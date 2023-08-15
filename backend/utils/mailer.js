@@ -8,13 +8,13 @@ export const registerMail = (username, email, text, subject) => {
         port: 587,
         secure: false,
         auth: {
-          user: "sachinthakaa86@gmail.com",
-          pass: "cycrtuteqvsqerpx",
+          user: "info.campusbodima@gmail.com",
+          pass: "fsgumbgazxzxnqkl",
         },
     });
     
     let mailDetails = {
-    from: 'sachinthakaa86@gmail.com',
+    from: 'info.campusbodima@gmail.com',
     to: email,
     subject: subject,
     text: text

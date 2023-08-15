@@ -102,7 +102,7 @@ const googleAuthUser = asyncHandler(async (req, res) => {
         });
     }
     else{
-        user = await User.create({
+            user = await User.create({
             email: profile.email,
             displayName: profile.displayName,
             image: profile.image,

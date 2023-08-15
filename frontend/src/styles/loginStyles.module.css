@@ -1,0 +1,42 @@
+.mainDiv{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.trapezoid{
+    border-bottom: 100vh solid #66B2ff;
+    border-right: 100vw solid #66B2ff;
+    border-left: 65vw solid transparent;
+    position: fixed;
+    /*filter: blur(5px);*/
+}
+
+.loginContainer{
+    position: relative;
+    background-color: rgb(255 255 255 / 76%);
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+    max-width: 65vw !important;
+    box-shadow: 0 4px 16px #00000025;
+}
+
+.loginImage{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.inputBox{
+    width: 100%;
+    border-radius: 10px;
+}
+
+.googleButton{
+    background-color: white !important;
+    color: black !important;
+    text-transform: unset !important;
+    width: 10vw;
+}

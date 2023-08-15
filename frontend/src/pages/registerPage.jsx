@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Form, Image, Button, Row, Col } from 'react-bootstrap';
 import { Divider } from "@mui/material";
 import { toast } from 'react-toastify';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 import { useGoogleLoginMutation, useRegisterMutation } from '../slices/usersApiSlice';
 import { setUserInfo } from "../slices/authSlice";
 import { ImageToBase64 } from "../utils/ImageToBase64";
@@ -38,27 +37,49 @@ const RegisterPage = () => {
     }, [navigate, userInfo]);
 
     const googleLoginSuccess = async (res) => {
-        const decoded = jwt_decode(res.credential);
-        const userInfo = {
-            email: decoded.email, 
-            displayName: decoded.name, 
-            image: decoded.picture, 
-            firstName: decoded.given_name, 
-            lastName: decoded.family_name,
-        }
-        try {
-            const googleRes = await googleLogin({...userInfo}).unwrap();
-            dispatch(setUserInfo({...googleRes}));            
-            toast.success('Login Successful');
-            navigate('/');
-        } catch (err) {
-            toast.error(err.data?.message || err.error);
-        }
+
+        fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${res.access_token}`,
+            },
+        })
+        .then(response => response.json())
+        .then(async(data) => {
+
+            const userInfo = {
+                email: data.email, 
+                displayName: data.name, 
+                image: data.picture, 
+                firstName: data.given_name, 
+                lastName: data.family_name,
+            }
+
+            try {
+                const googleRes = await googleLogin({...userInfo}).unwrap();
+                dispatch(setUserInfo({...googleRes}));            
+                toast.success('Login Successful');
+                navigate('/');
+            } catch (err) {
+                toast.error(err.data?.message || err.error);
+            }
+
+        })
+        .catch(error => {
+            toast.error("Error fetching user profile:", error);
+        });
+        
     }
 
     const googleLoginFail = () => {
         toast.error('Login Failed');
     }
+    
+
+    const login = useGoogleLogin({
+      onSuccess: googleLoginSuccess,
+      onFailure: googleLoginFail
+    });
 
     const submitHandler = async (e) => {
         e.preventDefault();
@@ -88,114 +109,130 @@ const RegisterPage = () => {
     }
 
     return (
-        <FormContainer>
-            <h1>Sign Up</h1>
-
-            <form encType="multipart/form-data" onSubmit={ submitHandler } >
-
-                <Form.Group controlId="formFile" className="mb-0 text-center">
-                    <Form.Label className="mb-0"><Image src={imagePath} width={200} height={200} roundedCircle style={{cursor: 'pointer'}} /></Form.Label>
-                    <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
-                </Form.Group>
-
-                <Row>
-                    <Col xs={12} md={6}>
-                        <Form.Group className="my-2" controlId="fName">
-                            <Form.Label>First Name</Form.Label>
-                            <Form.Control 
-                                type="text" 
-                                placeholder="Enter First Name" 
-                                value={firstName} 
-                                required
-                                onChange={ (e) => setFirstName(e.target.value)}
-                            ></Form.Control>
-                        </Form.Group>
+        <div className={styles.mainDiv}>
+            <div className={styles.trapezoid}></div>
+            <Container className={styles.loginContainer}>
+                <Row className='justify-content-md-center'>
+                    <Col xs={12} md={6} className="">
+                        <Link to='/' style={{textDecoration:"none"}}><Image src="./logo2.png" width={150} style={{cursor: 'pointer', marginTop:'20px'}} /></Link>
+                        <br />
+                        <div className={styles.loginImage}>
+                            <Image src="./images/hostel.png" width={500}/>
+                        </div>
                     </Col>
-                    <Col xs={12} md={6}>
-                        <Form.Group className="my-2" controlId="lName">
-                            <Form.Label>Last Name</Form.Label>
-                            <Form.Control 
-                                type="text" 
-                                placeholder="Enter Last Name" 
-                                value={lastName} 
-                                onChange={ (e) => setLastName(e.target.value)}
-                            ></Form.Control>
-                        </Form.Group>
+                    <Col xs={12} md={6} className='p-5'>
+                        <h1>Sign Up</h1>
+
+                        <form encType="multipart/form-data" onSubmit={ submitHandler } >
+
+                            <Form.Group controlId="formFile" className="mb-0 text-center">
+                                <Form.Label className="mb-0"><Image src={imagePath} width={200} height={200} roundedCircle style={{cursor: 'pointer'}} /></Form.Label>
+                                <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
+                            </Form.Group>
+
+                            <Row>
+                                <Col xs={12} md={6}>
+                                    <Form.Group className="my-2" controlId="fName">
+                                        <Form.Label>First Name</Form.Label>
+                                        <Form.Control 
+                                            type="text" 
+                                            placeholder="Enter First Name" 
+                                            value={firstName} 
+                                            required
+                                            onChange={ (e) => setFirstName(e.target.value)}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={12} md={6}>
+                                    <Form.Group className="my-2" controlId="lName">
+                                        <Form.Label>Last Name</Form.Label>
+                                        <Form.Control 
+                                            type="text" 
+                                            placeholder="Enter Last Name" 
+                                            value={lastName} 
+                                            onChange={ (e) => setLastName(e.target.value)}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            <Form.Group className="my-2" controlId="email">
+                                <Form.Label>Email Address</Form.Label>
+                                <Form.Control 
+                                    type="email" 
+                                    placeholder="Enter Email" 
+                                    value={email} 
+                                    required
+                                    onChange={ (e) => setEmail(e.target.value)}
+                                ></Form.Control>
+                            </Form.Group>
+
+                            <Form.Group className="my-2" controlId="displayName">
+                                <Form.Label>Username</Form.Label>
+                                <Form.Control 
+                                    type="text" 
+                                    placeholder="Enter Username" 
+                                    value={displayName} 
+                                    required
+                                    onChange={ (e) => setDisplayName(e.target.value)}
+                                ></Form.Control>
+                            </Form.Group>
+
+                            <Row>
+                                <Col xs={12} md={6}>
+                                    <Form.Group className="my-2" controlId="password">
+                                        <Form.Label>Password</Form.Label>
+                                        <Form.Control 
+                                            type="password" 
+                                            placeholder="Enter Password" 
+                                            value={password} 
+                                            required
+                                            onChange={ (e) => setPassword(e.target.value)}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={12} md={6}>
+                                <Form.Group className="my-2" controlId="cPassword">
+                                        <Form.Label>Confirm Password</Form.Label>
+                                        <Form.Control 
+                                            type="password" 
+                                            placeholder="Enter Password"
+                                            value={confirmPassword} 
+                                            required
+                                            onChange={ (e) => setConfirmPassword(e.target.value)}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            <LoadingButton type="submit" loading={isLoading} color="primary" variant="contained" className="mt-3">Sign Up</LoadingButton>
+                            
+                            <Row className='py-3'>
+                                <Col>
+                                    Already have an account? <Link to='/login' style={{textDecoration:"none"}}>Login</Link>
+                                </Col>
+                            </Row>
+
+                            <Divider>OR</Divider>
+
+                            <Row>
+                                <Col className="mt-3 d-flex justify-content-center">
+                                        <Button onClick={() => login()}>
+                                            Sign up as 
+                                        </Button>
+                                </Col>
+                                <Col className="mt-3 d-flex justify-content-center">
+                                        <Button onClick={() => login()}>
+                                            Sign up as Boarding Owner
+                                        </Button>
+                                </Col>
+                            </Row>
+
+                        </form>
                     </Col>
                 </Row>
-
-                <Form.Group className="my-2" controlId="email">
-                    <Form.Label>Email Address</Form.Label>
-                    <Form.Control 
-                        type="email" 
-                        placeholder="Enter Email" 
-                        value={email} 
-                        required
-                        onChange={ (e) => setEmail(e.target.value)}
-                    ></Form.Control>
-                </Form.Group>
-
-                <Form.Group className="my-2" controlId="displayName">
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control 
-                        type="text" 
-                        placeholder="Enter Username" 
-                        value={displayName} 
-                        required
-                        onChange={ (e) => setDisplayName(e.target.value)}
-                    ></Form.Control>
-                </Form.Group>
-
-                <Row>
-                    <Col xs={12} md={6}>
-                        <Form.Group className="my-2" controlId="password">
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control 
-                                type="password" 
-                                placeholder="Enter Password" 
-                                value={password} 
-                                required
-                                onChange={ (e) => setPassword(e.target.value)}
-                            ></Form.Control>
-                        </Form.Group>
-                    </Col>
-                    <Col xs={12} md={6}>
-                    <Form.Group className="my-2" controlId="cPassword">
-                            <Form.Label>Confirm Password</Form.Label>
-                            <Form.Control 
-                                type="password" 
-                                placeholder="Enter Password"
-                                value={confirmPassword} 
-                                required
-                                onChange={ (e) => setConfirmPassword(e.target.value)}
-                            ></Form.Control>
-                        </Form.Group>
-                    </Col>
-                </Row>
-
-                <LoadingButton type="submit" loading={isLoading} color="primary" variant="contained" className="mt-3">Sign Up</LoadingButton>
-                
-                <Row className='py-3'>
-                    <Col>
-                        Already have an account? <Link to='/login' style={{textDecoration:"none"}}>Login</Link>
-                    </Col>
-                </Row>
-
-                <Divider>OR</Divider>
-
-                <Row>
-                    <Col className="mt-3 d-flex justify-content-center">
-                        <GoogleOAuthProvider clientId="459902468078-o8jtn6mq2mjk54odsodkdf2rqo8hjrbo.apps.googleusercontent.com">
-                            <GoogleLogin
-                                onSuccess={ googleLoginSuccess }
-                                onError={ googleLoginFail }
-                            />
-                        </GoogleOAuthProvider>
-                    </Col>
-                </Row>
-
-            </form>
-        </FormContainer>
+            </Container>
+        </div>
     )
 };
 
