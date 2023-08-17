@@ -10,36 +10,49 @@ import {registerMail} from '../utils/mailer.js'
 const registerUser = asyncHandler(async (req, res) => {
     const {
         email, 
-        displayName, 
         image, 
         firstName, 
         lastName, 
-        password 
+        password,
+        userType,
+        phoneNo,
+        gender 
     } = req.body;
 
-    const userExists = await User.findOne({ email });
+    var userExists = await User.findOne({ email });
 
     if(userExists){
         res.status(400);
         throw new Error('User Already Exists');
+    }else{
+        userExists = await User.findOne({ phoneNo });
+
+        if(userExists){
+            res.status(400);
+            throw new Error('Phone Number Already in use');
+        }
     }
 
     const user = await User.create({
         email, 
-        displayName, 
         image, 
         firstName, 
         lastName, 
-        password
+        password,
+        userType,
+        phoneNo,
+        gender 
     });
 
     if(user){
         res.status(201).json({
-            email: user.email, 
-            displayName: user.displayName, 
+            email: user.email,  
             image: user.image, 
             firstName: user.firstName, 
             lastName: user.lastName, 
+            userType: user.userType,
+            phoneNo: user.phoneNo,
+            gender: user.gender 
         });
     }else{
         res.status(400);
@@ -233,7 +246,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
 });
 
 
-// @desc    Verify OTP
+// @desc    Reset Password
 // route    POST /api/users/resetPassword
 // @access  Public
 const resetPassword = asyncHandler(async (req, res) => {

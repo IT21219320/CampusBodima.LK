@@ -9,7 +9,6 @@ import { setUserInfo } from "../slices/authSlice";
 import { toast } from 'react-toastify';
 import { useGoogleLogin } from '@react-oauth/google';
 import LoadingButton from '@mui/lab/LoadingButton';
-import jwt_decode from "jwt-decode";
 import styles from '../styles/loginStyles.module.css';
 
 const LoginPage = () => {
@@ -137,90 +136,95 @@ const LoginPage = () => {
     }
 
     return (
-        <div className={styles.mainDiv}>
+        <>        
             <div className={styles.trapezoid}></div>
-            <Container className={styles.loginContainer}>
-                <Row className='justify-content-md-center'>
-                    <Col xs={12} md={6} className="">
-                        <Link to='/' style={{textDecoration:"none"}}><Image src="./logo2.png" width={150} style={{cursor: 'pointer', marginTop:'20px'}} /></Link>
-                        <br />
-                        <div className={styles.loginImage}>
-                            <Image src="./images/hostel.png" width={500}/>
-                        </div>
-                    </Col>
-                    <Col xs={12} md={6} className='p-5'>
-                        <h1>Sign In</h1>
-                        <h6>or <Link to='/register' style={{textDecoration:"none"}}>create an account</Link></h6>
-
-                        <Form onSubmit={ submitHandler }>
-                            <Box sx={{ display: 'flex', alignItems: 'flex-end' }} className="my-3">
-                                <Person sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                                <TextField 
-                                    type="email" 
-                                    value={email} 
-                                    label="Email Address" 
-                                    size="small" 
-                                    onChange={ (e) => setEmail(e.target.value)} 
-                                    className={styles.inputBox}
-                                    variant="standard" 
-                                    required
-                                />
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'flex-end' }} className="my-3">
-                                <Lock sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                                <TextField 
-                                    type={showPassword ? 'text' : 'password'}
-                                    value={password} 
-                                    label="Password" 
-                                    size="small" 
-                                    onChange={ (e) => setPassword(e.target.value) } 
-                                    className={styles.inputBox} 
-                                    variant="standard" 
-                                    InputProps={{
-                                        endAdornment: (
-                                          <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                                onMouseDown={handleMouseDownPassword}
-                                                >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                          </InputAdornment>
-                                        ),
-                                      }}
-                                    required
-                                />
-                            </Box>
-
-                            <LoadingButton type="submit" loading={isLoading} color="primary" variant="contained" className="mt-3">Sign In</LoadingButton>
-                            
-                            <Row className='py-3'>
-                                <Col>
-                                    <Link to='/generateotp' style={{textDecoration:"none"}}>Forgot Password?</Link>
-                                </Col>
-                            </Row>
-                            <Divider>OR</Divider>  
-                            <p className="text-center mt-2">Login With Google</p>                          
+            <div className={styles.mainDiv}>
+                <Container className={styles.loginContainer}>
+                    <Row className='justify-content-md-center'>
+                        <Col xs={12} md={6} className="d-flex flex-column">
                             <Row>
-                                <Col className="d-flex justify-content-center">
-                                    <Button className={styles.googleButton} onClick={() => ownerLogin()}>
-                                        <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/>
-                                        Boaring Owner
-                                    </Button>
-                                </Col>
-                                <Col className="d-flex justify-content-center">
-                                    <Button className={styles.googleButton} onClick={() => occupantLogin()}>
-                                        <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/>
-                                        Occupant
-                                    </Button>
-                                </Col>
+                                <Link to='/' style={{textDecoration:"none"}} className={styles.logo}><Image src="./logo2.png" width={150} style={{cursor: 'pointer', marginTop:'20px'}}/></Link>
+                            </Row> 
+                            <Row style={{height:'100%'}}>   
+                                <div className={styles.loginImage}>
+                                    <Image src="./images/hostel.png" style={{width:'100%'}}/>
+                                </div>
                             </Row>
-                        </Form>
-                    </Col>
-                </Row>
-            </Container>
-        </div>
+                        </Col>
+                        <Col xs={12} md={6} className='p-5'>
+                            <h1>Sign In</h1>
+                            <h6>or <Link to='/register' style={{textDecoration:"none"}}>create an account</Link></h6>
+
+                            <Form onSubmit={ submitHandler }>
+                                <Box sx={{ display: 'flex', alignItems: 'flex-end' }} className="my-3">
+                                    <Person sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+                                    <TextField 
+                                        type="email" 
+                                        value={email} 
+                                        label="Email Address" 
+                                        size="small" 
+                                        onChange={ (e) => setEmail(e.target.value)} 
+                                        className={styles.inputBox}
+                                        variant="standard" 
+                                        required
+                                    />
+                                </Box>
+                                <Box sx={{ display: 'flex', alignItems: 'flex-end' }} className="my-3">
+                                    <Lock sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+                                    <TextField 
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={password} 
+                                        label="Password" 
+                                        size="small" 
+                                        onChange={ (e) => setPassword(e.target.value) } 
+                                        className={styles.inputBox} 
+                                        variant="standard" 
+                                        InputProps={{
+                                            endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                            ),
+                                        }}
+                                        required
+                                    />
+                                </Box>
+
+                                <LoadingButton type="submit" loading={isLoading} color="primary" variant="contained" className="mt-3">Sign In</LoadingButton>
+                                
+                                <Row className='py-3'>
+                                    <Col>
+                                        <Link to='/generateotp' style={{textDecoration:"none"}}>Forgot Password?</Link>
+                                    </Col>
+                                </Row>
+                                <Divider>OR</Divider>  
+                                <p className="text-center mt-2">Login With Google</p>                          
+                                <Row>
+                                    <Col className="d-flex justify-content-center">
+                                        <Button className={styles.googleButton} onClick={() => ownerLogin()}>
+                                            <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/>
+                                            Boaring Owner
+                                        </Button>
+                                    </Col>
+                                    <Col className="d-flex justify-content-center">
+                                        <Button className={styles.googleButton} onClick={() => occupantLogin()}>
+                                            <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/>
+                                            Occupant
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Form>
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
+        </>
     )
 };
 

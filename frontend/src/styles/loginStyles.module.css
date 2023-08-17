@@ -1,8 +1,9 @@
 .mainDiv{
     width: 100%;
     height: 100%;
-    display: flex;
+    display: inline-grid;
     align-items: center;
+    overflow: auto;
 }
 
 .trapezoid{
@@ -10,6 +11,7 @@
     border-right: 100vw solid #66B2ff;
     border-left: 65vw solid transparent;
     position: fixed;
+    z-index: -1;
     /*filter: blur(5px);*/
 }
 
@@ -20,6 +22,8 @@
     border-radius: 10px;
     max-width: 65vw !important;
     box-shadow: 0 4px 16px #00000025;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .loginImage{
@@ -31,12 +35,21 @@
 
 .inputBox{
     width: 100%;
-    border-radius: 10px;
 }
 
 .googleButton{
     background-color: white !important;
     color: black !important;
     text-transform: unset !important;
-    width: 10vw;
+    min-width: 100% !important;
+    margin-top: 10px !important;
+}
+
+@media (max-width: 768px) {
+    .logo{
+        text-align: center !important;
+    }
+    .loginImage{
+        display: none;
+    }
 }

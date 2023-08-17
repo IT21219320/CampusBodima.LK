@@ -7,10 +7,6 @@ const userSchema = mongoose.Schema({
         required: true, 
         unique: true
     },
-    displayName: {
-        type: String, 
-        required: true
-    },
     image: {
         type: String, 
         required: false
@@ -22,6 +18,14 @@ const userSchema = mongoose.Schema({
     lastName: {
         type: String, 
         required: false
+    },
+    phoneNo: {
+        type: String, 
+        required: true
+    },
+    gender: {
+        type: String, 
+        required: true
     },
     accType: {
         type: String, 
