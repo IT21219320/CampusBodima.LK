@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Container, Row, Col, Image } from 'react-bootstrap';
-import { Divider, TextField, Box, InputAdornment, IconButton, Button } from "@mui/material";
+import { Divider, TextField, Box, InputAdornment, IconButton, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { Person, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLoginMutation, useGoogleLoginMutation } from '../slices/usersApiSlice';
-import { setUserInfo } from "../slices/authSlice";
+import { setUserInfo, destroyResetSession } from "../slices/authSlice";
 import { toast } from 'react-toastify';
 import { useGoogleLogin } from '@react-oauth/google';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -14,7 +14,10 @@ import styles from '../styles/loginStyles.module.css';
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [userType, setUserType] = useState('occupant');
     const [showPassword, setShowPassword] = useState(false);
+    const [isGoogleLoadingOccupant, setIsGoogleLoadingOccupant] = useState(false);
+    const [isGoogleLoadingOwner, setIsGoogleLoadingOwner] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -29,8 +32,10 @@ const LoginPage = () => {
     const [googleLogin] = useGoogleLoginMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
+    const { resetSession } = useSelector((state) => state.auth);
 
     useEffect(() => {
+        dispatch(destroyResetSession());
         if(userInfo){
             navigate('/');
         }
@@ -49,7 +54,6 @@ const LoginPage = () => {
 
             const userInfo = {
                 email: data.email, 
-                displayName: data.name, 
                 image: data.picture, 
                 firstName: data.given_name, 
                 lastName: data.family_name,
@@ -57,11 +61,13 @@ const LoginPage = () => {
             }
 
             try {
+                setIsGoogleLoadingOwner(true);
                 const googleRes = await googleLogin({...userInfo}).unwrap();
                 dispatch(setUserInfo({...googleRes}));            
                 toast.success('Login Successful');
                 navigate('/');
             } catch (err) {
+                setIsGoogleLoadingOwner(false);
                 toast.error(err.data?.message || err.error);
             }
 
@@ -85,7 +91,6 @@ const LoginPage = () => {
 
             const userInfo = {
                 email: data.email, 
-                displayName: data.name, 
                 image: data.picture, 
                 firstName: data.given_name, 
                 lastName: data.family_name,
@@ -93,11 +98,13 @@ const LoginPage = () => {
             }
 
             try {
+                setIsGoogleLoadingOccupant(true);
                 const googleRes = await googleLogin({...userInfo}).unwrap();
                 dispatch(setUserInfo({...googleRes}));            
                 toast.success('Login Successful');
                 navigate('/');
             } catch (err) {
+                setIsGoogleLoadingOccupant(false);
                 toast.error(err.data?.message || err.error);
             }
 
@@ -126,7 +133,7 @@ const LoginPage = () => {
     const submitHandler = async (e) => {
         e.preventDefault();
         try {
-            const res = await login({ email, password }).unwrap();
+            const res = await login({ userType, email, password }).unwrap();
             dispatch(setUserInfo({...res}));            
             toast.success('Login Successful');
             navigate('/');
@@ -156,6 +163,23 @@ const LoginPage = () => {
                             <h6>or <Link to='/register' style={{textDecoration:"none"}}>create an account</Link></h6>
 
                             <Form onSubmit={ submitHandler }>
+
+                                <Row className="mt-4">
+                                    <ToggleButtonGroup
+                                        value={userType}
+                                        exclusive
+                                        onChange={ (e) => setUserType(e.target.value) }
+                                        aria-label="User Type"
+                                        fullWidth
+                                    >
+                                        <ToggleButton value="occupant" aria-label="User Type Occupant">
+                                            Occupant
+                                        </ToggleButton>
+                                        <ToggleButton value="owner" aria-label="User Type Boarding Owner">
+                                            Boarding Owner
+                                        </ToggleButton>
+                                    </ToggleButtonGroup>
+                                </Row>
                                 <Box sx={{ display: 'flex', alignItems: 'flex-end' }} className="my-3">
                                     <Person sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
                                     <TextField 
@@ -204,19 +228,30 @@ const LoginPage = () => {
                                     </Col>
                                 </Row>
                                 <Divider>OR</Divider>  
-                                <p className="text-center mt-2">Login With Google</p>                          
+                                <p className="text-center mt-2">Login With Google</p>  
+
                                 <Row>
                                     <Col className="d-flex justify-content-center">
-                                        <Button className={styles.googleButton} onClick={() => ownerLogin()}>
-                                            <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/>
-                                            Boaring Owner
-                                        </Button>
+                                        <LoadingButton 
+                                            loading={isGoogleLoadingOwner} 
+                                            className={styles.googleButton} 
+                                            onClick={() => ownerLogin()} 
+                                            startIcon={ isGoogleLoadingOwner ? <></> : <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/> }
+                                            sx={{color:"black"}}
+                                        >
+                                            Boading Owner
+                                        </LoadingButton>
                                     </Col>
                                     <Col className="d-flex justify-content-center">
-                                        <Button className={styles.googleButton} onClick={() => occupantLogin()}>
-                                            <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/>
+                                        <LoadingButton 
+                                            loading={isGoogleLoadingOccupant} 
+                                            className={styles.googleButton} 
+                                            onClick={() => occupantLogin()}
+                                            startIcon={ isGoogleLoadingOccupant ? <></> : <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/> }
+                                            sx={{color:"black"}}
+                                        >
                                             Occupant
-                                        </Button>
+                                        </LoadingButton>
                                     </Col>
                                 </Row>
                             </Form>

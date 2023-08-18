@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Form, Container, Row, Col, Image } from 'react-bootstrap';
 import { Divider, TextField, Box, InputAdornment, IconButton, Button, Radio, RadioGroup , FormControlLabel , FormControl, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { LinearProgress, Typography, Stack } from '@mui/joy';
-import { Person, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useGoogleLoginMutation, useRegisterMutation } from '../slices/usersApiSlice';
@@ -25,6 +25,8 @@ const RegisterPage = () => {
     const [userType, setUserType] = useState('occupant');
     const [gender, setGender] = useState('Male');
     const [phoneNo, setPhoneNo] = useState('');
+    const [isGoogleLoadingOccupant, setIsGoogleLoadingOccupant] = useState(false);
+    const [isGoogleLoadingOwner, setIsGoogleLoadingOwner] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -59,7 +61,6 @@ const RegisterPage = () => {
 
             const userInfo = {
                 email: data.email, 
-                displayName: data.name, 
                 image: data.picture, 
                 firstName: data.given_name, 
                 lastName: data.family_name,
@@ -67,11 +68,13 @@ const RegisterPage = () => {
             }
 
             try {
+                setIsGoogleLoadingOwner(true);
                 const googleRes = await googleLogin({...userInfo}).unwrap();
                 dispatch(setUserInfo({...googleRes}));            
                 toast.success('Login Successful');
                 navigate('/');
             } catch (err) {
+                setIsGoogleLoadingOwner(false);
                 toast.error(err.data?.message || err.error);
             }
 
@@ -94,8 +97,7 @@ const RegisterPage = () => {
         .then(async(data) => {
 
             const userInfo = {
-                email: data.email, 
-                displayName: data.name, 
+                email: data.email,
                 image: data.picture, 
                 firstName: data.given_name, 
                 lastName: data.family_name,
@@ -103,11 +105,13 @@ const RegisterPage = () => {
             }
 
             try {
+                setIsGoogleLoadingOccupant(true);
                 const googleRes = await googleLogin({...userInfo}).unwrap();
                 dispatch(setUserInfo({...googleRes}));            
                 toast.success('Login Successful');
                 navigate('/');
             } catch (err) {
+                setIsGoogleLoadingOccupant(false);
                 toast.error(err.data?.message || err.error);
             }
 
@@ -367,16 +371,26 @@ const RegisterPage = () => {
 
                                 <Row>
                                     <Col className="d-flex justify-content-center">
-                                        <Button className={styles.googleButton} onClick={() => ownerLogin()}>
-                                            <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/>
-                                            Boaring Owner
-                                        </Button>
+                                        <LoadingButton 
+                                            loading={isGoogleLoadingOwner} 
+                                            className={styles.googleButton} 
+                                            onClick={() => ownerLogin()} 
+                                            startIcon={ isGoogleLoadingOwner ? <></> : <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/> }
+                                            sx={{color:"black"}}
+                                        >
+                                            Boading Owner
+                                        </LoadingButton>
                                     </Col>
                                     <Col className="d-flex justify-content-center">
-                                        <Button className={styles.googleButton} onClick={() => occupantLogin()}>
-                                            <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/>
+                                        <LoadingButton 
+                                            loading={isGoogleLoadingOccupant} 
+                                            className={styles.googleButton} 
+                                            onClick={() => occupantLogin()}
+                                            startIcon={ isGoogleLoadingOccupant ? <></> : <Image src="./images/Google_Logo.svg" width={20} style={{marginRight:"10px"}}/> }
+                                            sx={{color:"black"}}
+                                        >
                                             Occupant
-                                        </Button>
+                                        </LoadingButton>
                                     </Col>
                                 </Row>
                             </form>

@@ -18,7 +18,6 @@ import LoadingButton from '@mui/lab/LoadingButton';
 const ProfilePage = () => {
     const [email, setEmail] = useState('');
     const [accType, setAccType] = useState('');
-    const [displayName, setDisplayName] = useState('');
     const [imagePath, setImagePath] = useState('');
     const [image, setImage] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -27,6 +26,9 @@ const ProfilePage = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [viewUserInfo, setViewUserInfo] = useState();
     const [updateUserInfo, setUpdateUserInfo] = useState();
+    const [userType, setUserType] = useState('');
+    const [gender, setGender] = useState('');
+    const [phoneNo, setPhoneNo] = useState('');
     
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -39,11 +41,13 @@ const ProfilePage = () => {
     useEffect(() => {
         setEmail(userInfo.email);
         setAccType(userInfo.accType);
-        setDisplayName(userInfo.displayName);
         setImage(userInfo.image);
         setImagePath(userInfo.image);
         setFirstName(userInfo.firstName);
         setLastName(userInfo.lastName);
+        setUserType(userInfo.userType);
+        setPhoneNo(userInfo.phoneNo);
+        setGender(userInfo.gender);
         setViewUserInfo(true);
         setUpdateUserInfo(false);
         document.getElementById('updateUser').style.display = 'none';
@@ -54,7 +58,6 @@ const ProfilePage = () => {
         try {
             await logout().unwrap();
             dispatch(clearUserInfo());
-            console.log("df");
             navigate('/');
         } catch (err) {
             toast.error(err);
@@ -95,7 +98,7 @@ const ProfilePage = () => {
                 setPassword(userInfo.password);
             }
             try {
-                const res = await update({ email, displayName, image, firstName, lastName, password }).unwrap();
+                const res = await update({ email, image, firstName, lastName, password, phoneNo, gender }).unwrap();
                 dispatch(setUserInfo({...res}));
                 toast.success('Profile Updated');
                 navigate('/profile');
@@ -119,14 +122,14 @@ const ProfilePage = () => {
                             <CardContent style={{display:"flex", alignItems:"center", flexDirection:"column", padding:"50px 50px 30px 50px"}}>
                                 
                                 { imagePath ? 
-                                    <Avatar alt={displayName} src={imagePath} sx={{ width: 130, height: 130 }} referrerPolicy="no-referrer" /> 
+                                    <Avatar alt={firstName+" "+lastName} src={imagePath} sx={{ width: 130, height: 130 }} referrerPolicy="no-referrer" /> 
                                     : 
                                     <Typography component="div">
-                                        <Avatar alt={displayName} {...StringToAvatar(displayName)} style={{ width: 130, height: 130, fontSize: 50 }} />
+                                        <Avatar alt={firstName+" "+lastName} {...StringToAvatar(firstName+" "+lastName)} style={{ width: 130, height: 130, fontSize: 50 }} />
                                     </Typography> 
                                 }
                                 
-                                <Typography sx={{ fontWeight: 'bold' }} className='mt-4'>{displayName}</Typography>
+                                <Typography sx={{ fontWeight: 'bold' }} className='mt-4'>{firstName+" "+lastName}</Typography>
                                 <Stack direction="row" spacing={2} className='mt-5'>
                                     <Button variant="contained" color="primary" onClick={editProfile} startIcon={<EditIcon />}>Edit</Button>
                                     <Button variant="outlined" color="error" onClick={ logoutHandlerp }>Logout</Button>
@@ -161,7 +164,7 @@ const ProfilePage = () => {
                                             <b>Username</b>
                                         </Col>
                                         <Col>
-                                            {displayName}
+                                            {firstName+" "+lastName}
                                         </Col>
                                     </Row>
                                     <Divider sx={{borderColor:'initial'}}/>
@@ -196,10 +199,10 @@ const ProfilePage = () => {
                                                 }
                                             >
                                                 { imagePath ? 
-                                                    <Avatar alt={displayName} src={imagePath} sx={{ width: 130, height: 130, cursor:'pointer' }} /> 
+                                                    <Avatar alt={firstName+" "+lastName} src={imagePath} sx={{ width: 130, height: 130, cursor:'pointer' }} /> 
                                                     : 
                                                     <Typography component="div">
-                                                        <Avatar alt={displayName} {...StringToAvatar(displayName)} style={{ width: 130, height: 130, fontSize: 50, cursor:'pointer' }} />
+                                                        <Avatar alt={firstName+" "+lastName} {...StringToAvatar(firstName+" "+lastName)} style={{ width: 130, height: 130, fontSize: 50, cursor:'pointer' }} />
                                                     </Typography> 
                                                 }
                                             </Badge>
@@ -207,7 +210,7 @@ const ProfilePage = () => {
                                         <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
                                     </Form.Group>
                                     <br/>
-                                    <Typography sx={{ fontWeight: 'bold' }}>{displayName}</Typography>
+                                    <Typography sx={{ fontWeight: 'bold' }}>{firstName+" "+lastName}</Typography>
                                     <Stack direction="row" spacing={2} className='mt-5'>
                                     <LoadingButton type="submit" loading={isLoading} color="warning" variant="contained" startIcon={<UpdateIcon />}>Update</LoadingButton>
                                     <Button variant="outlined" color="error" onClick={viewProfile}>Cancel</Button>
@@ -261,7 +264,7 @@ const ProfilePage = () => {
                                                     <Form.Control 
                                                         type="text" 
                                                         placeholder="Enter Username" 
-                                                        value={displayName} 
+                                                        value={firstName+" "+lastName} 
                                                         required
                                                         onChange={ (e) => setDisplayName(e.target.value)}
                                                     ></Form.Control>

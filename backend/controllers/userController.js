@@ -19,7 +19,7 @@ const registerUser = asyncHandler(async (req, res) => {
         gender 
     } = req.body;
 
-    var userExists = await User.findOne({ email });
+    var userExists = await User.findOne({ email, userType });
 
     if(userExists){
         res.status(400);
@@ -41,6 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
         password,
         userType,
         phoneNo,
+
         gender 
     });
 
@@ -52,7 +53,8 @@ const registerUser = asyncHandler(async (req, res) => {
             lastName: user.lastName, 
             userType: user.userType,
             phoneNo: user.phoneNo,
-            gender: user.gender 
+            gender: user.gender,
+            accType: user.accType
         });
     }else{
         res.status(400);
@@ -66,9 +68,9 @@ const registerUser = asyncHandler(async (req, res) => {
 // route    POST /api/users/auth
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const { userType, email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email, userType });
 
     if(user && (await user.matchPasswords(password))){
 
@@ -79,16 +81,18 @@ const authUser = asyncHandler(async (req, res) => {
 
         generateToken(res, user.email);
         res.status(200).json({
-            email: user.email, 
-            displayName: user.displayName, 
+            email: user.email,  
             image: user.image, 
             firstName: user.firstName, 
             lastName: user.lastName, 
-            accType: user.accType, 
+            userType: user.userType,
+            phoneNo: user.phoneNo,
+            gender: user.gender,
+            accType: user.accType
         });
     }else{
         res.status(401);
-        throw new Error('Invalid Credentials');
+        throw new Error('User Not Found!');
     }
 
     // res.status(200).json({ message: 'auth user' });
@@ -101,26 +105,30 @@ const authUser = asyncHandler(async (req, res) => {
 const googleAuthUser = asyncHandler(async (req, res) => {
     const profile = req.body;
 
-    let user = await User.findOne({ email: profile.email });
+    let user = await User.findOne({ email: profile.email, userType: profile.userType });
 
     if(user){
         generateToken(res, user.email);
         res.status(200).json({
-            email: user.email, 
-            displayName: user.displayName, 
+            email: user.email,  
             image: user.image, 
             firstName: user.firstName, 
             lastName: user.lastName, 
-            accType: user.accType, 
+            userType: user.userType,
+            phoneNo: user.phoneNo,
+            gender: user.gender,
+            accType: user.accType
         });
     }
     else{
-            user = await User.create({
-            email: profile.email,
-            displayName: profile.displayName,
-            image: profile.image,
-            firstName: profile.firstName,
-            lastName: profile.lastName,
+        user = await User.create({
+            email: profile.email,  
+            image: profile.image, 
+            firstName: profile.firstName, 
+            lastName: profile.lastName, 
+            userType: profile.userType,
+            phoneNo: profile.phoneNo,
+            gender: profile.gender,
             accType: 'google',
             password: process.env.GOOGLE_SECRET
         })
@@ -128,12 +136,14 @@ const googleAuthUser = asyncHandler(async (req, res) => {
         if(user){
             generateToken(res, user.email);
             res.status(200).json({
-                email: user.email, 
-                displayName: user.displayName, 
+                email: user.email,  
                 image: user.image, 
                 firstName: user.firstName, 
                 lastName: user.lastName, 
-                accType: user.accType, 
+                userType: user.userType,
+                phoneNo: user.phoneNo,
+                gender: user.gender,
+                accType: user.accType
             });
         }
         else{
@@ -164,12 +174,14 @@ const logoutUser = asyncHandler(async (req, res) => {
 const getUserProfile = asyncHandler(async (req, res) => {
     const user = {
         email: req.user.email, 
-        displayName: req.user.displayName, 
         image: req.user.image, 
         firstName: req.user.firstName, 
         lastName: req.user.lastName, 
         accType: req.user.accType, 
-        password: req.user.password
+        password: req.user.password, 
+        userType: req.user.userType,
+        phoneNo: req.user.phoneNo,
+        gender: req.user.gender
     };  
     res.status(200).json(user);
 });
@@ -179,13 +191,14 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // route    PUT /api/users/profile
 // @access  Private
 const updateUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findOne({ email: req.user.email});
+    const user = await User.findOne({ email: req.user.email, userType: req.user.userType});
 
     if(user){
-        user.displayName = req.body.displayName || user.displayName;
         user.image = req.body.image || user.image;
         user.firstName = req.body.firstName || user.firstName;
         user.lastName = req.body.lastName || user.lastName;
+        user.phoneNo = req.body.phoneNo || user.phoneNo;
+        user.gender = req.body.gender || user.gender;
 
         if(req.body.password && req.body.accType == 'normal'){
             user.password = req.body.password;
@@ -195,11 +208,13 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
         res.status(200).json({
             email: updatedUser.email, 
-            displayName: updatedUser.displayName, 
             image: updatedUser.image, 
             firstName: updatedUser.firstName, 
             lastName: updatedUser.lastName, 
             accType: updatedUser.accType, 
+            userType: updatedUser.userType,
+            phoneNo: updatedUser.phoneNo,
+            gender: updatedUser.gender
         });
     }else{
         res.status(404);
@@ -212,9 +227,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // route    POST /api/users/generateOTP
 // @access  Public
 const generateOTP = asyncHandler(async (req, res) => {
-    const { email } = req.body;
+    const { email, userType } = req.body;
 
-    const user = await User.findOne({ email, accType:"normal" });
+    const user = await User.findOne({ email, accType:"normal", userType });
     if(user){
         req.app.locals.OTP = await otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false});
         registerMail(user.displayName,email,req.app.locals.OTP,"Your OTP");
@@ -250,9 +265,9 @@ const verifyOTP = asyncHandler(async (req, res) => {
 // route    POST /api/users/resetPassword
 // @access  Public
 const resetPassword = asyncHandler(async (req, res) => {
-    const { email, newPassword } = req.body;
+    const { email, userType, newPassword } = req.body;
 
-    const user = await User.findOne({ email: email});
+    const user = await User.findOne({ email: email, userType: userType });
 
     if(user){
         user.password = newPassword;

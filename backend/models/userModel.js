@@ -4,8 +4,7 @@ import bcrypt from 'bcryptjs';
 const userSchema = mongoose.Schema({
     email: {
         type: String, 
-        required: true, 
-        unique: true
+        required: true
     },
     image: {
         type: String, 
@@ -20,12 +19,10 @@ const userSchema = mongoose.Schema({
         required: false
     },
     phoneNo: {
-        type: String, 
-        required: true
+        type: String
     },
     gender: {
-        type: String, 
-        required: true
+        type: String
     },
     accType: {
         type: String, 
