@@ -5,6 +5,7 @@ import { useGenerateOTPMutation, useVerifyOTPMutation } from '../slices/usersApi
 import { createResetSession } from "../slices/authSlice";
 import { toast } from 'react-toastify';
 import { TextField, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { Sync } from '@mui/icons-material';
 import { MuiOtpInput } from 'mui-one-time-password-input'
 import { Form, Row, Image } from 'react-bootstrap';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -91,6 +92,7 @@ const GenerateOtpPage = () => {
                 <p className="text-start">The OTP code has being sent to the email you have entered. Please enter the code below to verify.</p>
                 <MuiOtpInput value={otp} length={6} onChange={ (e) => setOTP(e)} />
                 <LoadingButton loading={isLoading2} type="submit" color="primary" variant="contained" className="mt-3">Verify OTP</LoadingButton>
+                <LoadingButton loading={isLoading} onClick={ emailSubmitHandler } color="primary" variant="contained" className="mt-3 ms-3"><Sync /> Resend</LoadingButton>
             </Form>
         </FormContainer>
     );

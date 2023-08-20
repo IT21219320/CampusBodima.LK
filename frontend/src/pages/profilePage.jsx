@@ -54,10 +54,11 @@ const ProfilePage = () => {
         document.getElementById('viewUser').style.display = 'flex';
     }, [userInfo]);
 
-    const logoutHandlerp = async () => {
+    const logoutHandler = async () => {
         try {
             await logout().unwrap();
             dispatch(clearUserInfo());
+            toast.success("Logged Out");
             navigate('/');
         } catch (err) {
             toast.error(err);
@@ -98,7 +99,7 @@ const ProfilePage = () => {
                 setPassword(userInfo.password);
             }
             try {
-                const res = await update({ email, image, firstName, lastName, password, phoneNo, gender }).unwrap();
+                const res = await update({ email, image, firstName, lastName, password, userType, phoneNo, gender }).unwrap();
                 dispatch(setUserInfo({...res}));
                 toast.success('Profile Updated');
                 navigate('/profile');
@@ -132,7 +133,7 @@ const ProfilePage = () => {
                                 <Typography sx={{ fontWeight: 'bold' }} className='mt-4'>{firstName+" "+lastName}</Typography>
                                 <Stack direction="row" spacing={2} className='mt-5'>
                                     <Button variant="contained" color="primary" onClick={editProfile} startIcon={<EditIcon />}>Edit</Button>
-                                    <Button variant="outlined" color="error" onClick={ logoutHandlerp }>Logout</Button>
+                                    <Button variant="outlined" color="error" onClick={ logoutHandler }>Logout</Button>
                                 </Stack>
                             </CardContent>
                         </Card>

@@ -11,12 +11,18 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        verifyEmail: builder.mutation({
+            query: (data) => ({
+                url: `${USERS_URL}/`,
+                method: 'GET',
+                params: data
+            }),
+        }),
         login: builder.mutation({
             query: (data) => ({
                 url: `${USERS_URL}/auth`,
                 method: 'POST',
                 body: data,
-                
             }),
         }),
         googleLogin: builder.mutation({
@@ -63,4 +69,4 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useLoginMutation, useGoogleLoginMutation, useRegisterMutation, useLogoutMutation, useUpdateUserMutation, useGenerateOTPMutation, useVerifyOTPMutation, useResetPasswordMutation } = usersApiSlice;
+export const { useLoginMutation, useGoogleLoginMutation, useRegisterMutation, useVerifyEmailMutation, useLogoutMutation, useUpdateUserMutation, useGenerateOTPMutation, useVerifyOTPMutation, useResetPasswordMutation } = usersApiSlice;

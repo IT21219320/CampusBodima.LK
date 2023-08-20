@@ -2,12 +2,13 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import generateToken from '../utils/generateToken.js';
 import otpGenerator from 'otp-generator';
+import jwt from 'jsonwebtoken';
 import {registerMail} from '../utils/mailer.js'
 
-// @desc    Register a new user
+// @desc    Check if user exists and send registeration mail
 // route    POST /api/users
 // @access  Public
-const registerUser = asyncHandler(async (req, res) => {
+const sendRegisterMail = asyncHandler(async (req, res) => {
     const {
         email, 
         image, 
@@ -15,7 +16,6 @@ const registerUser = asyncHandler(async (req, res) => {
         lastName, 
         password,
         userType,
-        phoneNo,
         gender 
     } = req.body;
 
@@ -24,13 +24,65 @@ const registerUser = asyncHandler(async (req, res) => {
     if(userExists){
         res.status(400);
         throw new Error('User Already Exists');
-    }else{
-        userExists = await User.findOne({ phoneNo });
+    }
 
-        if(userExists){
-            res.status(400);
-            throw new Error('Phone Number Already in use');
-        }
+    const user = ({
+        email, 
+        image, 
+        firstName, 
+        lastName, 
+        password,
+        userType,
+        gender 
+    });
+
+    var token = jwt.sign({ user }, process.env.JWT_SECRET, { 
+        expiresIn: '30d' 
+    });
+
+    token = `${token.split('.')[0]}/${token.split('.')[1]}/${token.split('.')[2]}`;
+
+    if(token){
+        const message = `<p><b>Hello ${user.firstName},</b><br><br> 
+                            Welcome to CampusBodima! Start setting up your account by verifying your email address. Click this secure link:<br><br>
+                            <a href="http://${process.env.DOMAIN}/register/${token}">Verify your email</a><br><br>
+                            Thank you for choosing CampusBodima!<br><br>
+                            Best wishes,<br>
+                            The CampusBodima Team</p>`
+        
+        registerMail(email,message,"Activate Your Account");
+        res.status(201).json({ message: "Email Verification Sent!"});
+    }
+    else{
+        res.status(400);
+        throw new Error('Email not found');
+    }
+
+    
+
+});
+
+// @desc    Register a new user
+// route    GET /api/users/
+// @access  Public
+const registerUser = asyncHandler(async (req, res) => {
+    console.log(jwt.decode(req.query.token));
+    const {
+        email, 
+        image, 
+        firstName, 
+        lastName, 
+        password,
+        userType,
+        gender 
+    } = jwt.decode(req.query.token).user;
+
+
+    var userExists = await User.findOne({ email, userType });
+
+    if(userExists){
+        res.status(400);
+        throw new Error('User Already Exists');
     }
 
     const user = await User.create({
@@ -40,9 +92,8 @@ const registerUser = asyncHandler(async (req, res) => {
         lastName, 
         password,
         userType,
-        phoneNo,
-
-        gender 
+        gender,
+        phoneNo: "" 
     });
 
     if(user){
@@ -52,7 +103,6 @@ const registerUser = asyncHandler(async (req, res) => {
             firstName: user.firstName, 
             lastName: user.lastName, 
             userType: user.userType,
-            phoneNo: user.phoneNo,
             gender: user.gender,
             accType: user.accType
         });
@@ -108,6 +158,10 @@ const googleAuthUser = asyncHandler(async (req, res) => {
     let user = await User.findOne({ email: profile.email, userType: profile.userType });
 
     if(user){
+        if(user.accType == 'normal'){
+            res.status(400);
+            throw new Error('User Already Exists! Please login using your password');
+        }
         generateToken(res, user.email);
         res.status(200).json({
             email: user.email,  
@@ -164,7 +218,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         expires: new Date(0)
     })
     
-    res.status(200).json({ message: 'Loged out' });
+    res.status(200).json({ message: 'Logged out' });
 });
 
 
@@ -191,7 +245,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // route    PUT /api/users/profile
 // @access  Private
 const updateUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findOne({ email: req.user.email, userType: req.user.userType});
+    const user = await User.findOne({ email: req.body.email, userType: req.body.userType});
 
     if(user){
         user.image = req.body.image || user.image;
@@ -232,7 +286,10 @@ const generateOTP = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email, accType:"normal", userType });
     if(user){
         req.app.locals.OTP = await otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false});
-        registerMail(user.displayName,email,req.app.locals.OTP,"Your OTP");
+        
+        const message = `<p>Hello ${user.firstName},<br> Your OTP is: <b>${req.app.locals.OTP}</b></p>`
+
+        registerMail(email, message,"Your OTP");
         res.status(201).json({ message: "OTP Sent"});
     }
     else{
@@ -289,6 +346,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 export { 
     authUser,
     googleAuthUser,
+    sendRegisterMail,
     registerUser, 
     logoutUser,
     getUserProfile,

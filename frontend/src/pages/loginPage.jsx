@@ -134,7 +134,8 @@ const LoginPage = () => {
         e.preventDefault();
         try {
             const res = await login({ userType, email, password }).unwrap();
-            dispatch(setUserInfo({...res}));            
+            dispatch(setUserInfo({...res}));    
+            console.log(res)        
             toast.success('Login Successful');
             navigate('/');
         } catch (err) {

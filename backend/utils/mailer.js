@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-export const registerMail = (username, email, text, subject) => {
+export const registerMail = (email, text, subject) => {
     
     const mailTransporter  = nodemailer.createTransport({
         service: "gmail",
@@ -17,7 +17,7 @@ export const registerMail = (username, email, text, subject) => {
     from: 'info.campusbodima@gmail.com',
     to: email,
     subject: subject,
-    text: text
+    html: text
     };
     
     mailTransporter.sendMail(mailDetails, function(err, data) {

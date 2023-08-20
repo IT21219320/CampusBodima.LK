@@ -10,6 +10,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useGoogleLoginMutation, useRegisterMutation } from '../slices/usersApiSlice';
 import { setUserInfo } from "../slices/authSlice";
 import { ImageToBase64 } from "../utils/ImageToBase64";
+import { sendSms } from "../utils/smsSender";
 import LoadingButton from '@mui/lab/LoadingButton';
 import styles from '../styles/loginStyles.module.css';
 
@@ -24,9 +25,14 @@ const RegisterPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [userType, setUserType] = useState('occupant');
     const [gender, setGender] = useState('Male');
-    const [phoneNo, setPhoneNo] = useState('');
     const [isGoogleLoadingOccupant, setIsGoogleLoadingOccupant] = useState(false);
     const [isGoogleLoadingOwner, setIsGoogleLoadingOwner] = useState(false);
+
+    /*const getToken = () => {
+        const numbers = {mobile: "715886675"};
+        const message = "hii";
+        sendSms(numbers,message);
+    }*/
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -147,8 +153,8 @@ const RegisterPage = () => {
         }
         else{
             try {
-                const res = await register({ email, image, firstName, lastName, password, userType, phoneNo, gender }).unwrap();
-                toast.success('Register Successful');
+                const res = await register({ email, image, firstName, lastName, password, userType, gender }).unwrap();
+                toast.success('Email Verification Sent!');
                 navigate('/login');
             } catch (err) {
                 toast.error(err.data?.message || err.error);
@@ -260,27 +266,6 @@ const RegisterPage = () => {
                                             <FormControlLabel value="Female" control={<Radio />} label="Female" />
                                         </RadioGroup>
                                     </FormControl>
-                                </Row>
-
-                                <Row>
-                                    <Box sx={{ display: 'flex', alignItems: 'flex-end' }} className="my-2">
-                                        <TextField 
-                                            type="tel"
-                                            value={phoneNo} 
-                                            label="Mobile No" 
-                                            size="small" 
-                                            onChange={ (e) => setPhoneNo(e.target.value) } 
-                                            className={styles.inputBox} 
-                                            variant="standard" 
-                                            required
-                                            inputProps={{ 
-                                                inputMode: 'numeric', 
-                                                pattern: '[0-9]*' ,
-                                                maxLength: 10,
-                                                minLength: 10
-                                            }}
-                                        />
-                                    </Box>
                                 </Row>
 
                                 <Row>

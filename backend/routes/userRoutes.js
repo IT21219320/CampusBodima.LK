@@ -1,5 +1,5 @@
 import express from 'express';
-import { authUser, googleAuthUser, registerUser, logoutUser, getUserProfile, updateUserProfile, generateOTP, verifyOTP, resetPassword } from '../controllers/userController.js';
+import { authUser, googleAuthUser, sendRegisterMail, registerUser, logoutUser, getUserProfile, updateUserProfile, generateOTP, verifyOTP, resetPassword } from '../controllers/userController.js';
 import { protect } from '../middleware/authMiddleware.js'
 // - **POST /api/users** - Register a user
 // - **POST /api/users/auth** - Authenticate a user and get token
@@ -9,7 +9,8 @@ import { protect } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
 
-router.post('/', registerUser);
+router.post('/', sendRegisterMail);
+router.get('/', registerUser);
 router.post('/auth', authUser);
 router.post('/googleAuth', googleAuthUser);
 router.post('/logout', logoutUser);
