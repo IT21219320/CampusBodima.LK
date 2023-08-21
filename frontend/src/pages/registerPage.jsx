@@ -28,11 +28,11 @@ const RegisterPage = () => {
     const [isGoogleLoadingOccupant, setIsGoogleLoadingOccupant] = useState(false);
     const [isGoogleLoadingOwner, setIsGoogleLoadingOwner] = useState(false);
 
-    /*const getToken = () => {
-        const numbers = {mobile: "715886675"};
-        const message = "hii";
+    const getToken = () => {
+        const numbers = {mobile: "762144967"};
+        const message = "Helloooo";
         sendSms(numbers,message);
-    }*/
+    }
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -382,6 +382,7 @@ const RegisterPage = () => {
                         </Col>
                     </Row>
                 </Container>
+                <Button onClick={getToken}>Send SMS</Button>
             </div>
         </>
     )

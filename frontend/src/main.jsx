@@ -16,6 +16,8 @@ import GenerateOtpPage from './pages/generateOtpPage.jsx';
 import ResetPasswordPage from './pages/resetPasswordPage.jsx';
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
+import OwnerRoute from './components/ownerRoute';
+import OccupantRoute from './components/occupantRoute';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
@@ -38,7 +40,17 @@ const router = createBrowserRouter(
 
         {/* Admin Routes */}
         <Route path='' element={ <AdminRoute /> }>
-          <Route path='/dashboard' element={ <ProfilePage /> } />
+
+        </Route>
+
+        {/* Owner Routes */}
+        <Route path='' element={ <OwnerRoute /> }>
+
+        </Route>
+
+        {/* Occupant Routes */}
+        <Route path='' element={ <OccupantRoute /> }>
+          
         </Route>
       </Route>
 
