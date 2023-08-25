@@ -177,7 +177,10 @@ const LoginPage = () => {
                                             Occupant
                                         </ToggleButton>
                                         <ToggleButton value="owner" aria-label="User Type Boarding Owner">
-                                            Boarding Owner
+                                            Owner
+                                        </ToggleButton>
+                                        <ToggleButton value="admin" aria-label="User Type Admin">
+                                            Admin
                                         </ToggleButton>
                                     </ToggleButtonGroup>
                                 </Row>

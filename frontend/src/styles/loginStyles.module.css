@@ -1,11 +1,3 @@
-.mainDiv{
-    width: 100%;
-    height: 100%;
-    display: inline-grid;
-    align-items: center;
-    overflow: auto;
-}
-
 .trapezoid{
     border-bottom: 100vh solid #66B2ff;
     border-right: 100vw solid #66B2ff;
@@ -13,6 +5,14 @@
     position: fixed;
     z-index: -1;
     /*filter: blur(5px);*/
+}
+
+.mainDiv{
+    width: 100%;
+    height: 100%;
+    display: inline-grid;
+    align-items: center;
+    overflow: auto;
 }
 
 .loginContainer{
@@ -24,6 +24,16 @@
     box-shadow: 0 4px 16px #00000025;
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+.verificationMsg{
+    display: flex;
+    height: 90vh;
+    padding: 0 30px !important;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .loginImage{

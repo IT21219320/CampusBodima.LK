@@ -1,0 +1,19 @@
+.itmBtn{
+    margin: 5px 8px !important;
+    border-radius: 5px !important;
+    padding: 0 !important;
+    padding-left: 12px !important;
+}
+
+.itmBtn:hover{
+    background: #2d3253 !important;
+}
+
+.active{
+    background: linear-gradient(72.47deg, #7367f0 22.16%, rgba(115, 103, 240, 0.7) 76.47%);
+    box-shadow: 0px 2px 6px 0px rgb(115 103 240 / 48%);
+}
+
+.active:hover{
+    background: linear-gradient(72.47deg, #7367f0 22.16%, rgba(115, 103, 240, 0.7) 76.47%) !important;
+}
