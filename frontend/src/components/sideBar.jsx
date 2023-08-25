@@ -1,0 +1,113 @@
+import * as React from 'react';
+import { Link, useLocation  } from 'react-router-dom';
+import { styled, useTheme } from '@mui/material/styles';
+import { Box, List, CssBaseline, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import MuiDrawer from '@mui/material/Drawer';
+import MuiAppBar from '@mui/material/AppBar';
+import { HomeRounded, Person } from '@mui/icons-material';
+import { Image } from 'react-bootstrap';
+
+import sideBarStyles from '../styles/sideBarStyles.module.css'
+
+const drawerWidth = 240;
+
+const openedMixin = (theme) => ({
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+  background: '#242745',
+  color:'white'
+});
+
+const closedMixin = (theme) => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+  background: '#242745',
+  color:'white'
+});
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing(0, 0),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+}));
+
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    ...(open && {
+      ...openedMixin(theme),
+      '& .MuiDrawer-paper': openedMixin(theme),
+    }),
+    ...(!open && {
+      ...closedMixin(theme),
+      '& .MuiDrawer-paper': closedMixin(theme),
+    }),
+  }),
+);
+
+export default function Sidebar() {
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(false);
+
+  const handleDrawerOpen = () => {
+    document.getElementById('logo').src = "./logoBig2.png";
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    document.getElementById('logo').src = "./logo.png";
+    setOpen(false);
+  };
+
+  const location = useLocation();
+  const activeRoute = location.pathname;
+  console.log(activeRoute);
+  
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseOut={handleDrawerClose}>
+        <DrawerHeader>
+          <Link to='/'><Image src="./logo.png" height='70px' id="logo"/></Link>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          <Link to='/dashboard' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/dashboard' ? sideBarStyles.active : 'dd'}`}>
+              <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white',  }}>
+                <HomeRounded />
+              </ListItemIcon>
+              <ListItemText primary={"Dashboard"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem></Link>
+          
+          <Link to='/profile' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/profile' ? sideBarStyles.active : 'dd'}`}>
+              <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                <Person />
+              </ListItemIcon>
+              <ListItemText primary={"Profile"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem></Link>
+        </List>
+      </Drawer>
+    </Box>
+  );
+}

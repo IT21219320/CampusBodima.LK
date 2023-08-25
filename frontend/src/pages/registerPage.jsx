@@ -155,7 +155,8 @@ const RegisterPage = () => {
             try {
                 const res = await register({ email, image, firstName, lastName, password, userType, gender }).unwrap();
                 toast.success('Email Verification Sent!');
-                navigate('/login');
+                document.getElementById("registerForm").style.display = "none";
+                document.getElementById("emailSentMsg").style.display = "block";
             } catch (err) {
                 toast.error(err.data?.message || err.error);
             }
@@ -176,7 +177,7 @@ const RegisterPage = () => {
         <>        
             <div className={styles.trapezoid}></div>
             <div className={styles.mainDiv}>
-                <Container className={styles.loginContainer}>
+                <Container className={styles.loginContainer} id="registerForm">
                     <Row className='justify-content-md-center'>
                         <Col xs={12} md={6} className="d-flex flex-column">
                             <Row>
@@ -381,6 +382,12 @@ const RegisterPage = () => {
                             </form>
                         </Col>
                     </Row>
+                </Container>
+                <Container className={`${styles.loginContainer}`} style={{height:"90vh", display: "none"}} id="emailSentMsg">
+                    <div className={`${styles.verificationMsg}`}>
+                        <Link to='/' style={{textDecoration:"none", position: "absolute", top: "15px", left: "15px"}} className={styles.logo}><Image src="./logo2.png" width={150} style={{cursor: 'pointer', marginTop:'20px'}}/></Link>
+                        <h3>A Verification mail has being sent to {email}. Please verify to register to CampusBodima as an {userType}.</h3>
+                    </div>
                 </Container>
                 {/*<Button onClick={getToken}>Send SMS</Button>*/}
             </div>
