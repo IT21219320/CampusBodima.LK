@@ -37,7 +37,7 @@ const sendRegisterMail = asyncHandler(async (req, res) => {
     });
 
     var token = jwt.sign({ user }, process.env.JWT_SECRET, { 
-        expiresIn: '30d' 
+        expiresIn: '1d' 
     });
 
     token = `${token.split('.')[0]}/${token.split('.')[1]}/${token.split('.')[2]}`;
@@ -66,49 +66,74 @@ const sendRegisterMail = asyncHandler(async (req, res) => {
 // route    GET /api/users/
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-    console.log(jwt.decode(req.query.token));
-    const {
-        email, 
-        image, 
-        firstName, 
-        lastName, 
-        password,
-        userType,
-        gender 
-    } = jwt.decode(req.query.token).user;
 
+    try {
 
-    var userExists = await User.findOne({ email, userType });
+        const {
+            email, 
+            image, 
+            firstName, 
+            lastName, 
+            password,
+            userType,
+            gender 
+        } = jwt.decode(req.query.token).user;
 
-    if(userExists){
-        res.status(400);
-        throw new Error('User Already Exists');
-    }
+        var userExists = await User.findOne({ email, userType });
 
-    const user = await User.create({
-        email, 
-        image, 
-        firstName, 
-        lastName, 
-        password,
-        userType,
-        gender,
-        phoneNo: "" 
-    });
+        if(userExists){
+            res.status(400);
+            throw new Error('User Already Exists');
+        }
+    
+        var user;
+        if(userType == "occupant"){
+            user = await User.create({
+                email, 
+                image, 
+                firstName, 
+                lastName, 
+                password,
+                userType,
+                gender,
+                phoneNo: "",
+                totalPayable: '0' 
+            });
+        }
+        else{
+            user = await User.create({
+                email, 
+                image, 
+                firstName, 
+                lastName, 
+                password,
+                userType,
+                gender,
+                phoneNo: "" 
+            });
+        }
+    
+        if(user){
+            res.status(201).json({
+                email: user.email,  
+                image: user.image, 
+                firstName: user.firstName, 
+                lastName: user.lastName, 
+                userType: user.userType,
+                gender: user.gender,
+                accType: user.accType,
+                totalPayable: user.totalPayable
+            });
+        }else{
+            res.status(400);
+            throw new Error('Invalid User Data');
+        }
 
-    if(user){
-        res.status(201).json({
-            email: user.email,  
-            image: user.image, 
-            firstName: user.firstName, 
-            lastName: user.lastName, 
-            userType: user.userType,
-            gender: user.gender,
-            accType: user.accType
-        });
-    }else{
-        res.status(400);
-        throw new Error('Invalid User Data');
+    } catch (error) {
+
+        res.status(401);
+        throw new Error('Not Authorized, Session Expired');
+
     }
 
 });
@@ -122,6 +147,10 @@ const authUser = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ email, userType });
 
+    if(user && user.accType == 'google'){
+        res.status(401);
+        throw new Error('User Not Found!');
+    }
     if(user && (await user.matchPasswords(password))){
 
         if(user.accType != 'normal'){
@@ -138,7 +167,8 @@ const authUser = asyncHandler(async (req, res) => {
             userType: user.userType,
             phoneNo: user.phoneNo,
             gender: user.gender,
-            accType: user.accType
+            accType: user.accType,
+            totalPayable: user.totalPayable
         });
     }else{
         res.status(401);
@@ -171,21 +201,36 @@ const googleAuthUser = asyncHandler(async (req, res) => {
             userType: user.userType,
             phoneNo: user.phoneNo,
             gender: user.gender,
-            accType: user.accType
+            accType: user.accType,
+            totalPayable: user.totalPayable
         });
     }
     else{
-        user = await User.create({
-            email: profile.email,  
-            image: profile.image, 
-            firstName: profile.firstName, 
-            lastName: profile.lastName, 
-            userType: profile.userType,
-            phoneNo: profile.phoneNo,
-            gender: profile.gender,
-            accType: 'google',
-            password: process.env.GOOGLE_SECRET
-        })
+        if(profile.userType == 'occupant'){
+            user = await User.create({
+                email: profile.email,  
+                image: profile.image, 
+                firstName: profile.firstName, 
+                lastName: profile.lastName, 
+                userType: profile.userType,
+                phoneNo: profile.phoneNo,
+                gender: profile.gender,
+                accType: 'google',
+                totalPayable: '0'
+            })
+        }
+        else{
+            user = await User.create({
+                email: profile.email,  
+                image: profile.image, 
+                firstName: profile.firstName, 
+                lastName: profile.lastName, 
+                userType: profile.userType,
+                phoneNo: profile.phoneNo,
+                gender: profile.gender,
+                accType: 'google'
+            })
+        }
         
         if(user){
             generateToken(res, user.email);
@@ -197,7 +242,8 @@ const googleAuthUser = asyncHandler(async (req, res) => {
                 userType: user.userType,
                 phoneNo: user.phoneNo,
                 gender: user.gender,
-                accType: user.accType
+                accType: user.accType,
+                totalPayable: user.totalPayable
             });
         }
         else{
@@ -235,7 +281,8 @@ const getUserProfile = asyncHandler(async (req, res) => {
         password: req.user.password, 
         userType: req.user.userType,
         phoneNo: req.user.phoneNo,
-        gender: req.user.gender
+        gender: req.user.gender,
+        totalPayable: user.totalPayable
     };  
     res.status(200).json(user);
 });
@@ -253,6 +300,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
         user.lastName = req.body.lastName || user.lastName;
         user.phoneNo = req.body.phoneNo || user.phoneNo;
         user.gender = req.body.gender || user.gender;
+        
+        if(user.userType == 'occupant'){
+            user.totalPayable = req.body.totalPayable || user.totalPayable;
+        }
 
         if(req.body.password && req.body.accType == 'normal'){
             user.password = req.body.password;
@@ -268,7 +319,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             accType: updatedUser.accType, 
             userType: updatedUser.userType,
             phoneNo: updatedUser.phoneNo,
-            gender: updatedUser.gender
+            gender: updatedUser.gender,
+            totalPayable: updatedUser.totalPayable
         });
     }else{
         res.status(404);

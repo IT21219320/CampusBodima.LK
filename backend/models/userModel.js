@@ -34,9 +34,11 @@ const userSchema = mongoose.Schema({
         required: true,
         default: 'occupant'
     },
+    totalPayable: {
+        type: String,
+    },
     password: {
-        type: String, 
-        required: true
+        type: String
     }
 }, {
     timestamps: true
