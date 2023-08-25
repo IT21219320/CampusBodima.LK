@@ -3,8 +3,7 @@ import { Link, useLocation  } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
 import { Box, List, CssBaseline, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar from '@mui/material/AppBar';
-import { HomeRounded, Person } from '@mui/icons-material';
+import { HomeRounded, Person, HomeWorkRounded } from '@mui/icons-material';
 import { Image } from 'react-bootstrap';
 
 import sideBarStyles from '../styles/sideBarStyles.module.css'
@@ -104,6 +103,15 @@ export default function Sidebar() {
                 <Person />
               </ListItemIcon>
               <ListItemText primary={"Profile"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem></Link>
+          
+          <Link to='/boarding' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/boarding' ? sideBarStyles.active : 'dd'}`}>
+              <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                <HomeWorkRounded />
+              </ListItemIcon>
+              <ListItemText primary={"My Boarding"} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem></Link>
         </List>
