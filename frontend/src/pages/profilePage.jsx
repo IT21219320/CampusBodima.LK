@@ -15,8 +15,6 @@ import AddIcon from '@mui/icons-material/Add';
 import UpdateIcon from '@mui/icons-material/Update';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-//import Header from '../components/header';
-//import Header from '../components/header2';
 import Sidebar from '../components/sideBar';
 
 import profileStyles from '../styles/profileStyles.module.css';
