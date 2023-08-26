@@ -69,12 +69,12 @@ export default function Sidebar() {
   const { userInfo } = useSelector((state) => state.auth);
 
   const handleDrawerOpen = () => {
-    document.getElementById('logo').src = "./logoBig2.png";
+    document.getElementById('logo').src = "/logoBig2.png";
     setOpen(true);
   };
 
   const handleDrawerClose = () => {
-    document.getElementById('logo').src = "./logo.png";
+    document.getElementById('logo').src = "/logo.png";
     setOpen(false);
   };
 
@@ -87,7 +87,7 @@ export default function Sidebar() {
       <CssBaseline />
       <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseOut={handleDrawerClose}>
         <DrawerHeader>
-          <Link to='/'><Image src="./logo.png" height='70px' id="logo"/></Link>
+          <Link to='/'><Image src="/logo.png" height='70px' id="logo"/></Link>
         </DrawerHeader>
         <Divider />
         <List>
