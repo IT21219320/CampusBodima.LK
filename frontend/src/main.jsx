@@ -13,6 +13,7 @@ import RegisterPage from './pages/registerPage.jsx';
 import VerifyEmailPage from './pages/verifyEmailPage.jsx';
 import ProfilePage from './pages/profilePage.jsx';
 import GenerateOtpPage from './pages/generateOtpPage.jsx';
+import OwnerBoardingPage from './pages/ownerBoardingPage.jsx';
 import ResetPasswordPage from './pages/resetPasswordPage.jsx';
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
@@ -45,7 +46,7 @@ const router = createBrowserRouter(
 
         {/* Owner Routes */}
         <Route path='' element={ <OwnerRoute /> }>
-
+          <Route path='/owner/boarding' element={ <OwnerBoardingPage /> } />
         </Route>
 
         {/* Occupant Routes */}
