@@ -8,6 +8,8 @@ import { HomeRounded, Person, HomeWorkRounded } from '@mui/icons-material';
 import { Image } from 'react-bootstrap';
 
 import sideBarStyles from '../styles/sideBarStyles.module.css'
+import LogoBig from '../../public/logoBig2.png';
+import Logo from '../../public/logo.png';
 
 const drawerWidth = 240;
 
@@ -69,25 +71,24 @@ export default function Sidebar() {
   const { userInfo } = useSelector((state) => state.auth);
 
   const handleDrawerOpen = () => {
-    document.getElementById('logo').src = "/logoBig2.png";
+    document.getElementById('logo').src = LogoBig;
     setOpen(true);
   };
 
   const handleDrawerClose = () => {
-    document.getElementById('logo').src = "/logo.png";
+    document.getElementById('logo').src = Logo;
     setOpen(false);
   };
 
   const location = useLocation();
   const activeRoute = location.pathname;
-  console.log(activeRoute);
   
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseOut={handleDrawerClose}>
         <DrawerHeader>
-          <Link to='/'><Image src="/logo.png" height='70px' id="logo"/></Link>
+          <Link to='/'><Image src={Logo} height='70px' id="logo"/></Link>
         </DrawerHeader>
         <Divider />
         <List>

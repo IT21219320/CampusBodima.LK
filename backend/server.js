@@ -3,6 +3,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
+import boardingRoutes from './routes/boardingRoutes.js';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -20,6 +21,7 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use('/api/users', userRoutes);
+app.use('/api/boardings', boardingRoutes);
 
 if(process.env.NODE_ENV === 'production'){
     const __dirname = path.resolve();
