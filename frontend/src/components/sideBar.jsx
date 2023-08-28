@@ -8,8 +8,8 @@ import { HomeRounded, Person, HomeWorkRounded } from '@mui/icons-material';
 import { Image } from 'react-bootstrap';
 
 import sideBarStyles from '../styles/sideBarStyles.module.css'
-import LogoBig from '../../public/logoBig2.png';
-import Logo from '../../public/logo.png';
+import LogoBig from '/logoBig2.png';
+import Logo from '/logo.png';
 
 const drawerWidth = 240;
 
