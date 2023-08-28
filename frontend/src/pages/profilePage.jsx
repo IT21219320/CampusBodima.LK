@@ -15,8 +15,6 @@ import AddIcon from '@mui/icons-material/Add';
 import UpdateIcon from '@mui/icons-material/Update';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-//import Header from '../components/header';
-//import Header from '../components/header2';
 import Sidebar from '../components/sideBar';
 
 import profileStyles from '../styles/profileStyles.module.css';
@@ -128,7 +126,7 @@ const ProfilePage = () => {
                         <Col>
                             <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
-                                <Link underline="hover" key="2" color="inherit" href="#">User</Link>,
+                                <Link underline="hover" key="2" color="inherit" href="/profile">{userType == 'owner' ? 'Owner' : (userType == 'occupant' ? 'Occupant' : userType == 'admin' ? 'Admin' : <></>)}</Link>,
                                 <Typography key="3" color="text.primary">Profile</Typography>
                             </Breadcrumbs>
                         </Col>

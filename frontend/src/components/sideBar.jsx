@@ -82,7 +82,6 @@ export default function Sidebar() {
 
   const location = useLocation();
   const activeRoute = location.pathname;
-  console.log(activeRoute);
   
   return (
     <Box sx={{ display: 'flex' }}>

@@ -115,6 +115,7 @@ const registerUser = asyncHandler(async (req, res) => {
     
         if(user){
             res.status(201).json({
+                _id: user._id,
                 email: user.email,  
                 image: user.image, 
                 firstName: user.firstName, 
@@ -122,7 +123,9 @@ const registerUser = asyncHandler(async (req, res) => {
                 userType: user.userType,
                 gender: user.gender,
                 accType: user.accType,
-                totalPayable: user.totalPayable
+                totalPayable: user.totalPayable,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
             });
         }else{
             res.status(400);
@@ -160,6 +163,7 @@ const authUser = asyncHandler(async (req, res) => {
 
         generateToken(res, user.email);
         res.status(200).json({
+            _id: user._id,
             email: user.email,  
             image: user.image, 
             firstName: user.firstName, 
@@ -168,7 +172,9 @@ const authUser = asyncHandler(async (req, res) => {
             phoneNo: user.phoneNo,
             gender: user.gender,
             accType: user.accType,
-            totalPayable: user.totalPayable
+            totalPayable: user.totalPayable,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
         });
     }else{
         res.status(401);
@@ -194,6 +200,7 @@ const googleAuthUser = asyncHandler(async (req, res) => {
         }
         generateToken(res, user.email);
         res.status(200).json({
+            _id: user._id,
             email: user.email,  
             image: user.image, 
             firstName: user.firstName, 
@@ -202,7 +209,9 @@ const googleAuthUser = asyncHandler(async (req, res) => {
             phoneNo: user.phoneNo,
             gender: user.gender,
             accType: user.accType,
-            totalPayable: user.totalPayable
+            totalPayable: user.totalPayable,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
         });
     }
     else{
@@ -235,6 +244,7 @@ const googleAuthUser = asyncHandler(async (req, res) => {
         if(user){
             generateToken(res, user.email);
             res.status(200).json({
+                _id: user._id,
                 email: user.email,  
                 image: user.image, 
                 firstName: user.firstName, 
@@ -243,7 +253,9 @@ const googleAuthUser = asyncHandler(async (req, res) => {
                 phoneNo: user.phoneNo,
                 gender: user.gender,
                 accType: user.accType,
-                totalPayable: user.totalPayable
+                totalPayable: user.totalPayable,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
             });
         }
         else{
@@ -273,6 +285,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 // @access  Private
 const getUserProfile = asyncHandler(async (req, res) => {
     const user = {
+        _id: req.user._id,
         email: req.user.email, 
         image: req.user.image, 
         firstName: req.user.firstName, 
@@ -282,7 +295,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
         userType: req.user.userType,
         phoneNo: req.user.phoneNo,
         gender: req.user.gender,
-        totalPayable: user.totalPayable
+        totalPayable: req.user.totalPayable,
+        createdAt: req.user.createdAt,
+        updatedAt: req.user.updatedAt
     };  
     res.status(200).json(user);
 });
@@ -312,6 +327,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
         const updatedUser = await user.save();
 
         res.status(200).json({
+            _id: updatedUser._id,
             email: updatedUser.email, 
             image: updatedUser.image, 
             firstName: updatedUser.firstName, 
@@ -320,7 +336,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             userType: updatedUser.userType,
             phoneNo: updatedUser.phoneNo,
             gender: updatedUser.gender,
-            totalPayable: updatedUser.totalPayable
+            totalPayable: updatedUser.totalPayable,
+            createdAt: updatedUser.createdAt,
+            updatedAt: updatedUser.updatedAt
         });
     }else{
         res.status(404);
