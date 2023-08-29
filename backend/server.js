@@ -5,6 +5,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import boardingRoutes from './routes/boardingRoutes.js';
+import menuRoutes from './routes/menuRoutes.js';
+import inventoryRoutes from './routes/inventoryRoutes.js';
+import utilityRoutes from './routes/utilityRoutes.js';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -24,6 +27,9 @@ app.use(bodyParser.json());
 
 app.use('/api/users', userRoutes);
 app.use('/api/boardings', boardingRoutes);
+app.use('/api/menues', menuRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/utilities', utilityRoutes);
 
 if(process.env.NODE_ENV === 'production'){
     const __dirname = path.resolve();
