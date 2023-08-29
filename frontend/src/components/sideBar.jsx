@@ -148,7 +148,7 @@ export default function Sidebar() {
           : <></>}
         </List>
       </Drawer>
-      {open ? <></> : <div id="smMenuBtn" onClick={handleDrawerOpen} style={{position:'fixed', left: `calc(${theme.spacing(7)} + 9px)`, zIndex:1, cursor:'pointer'}}><MenuRounded /></div>}
+      {open ? <></> : <div id="smMenuBtn" onClick={handleDrawerOpen} style={{left: `calc(${theme.spacing(7)} + 9px)`}} className={sideBarStyles.openMenuBtn}><MenuRounded /></div>}
     </Box>
   );
 }

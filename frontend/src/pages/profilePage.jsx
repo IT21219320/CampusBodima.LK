@@ -17,7 +17,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 
 import Sidebar from '../components/sideBar';
 
-import profileStyles from '../styles/profileStyles.module.css';
+import dashboardStyles from '../styles/dashboardStyles.module.css';
 
 const ProfilePage = () => {
     const [email, setEmail] = useState('');
@@ -120,8 +120,8 @@ const ProfilePage = () => {
     return (
         <>
             <Sidebar />
-            <div className={profileStyles.mainDiv}>
-                <Container className={profileStyles.profileContainer}>
+            <div className={dashboardStyles.mainDiv}>
+                <Container className={dashboardStyles.container}>
                     <Row>
                         <Col>
                             <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
@@ -145,7 +145,7 @@ const ProfilePage = () => {
                                 <Row>
                                     <Col>
                                         <Card>
-                                            <CardContent className={profileStyles.cardContent}>
+                                            <CardContent className={dashboardStyles.cardContent}>
                                                 
                                                 { imagePath ? 
                                                     <Avatar alt={firstName+" "+lastName} src={imagePath} sx={{ width: 130, height: 130 }} referrerPolicy="no-referrer" /> 
@@ -168,7 +168,7 @@ const ProfilePage = () => {
                                 <Row>
                                     <Col>
                                         <Card className='mt-3'>
-                                            <CardContent className={`${profileStyles.cardContent} pt-3 pb-3`}>
+                                            <CardContent className={`${dashboardStyles.cardContent} pt-3 pb-3`}>
                                                 <h4>Total Payable</h4>
                                                 <h3>Rs. {totalPayable}</h3>
                                             </CardContent>
@@ -179,7 +179,7 @@ const ProfilePage = () => {
                             </Col>
                             <Col className="mb-3" xs={12} md={8}>
                                 <Card>
-                                    <CardContent className={profileStyles.cardContent}>
+                                    <CardContent className={dashboardStyles.cardContent}>
                                         <List sx={{width:'100%'}} component="nav">
                                             <Row className='py-3'>
                                                 <Col>

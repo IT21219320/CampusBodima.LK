@@ -17,3 +17,10 @@
 .active:hover{
     background: linear-gradient(72.47deg, #7367f0 22.16%, rgba(115, 103, 240, 0.7) 76.47%) !important;
 }
+
+.openMenuBtn{
+    position: fixed;
+    z-index: 1;
+    cursor: pointer;
+    
+}

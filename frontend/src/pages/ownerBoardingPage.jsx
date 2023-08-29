@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 import Sidebar from '../components/sideBar';
-import ownerBoardingStyles from '../styles/ownerBoardingStyles.module.css';
+import dashboardStyles from '../styles/dashboardStyles.module.css';
 
 const OwnerBoardingPage = () => {
     const [viewUserInfo, setViewUserInfo] = useState();
@@ -51,8 +51,8 @@ var isLoading2 = true;
     return (
         <>
             <Sidebar />
-            <div className={ownerBoardingStyles.mainDiv}>
-                <Container className={ownerBoardingStyles.boardingContainer}>
+            <div className={dashboardStyles.mainDiv}>
+                <Container className={dashboardStyles.container}>
                     <Row>
                         <Col>
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
@@ -69,7 +69,7 @@ var isLoading2 = true;
                                 <Row>
                                     <Col>
                                         <Card>
-                                            <CardContent className={ownerBoardingStyles.cardContent}>
+                                            <CardContent className={dashboardStyles.cardContent}>
                                                 <Row>
                                                     <Col><Link to=''><Button></Button></Link></Col>
                                                 </Row>
