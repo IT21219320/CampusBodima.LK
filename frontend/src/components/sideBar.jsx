@@ -2,10 +2,10 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation  } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
-import { Box, List, CssBaseline, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, List, CssBaseline, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
-import { HomeRounded, Person, HomeWorkRounded } from '@mui/icons-material';
-import { Image } from 'react-bootstrap';
+import { HomeRounded, Person, HomeWorkRounded, MenuRounded, MenuOpenRounded  } from '@mui/icons-material';
+import { Button, Image } from 'react-bootstrap';
 
 import sideBarStyles from '../styles/sideBarStyles.module.css'
 import LogoBig from '/logoBig2.png';
@@ -66,6 +66,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function Sidebar() {
   const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [open, setOpen] = React.useState(false);
 
   const { userInfo } = useSelector((state) => state.auth);
@@ -82,13 +84,22 @@ export default function Sidebar() {
 
   const location = useLocation();
   const activeRoute = location.pathname;
+
+  React.useEffect(() => {
+    if (isSmallScreen) {
+      document.getElementById('smMenuBtn').style.left = `calc(${theme.spacing(6)} + 9px)`;
+    }else{
+      document.getElementById('smMenuBtn').style.left = `calc(${theme.spacing(7)} + 9px)`;
+    }   
+  },[isSmallScreen]);
   
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex' }} id='sideBarBox'>
       <CssBaseline />
-      <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseOut={handleDrawerClose}>
+      <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <Link to='/'><Image src={Logo} height='70px' id="logo"/></Link>
+          {open ? <Button onClick={handleDrawerClose}><MenuOpenRounded /></Button> : <></>}
         </DrawerHeader>
         <Divider />
         <List>
@@ -137,6 +148,7 @@ export default function Sidebar() {
           : <></>}
         </List>
       </Drawer>
+      {open ? <></> : <div id="smMenuBtn" onClick={handleDrawerOpen} style={{position:'fixed', left: `calc(${theme.spacing(7)} + 9px)`, zIndex:1, cursor:'pointer'}}><MenuRounded /></div>}
     </Box>
   );
 }

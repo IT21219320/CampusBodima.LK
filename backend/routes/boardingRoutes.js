@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/register', registerBoarding);
 router.post('/addroom', addRoom);
-router.get('/owner/:ownerId', getOwnerBoardings);
+router.get('/owner/:ownerId/:page', getOwnerBoardings);
 router.get('/occupant/:occupantId', getOccupantBoarding);
 
 export default router;

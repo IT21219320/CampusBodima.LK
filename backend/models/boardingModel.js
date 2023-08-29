@@ -22,7 +22,7 @@ const boardingSchema = mongoose.Schema({
         required: true
     },
     facilities: {
-        type: String
+        type: [String]
     },
     utilityBills: {
         type: Boolean,
@@ -43,6 +43,9 @@ const boardingSchema = mongoose.Schema({
     boardingType: {
         type: String, 
         required: true,
+    },
+    rules: {
+        type: [String]
     },
     keyMoney: {
         type: String

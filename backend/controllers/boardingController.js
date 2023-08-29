@@ -114,16 +114,24 @@ const addRoom = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all Boardings of particular owner
-// route    GET /api/boardings/owner/:ownerId
+// route    GET /api/boardings/owner/:ownerId/:page
 // @access  Private - Owner
 const getOwnerBoardings = asyncHandler(async (req, res) => {
-    const ownerId = req.params.ownerId
+    const ownerId = req.params.ownerId;
+    const page = req.params.page || 1;
+    const pageSize = 10;
 
-    const boardings = await Boarding.find({owner:ownerId}).populate(['room','owner']);
+    const skipCount = (page - 1) * pageSize;
+
+    var totalPages = await Boarding.countDocuments({owner:ownerId});
+    totalPages = Math.ceil(parseInt(totalPages)/pageSize);
+
+    const boardings = await Boarding.find({owner:ownerId}).populate(['room','owner']).skip(skipCount).limit(pageSize);
     
     if(boardings){
         res.status(200).json({
-            boardings
+            boardings,
+            totalPages
         })
     }
     else{

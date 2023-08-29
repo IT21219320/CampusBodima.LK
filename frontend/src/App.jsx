@@ -19,7 +19,7 @@ const App = () => {
   return (
     <>
       <ToastContainer />
-      <Container className='mw-100 py-0 px-0' style={{position:'fixed', minHeight:'100vh', height:'100%', overflow:'auto'}}>
+      <Container className='mw-100 py-0 px-0' style={{position:'fixed', minHeight:'100vh', height:'100%', overflow:'auto', display:'flex'}}>
         <Outlet />
       </Container>
     </>

@@ -1,4 +1,5 @@
 import express from 'express';
+import bodyParser from 'body-parser'; 
 import path from 'path';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 app.use('/api/users', userRoutes);
 app.use('/api/boardings', boardingRoutes);
