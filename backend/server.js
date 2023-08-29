@@ -8,6 +8,8 @@ import boardingRoutes from './routes/boardingRoutes.js';
 import menuRoutes from './routes/menuRoutes.js';
 import inventoryRoutes from './routes/inventoryRoutes.js';
 import utilityRoutes from './routes/utilityRoutes.js';
+import reservationRoutes from './routes/reservationRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -27,6 +29,8 @@ app.use(bodyParser.json());
 
 app.use('/api/users', userRoutes);
 app.use('/api/boardings', boardingRoutes);
+app.use('/api/reservations', reservationRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/menues', menuRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/utilities', utilityRoutes);
