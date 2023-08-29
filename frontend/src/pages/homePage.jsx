@@ -2,8 +2,10 @@ import Header from '../components/header';
 const HomePage = () => {
     return (
         <>
-            <Header />
-            <div>Home</div>
+            <div style={{width:'100%'}}>
+                <Header />
+                <div>Home</div>
+            </div>
         </>
     );
 }

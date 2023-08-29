@@ -99,7 +99,7 @@ export default function Sidebar() {
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <Link to='/'><Image src={Logo} height='70px' id="logo"/></Link>
-          {open ? <Button onClick={handleDrawerClose}><MenuOpenRounded /></Button> : <></>}
+          {open ? <div onClick={handleDrawerClose} className={sideBarStyles.closeMenuBtn}><MenuOpenRounded /></div> : <></>}
         </DrawerHeader>
         <Divider />
         <List>
