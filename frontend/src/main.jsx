@@ -15,6 +15,7 @@ import ProfilePage from './pages/profilePage.jsx';
 import GenerateOtpPage from './pages/generateOtpPage.jsx';
 import OwnerBoardingPage from './pages/ownerBoardingPage.jsx';
 import ResetPasswordPage from './pages/resetPasswordPage.jsx';
+import CreateTicket from './pages/CreateTicketPage.jsx';
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
 import OwnerRoute from './components/ownerRoute';
@@ -38,6 +39,7 @@ const router = createBrowserRouter(
       {/* Private Routes */}
       <Route path='' element={ <PrivateRoute /> }>
         <Route path='/profile' element={ <ProfilePage /> } />
+        
 
         {/* Admin Routes */}
         <Route path='' element={ <AdminRoute /> }>
@@ -51,6 +53,7 @@ const router = createBrowserRouter(
 
         {/* Occupant Routes */}
         <Route path='' element={ <OccupantRoute /> }>
+          <Route path='/createTicket' element={<CreateTicket />} />
           
         </Route>
       </Route>
