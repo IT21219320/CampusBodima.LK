@@ -110,7 +110,7 @@ export default function Sidebar() {
         <Divider />
         <List>
           <Link to='/dashboard' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/dashboard' ? sideBarStyles.active : 'dd'}`}>
+            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/dashboard' ? sideBarStyles.active : ''}`}>
               <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white',  }}>
                 <HomeRounded />
               </ListItemIcon>
@@ -119,7 +119,7 @@ export default function Sidebar() {
           </ListItem></Link>
           
           <Link to='/profile' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/profile' ? sideBarStyles.active : 'dd'}`}>
+            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/profile' ? sideBarStyles.active : ''}`}>
               <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
                 <Person />
               </ListItemIcon>
@@ -131,7 +131,7 @@ export default function Sidebar() {
 
           <>
             <Link to='/owner/boarding' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/owner/boarding' ? sideBarStyles.active : 'dd'}`}>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute == '/owner/boarding' || activeRoute == '/owner/boarding/add') ? sideBarStyles.active : ''}`}>
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
                   <HomeWorkRounded />
                 </ListItemIcon>
@@ -146,7 +146,7 @@ export default function Sidebar() {
 
           <>
             <Link to='/occupant/boarding' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/occupant/boarding' ? sideBarStyles.active : 'dd'}`}>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute == '/occupant/boarding' ? sideBarStyles.active : ''}`}>
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
                   <HomeWorkRounded />
                 </ListItemIcon>
@@ -155,11 +155,11 @@ export default function Sidebar() {
             </ListItem></Link>
 
             <Link to='/createTicket' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/createTicket' ? sideBarStyles.active : 'dd'}`}>
+            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/createTicket' ? sideBarStyles.active : ''}`}>
               <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
                 <ContactSupportRounded />
               </ListItemIcon>
-              <ListItemText primary={"My Boarding"} sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary={"My Tickets"} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
             </ListItem></Link>
           </>

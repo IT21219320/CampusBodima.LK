@@ -14,6 +14,7 @@ import VerifyEmailPage from './pages/verifyEmailPage.jsx';
 import ProfilePage from './pages/profilePage.jsx';
 import GenerateOtpPage from './pages/generateOtpPage.jsx';
 import OwnerBoardingPage from './pages/ownerBoardingPage.jsx';
+import RegisterBoardingPage from './pages/registerBoardingPage.jsx';
 import ResetPasswordPage from './pages/resetPasswordPage.jsx';
 import CreateTicket from './pages/CreateTicketPage.jsx';
 import PrivateRoute from './components/privateRoute';
@@ -49,11 +50,12 @@ const router = createBrowserRouter(
         {/* Owner Routes */}
         <Route path='' element={ <OwnerRoute /> }>
           <Route path='/owner/boarding' element={ <OwnerBoardingPage /> } />
+          <Route path='/owner/boarding/add' element={ <RegisterBoardingPage /> } />
         </Route>
 
         {/* Occupant Routes */}
         <Route path='' element={ <OccupantRoute /> }>
-          <Route path='/createTicket' element={<CreateTicket />} />
+          <Route path='/occupant/createTicket' element={<CreateTicket />} />
           
         </Route>
       </Route>
