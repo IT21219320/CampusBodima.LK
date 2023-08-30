@@ -112,8 +112,37 @@ const updateIngredient = asyncHandler(async (req, res) => {
 });
 
 
+// @desc    Delete Ingredient of particular owner
+// route    DELETE /api/ingredient/owner/:ownerId/:ingredientId
+// @access  Private - Owner
+const deleteIngredient = asyncHandler(async (req, res) => {
+    const ownerId = req.params.ownerId;
+    const ingredientId = req.params.ingredientId;  
+
+    try {
+        const ingredient = await Ingredient.findOne({ _id: ingredientId, owner: ownerId });
+
+        if (!ingredient) {
+            res.status(404);
+            throw new Error("Ingredient not found");
+        }
+
+        await ingredient.remove();
+
+        res.status(200).json({
+            message: "Ingredient deleted successfully"
+        });
+    } catch (error) {
+        res.status(400).json({
+            error: error.message || "Failed to delete ingredient"
+        });
+    }
+});
+
+
 export { 
     addIngredient,
     getOwnerIngredient,
-    updateIngredient    
+    updateIngredient,
+    deleteIngredient    
 };
