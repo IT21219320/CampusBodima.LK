@@ -82,7 +82,7 @@ const OwnerBoardingPage = () => {
                                 <Row>
                                     <Col>
                                         <Row style={{textAlign:'right'}}>
-                                            <Col><Link to=''><Button className="mt-4" style={{background: '#685DD8'}}><AddHomeWork /> Add New Boarding</Button></Link></Col>
+                                            <Col><Link href='/owner/boarding/add'><Button className="mt-4" style={{background: '#685DD8'}}><AddHomeWork /> Add New Boarding</Button></Link></Col>
                                         </Row>
                                         <Row style={{minHeight:'calc(100vh - 240px)'}}>
                                             <Col>
