@@ -16,7 +16,7 @@ import GenerateOtpPage from './pages/generateOtpPage.jsx';
 import OwnerBoardingPage from './pages/ownerBoardingPage.jsx';
 import RegisterBoardingPage from './pages/registerBoardingPage.jsx';
 import ResetPasswordPage from './pages/resetPasswordPage.jsx';
-import CreateTicket from './pages/CreateTicketPage.jsx';
+import CreateTicket from './pages/createTicketPage.jsx';
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
 import OwnerRoute from './components/ownerRoute';
