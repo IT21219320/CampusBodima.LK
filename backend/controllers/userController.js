@@ -319,6 +319,13 @@ const updateUserProfile = asyncHandler(async (req, res) => {
         if(user.userType == 'occupant'){
             user.totalPayable = req.body.totalPayable || user.totalPayable;
         }
+        
+        if(user.userType == 'owner'){
+            user.bankAccNo = req.body.bankAccNo || user.bankAccNo;
+            user.bankAccName = req.body.bankAccName || user.bankAccName;
+            user.bankName = req.body.bankName || user.bankName;
+            user.bankBranch = req.body.bankBranch || user.bankBranch;
+        }
 
         if(req.body.password && req.body.accType == 'normal'){
             user.password = req.body.password;

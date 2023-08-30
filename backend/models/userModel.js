@@ -39,6 +39,18 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String
+    },
+    bankAccNo: {
+        type: String,
+    },
+    bankAccName: {
+        type: String,
+    },
+    bankName: {
+        type: String,
+    },
+    bankBranch: {
+        type: String
     }
 }, {
     timestamps: true
