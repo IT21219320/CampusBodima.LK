@@ -120,14 +120,12 @@ const deleteIngredient = asyncHandler(async (req, res) => {
     const ingredientId = req.params.ingredientId;  
 
     try {
-        const ingredient = await Ingredient.findOne({ _id: ingredientId, owner: ownerId });
+        const result = await Ingredient.deleteOne({ _id: ingredientId, owner: ownerId });
 
-        if (!ingredient) {
+        if (result.deletedCount === 0) {
             res.status(404);
             throw new Error("Ingredient not found");
         }
-
-        await ingredient.remove();
 
         res.status(200).json({
             message: "Ingredient deleted successfully"
