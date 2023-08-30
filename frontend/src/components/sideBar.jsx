@@ -6,6 +6,7 @@ import { Box, List, CssBaseline, Divider, ListItem, ListItemButton, ListItemIcon
 import MuiDrawer from '@mui/material/Drawer';
 import { HomeRounded, Person, HomeWorkRounded, MenuRounded, MenuOpenRounded  } from '@mui/icons-material';
 import { Button, Image } from 'react-bootstrap';
+import {setSideBarStatus} from '../slices/customizeSlice';
 
 import sideBarStyles from '../styles/sideBarStyles.module.css'
 import LogoBig from '/logoBig2.png';
@@ -67,23 +68,27 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function Sidebar() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  
+  const { sideBar } = useSelector((state) => state.customize);
+  const { userInfo } = useSelector((state) => state.auth);
 
   const [open, setOpen] = React.useState(false);
-
-  const { userInfo } = useSelector((state) => state.auth);
+  
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const activeRoute = location.pathname;
 
   const handleDrawerOpen = () => {
     document.getElementById('logo').src = LogoBig;
     setOpen(true);
+    dispatch(setSideBarStatus({status:true})); 
   };
 
   const handleDrawerClose = () => {
     document.getElementById('logo').src = Logo;
     setOpen(false);
+    dispatch(setSideBarStatus({status:false})); 
   };
-
-  const location = useLocation();
-  const activeRoute = location.pathname;
 
   React.useEffect(() => {
     if (isSmallScreen) {
@@ -91,6 +96,7 @@ export default function Sidebar() {
     }else{
       document.getElementById('smMenuBtn').style.left = `calc(${theme.spacing(7)} + 9px)`;
     }   
+    setOpen(sideBar ? sideBar.status : false);
   },[isSmallScreen]);
   
   return (
@@ -98,7 +104,7 @@ export default function Sidebar() {
       <CssBaseline />
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <Link to='/'><Image src={Logo} height='70px' id="logo"/></Link>
+          <Link to='/'><Image src={open ? LogoBig : Logo} height='70px' id="logo"/></Link>
           {open ? <div onClick={handleDrawerClose} className={sideBarStyles.closeMenuBtn}><MenuOpenRounded /></div> : <></>}
         </DrawerHeader>
         <Divider />
