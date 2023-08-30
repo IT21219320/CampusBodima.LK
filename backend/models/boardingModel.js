@@ -10,6 +10,9 @@ const boardingSchema = mongoose.Schema({
         type: String, 
         required: false
     },
+    city: {
+        type: String
+    },
     location: {
         type: String
     },
@@ -18,6 +21,14 @@ const boardingSchema = mongoose.Schema({
         required: true
     },
     noOfRooms: {
+        type: String, 
+        required: true
+    },
+    noOfCommonBaths: {
+        type: String, 
+        required: true
+    },
+    noOfAttachBaths: {
         type: String, 
         required: true
     },
@@ -53,6 +64,9 @@ const boardingSchema = mongoose.Schema({
     rent: {
         type: String
     },
+    description: {
+        type: String
+    },
     room: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room'
@@ -61,6 +75,10 @@ const boardingSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    occupant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
     status:{
         type: String,

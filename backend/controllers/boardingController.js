@@ -12,9 +12,12 @@ const registerBoarding = asyncHandler(async (req, res) => {
         ownerId,
         boardingName, 
         address, 
+        city,
         location,
         boardingImages, 
-        noOfRooms, 
+        noOfRooms,
+        noOfCommonBaths,
+        noOfAttachBaths, 
         facilities, 
         utilityBills, 
         food, 
@@ -23,7 +26,12 @@ const registerBoarding = asyncHandler(async (req, res) => {
         boardingType,
         keyMoney,
         rent,
-        status
+        description,
+        status,
+        bankAccNo,
+        bankAccName,
+        bankName,
+        bankBranch
     } = req.body;
 
     var boardingExists = await Boarding.findOne({ boardingName: boardingName, 'owner': ownerId });
@@ -33,14 +41,24 @@ const registerBoarding = asyncHandler(async (req, res) => {
         throw new Error('Boarding Already Exists');
     }
 
-    const owner = await User.findById(ownerId);
+    var owner = await User.findById(ownerId);
+
+    owner.bankAccNo = bankAccNo || owner.bankAccNo;
+    owner.bankAccName = bankAccName || owner.bankAccName;
+    owner.bankName = bankName || owner.bankName;
+    owner.bankBranch = bankBranch || owner.bankBranch;
+
+    owner = await owner.save();
 
     const boarding = await Boarding.create({
         boardingName,
         address,
+        city,
         location,
         boardingImages,
         noOfRooms,
+        noOfCommonBaths,
+        noOfAttachBaths, 
         facilities,
         utilityBills,
         food,
@@ -49,6 +67,7 @@ const registerBoarding = asyncHandler(async (req, res) => {
         boardingType,
         keyMoney,
         rent,
+        description,
         owner,
         status 
     });
@@ -74,8 +93,11 @@ const addRoom = asyncHandler(async (req, res) => {
         boardingId,
         roomImages,
         noOfBeds,
+        noOfCommonBaths,
+        noOfAttachBaths, 
         keyMoney,
         rent,
+        description,
         status
     } = req.body;
 
@@ -91,8 +113,11 @@ const addRoom = asyncHandler(async (req, res) => {
         boardingId,
         roomImages,
         noOfBeds,
+        noOfCommonBaths,
+        noOfAttachBaths, 
         keyMoney,
         rent,
+        description,
         status
     });
 
@@ -119,7 +144,7 @@ const addRoom = asyncHandler(async (req, res) => {
 const getOwnerBoardings = asyncHandler(async (req, res) => {
     const ownerId = req.params.ownerId;
     const page = req.params.page || 1;
-    const pageSize = 10;
+    const pageSize = 5;
 
     const skipCount = (page - 1) * pageSize;
 

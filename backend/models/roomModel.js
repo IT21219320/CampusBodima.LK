@@ -17,16 +17,27 @@ const roomSchema = mongoose.Schema({
         type: String, 
         required: true
     },
+    noOfCommonBaths: {
+        type: String, 
+        required: true
+    },
+    noOfAttachBaths: {
+        type: String, 
+        required: true
+    },
     keyMoney: {
         type: String
     },
     rent: {
         type: String
     },
-    occupant: {
+    description: {
+        type: String
+    },
+    occupant: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    },
+    }],
     status:{
         type: String,
         required: true,
