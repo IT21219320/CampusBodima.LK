@@ -55,7 +55,7 @@ const router = createBrowserRouter(
 
         {/* Occupant Routes */}
         <Route path='' element={ <OccupantRoute /> }>
-          <Route path='/occupant/createTicket' element={<CreateTicket />} />
+          <Route path='/occupant/ticket/create' element={<CreateTicket />} />
           
         </Route>
       </Route>
