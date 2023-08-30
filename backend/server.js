@@ -6,7 +6,7 @@ import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import boardingRoutes from './routes/boardingRoutes.js';
 import menuRoutes from './routes/menuRoutes.js';
-import inventoryRoutes from './routes/inventoryRoutes.js';
+import ingredientRoutes from './routes/ingredientRoutes.js';
 import utilityRoutes from './routes/utilityRoutes.js';
 import reservationRoutes from './routes/reservationRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
@@ -33,7 +33,7 @@ app.use('/api/boardings', boardingRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/menues', menuRoutes);
-app.use('/api/inventory', inventoryRoutes);
+app.use('/api/ingredients', ingredientRoutes);
 app.use('/api/utilities', utilityRoutes);
 app.use('/api/tickets', ticketRoutes);
 
