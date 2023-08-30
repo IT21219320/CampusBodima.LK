@@ -4,7 +4,7 @@ import { Link, useLocation  } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
 import { Box, List, CssBaseline, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
-import { HomeRounded, Person, HomeWorkRounded, MenuRounded, MenuOpenRounded  } from '@mui/icons-material';
+import { HomeRounded, Person, HomeWorkRounded, MenuRounded, MenuOpenRounded, ContactSupportRounded  } from '@mui/icons-material';
 import { Button, Image } from 'react-bootstrap';
 import {setSideBarStatus} from '../slices/customizeSlice';
 
@@ -129,27 +129,40 @@ export default function Sidebar() {
           
           {userInfo.userType == 'owner' ?  //Navigations for Owner
 
-          <Link to='/owner/boarding' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/owner/boarding' ? sideBarStyles.active : 'dd'}`}>
-              <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                <HomeWorkRounded />
-              </ListItemIcon>
-              <ListItemText primary={"My Boardings"} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem></Link>
+          <>
+            <Link to='/owner/boarding' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/owner/boarding' ? sideBarStyles.active : 'dd'}`}>
+                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                  <HomeWorkRounded />
+                </ListItemIcon>
+                <ListItemText primary={"My Boardings"} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem></Link>
+          </>
 
           : <></>}
           
           {userInfo.userType == 'occupant' ?  //Navigations for Occupants
 
-          <Link to='/occupant/boarding' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+          <>
+            <Link to='/occupant/boarding' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/occupant/boarding' ? sideBarStyles.active : 'dd'}`}>
+                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                  <HomeWorkRounded />
+                </ListItemIcon>
+                <ListItemText primary={"My Boarding"} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem></Link>
+
+            <Link to='/createTicket' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/occupant/boarding' ? sideBarStyles.active : 'dd'}`}>
               <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                <HomeWorkRounded />
+                <ContactSupportRounded />
               </ListItemIcon>
               <ListItemText primary={"My Boarding"} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </ListItem></Link>
+            </ListItem></Link>
+          </>
 
           : <></>}
         </List>
