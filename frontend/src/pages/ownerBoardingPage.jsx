@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetOwnerBoardingsMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
 import { autoPlay } from 'react-swipeable-views-utils';
-import SwipeableViews from 'react-swipeable-views';
+//import SwipeableViews from 'react-swipeable-views';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 import Sidebar from '../components/sideBar';
@@ -17,12 +17,12 @@ import dashboardStyles from '../styles/dashboardStyles.module.css';
 
 import defaultImage from '/images/defaultImage.png'
 
-const AutoPlaySwipeableViews = SwipeableViews;
+//const AutoPlaySwipeableViews = SwipeableViews;
 
 const OwnerBoardingPage = () => {
     const theme = useTheme();
 
-    const [activeImage, setActiveImage] = useState(0);
+    //const [activeImage, setActiveImage] = useState(0);
     const [viewUserInfo, setViewUserInfo] = useState();
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState();
@@ -57,9 +57,9 @@ const OwnerBoardingPage = () => {
         console.log(boardings);   
     };
 
-    const handleImageChange = (step) => {
+    /*const handleImageChange = (step) => {
       setActiveImage(step);
-    };
+    };*/
 
     return (
         <>
