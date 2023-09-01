@@ -16,7 +16,7 @@ console.log(userInfo);
 
     const [getUserTickets, { isLoading }] = useGetUserTicketsMutation;
     
-    const loadData = async (pageNo) => {
+    /*const loadData = async (pageNo) => {
         try{
             
             const res = await getUserTickets( {id:} ).unwrap();
@@ -27,7 +27,7 @@ console.log(userInfo);
             toast.error(err.data?.message || err.error);
         }
 
-    }
+    }*/
 
     useEffect(() => {
         //loadData(page);
