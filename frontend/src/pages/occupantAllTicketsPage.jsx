@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
+import { useSelector } from 'react-redux';
 import { useGetUserTicketsMutation } from "../slices/ticketsApiSlices";
 import { toast } from "react-toastify";
 
 
-const occupantAllTickets = () =>{
+const OccupantAllTickets = () =>{
 
     const [tickets, setTickets] = useState([]);
     const [page, setPage] = useState(1);
@@ -12,22 +13,21 @@ const occupantAllTickets = () =>{
 
     const { userInfo } = useSelector((state) => state.auth);
 
-console.log(userInfo);
+    console.log(userInfo);
 
-    const [getUserTickets, { isLoading }] = useGetUserTicketsMutation;
+    const [getUserTickets, { isLoading }] = useGetUserTicketsMutation();
     
-    /*const loadData = async (pageNo) => {
+    const loadData = async (pageNo) => {
         try{
             
-            const res = await getUserTickets( {id:} ).unwrap();
+            const res = await getUserTickets( {id:userInfo._id, page, pageSize} ).unwrap();
             setTickets(res.tickets);
             setTotalPages(res.totalPages);
-            setPageSize(res.pageSize);
         } catch(err){
             toast.error(err.data?.message || err.error);
         }
 
-    }*/
+    }
 
     useEffect(() => {
         //loadData(page);
@@ -46,3 +46,5 @@ console.log(userInfo);
 
 
 }
+
+export default OccupantAllTickets;
