@@ -16,7 +16,8 @@ import GenerateOtpPage from './pages/generateOtpPage.jsx';
 import OwnerBoardingPage from './pages/ownerBoardingPage.jsx';
 import RegisterBoardingPage from './pages/registerBoardingPage.jsx';
 import ResetPasswordPage from './pages/resetPasswordPage.jsx';
-import CreateTicket from './pages/createTicketPage.jsx';
+import OccupantAllTicketsPage from './pages/occupantAllTicketsPage.jsx';
+import CreateTicketPage from './pages/createTicketPage.jsx';
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
 import OwnerRoute from './components/ownerRoute';
@@ -55,7 +56,8 @@ const router = createBrowserRouter(
 
         {/* Occupant Routes */}
         <Route path='' element={ <OccupantRoute /> }>
-          <Route path='/occupant/ticket/create' element={<CreateTicket />} />
+          <Route path='/occupant/ticket' element={<OccupantAllTicketsPage />} />
+          <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
           
         </Route>
       </Route>
