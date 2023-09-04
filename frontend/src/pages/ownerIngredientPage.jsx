@@ -40,7 +40,7 @@ const OwnerIngredientPage = () => {
         try {
             const data = userInfo._id+'/'+pageNo;
             const res = await getOwnerIngredient( data ).unwrap();
-            setIngredients(res.ingredients);  
+            setIngredients(res.ingredient);  
             setTotalPages(res.totalPages);  
         } catch (err) {
             toast.error(err.data?.message || err.error);
