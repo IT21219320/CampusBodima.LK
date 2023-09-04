@@ -100,8 +100,8 @@ const OwnerIngredientPage = () => {
                                                       <tbody>
                                                         {ingredients.map((ingredient, index) => (
                                                           <tr key={index}>
-                                                            <td>{ingredient.name}</td>
-                                                            <td>{ingredient.availableQuantity}</td>
+                                                            <td>{ingredient.ingredientName}</td>
+                                                            <td>{ingredient.quantity}</td>
                                                             <td>{ingredient.measurement}</td>
                                                           </tr>
                                                         ))}
@@ -110,7 +110,7 @@ const OwnerIngredientPage = () => {
                                                         
                                                     ):(
                                                         <div style={{height:'100%', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
-                                                            <h2>You don't have any registered boardings!</h2>
+                                                            <h2>You don't have any Ingredients!</h2>
                                                         </div>
                                                 )}
                                             </Col>
