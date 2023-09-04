@@ -11,6 +11,7 @@ import utilityRoutes from './routes/utilityRoutes.js';
 import reservationRoutes from './routes/reservationRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import ticketRoutes from './routes/ticketRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -36,6 +37,7 @@ app.use('/api/menues', menuRoutes);
 app.use('/api/ingredients', ingredientRoutes);
 app.use('/api/utilities', utilityRoutes);
 app.use('/api/tickets', ticketRoutes);
+app.use('/api/orders', orderRoutes);
 
 if(process.env.NODE_ENV === 'production'){
     const __dirname = path.resolve();

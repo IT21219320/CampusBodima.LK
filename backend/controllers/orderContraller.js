@@ -1,7 +1,7 @@
-import Order from '../models/orderModel.js';
+const orderModels= require('../orderModel');
 
 const createOrder = async (req, res)=>{ 
-  try {
+    try {
     const { product, foodType, quantity, price } = req.body; // Assuming these are your order fields
     const order = new Order({ product, foodType, quantity, price });
     const savedOrder = await order.save();
@@ -21,7 +21,7 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-export{
+module.exports = {
   createOrder,
   getAllOrders,
 };
