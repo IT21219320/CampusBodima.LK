@@ -20,66 +20,75 @@ const registerBoarding = asyncHandler(async (req, res) => {
         noOfAttachBaths, 
         facilities, 
         utilityBills, 
-        food, 
-        phoneNo, 
+        food,
         gender, 
         boardingType,
         keyMoney,
         rent,
         description,
-        status,
         bankAccNo,
         bankAccName,
         bankName,
         bankBranch
     } = req.body;
 
-    var boardingExists = await Boarding.findOne({ boardingName: boardingName, 'owner': ownerId });
+    var boardingExists = await Boarding.findOne({ boardingName: boardingName });
     
     if(boardingExists){
         res.status(400);
-        throw new Error('Boarding Already Exists');
+        throw new Error('A Boarding Already Exists With The Same Name');
     }
+    else{
 
-    var owner = await User.findById(ownerId);
-
-    owner.bankAccNo = bankAccNo || owner.bankAccNo;
-    owner.bankAccName = bankAccName || owner.bankAccName;
-    owner.bankName = bankName || owner.bankName;
-    owner.bankBranch = bankBranch || owner.bankBranch;
-
-    owner = await owner.save();
-
-    const boarding = await Boarding.create({
-        boardingName,
-        address,
-        city,
-        location,
-        boardingImages,
-        noOfRooms,
-        noOfCommonBaths,
-        noOfAttachBaths, 
-        facilities,
-        utilityBills,
-        food,
-        phoneNo,
-        gender,
-        boardingType,
-        keyMoney,
-        rent,
-        description,
-        owner,
-        status 
-    });
-
-    if(boarding){
-        res.status(201).json({
-            boarding
+        var owner = await User.findById(ownerId).select('-password');
+    
+        owner.bankAccNo = bankAccNo || owner.bankAccNo;
+        owner.bankAccName = bankAccName || owner.bankAccName;
+        owner.bankName = bankName || owner.bankName;
+        owner.bankBranch = bankBranch || owner.bankBranch;
+    
+        owner = await owner.save();
+    
+        var status;
+        if(boardingType == 'Annex'){
+            status = 'PendingApproval'
+        }
+        else{
+            status = 'PendingRoom'
+        }
+    
+        const boarding = await Boarding.create({
+            boardingName,
+            address,
+            city,
+            location,
+            boardingImages,
+            noOfRooms,
+            noOfCommonBaths,
+            noOfAttachBaths, 
+            facilities,
+            utilityBills,
+            food,
+            gender,
+            boardingType,
+            keyMoney,
+            rent,
+            description,
+            owner,
+            status 
         });
-    }else{
-        res.status(400);
-        throw new Error('Invalid Boarding Data');
+    
+        if(boarding){
+            res.status(201).json({
+                boarding,
+                owner
+            });
+        }else{
+            res.status(400);
+            throw new Error('Invalid Boarding Data');
+        }
     }
+
 
 });
 
@@ -97,8 +106,7 @@ const addRoom = asyncHandler(async (req, res) => {
         noOfAttachBaths, 
         keyMoney,
         rent,
-        description,
-        status
+        description
     } = req.body;
 
     var roomExists = await Boarding.findOne({ boardingId, roomNo });

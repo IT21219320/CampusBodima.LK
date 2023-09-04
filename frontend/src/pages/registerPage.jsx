@@ -10,7 +10,6 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useGoogleLoginMutation, useRegisterMutation } from '../slices/usersApiSlice';
 import { setUserInfo } from "../slices/authSlice";
 import { ImageToBase64 } from "../utils/ImageToBase64";
-import { sendSms } from "../utils/smsSender";
 import LoadingButton from '@mui/lab/LoadingButton';
 import styles from '../styles/loginStyles.module.css';
 
@@ -27,12 +26,6 @@ const RegisterPage = () => {
     const [gender, setGender] = useState('Male');
     const [isGoogleLoadingOccupant, setIsGoogleLoadingOccupant] = useState(false);
     const [isGoogleLoadingOwner, setIsGoogleLoadingOwner] = useState(false);
-
-    /*const getToken = () => {
-        const numbers = {mobile: "762144967"};
-        const message = "Helloooo";
-        sendSms(numbers,message);
-    }*/
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -169,8 +162,6 @@ const RegisterPage = () => {
         const data = await ImageToBase64(e.target.files[0]);
 
         setImage(data);
-
-        console.log(image);
     }
 
     return (

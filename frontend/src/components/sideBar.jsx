@@ -31,10 +31,7 @@ const closedMixin = (theme) => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
+  width: `calc(${theme.spacing(8)} + 1px)`,
   background: '#242745',
   color:'white'
 });
@@ -91,11 +88,6 @@ export default function Sidebar() {
   };
 
   React.useEffect(() => {
-    if (isSmallScreen) {
-      document.getElementById('smMenuBtn').style.left = `calc(${theme.spacing(6)} + 9px)`;
-    }else{
-      document.getElementById('smMenuBtn').style.left = `calc(${theme.spacing(7)} + 9px)`;
-    }   
     setOpen(sideBar ? sideBar.status : false);
   },[isSmallScreen]);
   

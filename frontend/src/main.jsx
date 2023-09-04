@@ -74,7 +74,7 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store = {store}>
     <React.StrictMode>
-      <GoogleOAuthProvider clientId="199042338771-lumcd8261ef56nn1b5nr80063ck2b902.apps.googleusercontent.com">
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
         <RouterProvider router={ router } />
       </GoogleOAuthProvider>
     </React.StrictMode>

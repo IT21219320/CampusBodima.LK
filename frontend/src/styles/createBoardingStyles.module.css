@@ -1,0 +1,21 @@
+.card{
+    background: linear-gradient(45deg, rgba(181, 174, 255, 0.25) 0%, rgba(91, 84, 189, 0.25) 100%);    
+    box-shadow: 2px 2px 5px 0px rgb(0 0 0 / 27%) !important;
+}
+
+.addImgLabel{
+    background: #348fe9;
+    border-radius: 5px;
+    text-align: center;
+    padding: 2px 5px 5px 5px;
+    margin-bottom: 5px !important;
+    cursor: pointer;
+}
+
+.submitBtn{
+    background:#66bb6a !important;
+}
+
+.submitBtn:hover{
+    background: #388e3c !important;
+}

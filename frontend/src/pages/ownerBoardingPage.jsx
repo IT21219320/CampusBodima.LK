@@ -7,25 +7,21 @@ import { NavigateNext, AddHomeWork } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetOwnerBoardingsMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
-import { autoPlay } from 'react-swipeable-views-utils';
-//import SwipeableViews from 'react-swipeable-views';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 import Sidebar from '../components/sideBar';
+
 import ownerStyles from '../styles/ownerStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 
 import defaultImage from '/images/defaultImage.png'
 
-//const AutoPlaySwipeableViews = SwipeableViews;
-
 const OwnerBoardingPage = () => {
     const theme = useTheme();
 
-    //const [activeImage, setActiveImage] = useState(0);
     const [viewUserInfo, setViewUserInfo] = useState();
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState();
+    const [totalPages, setTotalPages] = useState(0);
     const [boardings, setBoardings] = useState([]);
 
     const navigate = useNavigate();
@@ -57,10 +53,6 @@ const OwnerBoardingPage = () => {
         console.log(boardings);   
     };
 
-    /*const handleImageChange = (step) => {
-      setActiveImage(step);
-    };*/
-
     return (
         <>
             <Sidebar />
@@ -82,7 +74,7 @@ const OwnerBoardingPage = () => {
                                 <Row>
                                     <Col>
                                         <Row style={{textAlign:'right'}}>
-                                            <Col><Link href='/owner/boarding/add'><Button className="mt-4" style={{background: '#685DD8'}}><AddHomeWork /> Add New Boarding</Button></Link></Col>
+                                            <Col><Link href='/owner/boarding/add'><Button className={`${ownerStyles.addBtn} mt-4`}><AddHomeWork /> Add New Boarding</Button></Link></Col>
                                         </Row>
                                         <Row style={{minHeight:'calc(100vh - 240px)'}}>
                                             <Col>
@@ -132,6 +124,7 @@ const OwnerBoardingPage = () => {
                                                                             </>}
                                                                         </Col>
                                                                         <Col xs={2}>
+                                                                            
                                                                         </Col>
                                                                     </Row>
                                                                 </CardContent>

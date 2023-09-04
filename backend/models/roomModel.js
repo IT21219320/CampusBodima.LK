@@ -41,7 +41,7 @@ const roomSchema = mongoose.Schema({
     status:{
         type: String,
         required: true,
-        default: 'pending'
+        default: 'PendingApproval'
     }
 }, {
     timestamps: true

@@ -39,22 +39,17 @@ body{
     background-color: transparent;
 }
 
-.on-scrollbar{
-    scrollbar-width: thin; /* Firefox */
-    -ms-overflow-style: none; /* IE 10+ */
-}
-
-.on-scrollbar::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
     -webkit-box-shadow: none !important;
     background-color: transparent !important;
 }
 
-.on-scrollbar::-webkit-scrollbar {
+::-webkit-scrollbar {
     width: 6px !important;
     background-color: transparent;
 }
 
-.on-scrollbar::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     background-color: rgb(1, 114, 189); 
     border-radius: 5px;
 }

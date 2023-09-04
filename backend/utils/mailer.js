@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-export const registerMail = (email, text, subject) => {
+export const sendMail = (email, text, subject) => {
     
     const mailTransporter  = nodemailer.createTransport({
         service: "gmail",
@@ -8,8 +8,8 @@ export const registerMail = (email, text, subject) => {
         port: 587,
         secure: false,
         auth: {
-          user: "info.campusbodima@gmail.com",
-          pass: "fsgumbgazxzxnqkl",
+          user: process.env.NODE_MAILER_USERNAME,
+          pass: process.env.NODE_MAILER_PASSWORD,
         },
     });
     

@@ -15,21 +15,24 @@ const getSmsToken = (numbers, message) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            username: "antpixelcore",
-            password: "Pixelcore@1133",
+            username: 'antpixelcore',
+            password: 'Pixelcore@1133',
         }),
     })
     .then((response) => response.json())
     .then((data) => {
         token = data.token;
-        sendSms(numbers, message);
+        console.log("token:"+token);
+        sendSMS(numbers, message);
     })
     .catch((err) => {
-        toast.error(err.data?.message || err.error);
+        console.log(err.data?.message || err.error);
     });
 }
 
-const sendSms = (numbers, message) => {
+const sendSMS = (numbers, message) => {
+  
+  console.log(numbers);
     if(token){
         generateTransactionId();
         console.log(transactionId);
@@ -41,7 +44,7 @@ const sendSms = (numbers, message) => {
             },
             body: JSON.stringify({
                 "msisdn": [numbers],
-                "sourceAddress": "Pixelcore",
+                "sourceAddress": 'Pixelcore',
                 "message": message,
                 "transaction_id": transactionId,
                }
@@ -55,7 +58,7 @@ const sendSms = (numbers, message) => {
             if(err.errCode == 100){
                 getSmsToken(numbers, message);
             }
-            toast.error(err.data?.message || err.error);
+            console.log(err.data?.message || err.error);
         });
     }
     else{
@@ -63,5 +66,5 @@ const sendSms = (numbers, message) => {
     }
 }
 
-export {sendSms};
+export {sendSMS};
 

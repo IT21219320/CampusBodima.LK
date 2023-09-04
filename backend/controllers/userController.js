@@ -3,7 +3,8 @@ import User from '../models/userModel.js';
 import generateToken from '../utils/generateToken.js';
 import otpGenerator from 'otp-generator';
 import jwt from 'jsonwebtoken';
-import {registerMail} from '../utils/mailer.js'
+import { sendMail } from '../utils/mailer.js'
+import { sendSMS } from '../utils/smsSender.js';
 
 // @desc    Check if user exists and send registeration mail
 // route    POST /api/users
@@ -50,7 +51,7 @@ const sendRegisterMail = asyncHandler(async (req, res) => {
                             Best wishes,<br>
                             The CampusBodima Team</p>`
         
-        registerMail(email,message,"Activate Your Account");
+        sendMail(email,message,"Activate Your Account");
         res.status(201).json({ message: "Email Verification Sent!"});
     }
     else{
@@ -124,6 +125,10 @@ const registerUser = asyncHandler(async (req, res) => {
                 gender: user.gender,
                 accType: user.accType,
                 totalPayable: user.totalPayable,
+                bankAccNo: user.bankAccNo,
+                bankAccName: user.bankAccName,
+                bankName: user.bankName,
+                bankBranch: user.bankBranch,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             });
@@ -173,6 +178,10 @@ const authUser = asyncHandler(async (req, res) => {
             gender: user.gender,
             accType: user.accType,
             totalPayable: user.totalPayable,
+            bankAccNo: user.bankAccNo,
+            bankAccName: user.bankAccName,
+            bankName: user.bankName,
+            bankBranch: user.bankBranch,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt
         });
@@ -210,6 +219,10 @@ const googleAuthUser = asyncHandler(async (req, res) => {
             gender: user.gender,
             accType: user.accType,
             totalPayable: user.totalPayable,
+            bankAccNo: user.bankAccNo,
+            bankAccName: user.bankAccName,
+            bankName: user.bankName,
+            bankBranch: user.bankBranch,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt
         });
@@ -254,6 +267,10 @@ const googleAuthUser = asyncHandler(async (req, res) => {
                 gender: user.gender,
                 accType: user.accType,
                 totalPayable: user.totalPayable,
+                bankAccNo: user.bankAccNo,
+                bankAccName: user.bankAccName,
+                bankName: user.bankName,
+                bankBranch: user.bankBranch,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             });
@@ -296,6 +313,10 @@ const getUserProfile = asyncHandler(async (req, res) => {
         phoneNo: req.user.phoneNo,
         gender: req.user.gender,
         totalPayable: req.user.totalPayable,
+        bankAccNo: req.user.bankAccNo,
+        bankAccName: req.user.bankAccName,
+        bankName: req.user.bankName,
+        bankBranch: req.user.bankBranch,
         createdAt: req.user.createdAt,
         updatedAt: req.user.updatedAt
     };  
@@ -344,6 +365,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             phoneNo: updatedUser.phoneNo,
             gender: updatedUser.gender,
             totalPayable: updatedUser.totalPayable,
+            bankAccNo: updatedUser.bankAccNo,
+            bankAccName: updatedUser.bankAccName,
+            bankName: updatedUser.bankName,
+            bankBranch: updatedUser.bankBranch,
             createdAt: updatedUser.createdAt,
             updatedAt: updatedUser.updatedAt
         });
@@ -366,7 +391,7 @@ const generateOTP = asyncHandler(async (req, res) => {
         
         const message = `<p>Hello ${user.firstName},<br> Your OTP is: <b>${req.app.locals.OTP}</b></p>`
 
-        registerMail(email, message,"Your OTP");
+        sendMail(email, message,"Your OTP");
         res.status(201).json({ message: "OTP Sent"});
     }
     else{
@@ -388,6 +413,65 @@ const verifyOTP = asyncHandler(async (req, res) => {
     }
     else{
         req.app.locals.OTP = null;
+        res.status(400);
+        throw new Error("Invalid OTP");
+    }
+
+});
+
+
+// @desc    Generate SMS OTP
+// route    POST /api/users/sms/generateOTP
+// @access  public
+const generateSMSOTP = asyncHandler(async (req, res) => {
+    const { _id, phoneNo } = req.body;
+
+    const user = await User.findOne({ _id });
+
+    req.app.locals.SMSOTP = await otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false});
+    
+    const message = `Hello ${user.firstName}, Your OTP is: ${req.app.locals.SMSOTP}. Lets verify your phone number!`
+    var number = {mobile: parseInt(phoneNo)};
+    sendSMS(number, message);
+    res.status(201).json({ message: "OTP Sent"});
+
+});
+
+
+// @desc    Verify OTP
+// route    POST /api/users/sms/verifyOTP
+//@access   public
+const verifySMSOTP = asyncHandler(async (req, res) => {
+    const { _id, otp, phoneNo } = req.body;
+    if(parseInt(req.app.locals.SMSOTP) === parseInt(otp)){
+        
+        const user = await User.findOne({ _id });
+
+        user.phoneNo = phoneNo;
+
+        const updatedUser = await user.save();
+
+        res.status(201).json({ 
+            _id: updatedUser._id,
+            email: updatedUser.email, 
+            image: updatedUser.image, 
+            firstName: updatedUser.firstName, 
+            lastName: updatedUser.lastName, 
+            accType: updatedUser.accType, 
+            userType: updatedUser.userType,
+            phoneNo: updatedUser.phoneNo,
+            gender: updatedUser.gender,
+            totalPayable: updatedUser.totalPayable,
+            bankAccNo: updatedUser.bankAccNo,
+            bankAccName: updatedUser.bankAccName,
+            bankName: updatedUser.bankName,
+            bankBranch: updatedUser.bankBranch,
+            createdAt: updatedUser.createdAt,
+            updatedAt: updatedUser.updatedAt
+        })
+    }
+    else{
+        req.app.locals.SMSOTP = null;
         res.status(400);
         throw new Error("Invalid OTP");
     }
@@ -430,5 +514,7 @@ export {
     updateUserProfile,
     generateOTP,
     verifyOTP,
+    generateSMSOTP,
+    verifySMSOTP,
     resetPassword 
 };

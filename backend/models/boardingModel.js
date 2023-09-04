@@ -14,23 +14,20 @@ const boardingSchema = mongoose.Schema({
         type: String
     },
     location: {
-        type: String
+        type: Object
     },
     boardingImages: {
         type: [String], 
         required: true
     },
     noOfRooms: {
-        type: String, 
-        required: true
+        type: String,
     },
     noOfCommonBaths: {
-        type: String, 
-        required: true
+        type: String,
     },
     noOfAttachBaths: {
         type: String, 
-        required: true
     },
     facilities: {
         type: [String]
@@ -42,10 +39,6 @@ const boardingSchema = mongoose.Schema({
     food: {
         type: Boolean,
         default: 0
-    },
-    phoneNo: {
-        type: String,
-        require: true
     },
     gender: {
         type: String,
@@ -83,7 +76,7 @@ const boardingSchema = mongoose.Schema({
     status:{
         type: String,
         required: true,
-        default: 'pending'
+        default: 'Pending'
     }
 }, {
     timestamps: true

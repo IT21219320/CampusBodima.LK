@@ -16,11 +16,13 @@
     "@mui/joy": "^5.0.0-beta.2",
     "@mui/lab": "^5.0.0-alpha.134",
     "@mui/material": "^5.13.6",
+    "@react-google-maps/api": "^2.19.2",
     "@react-oauth/google": "^0.11.0",
     "@reduxjs/toolkit": "^1.9.5",
     "bootstrap": "^5.3.0",
     "jsonwebtoken": "^9.0.0",
     "jwt-decode": "^3.1.2",
+    "mui-file-input": "^3.0.1",
     "mui-one-time-password-input": "^1.1.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.8.0",
@@ -32,6 +34,7 @@
     "react-swipeable-views-utils": "^0.14.0",
     "react-toastify": "^9.1.3",
     "safe-buffer": "^5.2.1",
+    "use-places-autocomplete": "^4.0.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

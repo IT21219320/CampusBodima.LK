@@ -59,6 +59,20 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        generateSMSOTP: builder.mutation({
+            query: (data) => ({
+                url: `${USERS_URL}/sms/generateOTP`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+        verifySMSOTP: builder.mutation({
+            query: (data) => ({
+                url: `${USERS_URL}/sms/verifyOTP`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
         resetPassword: builder.mutation({
             query: (data) => ({
                 url: `${USERS_URL}/resetPassword`,
@@ -69,4 +83,4 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useLoginMutation, useGoogleLoginMutation, useRegisterMutation, useVerifyEmailMutation, useLogoutMutation, useUpdateUserMutation, useGenerateOTPMutation, useVerifyOTPMutation, useResetPasswordMutation } = usersApiSlice;
+export const { useLoginMutation, useGoogleLoginMutation, useRegisterMutation, useVerifyEmailMutation, useLogoutMutation, useUpdateUserMutation, useGenerateOTPMutation, useVerifyOTPMutation, useGenerateSMSOTPMutation, useVerifySMSOTPMutation, useResetPasswordMutation } = usersApiSlice;
