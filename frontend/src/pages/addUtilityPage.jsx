@@ -6,14 +6,14 @@ import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, InputLabel, Sel
 import { NavigateNext } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { toast } from 'react-toastify';
-import { useAddUtilitiesMutation } from '../slices/utilitiesApiSlice';
+//import { useAddUtilitiesMutation } from '../slices/utilitiesApiSlice';
 import { useGetOwnerBoardingsMutation } from '../slices/boardingsApiSlice';
 
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import Sidebar from '../components/sideBar';
 
 
-const addUtilities = () =>{
+const AddUtilitiesPage = () =>{
 
     const [boardingId, setBoardingId] = useState([]);
     const [utilityType,setUtilityType] = useState('Electricity');
@@ -25,7 +25,7 @@ const addUtilities = () =>{
     
     const navigate = useNavigate();
      
-    const [addUtilities, {isLoading}] = useAddUtilitiesMutation(); 
+    //const [addUtilities, {isLoading}] = useAddUtilitiesMutation(); 
 
 
     const { userInfo } = useSelector((state) => state.auth);
@@ -114,4 +114,4 @@ console.log('boardingId:', boardingId);
 
 };
 
-export default addUtilities;
+export default AddUtilitiesPage;

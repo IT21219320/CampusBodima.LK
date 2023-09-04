@@ -20,6 +20,7 @@ import AddIngredientPage from './pages/addIngredientPage';
 import ResetPasswordPage from './pages/resetPasswordPage.jsx';
 import OccupantAllTicketsPage from './pages/occupantAllTicketsPage.jsx';
 import CreateTicketPage from './pages/createTicketPage.jsx';
+import AddUtilitiesPage from './pages/addUtilityPage.jsx';
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
 import OwnerRoute from './components/ownerRoute';
@@ -63,7 +64,7 @@ const router = createBrowserRouter(
         <Route path='' element={ <OccupantRoute /> }>
           <Route path='/occupant/ticket' element={<OccupantAllTicketsPage />} />
           <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
-          
+          <Route path='/occupant/utility/add' element={<AddUtilitiesPage />} />
         </Route>
       </Route>
 
