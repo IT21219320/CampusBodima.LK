@@ -21,7 +21,7 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-module.exports = {
+export{
   createOrder,
   getAllOrders,
 };
