@@ -122,8 +122,8 @@ export default function Sidebar() {
           {userInfo.userType == 'owner' ?  //Navigations for Owner
 
           <>
-            <Link to='/owner/boarding' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute == '/owner/boarding' || activeRoute == '/owner/boarding/add') ? sideBarStyles.active : ''}`}>
+            <Link to='/owner/boardings' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute == '/owner/boardings' || activeRoute == '/owner/boardings/add') ? sideBarStyles.active : ''}`}>
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
                   <HomeWorkRounded />
                 </ListItemIcon>

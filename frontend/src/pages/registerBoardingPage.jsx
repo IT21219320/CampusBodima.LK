@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Form, Container, Row, Col, Image, InputGroup } from 'react-bootstrap';
-import { Breadcrumbs, Typography, Fade, Card, CardContent, Button, Tabs, Tab, Link, Pagination, CircularProgress, Box, Tooltip, Checkbox, FormControlLabel, ToggleButton, ToggleButtonGroup, Collapse, IconButton, Alert, Badge, Slider, Modal, Backdrop } from "@mui/material";
-import { useTheme } from '@mui/material/styles';
+import { Breadcrumbs, Typography, Fade, Card, CardContent, Button, Link, CircularProgress, Box, Tooltip, Checkbox, FormControlLabel, ToggleButton, ToggleButtonGroup, Collapse, IconButton, Alert, Badge, Slider, Modal, Backdrop } from "@mui/material";
 import { MuiOtpInput } from 'mui-one-time-password-input'
-import { NavigateNext, AddHomeWork, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
+import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from "../slices/authSlice";
 import { useRegisterBoardingMutation } from '../slices/boardingsApiSlice';
@@ -95,11 +94,11 @@ const RegisterBoardingPage = () => {
                 setUserLocation({ lat: userLat, lng: userLng });
                 },
                 (error) => {
-                console.error('Error getting user location:', error);
+                toast.error('Error getting user location:', error);
                 }
             );
         } else {
-        console.error('Geolocation is not available in this browser.');
+        toast.error('Geolocation is not available in this browser.');
         }
 
     },[]);
@@ -136,8 +135,6 @@ const RegisterBoardingPage = () => {
         const data = await ImageToBase64(e.target.files[0]);
 
         setBoardingImages([...boardingImages,data]);
-
-        console.log(boardingImages);
     }
 
     const removeImage = (imageToRemove) => {
@@ -235,10 +232,11 @@ const RegisterBoardingPage = () => {
                         dispatch(setUserInfo({...res.data.owner}));
 
                         if(boardingType == 'Annex'){
-                            navigate('/owner/boarding/');
+                            navigate('/owner/boardings/');
                         }
                         else{
-                            navigate(`/owner/boarding/${boardingName}/room/add`);
+                            const boardingId = res.data.boarding._id;
+                            navigate(`/owner/boardings/${boardingId}/${boardingName}/rooms/add`);
                         }
 
                     }
@@ -261,7 +259,7 @@ const RegisterBoardingPage = () => {
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
                                 <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
-                                <Link underline="hover" key="3" color="inherit" href="/owner/boarding">Boardings</Link>,
+                                <Link underline="hover" key="3" color="inherit" href="/owner/boardings">Boardings</Link>,
                                 <Typography key="4" color="text.primary">Add</Typography>
                             </Breadcrumbs>
                         </Col>
@@ -269,7 +267,7 @@ const RegisterBoardingPage = () => {
                     <Collapse in={noticeStatus}>
                         <Alert
                             action={ <IconButton aria-label="close" color="inherit" size="small" onClick={() => { setNoticeStatus(false); }} > <Close fontSize="inherit" /> </IconButton> }
-                            sx={{ mt: 2 }}
+                            sx={{ mt: 2, bgcolor:'rgb(177 232 255)' }}
                             severity="info"
                         >
                             <strong>Info</strong> -  You only need to complete this form once, so take your time, relax, and complete it at your convenience.
@@ -294,7 +292,7 @@ const RegisterBoardingPage = () => {
                                                 <Col><p><b>New Boarding</b></p></Col>
                                             </Row>
                                             <Row style={{marginBottom:'10px'}}>
-                                                <Col xs={12} md={6} style={{marginBottom:'10px'}}>
+                                                <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
                                                     <Row>
                                                         <Col style={{height:'100%'}} xs={12} md={4}>
                                                             <Form.Label style={{margin:0}}>
@@ -305,7 +303,7 @@ const RegisterBoardingPage = () => {
                                                             </Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="Boarding Name" value={boardingName} onChange={ (e) => setBoardingName(e.target.value)} required />
+                                                            <Form.Control type="text" placeholder="Boarding Name" value={boardingName} onChange={ (e) => setBoardingName(e.target.value)} required style={{width:'95%'}}/>
                                                         </Col>
                                                     </Row>
                                                     <Row style={{marginTop:'10px'}}>
@@ -313,7 +311,7 @@ const RegisterBoardingPage = () => {
                                                             <Form.Label style={{margin:0}}>Address<span style={{color:'red'}}>*</span> </Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="143/A, New Kandy Rd, Malabe" value={address} onChange={ (e) => setAddress(e.target.value)} required/>
+                                                            <Form.Control type="text" placeholder="143/A, New Kandy Rd, Malabe" value={address} onChange={ (e) => setAddress(e.target.value)} required style={{width:'95%'}}/>
                                                         </Col>
                                                     </Row>
                                                     <Row style={{marginTop:'10px'}}>
@@ -324,7 +322,7 @@ const RegisterBoardingPage = () => {
                                                             </Tooltip>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="Malabe" value={city} onChange={ (e) => setCity(e.target.value)} readOnly required/>
+                                                            <Form.Control type="text" placeholder="Malabe" value={city} onChange={ (e) => setCity(e.target.value)} required style={{width:'95%'}}/>
                                                         </Col>
                                                     </Row>
                                                     <Row style={{marginTop:'10px'}}>
@@ -334,7 +332,7 @@ const RegisterBoardingPage = () => {
                                                         <Col style={{height:'100%', textAlign:'left'}} xs={12} md={8}>
                                                             <LoadScript googleMapsApiKey={GOOGLE_API_KEY}>
                                                                 <GoogleMap
-                                                                    mapContainerStyle={{ width: '100%', height: '300px' }}
+                                                                    mapContainerStyle={{ width: '95%', height: '300px', boxShadow:'#000000a1 0px 0px 6px -1px', borderRadius:'10px' }}
                                                                     center={ userLocation || {lat: 6.914805296158741, lng: 79.97291231369822 } } // Default center SLIIT if user doesnt exist
                                                                     zoom={10}
                                                                     onClick={handleMapClick}
@@ -345,7 +343,7 @@ const RegisterBoardingPage = () => {
                                                         </Col>
                                                     </Row>
                                                 </Col>
-                                                <Col xs={12} md={6} style={{marginBottom:'10px'}}>
+                                                <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
                                                     <Row style={{marginTop:'10px'}}>
                                                         <Col style={{height:'100%'}} xs={12} md={4}>
                                                             <Form.Label style={{margin:0}}>Facilities</Form.Label>
@@ -508,7 +506,7 @@ const RegisterBoardingPage = () => {
                                             <> 
                                                 <hr />
                                                 <Row style={{marginTop:'20px'}}>
-                                                    <Col xs={12} md={6} style={{marginBottom:'10px'}}>
+                                                    <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
                                                         <Row style={{marginBottom:'5px'}}>
                                                             <Col style={{height:'100%'}} xs={12} md={4}>
                                                                 <Form.Label style={{margin:0}}>
@@ -523,6 +521,7 @@ const RegisterBoardingPage = () => {
                                                                     min={1} 
                                                                     max={11} 
                                                                     marks={roomMarks}
+                                                                    style={{width:'95%'}}
                                                                     valueLabelFormat={sliderValueText} 
                                                                     onChange={(e) => { e.target.value < 11 ? setNoOfRooms(e.target.value) : setNoOfRooms('10+')}}
                                                                 />
@@ -542,6 +541,8 @@ const RegisterBoardingPage = () => {
                                                                     marks={bathMarks} 
                                                                     min={0} 
                                                                     max={11} 
+                                                                    color="secondary"
+                                                                    style={{width:'95%'}}
                                                                     valueLabelFormat={sliderValueText} 
                                                                     onChange={(e) => { e.target.value < 11 ? setNoOfAttachBaths(e.target.value) : setNoOfAttachBaths('10+')}}
                                                                 />
@@ -561,13 +562,15 @@ const RegisterBoardingPage = () => {
                                                                     marks={bathMarks}
                                                                     min={0} 
                                                                     max={11} 
+                                                                    color="secondary"
+                                                                    style={{width:'95%'}}
                                                                     valueLabelFormat={sliderValueText} 
                                                                     onChange={(e) => { e.target.value < 11 ? setNoOfCommonBaths(e.target.value) : setNoOfCommonBaths('10+')}}
                                                                 />
                                                             </Col>
                                                         </Row>
                                                     </Col>
-                                                    <Col xs={12} md={6} style={{marginBottom:'10px'}}>
+                                                    <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
                                                         <Row style={{marginTop:'10px'}}>
                                                             <Col style={{height:'100%'}} xs={12} md={4}>
                                                                 <Form.Label style={{margin:0}}>Monthly Rent<span style={{color:'red'}}>*</span></Form.Label>
@@ -646,13 +649,13 @@ const RegisterBoardingPage = () => {
                                                 </Col>
                                             </Row>
                                             <Row style={{marginBottom:'10px'}}>
-                                                <Col xs={12} md={6} style={{marginBottom:'10px'}}>
+                                                <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
                                                     <Row>
                                                         <Col style={{height:'100%'}} xs={12} md={4}>
                                                             <Form.Label style={{margin:0}}>Bank Account No.<span style={{color:'red'}}>*</span></Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="number" placeholder="01234565345" value={bankAccNo} onChange={ (e) => setBankAccNo(e.target.value)} required readOnly={userInfo.bankAccNo ? true : false} />
+                                                            <Form.Control type="number" placeholder="01234565345" value={bankAccNo} onChange={ (e) => setBankAccNo(e.target.value)} required readOnly={userInfo.bankAccNo ? true : false} style={{width:'95%'}} />
                                                         </Col>
                                                     </Row>
                                                     <Row style={{marginTop:'10px'}}>
@@ -662,17 +665,17 @@ const RegisterBoardingPage = () => {
                                                             </Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="James Bond" value={bankAccName} onChange={ (e) => setBankAccName(e.target.value)} required readOnly={userInfo.bankAccName ? true : false} />
+                                                            <Form.Control type="text" placeholder="James Bond" value={bankAccName} onChange={ (e) => setBankAccName(e.target.value)} required readOnly={userInfo.bankAccName ? true : false} style={{width:'95%'}} />
                                                         </Col>
                                                     </Row>
                                                 </Col>
-                                                <Col xs={12} md={6} style={{marginBottom:'10px'}}>
+                                                <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
                                                     <Row>
                                                         <Col style={{height:'100%'}} xs={12} md={4}>
                                                             <Form.Label style={{margin:0}}>Bank Name<span style={{color:'red'}}>*</span></Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="BOC" value={bankName} onChange={ (e) => setBankName(e.target.value)} required readOnly={userInfo.bankName ? true : false} />
+                                                            <Form.Control type="text" placeholder="BOC" value={bankName} onChange={ (e) => setBankName(e.target.value)} required readOnly={userInfo.bankName ? true : false} style={{width:'95%'}} />
                                                         </Col>
                                                     </Row>
                                                     <Row style={{marginTop:'10px'}}>
@@ -682,7 +685,7 @@ const RegisterBoardingPage = () => {
                                                             </Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="Gampaha Branch" value={bankBranch} onChange={ (e) => setBankBranch(e.target.value)} required readOnly={userInfo.bankBranch ? true : false} />
+                                                            <Form.Control type="text" placeholder="Gampaha Branch" value={bankBranch} onChange={ (e) => setBankBranch(e.target.value)} required readOnly={userInfo.bankBranch ? true : false} style={{width:'95%'}} />
                                                         </Col>
                                                     </Row>
                                                 </Col>
@@ -696,7 +699,10 @@ const RegisterBoardingPage = () => {
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8} ls={10}>
                                                             {userInfo.phoneNo ?
-                                                            <Form.Control type="text" placeholder="PhoneNo" value={phoneNo} required readOnly style={{width:'fit-content'}}/>
+                                                                <InputGroup style={{width:'fit-content'}}>
+                                                                    <InputGroup.Text style={{color:'green'}}><Check /></InputGroup.Text>
+                                                                    <Form.Control type="text" placeholder="PhoneNo" value={phoneNo} required readOnly style={{width:'fit-content'}}/>
+                                                                </InputGroup>
                                                             :
                                                             <InputGroup style={{width:'fit-content'}}>
                                                                 <InputGroup.Text>(+94)</InputGroup.Text>

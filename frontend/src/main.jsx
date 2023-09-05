@@ -15,12 +15,15 @@ import ProfilePage from './pages/profilePage.jsx';
 import GenerateOtpPage from './pages/generateOtpPage.jsx';
 import OwnerBoardingPage from './pages/ownerBoardingPage.jsx';
 import RegisterBoardingPage from './pages/registerBoardingPage.jsx';
+import OwnerBoardingRoomPage from './pages/ownerBoardingRoomPage.jsx';
+import AddBoardingRoomPage from './pages/addBoardingRoomPage.jsx';
 import OwnerIngredientPage from './pages/OwnerIngredientPage';
 import AddIngredientPage from './pages/addIngredientPage';
 import ResetPasswordPage from './pages/resetPasswordPage.jsx';
 import OccupantAllTicketsPage from './pages/occupantAllTicketsPage.jsx';
 import CreateTicketPage from './pages/createTicketPage.jsx';
 import AddUtilitiesPage from './pages/addUtilityPage.jsx';
+import OrderList from './pages/OrderList.jsx'
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
 import OwnerRoute from './components/ownerRoute';
@@ -53,8 +56,10 @@ const router = createBrowserRouter(
 
         {/* Owner Routes */}
         <Route path='' element={ <OwnerRoute /> }>
-          <Route path='/owner/boarding' element={ <OwnerBoardingPage /> } />
-          <Route path='/owner/boarding/add' element={ <RegisterBoardingPage /> } />
+          <Route path='/owner/boardings' element={ <OwnerBoardingPage /> } />
+          <Route path='/owner/boardings/add' element={ <RegisterBoardingPage /> } />
+          <Route path='/owner/boardings/:boardingId/rooms' element={ <OwnerBoardingRoomPage /> } />
+          <Route path='/owner/boardings/:boardingId/:boardingName/rooms/add' element={ <AddBoardingRoomPage /> } />
 
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
@@ -64,7 +69,10 @@ const router = createBrowserRouter(
         <Route path='' element={ <OccupantRoute /> }>
           <Route path='/occupant/ticket' element={<OccupantAllTicketsPage />} />
           <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
+
           <Route path='/occupant/utility/add' element={<AddUtilitiesPage />} />
+
+          <Route path='/occupant/order/' element={<OrderList />} />
         </Route>
       </Route>
 

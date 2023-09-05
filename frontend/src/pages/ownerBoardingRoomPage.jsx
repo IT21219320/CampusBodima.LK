@@ -16,7 +16,7 @@ import dashboardStyles from '../styles/dashboardStyles.module.css';
 
 import defaultImage from '/images/defaultImage.png'
 
-const OwnerBoardingPage = () => {
+const OwnerBoardingRoomPage = () => {
     const theme = useTheme();
 
     const [viewUserInfo, setViewUserInfo] = useState();
@@ -153,4 +153,4 @@ const OwnerBoardingPage = () => {
     )
 };
 
-export default OwnerBoardingPage;
+export default OwnerBoardingRoomPage;
