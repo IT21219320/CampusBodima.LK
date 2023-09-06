@@ -1,0 +1,28 @@
+/* Add borders to the table and its cells */
+.customtable {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #df0e0e; /* Add border to the whole table */
+  }
+  
+  .customtable th, .customtable td {
+    border: 1px solid #dddddd; /* Add border to table cells (th and td) */
+    padding: 8px;
+    text-align: left;
+  }
+  
+  /* Add alternating row background color for better readability */
+  .customtable tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+  }
+  
+  /* Add hover effect on rows */
+  .customtable tbody tr:hover {
+    background-color: #e2e2e2;
+  }
+   
+  
+  
+  
+  
+  

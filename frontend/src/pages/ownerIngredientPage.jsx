@@ -3,18 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Container, Row, Col, Button } from 'react-bootstrap';
 import { Breadcrumbs, Typography, Fade, Card, CardContent, Tabs, Tab, Link, Pagination, CircularProgress, Box } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
-import { NavigateNext, AddHomeWork } from '@mui/icons-material';
+import { NavigateNext,} from '@mui/icons-material';
+import KitchenIcon from '@mui/icons-material/Kitchen';
+import DeleteIcon from '@mui/icons-material/Delete';
+import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetOwnerIngredientsMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
 import { Table, TableHead, TableRow } from '@mui/material'; 
 import { autoPlay } from 'react-swipeable-views-utils';
+ 
 //import SwipeableViews from 'react-swipeable-views';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 import Sidebar from '../components/sideBar';
 import ownerStyles from '../styles/ownerStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
+import ingredientStyles from '../styles/ingredientStyles.module.css';  
 
 import defaultImage from '/images/defaultImage.png'
 
@@ -79,8 +84,9 @@ const OwnerIngredientPage = () => {
                             <Col className="mb-3" xs={12} md={12}>
                                 <Row>
                                     <Col>
-                                        <Row style={{textAlign:'right'}}>
-                                            <Col><Link href='/owner/ingredient/add'><Button className="mt-4" style={{background: '#685DD8'}}><AddHomeWork /> Add New Ingredient</Button></Link></Col>
+                                    <h1 style={{ fontSize: '50px', color: 'blue', }}>Ingredients</h1>
+                                        <Row style={{textAlign:'right', marginBottom:'20px'}}>
+                                            <Col><Link href='/owner/ingredient/add'><Button className="mt-4" style={{background: '#685DD8'}}><KitchenIcon/> Add New Ingredient</Button></Link></Col>
                                         </Row>
                                         <Row style={{minHeight:'calc(100vh - 240px)'}}>
                                             <Col>
@@ -89,12 +95,14 @@ const OwnerIngredientPage = () => {
                                                         <CircularProgress />
                                                     </div> 
                                                    ): ingredients.length > 0 ? (
-                                                      <Table striped bordered hover>
+                                                      <Table className={ingredientStyles.customtable} striped bordered hover>
                                                         <thead>
                                                           <tr>
                                                             <th>Ingredient Name</th>
                                                             <th>Available Quantity</th>
                                                             <th>Measurement</th>
+                                                            <th>Purchase Date</th>
+                                                            <th>Option</th>  
                                                           </tr>
                                                         </thead>
                                                       <tbody>
@@ -103,6 +111,19 @@ const OwnerIngredientPage = () => {
                                                             <td>{ingredient.ingredientName}</td>
                                                             <td>{ingredient.quantity}</td>
                                                             <td>{ingredient.measurement}</td>
+                                                            <td>{ingredient.purchaseDate}</td>
+                                                            <td> 
+                                                                <Link href=''>
+                                                                    <Button  style={{ background: 'yellow', color: 'black', marginRight: '10px' }}>
+                                                                    <BrowserUpdatedIcon /> Update
+                                                                    </Button>
+                                                                </Link>
+                                                                <Link href=''>
+                                                                    <Button  style={{ background: 'red',color: 'black' }}>
+                                                                    <DeleteIcon /> Delete
+                                                                    </Button>
+                                                                </Link>
+                                                            </td> 
                                                           </tr>
                                                         ))}
                                                       </tbody>
