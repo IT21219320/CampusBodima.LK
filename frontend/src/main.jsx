@@ -63,14 +63,14 @@ const router = createBrowserRouter(
 
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
+
+          <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
         </Route>
 
         {/* Occupant Routes */}
         <Route path='' element={ <OccupantRoute /> }>
           <Route path='/occupant/ticket' element={<OccupantAllTicketsPage />} />
           <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
-
-          <Route path='/occupant/utility/add' element={<AddUtilitiesPage />} />
 
           <Route path='/occupant/order/' element={<OrderList />} />
         </Route>
