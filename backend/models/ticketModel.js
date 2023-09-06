@@ -18,7 +18,7 @@ const ticketSchema = mongoose.Schema({
     },
 
     subject:{
-        type:User.schema,
+        type:String,
         required:true,
     },
 
@@ -36,6 +36,12 @@ const ticketSchema = mongoose.Schema({
         type:String,
         required:true
     },
+
+    status:{
+        type:String,
+        default:'Pending'
+    },
+
 },{
     timestamps:true
 });

@@ -1,6 +1,8 @@
 import asyncHandler from 'express-async-handler'
-import Ticket from '../models/ticketModel';
-import User from '../models/userModel';
+import Ticket from '../models/ticketModel.js';
+import User from '../models/userModel.js';
+import Reservation from '../models/reservationModel.js';
+import Boarding from '../models/boardingModel.js';
 
 
 
@@ -9,6 +11,18 @@ import User from '../models/userModel';
 // @access Private
 const createTicket = asyncHandler(async (req,res) =>{
     const{ senderId, subject, category, subCategory ,description } = req.body;
+
+    const reservation = await Reservation.findOne({occupantID: senderId});
+
+    if(!reservation){
+        res.status(400);
+        throw new Error('Please join a boarding to raise ticket')
+    }
+
+    const boarding = await Boarding.findOne({_id: reservation.boardingId});
+
+
+    const owner = await User.findById(boarding.owner);
 
     const largestTicketNo = await Ticket.findOne({}, { ticketId: 1}).sort({ticketId: -1});
     
@@ -23,10 +37,12 @@ const createTicket = asyncHandler(async (req,res) =>{
     ticketId = ticketId.toString();
 
     const sender = await User.findById(senderId);
+    console.log(sender);
 
     const ticket = await Ticket.create({
         ticketId,
         senderId: sender,
+        recieverId: owner,
         subject,
         category,
         subCategory,
@@ -47,24 +63,35 @@ const createTicket = asyncHandler(async (req,res) =>{
 //getTicket by userId
 
 const getUserTickets = asyncHandler(async (req,res) => {
-    const {id} = req.body;
+    const id = req.body.id;
+    const page = req.body.page || 1;
+    const pageSize = req.body.pageSize;
 
-    const tickets = await Ticket.find({
-        $or: [{senderId: id},{recieverId: id}],
-    });
+    const skip = (page - 1) * pageSize;
 
-    if(tickets){
-        res.status(201).json({tickets});
-    }
-    else{
-        res.status(400);
-        throw new Error('No tickets');
+    try{
+         const tickets = await Ticket.find({
+             $or: [{senderId: id},{recieverId: id}],
+            })
+
+             .skip(skip)
+            .limit(pageSize);
+
+        if(tickets){
+            res.status(201).json({tickets});
+        }
+         else{
+            res.status(400);
+            throw new Error('No tickets');
+        } 
+    }catch(err){
+        res.status(500).json({err:'error'});
     }
 });
 
 //getTicket by ticketId
 
-const getTicketsbyId = asyncHandler(async (req,res) => {
+const getTicketsbyTicketId = asyncHandler(async (req,res) => {
     const{ticketId} = req.body;
 
     const ticket = await Ticket.find({ticketId});
@@ -81,7 +108,7 @@ const getTicketsbyId = asyncHandler(async (req,res) => {
 //updatetickets
 
 const updateTicket = asyncHandler(async (req,res) => {
-    const {_id,ticketId,senderId,recieverId,subject,category,subCategory,description} = req.body;
+    const {_id,ticketId,senderId,recieverId,subject,category,subCategory,description,status} = req.body;
 
     const tickets = await Ticket.findById(_id);
 
@@ -90,6 +117,7 @@ const updateTicket = asyncHandler(async (req,res) => {
         tickets.category = category || tickets.category;
         tickets.subCategory = subCategory || tickets.subCategory;
         tickets.description = description || tickets.description;
+        tickets.status = status || tickets.status;
 
         const updatedTicket = await tickets.save();
 
@@ -129,7 +157,7 @@ const deleteTicket = asyncHandler(async (req,res) => {
 
 export { createTicket,
         getUserTickets,
-        getTicketsbyId,
+        getTicketsbyTicketId,
         updateTicket,
         deleteTicket }
 
