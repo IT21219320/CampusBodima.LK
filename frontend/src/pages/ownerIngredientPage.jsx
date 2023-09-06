@@ -100,7 +100,7 @@ const OwnerIngredientPage = () => {
                                                           <tr>
                                                             <th>Ingredient Name</th>
                                                             <th>Available Quantity</th>
-                                                            <th>Measurement</th>
+                                                            <th>Alert At</th>
                                                             <th>Purchase Date</th>
                                                             <th>Option</th>  
                                                           </tr>
@@ -112,7 +112,7 @@ const OwnerIngredientPage = () => {
                                                             <td>{ingredient.quantity}</td>
                                                             <td>{ingredient.measurement}</td>
                                                             <td>{ingredient.purchaseDate}</td>
-                                                            <td> 
+                                                            <td className={ingredientStyles.nohover}> 
                                                                 <Link href=''>
                                                                     <Button  style={{ background: 'yellow', color: 'black', marginRight: '10px' }}>
                                                                     <BrowserUpdatedIcon /> Update
