@@ -20,11 +20,6 @@
   .customtable tbody tr:hover {
     background-color: #e2e2e2;
   }
-
-  .nohover:hover {
-    background-color: initial !important; /* Set the background color to the default value */
-    color: initial !important; /* Set the text color to the default value */
-  }
    
   
   
