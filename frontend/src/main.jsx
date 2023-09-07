@@ -19,6 +19,7 @@ import OwnerBoardingRoomPage from './pages/ownerBoardingRoomPage.jsx';
 import AddBoardingRoomPage from './pages/addBoardingRoomPage.jsx';
 import OwnerIngredientPage from './pages/OwnerIngredientPage';
 import AddIngredientPage from './pages/addIngredientPage';
+import UpdateIngredientPage from './pages/updateIngredientPage';
 import ResetPasswordPage from './pages/resetPasswordPage.jsx';
 import OccupantAllTicketsPage from './pages/occupantAllTicketsPage.jsx';
 import CreateTicketPage from './pages/createTicketPage.jsx';
@@ -63,6 +64,7 @@ const router = createBrowserRouter(
 
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
+          <Route path='/owner/ingredient/update' element={ <UpdateIngredientPage /> } />
 
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
         </Route>
