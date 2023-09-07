@@ -6,7 +6,7 @@ const reservationSchema = mongoose.Schema({
         required: true,
     },
 
-    roomNo: {
+    roomID: {
         type: String,
         required: true,
         unique: true
