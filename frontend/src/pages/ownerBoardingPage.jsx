@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetOwnerBoardingsMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
 import LoadingButton from '@mui/lab/LoadingButton';
+import storage from "../utils/firebaseConfig";
+import { ref, getDownloadURL } from "firebase/storage";
 
 import Sidebar from '../components/sideBar';
 
@@ -35,8 +37,38 @@ const OwnerBoardingPage = () => {
         try {
             const data = userInfo._id+'/'+pageNo;
             const res = await getOwnerBoardings( data ).unwrap();
-            setBoardings(res.boardings);  
-            setTotalPages(res.totalPages);  
+
+            // Create an array of promises for image retrieval
+            const imagePromises = res.boardings.map(async (boarding) => {
+                const updatedImages = await Promise.all(boarding.boardingImages.map(async (image, index) => {
+                    try {
+                        const imageUrl = await getDownloadURL(ref(storage, image));
+                        // Update the URL for the image in the boardingImages array
+                        return imageUrl;
+                    } catch (error) {
+                        console.error('Error retrieving image URL:', error);
+                        // Handle the error as needed
+                        return null; // or a default value if there's an error
+                    }
+                }));
+                // Create a new object with the updated boardingImages property
+                const updatedBoarding = { ...boarding, boardingImages: updatedImages };
+                return updatedBoarding;
+            });
+  
+            // Wait for all image retrieval promises to complete
+            Promise.all(imagePromises)
+                .then((updatedBoardings) => {
+                    setBoardings(updatedBoardings);  
+                    setTotalPages(res.totalPages);  
+                })
+                .catch((error) => {
+                    console.error('Error updating image URLs:', error);
+                    // Handle the error as needed
+                });
+
+            
+
         } catch (err) {
             toast.error(err.data?.message || err.error);
         }
@@ -109,7 +141,7 @@ const OwnerBoardingPage = () => {
                                                                                 </div>
                                                                             ))}
                                                                         </AutoPlaySwipeableViews>*/}
-                                                                            <Image src={boarding.boardingImages[0] ? boarding.boardingImages[0] : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images}height='100%' width='100%'/>
+                                                                            <Image src={boarding.boardingImages[0] ?  boarding.boardingImages[0]: defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images}height='100%' width='100%'/>
                                                                         </Col>
                                                                         <Col xs={6}>
                                                                         {console.log(boarding)}

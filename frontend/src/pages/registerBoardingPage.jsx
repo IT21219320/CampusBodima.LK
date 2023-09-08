@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import { useNavigate } from 'react-router-dom';
 import { Form, Container, Row, Col, Image, InputGroup } from 'react-bootstrap';
-import { Breadcrumbs, Typography, Fade, Card, CardContent, Button, Link, CircularProgress, Box, Tooltip, Checkbox, FormControlLabel, ToggleButton, ToggleButtonGroup, Collapse, IconButton, Alert, Badge, Slider, Modal, Backdrop } from "@mui/material";
+import { Breadcrumbs, Typography, Fade, Card, CardContent, Button, Link, CircularProgress, Box, Tooltip, Checkbox, FormControlLabel, ToggleButton, ToggleButtonGroup, Collapse, IconButton, Alert, Badge, Slider, Modal, Backdrop, LinearProgress } from "@mui/material";
 import { MuiOtpInput } from 'mui-one-time-password-input'
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +14,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 
 import { geoCoding } from '../utils/geoCoding.js'
 import { ImageToBase64 } from "../utils/ImageToBase64";
+import storage from "../utils/firebaseConfig";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 import Sidebar from '../components/sideBar';
 
@@ -45,6 +47,8 @@ const RegisterBoardingPage = () => {
     const [keyMoney, setKeyMoney] = useState(0);
     const [description, setDescription] = useState('');
     const [boardingImages, setBoardingImages] = useState([]);
+    const [boardingPreviewImages, setBoardingPreviewImages] = useState([]);
+    const [percent, setPercent] = useState('101');
     const [phoneNo, setPhoneNo] = useState(userInfo.phoneNo ? userInfo.phoneNo : '');
     const [bankAccNo, setBankAccNo] = useState(userInfo.bankAccNo ? userInfo.bankAccNo : '');
     const [bankAccName, setBankAccName] = useState(userInfo.bankAccName ? userInfo.bankAccName : '');
@@ -134,13 +138,27 @@ const RegisterBoardingPage = () => {
     const previewImage = async(e) => {
         const data = await ImageToBase64(e.target.files[0]);
 
-        setBoardingImages([...boardingImages,data]);
+        setBoardingImages([...boardingImages,e.target.files[0]]);
+        setBoardingPreviewImages([...boardingPreviewImages,data]);
     }
 
     const removeImage = (imageToRemove) => {
-        const updatedImages = boardingImages.filter((image) => image !== imageToRemove);
-      
-        setBoardingImages(updatedImages);
+        // Find the index of the item to remove in boardingImages
+        const indexToRemove = boardingPreviewImages.indexOf(imageToRemove);
+
+        if (indexToRemove !== -1) {
+            // Create a copy of the arrays with the item removed
+            const updatedPreviewImages = [...boardingPreviewImages];
+            const updatedImages = [...boardingImages];
+
+            updatedPreviewImages.splice(indexToRemove, 1);
+            updatedImages.splice(indexToRemove, 1);
+
+            // Update the state with the updated arrays
+            setBoardingPreviewImages(updatedPreviewImages);
+            setBoardingImages(updatedImages);
+        }
+        
     };
 
     const handleBoardingTypeChange = (e) => {
@@ -149,6 +167,9 @@ const RegisterBoardingPage = () => {
         if(e.target.value == 'Hostel' && boardingImages.length > 2){
             while (boardingImages.length > 2) {   
                 boardingImages.pop();
+            }
+            while (boardingPreviewImages.length > 2){
+                boardingPreviewImages.pop();
             }
         }
 
@@ -213,38 +234,68 @@ const RegisterBoardingPage = () => {
         }
         else{
             setBackDropOpen(true);
+            
             var res;
-                try {
+
+            try {
+
+                const uploadPromises = boardingImages.map(async (boardingImage) => {
+                    const file = boardingImage;
+                    try {
+                        const timestamp = new Date().getTime();
+                        const random = Math.floor(Math.random() * 1000) + 1;
+                        const uniqueName = `${timestamp}_${random}.${file.name.split('.').pop()}`;
+                    
+                        const storageRef = ref(storage, `${uniqueName}`);
+                        const uploadTask = uploadBytesResumable(storageRef, file);
+
+                        await uploadTask;
+                        
+                        return uniqueName;                  
+            
+                    } catch (error) {
+                        console.error('Error uploading and retrieving image:', error);
+                        return null; // Handle the error as needed
+                    }
+                });
+
+                // Wait for all uploads to complete
+                const uploadedImageNames = await Promise.all(uploadPromises);
+
+                // Filter out any null values from failed uploads
+                const validImageNames = uploadedImageNames.filter((name) => name !== null);
+
+                console.log(validImageNames)
+
+                if(boardingType == 'Annex'){
+                    res = await registerBoarding({ ownerId:userInfo._id, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, noOfRooms, noOfCommonBaths, noOfAttachBaths, rent, keyMoney, description, boardingImages:validImageNames, phoneNo, bankAccNo, bankAccName, bankName, bankBranch });
+                }
+                else{
+                    res = await registerBoarding({ ownerId:userInfo._id, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, boardingImages:validImageNames, phoneNo, bankAccNo, bankAccName, bankName, bankBranch });
+                }
+
+                if(res.error){
+                    toast.error(res.error.data.message);
+                    setBackDropOpen(false);
+                }
+                else{
+                    toast.success('Boarding Registered Successfully!')
+                    dispatch(setUserInfo({...res.data.owner}));
 
                     if(boardingType == 'Annex'){
-                        res = await registerBoarding({ ownerId:userInfo._id, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, noOfRooms, noOfCommonBaths, noOfAttachBaths, rent, keyMoney, description, boardingImages, phoneNo, bankAccNo, bankAccName, bankName, bankBranch });
+                        navigate('/owner/boardings/');
                     }
                     else{
-                        res = await registerBoarding({ ownerId:userInfo._id, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, boardingImages, phoneNo, bankAccNo, bankAccName, bankName, bankBranch });
+                        const boardingId = res.data.boarding._id;
+                        navigate(`/owner/boardings/${boardingId}/${boardingName}/rooms/add`);
                     }
 
-                    if(res.error){
-                        toast.error(res.error.data.message);
-                        setBackDropOpen(false);
-                    }
-                    else{
-                        toast.success('Boarding Registered Successfully!')
-                        dispatch(setUserInfo({...res.data.owner}));
-
-                        if(boardingType == 'Annex'){
-                            navigate('/owner/boardings/');
-                        }
-                        else{
-                            const boardingId = res.data.boarding._id;
-                            navigate(`/owner/boardings/${boardingId}/${boardingName}/rooms/add`);
-                        }
-
-                    }
-
-                } catch (err) {
-                    setBackDropOpen(false);
-                    toast.error(err.data?.message || err.error || err);
                 }
+
+            } catch (err) {
+                setBackDropOpen(false);
+                toast.error(err.data?.message || err.error || err);
+            }
         }
     }
 
@@ -486,12 +537,13 @@ const RegisterBoardingPage = () => {
                                                                         <Form.Group controlId="formFile" className="mb-0">
                                                                             <Form.Label className={`${CreateBoardingStyles.addImgLabel}`}><AddPhotoAlternate/> Add a photo</Form.Label>
                                                                             <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
+                                                                            <p>{percent=='101' ? '' : <><LinearProgress variant="determinate" value={percent} />{percent}%</>}</p>
                                                                         </Form.Group>
                                                                     :<></>}
-                                                                    {boardingImages.length > 0 ?
-                                                                        boardingImages.map((boardingImage, index) => (
-                                                                            <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(boardingImage)}>
-                                                                                <Image src={boardingImage} width={100} height={100} style={{cursor:'auto'}}/>
+                                                                    {boardingPreviewImages.length > 0 ?
+                                                                        boardingPreviewImages.map((boardingPreviewImage, index) => (
+                                                                            <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(boardingPreviewImage)}>
+                                                                                <Image src={boardingPreviewImage} width={100} height={100} style={{cursor:'auto'}}/>
                                                                             </Badge>
                                                                         ))
                                                                     :<></>}
@@ -622,12 +674,13 @@ const RegisterBoardingPage = () => {
                                                                     <Form.Group controlId="formFile" className="mb-0">
                                                                         <Form.Label className={`${CreateBoardingStyles.addImgLabel}`}><AddPhotoAlternate/> Add a photo</Form.Label>
                                                                         <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
+                                                                        <p>{percent=='101' ? '' : <><LinearProgress variant="determinate" value={percent} />{percent}%</>}</p>
                                                                     </Form.Group>
                                                                 :<></>}
-                                                                {boardingImages.length > 0 ?
-                                                                    boardingImages.map((boardingImage,index) => (
-                                                                        <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(boardingImage)}>
-                                                                            <Image src={boardingImage} width={100} height={100} style={{cursor:'auto'}}/>
+                                                                {boardingPreviewImages.length > 0 ?
+                                                                    boardingPreviewImages.map((boardingPreviewImage,index) => (
+                                                                        <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(boardingPreviewImage)}>
+                                                                            <Image src={boardingPreviewImage} width={100} height={100} style={{cursor:'auto'}}/>
                                                                         </Badge>
                                                                     ))
                                                                 :<></>}

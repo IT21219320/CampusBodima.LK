@@ -11,6 +11,8 @@ import { toast } from 'react-toastify';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 import { ImageToBase64 } from "../utils/ImageToBase64";
+import storage from "../utils/firebaseConfig";
+import { ref, uploadBytesResumable } from "firebase/storage";
 
 import Sidebar from '../components/sideBar';
 
@@ -31,6 +33,7 @@ const AddBoardingRoomPage = () => {
     const [keyMoney, setKeyMoney] = useState(0);
     const [description, setDescription] = useState('');
     const [roomImages, setRoomImages] = useState([]);
+    const [roomPreviewImages, setRoomPreviewImages] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);        
     const [backDropOpen, setBackDropOpen] = useState(false);  
 
@@ -49,15 +52,27 @@ const AddBoardingRoomPage = () => {
     const previewImage = async(e) => {
         const data = await ImageToBase64(e.target.files[0]);
 
-        setRoomImages([...roomImages,data]);
-
-        console.log(roomImages);
+        setRoomImages([...roomImages,e.target.files[0]]);
+        setRoomPreviewImages([...roomPreviewImages,data]);
     }
-
+    
     const removeImage = (imageToRemove) => {
-        const updatedImages = roomImages.filter((image) => image !== imageToRemove);
-      
-        setRoomImages(updatedImages);
+        // Find the index of the item to remove in roomImages
+        const indexToRemove = roomPreviewImages.indexOf(imageToRemove);
+
+        if (indexToRemove !== -1) {
+            // Create a copy of the arrays with the item removed
+            const updatedPreviewImages = [...roomPreviewImages];
+            const updatedImages = [...roomImages];
+
+            updatedPreviewImages.splice(indexToRemove, 1);
+            updatedImages.splice(indexToRemove, 1);
+
+            // Update the state with the updated arrays
+            setRoomPreviewImages(updatedPreviewImages);
+            setRoomImages(updatedImages);
+        }
+        
     };
 
     const sliderValueText = (value) => {
@@ -78,6 +93,35 @@ const AddBoardingRoomPage = () => {
             setBackDropOpen(true);
                 try {
                     
+                    const uploadPromises = roomImages.map(async (roomImage) => {
+                        const file = roomImage;
+                        try {
+                            const timestamp = new Date().getTime();
+                            const random = Math.floor(Math.random() * 1000) + 1;
+                            const uniqueName = `${timestamp}_${random}.${file.name.split('.').pop()}`;
+                        
+                            const storageRef = ref(storage, `${uniqueName}`);
+                            const uploadTask = uploadBytesResumable(storageRef, file);
+    
+                            await uploadTask;
+                            
+                            return uniqueName;                  
+                
+                        } catch (error) {
+                            console.error('Error uploading and retrieving image:', error);
+                            return null; // Handle the error as needed
+                        }
+                    });
+    
+                    // Wait for all uploads to complete
+                    const uploadedImageNames = await Promise.all(uploadPromises);
+    
+                    // Filter out any null values from failed uploads
+                    const validImageNames = uploadedImageNames.filter((name) => name !== null);
+    
+                    console.log(validImageNames) // use this when inserting image
+
+
                 } catch (err) {
                     setBackDropOpen(false);
                     toast.error(err.data?.message || err.error || err);
