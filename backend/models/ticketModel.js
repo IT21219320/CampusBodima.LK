@@ -48,4 +48,10 @@ const ticketSchema = mongoose.Schema({
 
 const Ticket = mongoose.model('Ticket',ticketSchema);
 
+ticketSchema.add({
+    reply: {
+        type: [Ticket.schema], // Reference to itself for handling replies
+    },
+});
+
 export default Ticket;
