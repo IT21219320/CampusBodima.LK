@@ -1,15 +1,8 @@
 .card{
     box-shadow: 5px 5px 10px #0000002b !important;
-    margin-top: 22px;
-     
-   
+    margin-top: 22px;  
 }
 
-.newTicket{
-   
-    margin-top: 16px !important;
-   
-}
 
 #newTicket{
     color:rgb(41, 60, 210)

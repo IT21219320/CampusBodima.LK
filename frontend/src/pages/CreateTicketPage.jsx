@@ -56,7 +56,7 @@ const CreateTicket = () => {
                 const res = await createTicket({ senderId:occupantId, subject, category, subCategory ,description }).unwrap();
                 
                 toast.success("successful");
-                navigate('/');  //should navigate to mytickets 
+                navigate('/occupant/ticket');  //should navigate to mytickets 
             } catch (err) {
                 toast.error(err?.data?.message || err.error);
             }
@@ -86,13 +86,13 @@ const CreateTicket = () => {
                             <Row>
                                 <Col>
                                     <Card variant="outlined" className={CreateTicketStyles.card}>
-                                        <CardContent>
-                                            <h4>Create Tickets</h4>
+                                        <CardContent style={{padding:'18px'}}>
+                                            <h4 style={{margin:0}}>Create Tickets</h4>
                                         </CardContent>
                                     </Card>
                                 </Col>
                             </Row>
-                            <Row className={CreateTicketStyles.newTicket}>
+                            <Row>
                                 <Col>
                                     <Card variant="outlined" className={CreateTicketStyles.card}>
                                         <CardContent>
@@ -113,7 +113,7 @@ const CreateTicket = () => {
 
                                                 <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
                                                     <Col lg={3} xs={6}><label htmlFor="subject" className={CreateTicketStyles.lbl}>Subject<span className={CreateTicketStyles.require}><b>*</b></span></label></Col>
-                                                    <Col lg={9} xs={6} className='mt-3'><input type="text" placeholder="Enter Subject" value={subject} id={CreateTicketStyles.subject} onChange={ (e) => setSubject(e.target.value)} required/></Col>
+                                                    <Col lg={9} xs={6} className='mt-3'><input type="text" placeholder="Enter Subject" value={subject} id={CreateTicketStyles.subject} onChange={ (e) => setSubject(e.target.value.toUpperCase())} required/></Col>
                                                 </Row>
                                                 <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
                                                     <Col lg={3} xs={6}><label htmlFor="category" className={CreateTicketStyles.lbl}>Category<span className={CreateTicketStyles.require}><b>*</b></span></label></Col>
@@ -121,7 +121,7 @@ const CreateTicket = () => {
                                                         <FormControl sx={{ m:0, minWidth: 120 }} size="small"> 
                                                             <Select value={category} onChange={changeCategory} required  >
                                                                 <MenuItem value="boarding">Boarding Issue</MenuItem>
-                                                                <MenuItem value="food">Food Issues</MenuItem>
+                                                                <MenuItem value="food">Food Issue</MenuItem>
                                                             </Select>
                                                         </FormControl>
                                                         <br/>
@@ -135,7 +135,7 @@ const CreateTicket = () => {
                                                         <FormControl sx={{ mt:1, ml:3, minWidth: 120 }} size="small" id="foodSub" style={{display:'none'}}>
                                                             <Select value={subCategory} onChange={(e) => setSubCategory(e.target.value)} required  >
                                                                 <MenuItem value="payments">Payment Issues</MenuItem>
-                                                                <MenuItem value="refunds">Quality Control</MenuItem>
+                                                                <MenuItem value="quality">Quality Control</MenuItem>
                                                                 <MenuItem value="other">Other</MenuItem>
                                                             </Select>
                                                         </FormControl>
@@ -143,9 +143,11 @@ const CreateTicket = () => {
                                                 </Row>
                                                 <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
                                                     <Col lg={3} xs={6}><label htmlFor="description" className={CreateTicketStyles.lbl}>Description<span className={CreateTicketStyles.require}><b>*</b></span></label></Col>
-                                                    <Col><FloatingLabel controlId="floatingTextarea2" label="Description">
-                                                        <Form.Control as="textarea" placeholder="Add Description" style={{ height: '100px' }} value={description}  onChange={ (e) => setDescription(e.target.value)} required/>
-                                                        </FloatingLabel></Col>
+                                                    <Col>
+                                                        {/*<FloatingLabel controlId="floatingTextarea2" label="Description">
+                                                            <Form.Control as="textarea" placeholder="Add Description" style={{ height: '100px' }} value={description}  onChange={ (e) => setDescription(e.target.value)} required/>
+                                                        </FloatingLabel>*/}
+                                                    </Col>
                                                 </Row>
                                             </Row>
                                                 <LoadingButton type="submit" loading={isLoading} className='mt-4 mb-4 me-4'  style={{float:'right'}} variant="contained">
@@ -171,5 +173,3 @@ const CreateTicket = () => {
 
 
 export default CreateTicket;
-
-

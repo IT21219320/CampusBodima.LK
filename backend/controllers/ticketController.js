@@ -21,7 +21,7 @@ const createTicket = asyncHandler(async (req,res) =>{
 
     const boarding = await Boarding.findOne({_id: reservation.boardingId});
 
-
+    console.log(boarding);
     const owner = await User.findById(boarding.owner);
 
     const largestTicketNo = await Ticket.findOne({}, { ticketId: 1}).sort({ticketId: -1});
@@ -70,11 +70,8 @@ const getUserTickets = asyncHandler(async (req,res) => {
     const skip = (page - 1) * pageSize;
 
     try{
-         const tickets = await Ticket.find({
-             $or: [{senderId: id},{recieverId: id}],
-            })
-
-             .skip(skip)
+         const tickets = await Ticket.find({'senderId._id': id})
+            .skip(skip)
             .limit(pageSize);
 
         if(tickets){
@@ -85,7 +82,7 @@ const getUserTickets = asyncHandler(async (req,res) => {
             throw new Error('No tickets');
         } 
     }catch(err){
-        res.status(500).json({err:'error'});
+        res.status(500).json({err});
     }
 });
 
