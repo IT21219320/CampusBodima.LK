@@ -75,6 +75,8 @@ const router = createBrowserRouter(
           <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
 
           <Route path='/occupant/order/' element={<OrderList />} />
+
+          {/*<Route path='/occupant/payment/' element={} />*/}
         </Route>
       </Route>
 

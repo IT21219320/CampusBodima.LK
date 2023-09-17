@@ -232,6 +232,9 @@ const RegisterBoardingPage = () => {
         else if(boardingType == 'Annex' && noOfAttachBaths == '0' && noOfCommonBaths == '0'){
             toast.error("You should have atleast 1 bathroom")
         }
+        else if(boardingType == 'Annex' && parseInt(rent) <= 0){
+            toast.error("Please enter a valid rent amount")
+        }
         else{
             setBackDropOpen(true);
             

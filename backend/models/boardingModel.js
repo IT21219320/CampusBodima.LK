@@ -77,6 +77,11 @@ const boardingSchema = mongoose.Schema({
         type: String,
         required: true,
         default: 'Pending'
+    },
+    visibility:{
+        type: Boolean,
+        required: true,
+        default: false
     }
 }, {
     timestamps: true

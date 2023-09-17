@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { Form, Container, Row, Col, Image, InputGroup } from 'react-bootstrap';
-import { Breadcrumbs, Typography, Fade, Card, CardContent, Button, Link, CircularProgress, Box, Tooltip, Checkbox, FormControlLabel, ToggleButton, ToggleButtonGroup, Collapse, IconButton, Alert, Badge, Slider, Modal, Backdrop } from "@mui/material";
-import { MuiOtpInput } from 'mui-one-time-password-input'
-import { NavigateNext, HelpOutlineRounded, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
+import { Breadcrumbs, Typography, Fade, Card, CardContent, Button, Link, CircularProgress, Tooltip, Collapse, IconButton, Alert, Badge, Slider, Backdrop } from "@mui/material";
+import { NavigateNext, HelpOutlineRounded, Close, AddPhotoAlternate } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-import { setUserInfo } from "../slices/authSlice";
 import { useAddRoomMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
-import LoadingButton from '@mui/lab/LoadingButton';
 
 import { ImageToBase64 } from "../utils/ImageToBase64";
 import storage from "../utils/firebaseConfig";
@@ -26,7 +23,8 @@ const AddBoardingRoomPage = () => {
     
     const [noticeStatus, setNoticeStatus] = useState(true);
     const [viewUserInfo, setViewUserInfo] = useState();
-    const [noOfRooms, setNoOfRooms] = useState(1);
+    const [roomID, setRoomID] = useState('');
+    const [noOfBeds, setNoOfBeds] = useState(1);
     const [noOfCommonBaths, setNoOfCommonBaths] = useState(0);
     const [noOfAttachBaths, setNoOfAttachBaths] = useState(0);
     const [rent, setRent] = useState('');
@@ -34,7 +32,6 @@ const AddBoardingRoomPage = () => {
     const [description, setDescription] = useState('');
     const [roomImages, setRoomImages] = useState([]);
     const [roomPreviewImages, setRoomPreviewImages] = useState([]);
-    const [modalOpen, setModalOpen] = useState(false);        
     const [backDropOpen, setBackDropOpen] = useState(false);  
 
     const [addRoom, {isLoading}] = useAddRoomMutation();
@@ -86,46 +83,65 @@ const AddBoardingRoomPage = () => {
 
     const submitHandler = async(e) => {
         e.preventDefault();
-        if(boardingImages.length < 1){
+    
+        if(parseInt(rent) <= 0){
+            toast.error("Please enter a valid rent amount")
+        }
+        else if(noOfAttachBaths == '0' && noOfCommonBaths == '0'){
+            toast.error("You should have atleast 1 bathroom")
+        }
+        else if(roomImages.length < 1){
             toast.error('Please add atleast 1 image to proceed');
         }
         else{
             setBackDropOpen(true);
+            const uploadPromises = roomImages.map(async (roomImage) => {
+                const file = roomImage;
                 try {
-                    
-                    const uploadPromises = roomImages.map(async (roomImage) => {
-                        const file = roomImage;
-                        try {
-                            const timestamp = new Date().getTime();
-                            const random = Math.floor(Math.random() * 1000) + 1;
-                            const uniqueName = `${timestamp}_${random}.${file.name.split('.').pop()}`;
-                        
-                            const storageRef = ref(storage, `${uniqueName}`);
-                            const uploadTask = uploadBytesResumable(storageRef, file);
-    
-                            await uploadTask;
-                            
-                            return uniqueName;                  
+                    const timestamp = new Date().getTime();
+                    const random = Math.floor(Math.random() * 1000) + 1;
+                    const uniqueName = `${timestamp}_${random}.${file.name.split('.').pop()}`;
                 
-                        } catch (error) {
-                            console.error('Error uploading and retrieving image:', error);
-                            return null; // Handle the error as needed
-                        }
-                    });
-    
-                    // Wait for all uploads to complete
-                    const uploadedImageNames = await Promise.all(uploadPromises);
-    
-                    // Filter out any null values from failed uploads
-                    const validImageNames = uploadedImageNames.filter((name) => name !== null);
-    
-                    console.log(validImageNames) // use this when inserting image
+                    const storageRef = ref(storage, `${uniqueName}`);
+                    const uploadTask = uploadBytesResumable(storageRef, file);
 
-
-                } catch (err) {
-                    setBackDropOpen(false);
-                    toast.error(err.data?.message || err.error || err);
+                    await uploadTask;
+                    
+                    return uniqueName;                  
+        
+                } catch (error) {
+                    console.error('Error uploading and retrieving image:', error);
+                    return null; // Handle the error as needed
                 }
+            });
+
+            // Wait for all uploads to complete
+            const uploadedImageNames = await Promise.all(uploadPromises);
+
+            // Filter out any null values from failed uploads
+            const validImageNames = uploadedImageNames.filter((name) => name !== null);
+            
+            try {
+                
+
+                const res = await addRoom({ roomNo:roomID, boardingId, roomImages:validImageNames, noOfBeds, noOfCommonBaths, noOfAttachBaths, rent, keyMoney, description });
+
+                if(res.error){
+                    toast.error(res.error.data.message);
+                    setBackDropOpen(false);
+                }
+                else{
+                    
+                    toast.success("Room added successfully!")
+                    navigate(`/owner/boardings/${boardingId}/rooms`)
+
+                }
+
+            } catch (err) {
+                setBackDropOpen(false);
+                console.log(err);
+                toast.error(err.data?.message || err.error || err);
+            }
         }
     }
 
@@ -186,180 +202,63 @@ const AddBoardingRoomPage = () => {
                                                             </Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="Boarding Name" value={boardingName} onChange={ (e) => setBoardingName(e.target.value)} required style={{width:'95%'}}/>
+                                                            <Form.Control type="text" placeholder="Boarding Name" value={boardingName} readOnly style={{width:'95%'}}/>
                                                         </Col>
                                                     </Row>
-                                                    <Row style={{marginTop:'10px'}}>
+                                                    <Row style={{marginTop:'15px'}}>
                                                         <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Address<span style={{color:'red'}}>*</span> </Form.Label>
+                                                            <Form.Label style={{margin:0}}>Room No<span style={{color:'red'}}>*</span> </Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="143/A, New Kandy Rd, Malabe" value={''} onChange={ (e) => setAddress(e.target.value)} required style={{width:'95%'}}/>
+                                                            <Form.Control type="number" placeholder="1" min={1} value={roomID} onChange={ (e) => setRoomID(e.target.value)} required style={{width:'95%'}}/>
                                                         </Col>
                                                     </Row>
-                                                    <Row style={{marginTop:'10px'}}>
+                                                    <Row style={{marginTop:'15px'}}>
                                                         <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>City<span style={{color:'red'}}>*</span></Form.Label>
-                                                            <Tooltip title="Select location from map to set the city" placement="top" arrow>
-                                                                <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
-                                                            </Tooltip>
+                                                            <Form.Label style={{margin:0}}>Monthly Rent<span style={{color:'red'}}>*</span></Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="Malabe" value={'city'} onChange={ (e) => setCity(e.target.value)} readOnly required style={{width:'95%'}}/>
+                                                            <InputGroup style={{width:'95%'}}>
+                                                                <InputGroup.Text>Rs.</InputGroup.Text>
+                                                                <Form.Control aria-label="Amount (to the nearest Rupee)" placeholder="10000" type="number" min={0} value={rent} onChange={(e) => setRent(e.target.value.replace('.', ''))} required />
+                                                                <InputGroup.Text>.00</InputGroup.Text>
+                                                            </InputGroup>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row style={{marginTop:'15px'}}>
+                                                        <Col style={{height:'100%'}} xs={12} md={4}>
+                                                            <Form.Label style={{margin:0}}>Key Money</Form.Label>
+                                                        </Col>
+                                                        <Col style={{height:'100%'}} xs={12} md={8}>
+                                                            <InputGroup style={{width:'95%'}}>
+                                                                <Form.Control type="number" min={0} value={keyMoney} onChange={(e) => setKeyMoney(e.target.value)} required />
+                                                                <InputGroup.Text>Month{keyMoney>1 ? 's' : ''}</InputGroup.Text>
+                                                            </InputGroup>
                                                         </Col>
                                                     </Row>
                                                 </Col>
                                                 <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
-                                                    <Row style={{marginTop:'20px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Utility Bills<span style={{color:'red'}}>*</span></Form.Label>
-                                                            <Tooltip title="Are you charging for any utility bills such as water or electricity seperately?" placement="top" arrow>
-                                                                <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
-                                                            </Tooltip>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Row>
-                                                                <Col>
-                                                                    <ToggleButtonGroup
-                                                                        color={'utilityBills'==="Yes" ? "success" : "error"}
-                                                                        value={'utilityBills'}
-                                                                        exclusive
-                                                                        onChange={(e) => setUtilityBills(e.target.value)}
-                                                                        required
-                                                                    >
-                                                                        <ToggleButton value="Yes" >Yes</ToggleButton>
-                                                                        <ToggleButton value="No" >No</ToggleButton>
-                                                                    </ToggleButtonGroup>
-                                                                </Col>
-                                                            </Row>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{marginTop:'20px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Food<span style={{color:'red'}}>*</span></Form.Label>
-                                                            <Tooltip title="Are you providing food for the occupants? *Select YES only if you are charging Seperately" placement="top" arrow>
-                                                                <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
-                                                            </Tooltip>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Row>
-                                                                <Col>
-                                                                    <ToggleButtonGroup
-                                                                        color={'food'==="Yes" ? "success" : "error"}
-                                                                        value={'food'}
-                                                                        exclusive
-                                                                        onChange={(e) => setFood(e.target.value)}
-                                                                        required
-                                                                    >
-                                                                        <ToggleButton value="Yes" >Yes</ToggleButton>
-                                                                        <ToggleButton value="No" >No</ToggleButton>
-                                                                    </ToggleButtonGroup>
-                                                                </Col>
-                                                            </Row>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{marginTop:'20px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Gender<span style={{color:'red'}}>*</span></Form.Label>
-                                                            <Tooltip title="Is the boarding place for Males, Females, or anyone?" placement="top" arrow>
-                                                                <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
-                                                            </Tooltip>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Row>
-                                                                <Col>
-                                                                    <ToggleButtonGroup
-                                                                        color="primary"
-                                                                        value={'gender'}
-                                                                        exclusive
-                                                                        onChange={(e) => setGender(e.target.value)}
-                                                                        required
-                                                                    >
-                                                                        <ToggleButton value="Male" >Male</ToggleButton>
-                                                                        <ToggleButton value="Female" >Female</ToggleButton>
-                                                                        <ToggleButton value="Any" >Any</ToggleButton>
-                                                                    </ToggleButtonGroup>
-                                                                </Col>
-                                                            </Row>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{marginTop:'20px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Boarding Type<span style={{color:'red'}}>*</span></Form.Label>
-                                                            <Tooltip title="Select Annex if your are going to rent out the whole building/floor or select Hostel if you are going to rent out room by room" placement="top" arrow>
-                                                                <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
-                                                            </Tooltip>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Row>
-                                                                <Col>
-                                                                    <ToggleButtonGroup
-                                                                        color="primary"
-                                                                        value={'boardingType'}
-                                                                        exclusive
-                                                                        required
-                                                                    >
-                                                                        <ToggleButton value="Annex" >Annex</ToggleButton>
-                                                                        <ToggleButton value="Hostel" >Hostel</ToggleButton>
-                                                                    </ToggleButtonGroup>
-                                                                </Col>
-                                                            </Row>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{marginTop:'20px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Boarding Images<span style={{color:'red'}}>*</span></Form.Label>
-                                                            <Tooltip title="Add a few photos of the *outside* of the boarding." placement="top" arrow>
-                                                                <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
-                                                            </Tooltip>
-                                                            <p>({roomImages.length}/2)</p>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Row>
-                                                                <Col>
-                                                                    {roomImages.length < 2 ?
-                                                                        <Form.Group controlId="formFile" className="mb-0">
-                                                                            <Form.Label className={`${CreateBoardingStyles.addImgLabel}`}><AddPhotoAlternate/> Add a photo</Form.Label>
-                                                                            <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
-                                                                        </Form.Group>
-                                                                    :<></>}
-                                                                    {roomImages.length > 0 ?
-                                                                        roomImages.map((roomImage, index) => (
-                                                                            <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(boardingImage)}>
-                                                                                <Image src={roomImage} width={100} height={100} style={{cursor:'auto'}}/>
-                                                                            </Badge>
-                                                                        ))
-                                                                    :<></>}
-                                                                </Col>
-                                                            </Row>
-                                                        </Col>
-                                                    </Row>
-                                                </Col>
-                                            </Row>
-                                            <hr />
-                                            <Row style={{marginTop:'20px'}}>
-                                                <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
-                                                    <Row style={{marginBottom:'5px'}}>
+                                                    <Row>
                                                         <Col style={{height:'100%'}} xs={12} md={4}>
                                                             <Form.Label style={{margin:0}}>
-                                                                Rooms 
+                                                                Beds 
                                                             </Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
                                                             <Slider 
-                                                                value={noOfRooms=='10+' ? 11 : noOfRooms} 
-                                                                valueLabelDisplay={noOfRooms > 1 ? 'on' : "auto"} 
+                                                                value={noOfBeds=='10+' ? 11 : noOfBeds} 
+                                                                valueLabelDisplay={noOfBeds > 1 ? 'on' : "auto"} 
                                                                 step={1} 
                                                                 min={1} 
                                                                 max={11} 
                                                                 marks={roomMarks}
                                                                 style={{width:'95%'}}
                                                                 valueLabelFormat={sliderValueText} 
-                                                                onChange={(e) => { e.target.value < 11 ? setNoOfRooms(e.target.value) : setNoOfRooms('10+')}}
+                                                                onChange={(e) => { e.target.value < 11 ? setNoOfBeds(e.target.value) : setNoOfBeds('10+')}}
                                                             />
                                                         </Col>
                                                     </Row>
-                                                    <Row style={{marginBottom:'5px'}}>
+                                                    <Row  style={{marginTop:'20px'}}>
                                                         <Col style={{height:'100%'}} xs={12} md={4}>
                                                             <Form.Label style={{margin:0}}>
                                                                 Attached Bathrooms 
@@ -380,7 +279,7 @@ const AddBoardingRoomPage = () => {
                                                             />
                                                         </Col>
                                                     </Row>
-                                                    <Row>
+                                                    <Row style={{marginTop:'20px'}}>
                                                         <Col style={{height:'100%'}} xs={12} md={4}>
                                                             <Form.Label style={{margin:0}}>
                                                                 Common Bathrooms 
@@ -402,46 +301,22 @@ const AddBoardingRoomPage = () => {
                                                         </Col>
                                                     </Row>
                                                 </Col>
-                                                <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
-                                                    <Row style={{marginTop:'10px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Monthly Rent<span style={{color:'red'}}>*</span></Form.Label>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <InputGroup style={{width:'95%'}}>
-                                                                <InputGroup.Text>Rs.</InputGroup.Text>
-                                                                <Form.Control aria-label="Amount (to the nearest Rupee)" placeholder="10000" type="number" min={0} value={rent} onChange={(e) => setRent(e.target.value.replace('.', ''))} required />
-                                                                <InputGroup.Text>.00</InputGroup.Text>
-                                                            </InputGroup>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{marginTop:'10px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Key Money</Form.Label>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <InputGroup style={{width:'95%'}}>
-                                                                <Form.Control type="number" min={0} value={keyMoney} onChange={(e) => setKeyMoney(e.target.value)} required />
-                                                                <InputGroup.Text>Month{keyMoney>1 ? 's' : ''}</InputGroup.Text>
-                                                            </InputGroup>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{marginTop:'10px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Description<span style={{color:'red'}}>*</span></Form.Label>
-                                                            <p>{description.length}/5000</p>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <InputGroup style={{width:'95%'}}>
-                                                                <Form.Control as="textarea" rows={3} maxLength={5000} value={description} onChange={(e) => setDescription(e.target.value)} required />
-                                                            </InputGroup>
-                                                        </Col>
-                                                    </Row>
+                                            </Row>
+                                            <Row style={{marginTop:'10px'}}>
+                                                <Col style={{height:'100%'}} xs={12} md={2}>
+                                                    <Form.Label style={{margin:0}}>Description<span style={{color:'red'}}>*</span></Form.Label>
+                                                    <p>{description.length}/5000</p>
+                                                </Col>
+                                                <Col style={{height:'100%'}} xs={12} md={10}>
+                                                    <InputGroup style={{width:'98%'}}>
+                                                        <Form.Control as="textarea" rows={3} maxLength={5000} value={description} onChange={(e) => setDescription(e.target.value)} required />
+                                                    </InputGroup>
                                                 </Col>
                                             </Row>
+                                            <hr />
                                             <Row style={{marginTop:'20px'}}>
                                                 <Col style={{height:'100%'}} xs={12} md={4} lg={2}>
-                                                    <Form.Label style={{margin:0}}>Boarding Images<span style={{color:'red'}}>*</span></Form.Label>
+                                                    <Form.Label style={{margin:0}}>Room Images<span style={{color:'red'}}>*</span></Form.Label>
                                                     <Tooltip title="Add up to a maximum of 5 photos of the Annex." placement="top" arrow>
                                                         <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
                                                     </Tooltip>
@@ -450,16 +325,16 @@ const AddBoardingRoomPage = () => {
                                                 <Col style={{height:'100%'}} xs={12} md={8} lg={10}>
                                                     <Row>
                                                         <Col>
-                                                            {roomImages.length < 5 ?
+                                                            {roomPreviewImages.length < 5 ?
                                                                 <Form.Group controlId="formFile" className="mb-0">
                                                                     <Form.Label className={`${CreateBoardingStyles.addImgLabel}`}><AddPhotoAlternate/> Add a photo</Form.Label>
                                                                     <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
                                                                 </Form.Group>
                                                             :<></>}
-                                                            {roomImages.length > 0 ?
-                                                                roomImages.map((roomImage,index) => (
-                                                                    <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(boardingImage)}>
-                                                                        <Image src={roomImage} width={100} height={100} style={{cursor:'auto'}}/>
+                                                            {roomPreviewImages.length > 0 ?
+                                                                roomPreviewImages.map((roomPreviewImage,index) => (
+                                                                    <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(roomPreviewImage)}>
+                                                                        <Image src={roomPreviewImage} width={100} height={100} style={{cursor:'auto'}}/>
                                                                     </Badge>
                                                                 ))
                                                             :<></>}
@@ -469,7 +344,7 @@ const AddBoardingRoomPage = () => {
                                             </Row>
                                             <Row style={{marginTop:'40px'}}>
                                                 <Col>
-                                                    <Button type="submit" className={CreateBoardingStyles.submitBtn} variant="contained">Register Boarding</Button>
+                                                    <Button type="submit" className={CreateBoardingStyles.submitBtn} variant="contained">Finish</Button>
                                                     <Backdrop
                                                         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                                                         open={backDropOpen}
