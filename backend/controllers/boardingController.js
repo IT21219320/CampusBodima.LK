@@ -109,8 +109,15 @@ const addRoom = asyncHandler(async (req, res) => {
         description
     } = req.body;
 
-    var roomExists = await Boarding.findOne({ boardingId, roomNo });
+    var boardingExists = await Boarding.findOne({ _id:boardingId });
     
+    if(!boardingExists){
+        res.status(400);
+        throw new Error('Boarding Not Found!');
+    }
+
+    var roomExists = await Room.findOne({ boardingId, roomNo });
+
     if(roomExists){
         res.status(400);
         throw new Error('Room Already Exists');
@@ -125,13 +132,15 @@ const addRoom = asyncHandler(async (req, res) => {
         noOfAttachBaths, 
         keyMoney,
         rent,
-        description,
-        status
+        description
     });
 
     const updatedBoarding = await Boarding.findOneAndUpdate(
         { _id: boardingId },
-        { $push: { room: room._id } },
+        { 
+            $push: { room: room._id },
+            $set: { status: 'PendingApproval' }
+        },
         { new: true }
     ).populate('room').populate('owner');
 
@@ -147,11 +156,12 @@ const addRoom = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all Boardings of particular owner
-// route    GET /api/boardings/owner/:ownerId/:page
+// route    GET /api/boardings/owner/:ownerId/:page/:status
 // @access  Private - Owner
 const getOwnerBoardings = asyncHandler(async (req, res) => {
     const ownerId = req.params.ownerId;
     const page = req.params.page || 1;
+    const status = req.params.status;
     const pageSize = 5;
 
     const skipCount = (page - 1) * pageSize;
@@ -159,7 +169,7 @@ const getOwnerBoardings = asyncHandler(async (req, res) => {
     var totalPages = await Boarding.countDocuments({owner:ownerId});
     totalPages = Math.ceil(parseInt(totalPages)/pageSize);
 
-    const boardings = await Boarding.find({owner:ownerId}).populate(['room','owner']).skip(skipCount).limit(pageSize);
+    const boardings = await Boarding.find({owner:ownerId, status}).populate(['room','owner']).skip(skipCount).limit(pageSize);
     
     if(boardings){
         res.status(200).json({
@@ -172,6 +182,8 @@ const getOwnerBoardings = asyncHandler(async (req, res) => {
         throw new Error("No Boardings Available")
     }
 });
+
+
 
 // @desc    Get all Boardings of particular owner
 // route    GET /api/boardings/occupant/:occupantId

@@ -10,10 +10,10 @@
     box-shadow: 1px 2px 10px 0px rgb(0 0 0 / 25%) !important;
 }
 
-.card:active{
+/*.card:active{
     box-shadow: 1px 2px 10px 0px rgb(0 0 0 / 15%) !important;
     transform: scale(.997);
-}
+}*/
 
 .cardContent{
     display: flex;
@@ -43,3 +43,59 @@
 .addBtn:active{
     transform: scale(.98);
 }
+
+.pendingApproval {
+    position: relative;
+    filter: grayscale(1); /* Grayscale effect */
+    opacity: 0.8; /* Reduced opacity */
+  }
+  
+  /* Style for the watermark text */
+.pendingApproval::before {
+    content: "Pending Approval"; /* Text content */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the text */
+    font-size: 24px; /* Adjust font size */
+    color: rgba(255, 0, 0, 0.7); /* Text color and opacity */
+    z-index: 1; /* Place text above the content */
+}
+
+.ctrls{
+    height: fit-content;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: 2px 2px 9px 0px rgba(0, 0, 0, 0.25);
+    margin-left: 10px;
+}
+
+.ctrls:hover{
+    box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.25);
+}
+  
+.ctrls:active{
+    transform: scale(.98);
+}
+
+.edtBtn{
+    color: #3366ff;
+    padding: 0 5px 4px 6px;
+}
+
+.deleteBtn{
+    color: #f73b54;
+    padding: 0 5px 4px 5px;
+}
+
+.paras{
+    font-size: large;
+    color: dimgray;
+    margin-bottom: 0.5em;
+}
+  
+.facilities::before{
+    content: '\2713';
+    margin-right: 5px;
+}
+  

@@ -3,15 +3,14 @@ import mongoose from 'mongoose';
 const roomSchema = mongoose.Schema({
     roomNo: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     boardingId: {
         type: String, 
         required: true,
     },
     roomImages: {
-        type: String
+        type: [String]
     },
     noOfBeds: {
         type: String, 
@@ -42,6 +41,11 @@ const roomSchema = mongoose.Schema({
         type: String,
         required: true,
         default: 'PendingApproval'
+    },
+    visibility:{
+        type: Boolean,
+        required: true,
+        default: false
     }
 }, {
     timestamps: true

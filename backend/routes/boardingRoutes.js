@@ -7,5 +7,6 @@ router.post('/register', registerBoarding);
 router.post('/addroom', addRoom);
 router.get('/owner/:ownerId/:page', getOwnerBoardings);
 router.get('/occupant/:occupantId', getOccupantBoarding);
+router.put('/updateVi')
 
 export default router;
