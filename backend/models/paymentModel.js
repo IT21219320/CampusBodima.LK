@@ -27,9 +27,9 @@ const paymentSchema = mongoose.Schema({
         ref: 'User'
     },
     date : {
-        type: date,
-
+        type: String,
     }
+    
     
 }, {
     timestamps: true
