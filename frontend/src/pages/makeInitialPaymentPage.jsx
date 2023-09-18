@@ -19,7 +19,7 @@ function MakeInitialPaymentPage() {
   
   useEffect(() => {
 
-    fetch("api/payments/config")
+    fetch("/api/payments/config")
       .then(async (r) => {
         const { publishableKey } = await r.json();
         setStripePromise(loadStripe(publishableKey));
@@ -28,7 +28,7 @@ function MakeInitialPaymentPage() {
 
     const id = userInfo._id
     const reqData = {userID: id}
-    fetch("api/payments/create-payment-intent", {
+    fetch("/api/payments/create-payment-intent", {
       method:"POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,45 +42,47 @@ function MakeInitialPaymentPage() {
 
   return (
     <>
-    <div className={paymentScreenStyles.stepperDiv}>
-      <Stepper activeStep={activeStep}>
-          <Step>
-            <StepLabel>Reservation</StepLabel>
-          </Step>
-          <Step>
-            <StepLabel>User Details</StepLabel>
-          </Step>
-          <Step>
-            <StepLabel>Payment</StepLabel>
-          </Step>
-          <Step>
-            <StepLabel>Confirm Reservation</StepLabel>
-          </Step>
-      </Stepper>
-    </div>
-      <div className={paymentScreenStyles.card}>
-        <Row>
-          <Col className={paymentScreenStyles.card40}>
-            <h3 className={paymentScreenStyles.h3PaymentTopic}>Payment Summery</h3>
-            <hr style={{color:"white", borderWidth: "2px"}}></hr>
-            <h5 className={paymentScreenStyles.h5Text}>Room Number</h5>
-            <hr style={{color:"white", borderWidth: "2px"}}></hr>
-            <h5 className={paymentScreenStyles.h5Text}>Additional options</h5>
-            <hr style={{color:"white", borderWidth: "2px"}}></hr>
-            <h5 className={paymentScreenStyles.h5Text}>Initial Payment</h5>
-            
-          </Col>
-          <Col>
-          <h3 className={paymentScreenStyles.h3Topic}>Enter card details</h3>
-          <div className={paymentScreenStyles.paymentForm}>
-              {clientSecret && stripePromise && (
-                <Elements stripe={stripePromise} options={{ clientSecret }}>
-                  <CheckoutForm />
-                </Elements>
-              )}
-            </div>
-          </Col>
-      </Row>
+      <div style={{width:'100%'}}>
+        <div className={paymentScreenStyles.stepperDiv}>
+          <Stepper activeStep={activeStep}>
+              <Step>
+                <StepLabel>Reservation</StepLabel>
+              </Step>
+              <Step>
+                <StepLabel>User Details</StepLabel>
+              </Step>
+              <Step>
+                <StepLabel>Payment</StepLabel>
+              </Step>
+              <Step>
+                <StepLabel>Confirm Reservation</StepLabel>
+              </Step>
+          </Stepper>
+        </div>
+        <div className={paymentScreenStyles.card}>
+          <Row>
+            <Col className={paymentScreenStyles.card40}>
+              <h3 className={paymentScreenStyles.h3PaymentTopic}>Payment Summery</h3>
+              <hr style={{color:"white", borderWidth: "2px"}}></hr>
+              <h5 className={paymentScreenStyles.h5Text}>Room Number</h5>
+              <hr style={{color:"white", borderWidth: "2px"}}></hr>
+              <h5 className={paymentScreenStyles.h5Text}>Additional options</h5>
+              <hr style={{color:"white", borderWidth: "2px"}}></hr>
+              <h5 className={paymentScreenStyles.h5Text}>Initial Payment</h5>
+              
+            </Col>
+            <Col>
+            <h3 className={paymentScreenStyles.h3Topic}>Enter card details</h3>
+            <div className={paymentScreenStyles.paymentForm}>
+                {clientSecret && stripePromise && (
+                  <Elements stripe={stripePromise} options={{ clientSecret }}>
+                    <CheckoutForm />
+                  </Elements>
+                )}
+              </div>
+            </Col>
+        </Row>
+        </div>
       </div>
     </>
   );
