@@ -43,8 +43,10 @@ const createFeedback = asyncHandler(async (req, res) => {
     }
     
   });
-  //getTicket by userId
+  
+
   // Getfeedback by feedbackId
+  // @access Private
   const getFeedbackById = asyncHandler(async (req, res) => {
     const { feedbackId } = req.params;
   
@@ -63,6 +65,7 @@ const createFeedback = asyncHandler(async (req, res) => {
   });
   
   // Update feedback by feedbackId
+  // @access Private
 
   const updateFeedback = asyncHandler(async (req, res) => {
     const { feedbackId } = req.params;
@@ -89,6 +92,7 @@ const createFeedback = asyncHandler(async (req, res) => {
   });
   
   // Delete feedback by feedbackId
+  // @access Private
   const deleteFeedback = asyncHandler(async (req, res) => {
     const { feedbackId } = req.params;
   
