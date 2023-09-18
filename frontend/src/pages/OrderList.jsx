@@ -20,11 +20,12 @@ import React, { useEffect, useState } from 'react';
 
      return (
        <div>
-         <h2>Orders</h2>
+         <h2>My Orders</h2>
          <ul>
+          <p></p>
            {orders.map((order) => (
              <li key={order._id}>
-               Product: {order.product}, Quantity: {order.quantity}, Customer: {order.customer}
+               Product: {order.product},Food Type: {order.foodType}, Quantity: {order.quantity}, Price: {order.price}
              </li>
            ))}
          </ul>

@@ -17,9 +17,30 @@ const orderSchema = mongoose.Schema({
     price:{
         type:String,
         required:true,
+    },
+    orderNo:{
+        type:Number,
+    },
+    occupant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    status:{
+        type:Boolean,
+        required:true,
+    },
+    date:{
+        type:Date,
+        required:true,
+    },
+    total:{
+        type:String,
+        required:true,
     }
+},{
+    timestamps: true
 });
 
 const Order =  mongoose.model('Order' ,orderSchema );
 
-export default orderSchema;
+export default Order;

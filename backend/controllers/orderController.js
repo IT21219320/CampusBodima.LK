@@ -1,8 +1,15 @@
 import Order from '../models/orderModel.js';
+import User from '../models/userModel.js';
 
 const createOrder = async (req, res)=>{ 
   try {
-    const { product, foodType, quantity, price } = req.body; // Assuming these are your order fields
+    const { 
+      product, 
+      foodType, 
+      quantity, 
+      price 
+    } = req.body;
+    
     const order = new Order({ product, foodType, quantity, price });
     const savedOrder = await order.save();
     res.status(201).json(savedOrder);
