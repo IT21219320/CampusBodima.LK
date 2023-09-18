@@ -1,5 +1,5 @@
 import express from 'express';
- 
+import {getIntent, getPath, getPublichkey, getWebHook, makePayment} from "../controllers/paymentContollers.js";
 
 const router = express.Router();
 

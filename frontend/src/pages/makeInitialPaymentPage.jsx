@@ -19,7 +19,7 @@ function MakeInitialPaymentPage() {
   
   useEffect(() => {
 
-    fetch("api/payment/config")
+    fetch("api/payments/config")
       .then(async (r) => {
         const { publishableKey } = await r.json();
         setStripePromise(loadStripe(publishableKey));
@@ -28,7 +28,7 @@ function MakeInitialPaymentPage() {
 
     const id = userInfo._id
     const reqData = {userID: id}
-    fetch("api/payment/create-payment-intent", {
+    fetch("api/payments/create-payment-intent", {
       method:"POST",
       headers: {
         "Content-Type": "application/json",
