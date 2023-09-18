@@ -8,8 +8,9 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import { loadStripe } from "@stripe/stripe-js";
 import paymentScreenStyles from "../Styles/paymentScreen.module.css";
-function MakeInitialPaymentPage(props) {
-  const {stripePromise} = props;
+
+function MakeInitialPaymentPage() {
+  const [stripePromise, setStripePromise] = useState('');
   const [clientSecret, setClientSecret] = useState("");
 
   const { userInfo } = useSelector((state) => state.auth);
@@ -17,6 +18,14 @@ function MakeInitialPaymentPage(props) {
   const [activeStep, setActiveStep] = useState(2);
   
   useEffect(() => {
+
+    fetch("api/payment/config")
+      .then(async (r) => {
+        const { publishableKey } = await r.json();
+        setStripePromise(loadStripe(publishableKey));
+      });
+
+
     const id = userInfo._id
     const reqData = {userID: id}
     fetch("api/payment/create-payment-intent", {
@@ -28,6 +37,7 @@ function MakeInitialPaymentPage(props) {
     })
     .then((res) => res.json())
     .then(({clientSecret}) =>setClientSecret(clientSecret));
+
   }, []);
 
   return (

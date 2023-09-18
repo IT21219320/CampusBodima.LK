@@ -2,7 +2,7 @@ import { PaymentElement, LinkAuthenticationElement } from "@stripe/react-stripe-
 import { useState } from "react";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { useSelector } from "react-redux";
-import { useMakePaymentMutation } from "../slices/paymentApiSlice";
+//import { useMakePaymentMutation } from "../slices/paymentApiSlice";
 
 export default function CheckoutForm() {
   const stripe = useStripe();
@@ -11,7 +11,7 @@ export default function CheckoutForm() {
   const { userInfo } = useSelector((state) => state.auth);
   const [message, setMessage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [makePayment] = useMakePaymentMutation();
+  //const [makePayment] = useMakePaymentMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,7 +40,7 @@ export default function CheckoutForm() {
       
       const id = userInfo._id
       const reqData = {userID: id}
-      const res = await makePayment({reqData}).unwrap();
+      //const res = await makePayment({reqData}).unwrap();
       setIsProcessing(false);
     }
     
