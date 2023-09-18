@@ -1,12 +1,13 @@
 import express from 'express';
-import { registerBoarding, addRoom, getOwnerBoardings, getOccupantBoarding } from '../controllers/boardingController.js';
+import { registerBoarding, addRoom, getOwnerBoardings, getOccupantBoarding, updateBoardingVisibility, deleteBoarding } from '../controllers/boardingController.js';
 
 const router = express.Router();
 
 router.post('/register', registerBoarding);
 router.post('/addroom', addRoom);
-router.get('/owner/:ownerId/:page', getOwnerBoardings);
+router.get('/owner/:ownerId/:page/:status', getOwnerBoardings);
 router.get('/occupant/:occupantId', getOccupantBoarding);
-router.put('/updateVi')
+router.put('/updateBoardingVisibility', updateBoardingVisibility);
+router.delete('/deleteBoarding/:boardingId', deleteBoarding)
 
 export default router;

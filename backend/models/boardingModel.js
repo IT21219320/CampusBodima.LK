@@ -69,7 +69,7 @@ const boardingSchema = mongoose.Schema({
         ref: 'User',
         required: true
     },
-    occupant: {
+    occupant: { //if boarding is an annex, the occupant should be here, else the occupants should be in the room
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },

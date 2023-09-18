@@ -8,9 +8,7 @@ import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from "../slices/authSlice";
 import { useRegisterBoardingMutation } from '../slices/boardingsApiSlice';
-import { useGenerateSMSOTPMutation, useVerifySMSOTPMutation } from '../slices/usersApiSlice';
 import { toast } from 'react-toastify';
-import LoadingButton from '@mui/lab/LoadingButton';
 
 import { geoCoding } from '../utils/geoCoding.js'
 import { ImageToBase64 } from "../utils/ImageToBase64";
@@ -22,7 +20,7 @@ import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import CreateBoardingStyles from '../styles/createBoardingStyles.module.css';
 
-const RegisterBoardingPage = () => {
+const EditBoardingPage = () => {
 
     const { userInfo } = useSelector((state) => state.auth);
     
@@ -46,18 +44,8 @@ const RegisterBoardingPage = () => {
     const [description, setDescription] = useState('');
     const [boardingImages, setBoardingImages] = useState([]);
     const [boardingPreviewImages, setBoardingPreviewImages] = useState([]);
-    const [percent, setPercent] = useState('101');
-    const [phoneNo, setPhoneNo] = useState(userInfo.phoneNo ? userInfo.phoneNo : '');
-    const [bankAccNo, setBankAccNo] = useState(userInfo.bankAccNo ? userInfo.bankAccNo : '');
-    const [bankAccName, setBankAccName] = useState(userInfo.bankAccName ? userInfo.bankAccName : '');
-    const [bankName, setBankName] = useState(userInfo.bankName ? userInfo.bankName : '');
-    const [bankBranch, setBankBranch] = useState(userInfo.bankBranch ? userInfo.bankBranch : '');    
-    const [modalOpen, setModalOpen] = useState(false);        
-    const [backDropOpen, setBackDropOpen] = useState(false);        
-    const [otp, setOTP] = useState('');    
+    const [backDropOpen, setBackDropOpen] = useState(false);   
 
-    const [generateSMSOTP, {isLoading}] = useGenerateSMSOTPMutation();
-    const [verifySMSOTP, {isLoading2}] = useVerifySMSOTPMutation();
     const [registerBoarding, {isLoading3}] = useRegisterBoardingMutation();
 
     const navigate = useNavigate();
@@ -67,19 +55,6 @@ const RegisterBoardingPage = () => {
 
     const roomMarks = [{value: 1, label: '1'}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}, {value: 8}, {value: 9}, {value: 10}, {value: 11, label: '10+'}]
     const bathMarks = [{value: 0, label: '0'}, {value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}, {value: 8}, {value: 9}, {value: 10}, {value: 11, label: '10+'}]
-    
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 500,
-        bgcolor: 'background.paper',
-        borderRadius: '5px',
-        boxShadow: 24,
-        p: 4,
-        textAlign:'center'
-    };
 
     useEffect(() => {
         setViewUserInfo(true);
@@ -179,37 +154,6 @@ const RegisterBoardingPage = () => {
         }
         else{
             return `10+`
-        }
-    }
-
-    const sendOTP = async() => {
-        const _id = userInfo._id;
-        if(phoneNo == null || phoneNo == ''){
-            toast.error("Enter Phone Number to Verify")
-        } 
-        else if(phoneNo.length != 9){
-            toast.error("Enter a valid Phone Number")
-        }
-        else{
-            try {
-                const res = await generateSMSOTP({ _id, phoneNo }).unwrap();
-                toast.success("OTP Sent");
-                setModalOpen(true);
-            } catch (err) {
-                toast.error(err);
-            }       
-        }
-    }
-
-    const verifyOTP = async() => {
-        const _id = userInfo._id;
-        try {
-            const res = await verifySMSOTP({ _id, otp, phoneNo }).unwrap();
-            dispatch(setUserInfo({...res})); 
-            toast.success('Your phone number is verified!');
-            setModalOpen(false);
-        } catch (err) {
-            toast.error(err.data?.message || err.error);
         }
     }
 
@@ -513,8 +457,7 @@ const RegisterBoardingPage = () => {
                                                                         onChange={handleBoardingTypeChange}
                                                                         required
                                                                     >
-                                                                        <ToggleButton value="Annex" >Annex</ToggleButton>
-                                                                        <ToggleButton value="Hostel" >Hostel</ToggleButton>
+                                                                        <ToggleButton value={boardingType} >{boardingType}</ToggleButton>
                                                                     </ToggleButtonGroup>
                                                                 </Col>
                                                             </Row>
@@ -689,100 +632,6 @@ const RegisterBoardingPage = () => {
                                                 </Row>
                                             </>
                                             : <></>}
-                                            <hr />
-                                            <Row style={{marginTop:'20px'}}>
-                                                <Col>
-                                                    <p>
-                                                        <b>Bank Details</b>
-                                                        <Tooltip title="Enter your bank details so that occupants can make monthly payments" placement="top" arrow>
-                                                            <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
-                                                        </Tooltip>
-                                                    </p>
-                                                </Col>
-                                            </Row>
-                                            <Row style={{marginBottom:'10px'}}>
-                                                <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
-                                                    <Row>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Bank Account No.<span style={{color:'red'}}>*</span></Form.Label>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="number" placeholder="01234565345" value={bankAccNo} onChange={ (e) => setBankAccNo(e.target.value)} required readOnly={userInfo.bankAccNo ? true : false} style={{width:'95%'}} />
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{marginTop:'10px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>
-                                                                Account Holder Name<span style={{color:'red'}}>*</span> 
-                                                            </Form.Label>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="James Bond" value={bankAccName} onChange={ (e) => setBankAccName(e.target.value)} required readOnly={userInfo.bankAccName ? true : false} style={{width:'95%'}} />
-                                                        </Col>
-                                                    </Row>
-                                                </Col>
-                                                <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
-                                                    <Row>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>Bank Name<span style={{color:'red'}}>*</span></Form.Label>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="BOC" value={bankName} onChange={ (e) => setBankName(e.target.value)} required readOnly={userInfo.bankName ? true : false} style={{width:'95%'}} />
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{marginTop:'10px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
-                                                            <Form.Label style={{margin:0}}>
-                                                                Branch Name<span style={{color:'red'}}>*</span> 
-                                                            </Form.Label>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="Gampaha Branch" value={bankBranch} onChange={ (e) => setBankBranch(e.target.value)} required readOnly={userInfo.bankBranch ? true : false} style={{width:'95%'}} />
-                                                        </Col>
-                                                    </Row>
-                                                </Col>
-                                            </Row>
-                                            <hr />
-                                            <Row style={{marginTop:'20px'}}>
-                                                <Col>
-                                                    <Row>
-                                                        <Col style={{height:'100%'}} xs={12} md={4} lg={2}>
-                                                            <Form.Label style={{margin:0}}>Phone Number<span style={{color:'red'}}>*</span></Form.Label>
-                                                        </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8} ls={10}>
-                                                            {userInfo.phoneNo ?
-                                                                <InputGroup style={{width:'fit-content'}}>
-                                                                    <InputGroup.Text style={{color:'green'}}><Check /></InputGroup.Text>
-                                                                    <Form.Control type="text" placeholder="PhoneNo" value={phoneNo} required readOnly style={{width:'fit-content'}}/>
-                                                                </InputGroup>
-                                                            :
-                                                            <InputGroup style={{width:'fit-content'}}>
-                                                                <InputGroup.Text>(+94)</InputGroup.Text>
-                                                                <Form.Control placeholder="715447792" type="text" maxLength={9} value={phoneNo} onChange={(e) => setPhoneNo(e.target.value.replace(/\D/g, ''))}/>
-                                                                <LoadingButton loading={isLoading} variant="contained" className="ms-2" onClick={sendOTP}>Add</LoadingButton>
-                                                            </InputGroup>
-                                                            }
-                                                            <Modal
-                                                                open={modalOpen}
-                                                                onClose={() => setModalOpen(false)}
-                                                                aria-labelledby="OTP Modal"
-                                                                aria-describedby="OTP Modal"
-                                                            >
-                                                                <Box sx={style}>
-                                                                    
-                                                                    <h1>OTP Verification</h1>
-                                                                    <br />
-                                                                    <p className="text-start">The OTP code has being sent to +94{phoneNo}. Please enter the code below to verify.</p>
-                                                                    <MuiOtpInput value={otp} length={6} onChange={ (e) => setOTP(e)} />
-                                                                    <LoadingButton loading={isLoading2} onClick={ verifyOTP } color="primary" variant="contained" className="mt-3">Verify OTP</LoadingButton>
-                                                                    <LoadingButton loading={isLoading} onClick={ sendOTP } color="primary" variant="contained" className="mt-3 ms-3"><Sync /> Resend</LoadingButton>
-                                                                    
-                                                                </Box>
-                                                            </Modal>
-                                                        </Col>
-                                                    </Row>
-                                                </Col>
-                                            </Row>
                                             <Row style={{marginTop:'40px'}}>
                                                 <Col>
                                                     <Button type="submit" className={CreateBoardingStyles.submitBtn} variant="contained">Register Boarding</Button>
@@ -806,4 +655,4 @@ const RegisterBoardingPage = () => {
     );
 }
 
-export default RegisterBoardingPage;
+export default EditBoardingPage;

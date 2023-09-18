@@ -166,11 +166,11 @@ const getOwnerBoardings = asyncHandler(async (req, res) => {
 
     const skipCount = (page - 1) * pageSize;
 
-    var totalPages = await Boarding.countDocuments({owner:ownerId});
+    var totalPages = await Boarding.countDocuments({owner:ownerId, status});
     totalPages = Math.ceil(parseInt(totalPages)/pageSize);
 
     const boardings = await Boarding.find({owner:ownerId, status}).populate(['room','owner']).skip(skipCount).limit(pageSize);
-    
+
     if(boardings){
         res.status(200).json({
             boardings,
@@ -183,19 +183,16 @@ const getOwnerBoardings = asyncHandler(async (req, res) => {
     }
 });
 
-
-
 // @desc    Get all Boardings of particular owner
 // route    GET /api/boardings/occupant/:occupantId
-// @access  Private - Occupant
 const getOccupantBoarding = asyncHandler(async (req, res) => {
     const occupantId = req.params.occupantId
 
-    const Room = await Room.find({occupant:occupantId});
+    const room = await Room.find({occupant:occupantId});
     
-    if(Room){
+    if(room){
         res.status(200).json({
-            Room
+            room
         })
     }
     else{
@@ -204,9 +201,94 @@ const getOccupantBoarding = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Update Visibility of particular boarding
+// route    PUT /api/boardings/updateBoardingVisibility/
+const updateBoardingVisibility = asyncHandler(async (req, res) => {
+    const boardingId = req.body.id;
+
+    const boarding = await Boarding.findById(boardingId).populate('room');
+    console.log(boarding);
+    if(boarding){
+
+        var boardingCapacity = 0;
+        var boardingOccupantCount = 0;
+
+        for(let i = 0; i < boarding.room.length; i++){
+            boardingCapacity += parseInt(boarding.room[i].noOfBeds);
+        }
+
+        for(let i = 0; i < boarding.room.length; i++){
+            boardingOccupantCount += boarding.room[i].occupant.length;
+        }
+
+        if(boarding.occupant && boarding.boardingType == 'Annex'){
+            res.status(400);
+            throw new Error(`The annex is already rented out!`)
+        }
+        else if(boardingCapacity == boardingOccupantCount && boarding.boardingType == 'Hostel'){
+            res.status(400);
+            throw new Error("There arent any free rooms available")
+        }
+        else{
+            boarding.visibility = !boarding.visibility;
+            const updatedBoarding = await boarding.save();
+            res.status(200).json({
+                message:'Boarding updated Successfully'
+            })
+        }
+    }
+    else{
+        res.status(400);
+        throw new Error("Oops Something went wrong :(")
+    }
+});
+
+// @desc    Delete particular boarding
+// route    DELETE /api/boardings/deleteBoarding/:boardingId
+const deleteBoarding = asyncHandler(async (req, res) => {
+    const boardingId = req.params.boardingId;
+
+    const boarding = await Boarding.findById(boardingId).populate('room');
+    
+    if(boarding){
+
+        var occupantCount = 0;
+        console.log(boarding);
+        for(let i = 0; i < boarding.room.length; i++){
+            occupantCount += boarding.room[i].occupant.length;
+        }
+
+        console.log(boarding.occupant);
+        if(occupantCount == 0 && !boarding.occupant){
+
+            if(boarding.boardingType == 'Hostel' && boarding.room.length > 0){
+                for(let i = 0; i < boarding.room.length; i++){
+                    await Room.findByIdAndDelete(boarding.room[i]._id);
+                }
+            }
+
+            await Boarding.findByIdAndDelete(boardingId);
+
+            res.status(200).json({
+                message:'Boarding deleted successfully!'
+            })
+        }
+        else{
+            res.status(400);
+            throw new Error("Can't delete boarding when there are occupants!")
+        }
+    }
+    else{
+        res.status(400);
+        throw new Error("Oops something went wrong :(");
+    }
+});
+
 export { 
     registerBoarding,
     addRoom,
     getOwnerBoardings,
-    getOccupantBoarding
+    getOccupantBoarding,
+    updateBoardingVisibility,
+    deleteBoarding
 };

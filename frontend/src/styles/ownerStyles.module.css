@@ -98,4 +98,10 @@
     content: '\2713';
     margin-right: 5px;
 }
+
+.confirmIcon{
+    padding-bottom: 0 !important;
+    color: orange;
+    text-align: center;
+}
   
