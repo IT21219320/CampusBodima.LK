@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { LoadScript } from '@react-google-maps/api';
 
 import store from './store';
 import { Provider } from 'react-redux';
@@ -15,6 +16,7 @@ import ProfilePage from './pages/profilePage.jsx';
 import GenerateOtpPage from './pages/generateOtpPage.jsx';
 import OwnerBoardingPage from './pages/ownerBoardingPage.jsx';
 import RegisterBoardingPage from './pages/registerBoardingPage.jsx';
+import EditBoardingPage from './pages/editBoardingPage.jsx';
 import OwnerBoardingRoomPage from './pages/ownerBoardingRoomPage.jsx';
 import AddBoardingRoomPage from './pages/addBoardingRoomPage.jsx';
 import OwnerIngredientPage from './pages/OwnerIngredientPage';
@@ -60,6 +62,7 @@ const router = createBrowserRouter(
           <Route path='/owner/boardings' element={ <OwnerBoardingPage /> } />
           <Route path='/owner/boardings/add' element={ <RegisterBoardingPage /> } />
           <Route path='/owner/boardings/:boardingId/rooms' element={ <OwnerBoardingRoomPage /> } />
+          <Route path='/owner/boardings/:boardingId/edit' element={ <EditBoardingPage /> } />
           <Route path='/owner/boardings/:boardingId/:boardingName/rooms/add' element={ <AddBoardingRoomPage /> } />
 
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
@@ -88,7 +91,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store = {store}>
     <React.StrictMode>
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <RouterProvider router={ router } />
+        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+          <RouterProvider router={ router } />
+        </LoadScript>
       </GoogleOAuthProvider>
     </React.StrictMode>
   </Provider>,
