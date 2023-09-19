@@ -114,7 +114,7 @@ const OwnerIngredientPage = () => {
                                    <Col> 
                                         <Tabs defaultActiveKey="Ingredients"  id="uncontrolled-tab-example" className="mb-3">
                                             <Tab eventKey="Ingredients" title="Ingredients">
-                                                <AllIngredients>{boardingId}</AllIngredients>
+                                                <AllIngredients boardingId={boardingId} />
                                             </Tab>
                                             <Tab eventKey="Central Inventory" title="Central Inventory">
                                                 <h1>Central Inventory</h1>

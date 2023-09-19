@@ -11,7 +11,7 @@ import { useGetBoardingIngredientsMutation } from '../slices/ingredientsApiSlice
 import { toast } from 'react-toastify';
 import ingredientStyles from '../styles/ingredientStyles.module.css';  
 
-const AllIngredients = ({children}) => {
+const AllIngredients = ({ boardingId }) => {
     
     const theme = useTheme();
 
@@ -30,10 +30,13 @@ const AllIngredients = ({children}) => {
 
     const loadData = async (pageNo) => {
         try {
-            const data = children+'/'+pageNo;
-            const res = await getBoardingIngredient( data ).unwrap();
-            setIngredients(res.ingredient);  
-            setTotalPages(res.totalPages);  
+            if(boardingId){
+                console.log(boardingId);
+                const data = boardingId+'/'+pageNo;
+                const res = await getBoardingIngredient( data ).unwrap();
+                setIngredients(res.ingredient);  
+                setTotalPages(res.totalPages);  
+            }
         } catch (err) {
             toast.error(err.data?.message || err.error);
         }
@@ -41,7 +44,7 @@ const AllIngredients = ({children}) => {
 
     useEffect(() => {
         loadData(page);     
-    },[]);
+    },[boardingId]);
 
     const handlePageChange = (event, value) => {
         setPage(value);
