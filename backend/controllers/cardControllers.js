@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import cardDetails from "../models/cardDetailsModel.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 
 const addCard = expressAsyncHandler(async(req,res) =>{
