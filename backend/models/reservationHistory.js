@@ -9,7 +9,7 @@ const reservationHistorySchema = mongoose.Schema({
 
     roomID: {
         type: String,
-        required: true,
+        required: true,    
         unique: true
     },
 
