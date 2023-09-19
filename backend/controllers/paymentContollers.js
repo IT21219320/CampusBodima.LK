@@ -1,8 +1,10 @@
 import expressAsyncHandler from "express-async-handler";
 import dotenv from 'dotenv';
 import Stripe from "stripe";
+import cron from "node-cron";
 import payment from "../models/paymentModel.js";
 import User from "../models/userModel.js";
+import reservations from "../models/reservationModel.js";
 dotenv.config();
 
 
@@ -55,6 +57,25 @@ const getPaymentsByUserID = expressAsyncHandler(async(req, res) =>{
     }
 
 })
+
+cron.schedule('0 0 10 * *', async () => {
+    try {
+      // Calculate the monthly fee for each subscribed user
+      const reservedUsers = await reservations.find();
+  
+      for (const users of reservedUsers) {
+        
+        
+        
+  
+        
+      }
+  
+      console.log('Monthly fees calculated and updated.');
+    } catch (error) {
+      console.error('Error calculating monthly fees:', error);
+    }
+  });
 
 const getIntent = expressAsyncHandler(async(req,res)=>{
   
