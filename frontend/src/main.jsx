@@ -26,6 +26,7 @@ import ResetPasswordPage from './pages/resetPasswordPage.jsx';
 import OccupantAllTicketsPage from './pages/occupantAllTicketsPage.jsx';
 import CreateTicketPage from './pages/createTicketPage.jsx';
 import AddUtilitiesPage from './pages/addUtilityPage.jsx';
+import CreateFeedback from './pages/createFeedbackPage';
 import MakeInitialPaymentPage from './pages/makeInitialPaymentPage';
 import OrderList from './pages/OrderList.jsx'
 import PrivateRoute from './components/privateRoute';
@@ -81,6 +82,8 @@ const router = createBrowserRouter(
           <Route path='/occupant/order/' element={<OrderList />} />
 
           <Route path='/occupant/makePayment/' element={<MakeInitialPaymentPage />} />
+
+          <Route path='/occupant/feedback/create' element={<CreateFeedback />} />
         </Route>
       </Route>
 
