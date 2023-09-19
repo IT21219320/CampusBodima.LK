@@ -18,9 +18,9 @@ const menuSchema = mongoose.Schema({
         type: String, 
         required: true
     },
-    owner: {
+    boarding: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Boarding',
         required: true
     },
 });

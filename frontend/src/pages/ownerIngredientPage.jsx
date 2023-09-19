@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Form, Container, Row, Col, Table, Button, Tabs, Tab } from 'react-bootstrap';
-import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, Pagination, CircularProgress, Box } from "@mui/material";
+import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, Pagination, CircularProgress, Box, FormControl,  InputLabel, MenuItem, Select  } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import { NavigateNext,} from '@mui/icons-material';
 import KitchenIcon from '@mui/icons-material/Kitchen';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetOwnerIngredientsMutation } from '../slices/ingredientsApiSlice';
+import { useGetOwnerBoardingMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
 import { TableHead, TableRow } from '@mui/material'; 
 import { autoPlay } from 'react-swipeable-views-utils';
@@ -29,7 +29,43 @@ import defaultImage from '/images/defaultImage.png'
 
 const OwnerIngredientPage = () => {
 
-    const { userInfo } = useSelector((state) => state.auth);
+    const { userInfo } = useSelector((state) => state.auth); 
+    const [boardingId, setBoardingId] = useState('');
+    const [boardingNames, setBoardingNames] = useState([]);
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const [getOwnerBoarding, { isLoading }] = useGetOwnerBoardingMutation();
+
+    // Function to fetch boarding names from the API
+    const loadData = async () => {
+        try {
+             
+            const ownerId = userInfo._id;
+
+            const res = await getOwnerBoarding(ownerId).unwrap();  
+            setBoardingNames(res.boardings);  
+            
+            if (res.boardings.length > 0) {
+                // Set the default selected boarding ID to the first one in the list
+                setBoardingId(res.boardings[0]._id);
+            }
+
+        } catch (error) {
+            console.error('Error fetching boarding names:', error);
+             
+        }
+    };
+
+    useEffect(() => {
+        loadData(); // Fetch boarding names when the component mounts
+    }, []);
+
+    // Function to handle when a boarding is selected
+    const handleBoardingSelect = (event) => {
+        setBoardingId(event.target.value);
+    };
 
     return (
         <>
@@ -52,9 +88,33 @@ const OwnerIngredientPage = () => {
                                 <Row>
                                     <Col>
                                     <h1 style={{ fontSize: '50px', color: 'blue', }}>Inventory</h1>
+                                    </Col>
+                                    <Col className="ml-5">
+                                    <Box sx={{ minWidth: 120}}>
+                                        <FormControl fullWidth>
+                                            <InputLabel id="demo-simple-select-label">Boarding Name</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={boardingId}
+                                                label="Boarding Name"
+                                                onChange={handleBoardingSelect}
+                                            >
+                                                 {boardingNames.map((boarding) => (
+                                                    <MenuItem key={boarding._id} value={boarding._id}>
+                                                        {boarding.boardingName}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                   </Box>
+                                   </Col> 
+                                </Row>
+                                <Row>
+                                   <Col> 
                                         <Tabs defaultActiveKey="Ingredients"  id="uncontrolled-tab-example" className="mb-3">
                                             <Tab eventKey="Ingredients" title="Ingredients">
-                                                <AllIngredients />
+                                                <AllIngredients>{boardingId}</AllIngredients>
                                             </Tab>
                                             <Tab eventKey="Central Inventory" title="Central Inventory">
                                                 <h1>Central Inventory</h1>

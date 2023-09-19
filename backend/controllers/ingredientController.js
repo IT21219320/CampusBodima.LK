@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
+import Boarding from '../models/boardingModel.js';
 import Ingredient from '../models/ingredientModel.js';
 
 
@@ -9,28 +10,28 @@ import Ingredient from '../models/ingredientModel.js';
 const addIngredient = asyncHandler(async (req, res) => {
 
     const {
-        ownerId,
+        boardingId,
         ingredientName,
         quantity,
         measurement,
         purchaseDate 
     } = req.body;
 
-    var ingredientExists = await Ingredient.findOne({ ingredientName: ingredientName, 'owner': ownerId });
+    var ingredientExists = await Ingredient.findOne({ ingredientName: ingredientName, 'boarding': boardingId });
     
     if(ingredientExists){
         res.status(400);
         throw new Error('Ingredient Already Exists');
     }
 
-    const owner = await User.findById(ownerId);
+    const boarding = await Boarding.findById(boardingId);
 
     const ingredient = await Ingredient.create({
         ingredientName,
         quantity,
         measurement,
         purchaseDate,
-        owner
+        boarding
     });
 
     if(ingredient){
@@ -45,20 +46,20 @@ const addIngredient = asyncHandler(async (req, res) => {
 });
 
 
-// @desc    Get all Ingredient of particular owner
-// route    GET /api/ingredient/owner/:ownerId/:page
+// @desc    Get all Ingredient for particular boarding
+// route    GET /api/ingredient/owner/:boardingId/:page
 // @access  Private - Owner
-const getOwnerIngredient = asyncHandler(async (req, res) => {
-    const ownerId = req.params.ownerId;
+const getBoardingIngredient = asyncHandler(async (req, res) => {
+    const boardingId = req.params.boardingId;
     const page = req.params.page || 1;
     const pageSize = 10;
 
     const skipCount = (page - 1) * pageSize;
 
-    var totalPages = await Ingredient.countDocuments({owner:ownerId});
+    var totalPages = await Ingredient.countDocuments({boarding:boardingId});
     totalPages = Math.ceil(parseInt(totalPages)/pageSize);
 
-    const ingredient = await Ingredient.find({owner:ownerId}).skip(skipCount).limit(pageSize);
+    const ingredient = await Ingredient.find({boarding:boardingId}).skip(skipCount).limit(pageSize);
     
     if(ingredient){
         res.status(200).json({
@@ -72,13 +73,32 @@ const getOwnerIngredient = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Get all Boardings of particular owner if they selected Food
+// route    GET /api/ingredient/owner/:ownerId
+// @access  Private - Owner
+const getOwnerBoarding = asyncHandler(async (req, res) => {
+    const ownerId = req.params.ownerId;
+    
+    const boardings = await Boarding.find({ owner: ownerId, food: true });
+    
+    if(boardings){
+        res.status(200).json({
+            boardings, 
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("No Boardings Available")
+    }
+});
 
-// @desc    Update ingredient of particular owner
+
+// @desc    Update ingredient of particular boarding
 // route    PUT /api/ingredient/owner
 // @access  Private - Owner
 const updateIngredient = asyncHandler(async (req, res) => {
     const {
-        ownerId,
+        boardingId,
         ingredientId,  
         newIngredientName,
         newQuantity,
@@ -87,7 +107,7 @@ const updateIngredient = asyncHandler(async (req, res) => {
     } = req.body;
 
     try {
-        const ingredient = await Ingredient.findOne({ _id: ingredientId, owner: ownerId });
+        const ingredient = await Ingredient.findOne({ _id: ingredientId, boarding:boardingId });
 
         if (!ingredient) {
             res.status(404);
@@ -112,15 +132,15 @@ const updateIngredient = asyncHandler(async (req, res) => {
 });
 
 
-// @desc    Delete Ingredient of particular owner
-// route    DELETE /api/ingredient/owner/:ownerId/:ingredientId
+// @desc    Delete Ingredient of particular boarding
+// route    DELETE /api/ingredient/owner/:boardingId/:ingredientId
 // @access  Private - Owner
 const deleteIngredient = asyncHandler(async (req, res) => {
-    const ownerId = req.params.ownerId;
+    const boardingId = req.params.boardingId;
     const ingredientId = req.params.ingredientId;  
 
     try {
-        const result = await Ingredient.deleteOne({ _id: ingredientId, owner: ownerId });
+        const result = await Ingredient.deleteOne({ _id: ingredientId, boarding:boardingId });
 
         if (result.deletedCount === 0) {
             res.status(404);
@@ -140,7 +160,8 @@ const deleteIngredient = asyncHandler(async (req, res) => {
 
 export { 
     addIngredient,
-    getOwnerIngredient,
+    getBoardingIngredient,
+    getOwnerBoarding,
     updateIngredient,
     deleteIngredient    
 };

@@ -11,7 +11,13 @@ export const ingredientsApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
-        getOwnerIngredients: builder.mutation({
+        getBoardingIngredients: builder.mutation({
+            query: (data) => ({
+                url: `${Ingredient_URL}/owner/${data}`,
+                method: 'GET',
+            }),
+        }),
+        getOwnerBoarding: builder.mutation({
             query: (data) => ({
                 url: `${Ingredient_URL}/owner/${data}`,
                 method: 'GET',
@@ -33,4 +39,4 @@ export const ingredientsApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useAddIngredientMutation, useGetOwnerIngredientsMutation, useUpdateIngredientsMutation, useDeleteIngredientsMutation} = ingredientsApiSlice;
+export const { useAddIngredientMutation, useGetBoardingIngredientsMutation, useGetOwnerBoardingMutation, useUpdateIngredientsMutation, useDeleteIngredientsMutation} = ingredientsApiSlice;

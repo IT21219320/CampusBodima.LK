@@ -5,7 +5,7 @@ import { Breadcrumbs, Typography, Button, Link, CircularProgress, Box, Collapse,
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from "../slices/authSlice";
-import { useAddIngredientMutation } from '../slices/ingredientsApiSlice';
+import { useAddIngredientMutation,useGetOwnerBoardingMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
 import LoadingButton from '@mui/lab/LoadingButton';
 import FormContainer from "../components/formContainer";
@@ -22,6 +22,8 @@ const AddIngredientPage = () => {
 
   const { userInfo } = useSelector((state) => state.auth);
 
+  const [boardingId, setBoardingId] = useState('');
+  const [boardingNames, setBoardingNames] = useState([]);
   const [noticeStatus, setNoticeStatus] = useState(true);
   const [ingredientName, setIngredientName] = useState('');
   const [quantity, setQuantity] = useState('');
@@ -30,12 +32,27 @@ const AddIngredientPage = () => {
   const [purchaseDate, setPurchaseDate] = useState('');
    
   const [addIngredient, {isLoading}] = useAddIngredientMutation();
+  const [getOwnerBoarding,{isLoading2}] = useGetOwnerBoardingMutation();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const loadData = async () => {
+    try {
+      const ownerId = userInfo._id;
+      const res = await getOwnerBoarding(ownerId).unwrap();
+      setBoardingNames(res.boardings);
+      if (res.boardings.length > 0) {
+        // Set the default selected boarding ID to the first one in the list
+        setBoardingId(res.boardings[0]._id);
+      }
+    } catch (error) {
+      console.error('Error fetching boarding names:', error);
+    }
+  };
+
   useEffect(() => {
-         
+    loadData();     
   },[]);
 
   const submitHandler = async(e) => {
@@ -43,7 +60,7 @@ const AddIngredientPage = () => {
 
       try {
         const data = {
-          ownerId: userInfo._id,  
+          boardingId: boardingId,  
           ingredientName,
           quantity:quantity+''+measurement,  
           measurement:alertquantity+''+measurement,
@@ -95,10 +112,31 @@ const AddIngredientPage = () => {
                     </Collapse>
 
                     <FormContainer>
-                        <h1>Add Ingredients</h1>
+                       <Form onSubmit={submitHandler}>
+                            <Row>
+                              <Col>
+                                <h2>Add Ingredients</h2>
+                              </Col>
+                              <Col>
+                                  <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">Boarding Name</InputLabel>
+                                    <Select
+                                      labelId="demo-simple-select-label"
+                                      id="demo-simple-select"
+                                      value={boardingId}
+                                      label="Boarding Name"
+                                      onChange={(e) => setBoardingId(e.target.value)}
+                                    >
+                                      {boardingNames.map((boarding) => (
+                                        <MenuItem key={boarding._id} value={boarding._id}>
+                                          {boarding.boardingName}
+                                        </MenuItem>
+                                      ))}
+                                    </Select>
+                                  </FormControl>
+                              </Col>
+                            </Row>
 
-
-                        <Form onSubmit={submitHandler}>
                             <Form.Group className='my-2' controlId='ingredientName'>
                               <Form.Label>Ingredient Name</Form.Label>
                               <Form.Control

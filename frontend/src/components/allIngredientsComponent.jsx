@@ -7,11 +7,11 @@ import KitchenIcon from '@mui/icons-material/Kitchen';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetOwnerIngredientsMutation } from '../slices/ingredientsApiSlice';
+import { useGetBoardingIngredientsMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
 import ingredientStyles from '../styles/ingredientStyles.module.css';  
 
-const AllIngredients = () => {
+const AllIngredients = ({children}) => {
     
     const theme = useTheme();
 
@@ -24,14 +24,14 @@ const AllIngredients = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const [getOwnerIngredient, { isLoading }] = useGetOwnerIngredientsMutation();
+    const [getBoardingIngredient, { isLoading }] = useGetBoardingIngredientsMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
 
     const loadData = async (pageNo) => {
         try {
-            const data = userInfo._id+'/'+pageNo;
-            const res = await getOwnerIngredient( data ).unwrap();
+            const data = children+'/'+pageNo;
+            const res = await getBoardingIngredient( data ).unwrap();
             setIngredients(res.ingredient);  
             setTotalPages(res.totalPages);  
         } catch (err) {
