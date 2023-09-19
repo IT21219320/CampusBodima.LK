@@ -63,7 +63,7 @@ cron.schedule('0 0 10 * *', async () => {
       // Calculate the monthly fee for each subscribed user
       const reservedUsers = await reservations.find();
   
-      for (const users of reservedUsers) {
+      for (const user of reservedUsers) {
         
         
         
