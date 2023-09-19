@@ -13,7 +13,7 @@ import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { feedbacksApiSlice } from '../slices/feedbackApiSlice';
 import Sidebar from '../components/sideBar';
 
-const createFeedback = () => {
+const CreateFeedback = () => {
     const { userInfo } = useSelector((state) => state.auth);
   
     const [viewUserInfo, setViewUserInfo] = useState(true);
@@ -149,4 +149,4 @@ const createFeedback = () => {
     );
   };
   
-  export default createFeedback;
+  export default CreateFeedback;
