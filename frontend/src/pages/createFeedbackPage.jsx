@@ -6,11 +6,11 @@ import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, InputLabel, Sel
 import { NavigateNext } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { toast } from 'react-toastify';
-import { usecreateFeedbackMutation } from '../slices/feedbackApiSlice';
+import { useCreateFeedbackMutation } from '../slices/feedbackApiSlice'; // Corrected import
 
 
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { feedbacksApiSlice } from '../slices/feedbackApiSlice';
+import { feedbackApiSlice } from '../slices/feedbackApiSlice';
 import Sidebar from '../components/sideBar';
 
 const CreateFeedback = () => {
@@ -22,7 +22,8 @@ const CreateFeedback = () => {
     const [occupantEmail, setOccupantEmail] = useState(userInfo.email);
     const [feedback, setFeedback] = useState('');
   
-    const [createFeedback, { isLoading }] = usecreateFeedbackMutation(); // Use the appropriate feedback mutation hook
+    //const [CreateFeedback, { isLoading }] = usecreateFeedbackMutation(); // Use the appropriate feedback mutation hook
+    const [createFeedback, { isLoading }] = useCreateFeedbackMutation(); // Corrected hook name
   
     const navigate = useNavigate();
   
@@ -83,7 +84,7 @@ const CreateFeedback = () => {
                 </Row>
                 <Row>
                   <Col>
-                    <Card variant="outlined" className={CreateFeedbackStyles.card}>
+                    <Card variant="outlined" className={createFeedbackStyles.card}>
                       <CardContent>
                         <Row id={CreateFeedbackStyles.newFeedback}>
                           <p>
@@ -94,7 +95,7 @@ const CreateFeedback = () => {
                         <Row>
                           <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
                             <Col lg={3} xs={6}>
-                              <label htmlFor="name" className={CreateFeedbackStyles.lbl}>
+                              <label htmlFor="name" className={createFeedbackStyles.lbl}>
                                 Name
                               </label>
                             </Col>
@@ -105,7 +106,7 @@ const CreateFeedback = () => {
   
                           <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
                             <Col lg={3} xs={6}>
-                              <label htmlFor="name" className={CreateFeedbackStyles.lbl}>
+                              <label htmlFor="name" className={createFeedbackStyles.lbl}>
                                 Email
                               </label>
                             </Col>
@@ -116,8 +117,8 @@ const CreateFeedback = () => {
   
                           <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
                             <Col lg={3} xs={6}>
-                              <label htmlFor="feedback" className={CreateFeedbackStyles.lbl}>
-                                Feedback<span className={CreateFeedbackStyles.require}><b>*</b></span>
+                              <label htmlFor="feedback" className={createFeedbackStyles.lbl}>
+                                Feedback<span className={createFeedbackStyles.require}><b>*</b></span>
                               </label>
                             </Col>
                             <Col>
