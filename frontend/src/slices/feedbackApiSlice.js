@@ -2,7 +2,7 @@ import { apiSlice } from "./apiSlice";
 
 const FEEDBACKS_URL = '/api/feedback';
 
-export const feedbacksApiSlice = apiSlice.injectEndpoints({
+export const feedbackApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         createFeedback: builder.mutation({
             query: (data) => ({
@@ -36,11 +36,6 @@ export const feedbacksApiSlice = apiSlice.injectEndpoints({
     })
 });
 
-export const{
-    usecreateFeedbackMutation,
-    usegetFeedbackByIdMutation,
-    useupdateFeedbackMutation,
-    usedeleteFeedbackMutation,
-} = feedbacksApiSlice
+export const{usecreateFeedbackMutation,usegetFeedbackByIdMutation,useupdateFeedbackMutation,usedeleteFeedbackMutation,} = feedbacksApiSlice
 
 
