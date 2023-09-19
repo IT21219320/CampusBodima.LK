@@ -8,7 +8,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { toast } from 'react-toastify';
 import { useCreateFeedbackMutation } from '../slices/feedbackApiSlice'; // Corrected import
 
-
+import CreateFeedbackStyles from '../styles/createFeedbackStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { feedbackApiSlice } from '../slices/feedbackApiSlice';
 import Sidebar from '../components/sideBar';
@@ -75,18 +75,17 @@ const CreateFeedback = () => {
               <Form onSubmit={submitHandler}>
                 <Row>
                   <Col>
-                    <Card variant="outlined" className={createFeedbackStyles.card}>
+                    <Card variant="outlined" className={CreateFeedbackStyles.card}>
                       <CardContent style={{ padding: '18px' }}>
                         <h4 style={{ margin: 0 }}>Create Feedback</h4>
                       </CardContent>
                     </Card>
                   </Col>
                 </Row>
-                <Row>
-                  <Col>
-                    <Card variant="outlined" className={createFeedbackStyles.card}>
+                <Col>
+                    <Card variant="outlined" className={CreateFeedbackStyles.card}>
                       <CardContent>
-                        <Row id={createFeedbackStyles.newFeedback}>
+                        <Row id={CreateFeedbackStyles.newFeedback}>
                           <p>
                             <b>New Feedback</b>
                           </p>
@@ -95,7 +94,7 @@ const CreateFeedback = () => {
                         <Row>
                           <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
                             <Col lg={3} xs={6}>
-                              <label htmlFor="name" className={createFeedbackStyles.lbl}>
+                              <label htmlFor="name" className={CreateFeedbackStyles.lbl}>
                                 Name
                               </label>
                             </Col>
@@ -106,7 +105,7 @@ const CreateFeedback = () => {
   
                           <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
                             <Col lg={3} xs={6}>
-                              <label htmlFor="name" className={createFeedbackStyles.lbl}>
+                              <label htmlFor="name" className={CreateFeedbackStyles.lbl}>
                                 Email
                               </label>
                             </Col>
@@ -117,8 +116,8 @@ const CreateFeedback = () => {
   
                           <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
                             <Col lg={3} xs={6}>
-                              <label htmlFor="feedback" className={createFeedbackStyles.lbl}>
-                                Feedback<span className={createFeedbackStyles.require}><b>*</b></span>
+                              <label htmlFor="feedback" className={CreateFeedbackStyles.lbl}>
+                                Feedback<span className={CreateFeedbackStyles.require}><b>*</b></span>
                               </label>
                             </Col>
                             <Col>
@@ -141,7 +140,6 @@ const CreateFeedback = () => {
                       </CardContent>
                     </Card>
                   </Col>
-                </Row>
               </Form>
             </Fade>
           </Container>
