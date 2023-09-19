@@ -11,6 +11,7 @@ import utilityRoutes from './routes/utilityRoutes.js';
 import reservationRoutes from './routes/reservationRoutes.js';
 import reservationHistoryRoutes from './routes/reservationHistoryRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import cardRoutes from './routes/cardRoutes.js';
 import ticketRoutes from './routes/ticketRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js'
@@ -36,6 +37,7 @@ app.use('/api/boardings', boardingRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/reservationsHistory', reservationHistoryRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/cards', cardRoutes);
 app.use('/api/menues', menuRoutes);
 app.use('/api/ingredients', ingredientRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
