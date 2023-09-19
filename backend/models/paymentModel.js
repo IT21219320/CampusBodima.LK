@@ -4,9 +4,6 @@ const paymentSchema = mongoose.Schema({
     paymentType : {
         type : String
     },
-    currency : {
-        type : String
-    },
     amount : {
         type : String
     },
@@ -20,7 +17,6 @@ const paymentSchema = mongoose.Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
     },
     occupant: {
         type: mongoose.Schema.Types.ObjectId,
@@ -28,8 +24,14 @@ const paymentSchema = mongoose.Schema({
     },
     date : {
         type: String,
+    },
+    credited : {
+        type: String,
+    },
+    debited : {
+        type : String,
     }
-    
+
     
 }, {
     timestamps: true

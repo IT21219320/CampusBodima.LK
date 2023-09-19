@@ -5,9 +5,11 @@
 }
 .h3Topic{
     margin-top: 6%;
+    text-align: center;
 }
 .h3PaymentTopic{
     color:aliceblue;
+    text-align: center;
 }
 .h5Text{
     color:aliceblue;
