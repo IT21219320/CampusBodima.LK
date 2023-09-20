@@ -23,7 +23,7 @@ const paymentSchema = mongoose.Schema({
         ref: 'User'
     },
     date : {
-        type: String,
+        type: Date,
     },
     credited : {
         type: String,
