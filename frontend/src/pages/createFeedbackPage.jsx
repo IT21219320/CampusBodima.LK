@@ -20,7 +20,8 @@ const CreateFeedback = () => {
     const [occupantId, setOccupantId] = useState(userInfo._id);
     const [occupantName, setOccupantName] = useState(userInfo.firstName + ' ' + userInfo.lastName);
     const [occupantEmail, setOccupantEmail] = useState(userInfo.email);
-    const [feedback, setFeedback] = useState('');
+    const [category, setCategory] = useState('');
+    const [description, setDescription] = useState('');
   
     //const [CreateFeedback, { isLoading }] = usecreateFeedbackMutation(); // Use the appropriate feedback mutation hook
     const [createFeedback, { isLoading }] = useCreateFeedbackMutation(); // Corrected hook name
@@ -30,6 +31,21 @@ const CreateFeedback = () => {
     useEffect(() => {
       setViewUserInfo(true);
     }, []);
+
+   /* const changeCategory = (e) => {
+      setCategory(e.target.value);
+
+      if(e.target.value == 'boarding'){
+          document.getElementById('boardingSub').style.display = "inline-flex";
+          document.getElementById('foodSub').style.display = "none";
+          setSubCategory('');
+      }
+      else{
+          document.getElementById('foodSub').style.display = "inline-flex";
+          document.getElementById('boardingSub').style.display = "none";
+          setSubCategory('');
+      }
+  }*/
   
     const submitHandler = async (e) => {
       e.preventDefault();
@@ -110,14 +126,31 @@ const CreateFeedback = () => {
                               </label>
                             </Col>
                             <Col lg={9} xs={6} className="mt-3">
-                              <TextField id="outlined-read-only-input" size="small" value={occupantEmail} InputProps={{ readOnly: true }} />
+                              <TextField id="outlined-read-only-input" /*size="small"*/
+                              sx={{ width: '30%', height: '78px' }} value={occupantEmail} InputProps={{ readOnly: true }} />
                             </Col>
                           </Row>
-  
+
+                          <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
+                                                    <Col lg={3} xs={6}><label htmlFor="category" className={CreateFeedbackStyles.lbl}>Category<span className={CreateFeedbackStyles.require}><b>*</b></span></label></Col>
+                                                    <Col lg={9} xs={6} className='mt-3'>
+                                                        <FormControl sx={{ m:0, minWidth: 120 }} size="small"> 
+                                                            <Select 
+                                                              value={category} 
+                                                              onChange={(e) => setCategory(e.target.value)} 
+                                                              required  >
+                                                                <MenuItem value={'boarding'}>Boarding </MenuItem>
+                                                                <MenuItem value={'anex'}>Anex</MenuItem>
+                                                            </Select>
+                                                        </FormControl>
+                                                        </Col>
+                                                      
+                          </Row>
+                        
                           <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
                             <Col lg={3} xs={6}>
-                              <label htmlFor="feedback" className={CreateFeedbackStyles.lbl}>
-                                Feedback<span className={CreateFeedbackStyles.require}><b>*</b></span>
+                              <label htmlFor="description" className={CreateFeedbackStyles.lbl}>
+                                Description<span className={CreateFeedbackStyles.require}><b>*</b></span>
                               </label>
                             </Col>
                             <Col>
@@ -125,18 +158,25 @@ const CreateFeedback = () => {
                                 id="outlined-multiline-static"
                                 label="Enter Feedback"
                                 multiline
-                                rows={4}
-                                value={feedback}
-                                onChange={(e) => setFeedback(e.target.value)}
+                                rows={8}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 required
                                 variant="outlined"
+                                sx={{
+                                  width: '100%', 
+                                  height: '200px', 
+                                }}
                               />
                             </Col>
                           </Row>
                         </Row>
+
+                        
                         <LoadingButton type="submit" loading={isLoading} className="mt-4 mb-4 me-4" style={{ float: 'right' }} variant="contained">
                           Submit Feedback
                         </LoadingButton>
+                        
                       </CardContent>
                     </Card>
                   </Col>
