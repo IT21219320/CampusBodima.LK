@@ -84,7 +84,7 @@ const getIntent = expressAsyncHandler(async(req,res)=>{
   try {
 
     const paymentIntent = await stripe.paymentIntents.create({
-      currency: 'LKR',
+      currency: 'EUR',
       amount: 1999,
       automatic_payment_methods: { enabled: true }
     });

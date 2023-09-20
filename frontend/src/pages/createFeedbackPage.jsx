@@ -22,6 +22,7 @@ const CreateFeedback = () => {
     const [occupantEmail, setOccupantEmail] = useState(userInfo.email);
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
+    const [starRating, setstarRating]= useState("");
   
     //const [CreateFeedback, { isLoading }] = usecreateFeedbackMutation(); // Use the appropriate feedback mutation hook
     const [createFeedback, { isLoading }] = useCreateFeedbackMutation(); // Corrected hook name
@@ -31,6 +32,8 @@ const CreateFeedback = () => {
     useEffect(() => {
       setViewUserInfo(true);
     }, []);
+
+   
 
    /* const changeCategory = (e) => {
       setCategory(e.target.value);
@@ -130,6 +133,9 @@ const CreateFeedback = () => {
                               sx={{ width: '30%', height: '78px' }} value={occupantEmail} InputProps={{ readOnly: true }} />
                             </Col>
                           </Row>
+                          
+
+                          
 
                           <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
                                                     <Col lg={3} xs={6}><label htmlFor="category" className={CreateFeedbackStyles.lbl}>Category<span className={CreateFeedbackStyles.require}><b>*</b></span></label></Col>

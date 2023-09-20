@@ -38,6 +38,8 @@ import CreateFeedback from './pages/createFeedbackPage';
 
 import MakeInitialPaymentPage from './pages/makeInitialPaymentPage';
 
+import ConfirmReservationPage from './pages/confirmReservationPage';
+
 import OrderList from './pages/OrderList.jsx'
 
 
@@ -82,7 +84,7 @@ const router = createBrowserRouter(
 
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
-          <Route path='/owner/ingredient/update' element={ <UpdateIngredientPage /> } />
+          <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
 
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
         </Route>
@@ -95,6 +97,8 @@ const router = createBrowserRouter(
           <Route path='/occupant/order/' element={<OrderList />} />
 
           <Route path='/occupant/makePayment/' element={<MakeInitialPaymentPage />} />
+
+          <Route path='/occupant/reservation/confirm/' element={<ConfirmReservationPage />} />
 
           <Route path='/occupant/feedback/create' element={<CreateFeedback />} />
         </Route>

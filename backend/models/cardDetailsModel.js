@@ -11,7 +11,7 @@ const cardDetailsSchema = mongoose.Schema({
         require: true
     },
     expireDate : {
-        type : Date,
+        type : String,
         require : true,
     },
     cvv : {
