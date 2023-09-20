@@ -42,6 +42,10 @@ const ticketSchema = mongoose.Schema({
         default:'Pending'
     },
 
+    attachment:{
+        type:String
+    },
+
 },{
     timestamps:true
 });

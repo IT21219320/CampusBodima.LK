@@ -10,18 +10,17 @@ import Boarding from '../models/boardingModel.js';
 //route POST /api/tickets/create
 // @access Private
 const createTicket = asyncHandler(async (req,res) =>{
-    const{ senderId, subject, category, subCategory ,description } = req.body;
+    const{ senderId, subject, category, subCategory ,description, attachment } = req.body;
 
     const reservation = await Reservation.findOne({occupantID: senderId});
-
     if(!reservation){
         res.status(400);
         throw new Error('Please join a boarding to raise ticket')
     }
-
+    
     const boarding = await Boarding.findOne({_id: reservation.boardingId});
-
-    console.log(boarding);
+    
+    console.log(reservation.boardingId);
     const owner = await User.findById(boarding.owner);
 
     const largestTicketNo = await Ticket.findOne({}, { ticketId: 1}).sort({ticketId: -1});
@@ -37,7 +36,6 @@ const createTicket = asyncHandler(async (req,res) =>{
     ticketId = ticketId.toString();
 
     const sender = await User.findById(senderId);
-    console.log(sender);
 
     const ticket = await Ticket.create({
         ticketId,
@@ -46,7 +44,8 @@ const createTicket = asyncHandler(async (req,res) =>{
         subject,
         category,
         subCategory,
-        description
+        description,
+        attachment
 
     });
 
@@ -60,22 +59,47 @@ const createTicket = asyncHandler(async (req,res) =>{
 
 });
 
-//getTicket by userId
+//getTicket by userId   userta adala tiket tika
 
 const getUserTickets = asyncHandler(async (req,res) => {
     const id = req.body.id;
-    const page = req.body.page || 1;
-    const pageSize = req.body.pageSize;
+    const page = req.body.page || 0;
+    const pageSize = req.body.rowsPerPage;
+    const category = req.body.category;
+    const subCategory = req.body.subCategory;
+    const status = req.body.status;
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
+    const date = req.body.date;
+    const search = req.body.search;
 
-    const skip = (page - 1) * pageSize;
+    const skip = (page) * pageSize;
+
+    var totalRows = await Ticket.countDocuments({
+        'senderId._id': id,
+        ...(category !== 'all' ? { category } : {}),
+        ...(subCategory !== 'all' ? { subCategory } : {}),
+        ...(status !== 'all' ? { status } : {}),
+        ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+        subject: { $regex: search, $options: "i" } 
+    });
+
+    console.log(totalRows);
 
     try{
-         const tickets = await Ticket.find({'senderId._id': id})
-            .skip(skip)
-            .limit(pageSize);
+        const tickets = await Ticket.find({
+            'senderId._id': id,
+            ...(category !== 'all' ? { category } : {}),
+            ...(subCategory !== 'all' ? { subCategory } : {}),
+            ...(status !== 'all' ? { status } : {}),
+            ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
+            subject: { $regex: search, $options: "i" } 
+        })
+        .skip(skip)
+        .limit(pageSize);
 
         if(tickets){
-            res.status(201).json({tickets});
+            res.status(201).json({tickets,totalRows});
         }
          else{
             res.status(400);
@@ -86,7 +110,55 @@ const getUserTickets = asyncHandler(async (req,res) => {
     }
 });
 
-//getTicket by ticketId
+// search
+const search = asyncHandler(async (req,res) => {
+    const id = req.body.id;
+    const page = req.body.page || 0;
+    const pageSize = req.body.rowsPerPage;
+    const search = req.body.search;
+
+    const skip = (page) * pageSize;
+
+    var totalRows = await Ticket.countDocuments({
+        'senderId._id': id,
+        $or: [
+            { subject: { $regex: search, $options: "i" } },
+            { category: { $regex: search, $options: "i" } },
+            { subCategory: { $regex: search, $options: "i" } },
+            {status: {$regex: search, $options: "i"}},
+            
+          ],  
+    });
+
+    console.log(totalRows);
+
+    try{
+        const tickets = await Ticket.find({
+            'senderId._id': id,
+            $or: [
+                { subject: { $regex: search, $options: "i" } },
+                { category: { $regex: search, $options: "i" } },
+                { subCategory: { $regex: search, $options: "i" } },
+                {status: {$regex: search, $options: "i"}},
+                {description: {$regex: search, $options: "i"}}
+              ],  
+        })
+        .skip(skip)
+        .limit(pageSize);
+
+        if(tickets){
+            res.status(201).json({tickets,totalRows});
+        }
+         else{
+            res.status(400);
+            throw new Error('No tickets');
+        } 
+    }catch(err){
+        res.status(500).json({err});
+    }
+});
+
+//getTicket by ticketId      ticket ekata adala tickets tika(thread)
 
 const getTicketsbyTicketId = asyncHandler(async (req,res) => {
     const{ticketId} = req.body;
@@ -105,7 +177,7 @@ const getTicketsbyTicketId = asyncHandler(async (req,res) => {
 //updatetickets
 
 const updateTicket = asyncHandler(async (req,res) => {
-    const {_id,ticketId,senderId,recieverId,subject,category,subCategory,description,status} = req.body;
+    const {_id,ticketId,senderId,recieverId,subject,category,subCategory,description,status,attachment} = req.body;
 
     const tickets = await Ticket.findById(_id);
 
@@ -115,6 +187,7 @@ const updateTicket = asyncHandler(async (req,res) => {
         tickets.subCategory = subCategory || tickets.subCategory;
         tickets.description = description || tickets.description;
         tickets.status = status || tickets.status;
+        tickets.attachment = attachment || tickets.attachment;
 
         const updatedTicket = await tickets.save();
 
@@ -156,7 +229,9 @@ export { createTicket,
         getUserTickets,
         getTicketsbyTicketId,
         updateTicket,
-        deleteTicket }
+        deleteTicket,
+        search
+        }
 
 
 

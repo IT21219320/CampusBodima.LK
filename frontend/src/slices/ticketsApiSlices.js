@@ -16,13 +16,21 @@ export const ticketsApiSlice = apiSlice.injectEndpoints({
                 url: `${TICKETS_URL}/getUserTickets`,
                 method: 'POST',
                 body: data,
-                
             }),
         }),
+
+        searchTicket:builder.mutation({
+            query: (data) => ({
+                url: `${TICKETS_URL}/search`,
+                method:'POST',
+                body: data,
+            }), 
+        })
     }),
 });
 
 export const{
     useCreateTicketMutation,
     useGetUserTicketsMutation,
+    useSearchTicketMutation,
 } = ticketsApiSlice
