@@ -82,7 +82,7 @@ const router = createBrowserRouter(
 
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
-          <Route path='/owner/ingredient/update' element={ <UpdateIngredientPage /> } />
+          <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
 
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
         </Route>
