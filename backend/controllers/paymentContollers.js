@@ -30,6 +30,8 @@ const makePayment = expressAsyncHandler(async(req,res) =>{
 
   const user = await User.findById(userInfo_id);
 
+  console.log("payment inserted");
+
   const response = await payment.create({
     occupant: user,
     paymentType: "Card",
@@ -84,7 +86,7 @@ const getIntent = expressAsyncHandler(async(req,res)=>{
   try {
 
     const paymentIntent = await stripe.paymentIntents.create({
-      currency: 'LKR',
+      currency: 'EUR',
       amount: 1999,
       automatic_payment_methods: { enabled: true }
     });
