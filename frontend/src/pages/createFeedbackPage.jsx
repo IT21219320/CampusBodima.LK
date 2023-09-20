@@ -134,26 +134,7 @@ const CreateFeedback = () => {
                               sx={{ width: '30%', height: '78px' }} value={occupantEmail} InputProps={{ readOnly: true }} />
                             </Col>
                           </Row>
-                          <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
-                                                    <Col lg={3} xs={6}><label htmlFor="boardingID" className={CreateFeedbackStyles.lbl}>Boarding ID<span className={CreateFeedbackStyles.require}></span></label></Col>
-                                                    <Col lg={9} xs={6} className='mt-3'>
-                                                        <FormControl sx={{ m:0, minWidth: 120 }} size="small"> 
-                                                            <Select 
-                                                              value={boardingId} 
-                                                              onChange={(e) => setBoardingId(e.target.value)} 
-                                                              >
-                                                                
-                                                                {boardingNames.map((boarding) => (
-                                                                <MenuItem key={boarding._id} value={boarding._id}>
-                                                                  {boarding.boardingName}
-                                                                </MenuItem>
-                                      ))}
-                                                             
-                                                            </Select>
-                                                        </FormControl>
-                                                        </Col>
-                                                      
-                          </Row>
+                          
 
                           
 
