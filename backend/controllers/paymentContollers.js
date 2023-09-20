@@ -30,8 +30,6 @@ const makePayment = expressAsyncHandler(async(req,res) =>{
 
   const user = await User.findById(userInfo_id);
 
-  console.log("payment inserted");
-
   const response = await payment.create({
     occupant: user,
     paymentType: "Card",
