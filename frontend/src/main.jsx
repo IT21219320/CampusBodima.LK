@@ -8,32 +8,45 @@ import store from './store';
 import { Provider } from 'react-redux';
  
 import App from './App.jsx';
+
+
 import HomePage from './pages/homePage.jsx';
+
 import LoginPage from './pages/loginPage.jsx';
 import RegisterPage from './pages/registerPage.jsx';
 import VerifyEmailPage from './pages/verifyEmailPage.jsx';
 import ProfilePage from './pages/profilePage.jsx';
 import GenerateOtpPage from './pages/generateOtpPage.jsx';
+import ResetPasswordPage from './pages/resetPasswordPage.jsx';
+
 import OwnerBoardingPage from './pages/ownerBoardingPage.jsx';
 import RegisterBoardingPage from './pages/registerBoardingPage.jsx';
 import EditBoardingPage from './pages/editBoardingPage.jsx';
 import OwnerBoardingRoomPage from './pages/ownerBoardingRoomPage.jsx';
 import AddBoardingRoomPage from './pages/addBoardingRoomPage.jsx';
+
 import OwnerIngredientPage from './pages/OwnerIngredientPage';
 import AddIngredientPage from './pages/addIngredientPage';
 import UpdateIngredientPage from './pages/updateIngredientPage';
-import ResetPasswordPage from './pages/resetPasswordPage.jsx';
-import OccupantAllTicketsPage from './pages/occupantAllTicketsPage.jsx';
+
+import OccupantTicketsPage from './pages/occupantTicketsPage.jsx';
 import CreateTicketPage from './pages/createTicketPage.jsx';
+
 import AddUtilitiesPage from './pages/addUtilityPage.jsx';
+
 import CreateFeedback from './pages/createFeedbackPage';
+
 import MakeInitialPaymentPage from './pages/makeInitialPaymentPage';
+
 import OrderList from './pages/OrderList.jsx'
+
+
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
 import OwnerRoute from './components/ownerRoute';
 import OccupantRoute from './components/occupantRoute';
 
+import Spinner from 'react-bootstrap/Spinner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
@@ -76,7 +89,7 @@ const router = createBrowserRouter(
 
         {/* Occupant Routes */}
         <Route path='' element={ <OccupantRoute /> }>
-          <Route path='/occupant/ticket' element={<OccupantAllTicketsPage />} />
+          <Route path='/occupant/ticket' element={<OccupantTicketsPage />} />
           <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
 
           <Route path='/occupant/order/' element={<OrderList />} />
@@ -95,7 +108,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store = {store}>
     <React.StrictMode>
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} loadingElement={<div></div>}>
           <RouterProvider router={ router } />
         </LoadScript>
       </GoogleOAuthProvider>

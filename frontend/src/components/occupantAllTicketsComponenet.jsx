@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useGetUserTicketsMutation, useSearchTicketMutation } from "../slices/ticketsApiSlices";
 import { toast } from "react-toastify";
-import Sidebar from '../components/sideBar';
+import Sidebar from './sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Table} from 'react-bootstrap';
 import { Breadcrumbs, Typography, Fade, Card, CardContent,Link, Button, Paper, InputBase, IconButton, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress} from '@mui/material';
