@@ -20,6 +20,8 @@ const CreateFeedback = () => {
     const [occupantId, setOccupantId] = useState(userInfo._id);
     const [occupantName, setOccupantName] = useState(userInfo.firstName + ' ' + userInfo.lastName);
     const [occupantEmail, setOccupantEmail] = useState(userInfo.email);
+    const [boardingId, setBoardingId] = useState('');
+    const [boardingNames, setBoardingNames] = useState([]);
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
   
@@ -31,6 +33,8 @@ const CreateFeedback = () => {
     useEffect(() => {
       setViewUserInfo(true);
     }, []);
+
+   
 
    /* const changeCategory = (e) => {
       setCategory(e.target.value);
@@ -130,6 +134,28 @@ const CreateFeedback = () => {
                               sx={{ width: '30%', height: '78px' }} value={occupantEmail} InputProps={{ readOnly: true }} />
                             </Col>
                           </Row>
+                          <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
+                                                    <Col lg={3} xs={6}><label htmlFor="boardingID" className={CreateFeedbackStyles.lbl}>Boarding ID<span className={CreateFeedbackStyles.require}></span></label></Col>
+                                                    <Col lg={9} xs={6} className='mt-3'>
+                                                        <FormControl sx={{ m:0, minWidth: 120 }} size="small"> 
+                                                            <Select 
+                                                              value={boardingId} 
+                                                              onChange={(e) => setBoardingId(e.target.value)} 
+                                                              >
+                                                                
+                                                                {boardingNames.map((boarding) => (
+                                                                <MenuItem key={boarding._id} value={boarding._id}>
+                                                                  {boarding.boardingName}
+                                                                </MenuItem>
+                                      ))}
+                                                             
+                                                            </Select>
+                                                        </FormControl>
+                                                        </Col>
+                                                      
+                          </Row>
+
+                          
 
                           <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
                                                     <Col lg={3} xs={6}><label htmlFor="category" className={CreateFeedbackStyles.lbl}>Category<span className={CreateFeedbackStyles.require}><b>*</b></span></label></Col>
