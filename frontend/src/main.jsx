@@ -30,6 +30,7 @@ import AddIngredientPage from './pages/addIngredientPage';
 import UpdateIngredientPage from './pages/updateIngredientPage';
 
 import OccupantTicketsPage from './pages/occupantTicketsPage.jsx';
+import TicketThreadPage from './pages/ticketThreadPage.jsx'
 import CreateTicketPage from './pages/createTicketPage.jsx';
 
 import AddUtilitiesPage from './pages/addUtilityPage.jsx';
@@ -92,6 +93,7 @@ const router = createBrowserRouter(
         {/* Occupant Routes */}
         <Route path='' element={ <OccupantRoute /> }>
           <Route path='/occupant/ticket' element={<OccupantTicketsPage />} />
+          <Route path='/occupant/ticket/:ticketId' element={<TicketThreadPage />} />
           <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
 
           <Route path='/occupant/order/' element={<OrderList />} />
