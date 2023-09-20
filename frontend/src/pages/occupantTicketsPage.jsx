@@ -17,7 +17,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { FiEdit } from 'react-icons/fi';
 import {RiDeleteBinLine} from 'react-icons/ri'
 
-const OccupantAllTickets = () =>{
+const OccupantTickets = () =>{
 
     const [tickets, setTickets] = useState([]);
     const [page, setPage] = useState(0);
@@ -336,4 +336,4 @@ const OccupantAllTickets = () =>{
 
 }
 
-export default OccupantAllTickets;
+export default OccupantTickets;
