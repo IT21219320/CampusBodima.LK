@@ -20,10 +20,9 @@ const CreateFeedback = () => {
     const [occupantId, setOccupantId] = useState(userInfo._id);
     const [occupantName, setOccupantName] = useState(userInfo.firstName + ' ' + userInfo.lastName);
     const [occupantEmail, setOccupantEmail] = useState(userInfo.email);
-    const [boardingId, setBoardingId] = useState('');
-    const [boardingNames, setBoardingNames] = useState([]);
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
+    const [starRating, setstarRating]= useState("");
   
     //const [CreateFeedback, { isLoading }] = usecreateFeedbackMutation(); // Use the appropriate feedback mutation hook
     const [createFeedback, { isLoading }] = useCreateFeedbackMutation(); // Corrected hook name
