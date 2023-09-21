@@ -38,7 +38,7 @@ const CreateFeedback = () => {
     }, []);
 
     // Update the boardingId when the category changes
-    useEffect(() => {
+   /* useEffect(() => {
       if (category === 'boarding') {
           // Retrieve the boardingId based on your logic (e.g., from an API call)
           const fetchedBoardingId = 'YourBoardingIdHere';
@@ -51,7 +51,7 @@ const CreateFeedback = () => {
           // Reset boardingId if category is not 'boarding' or 'anex'
           setBoardingId('');
       }
-  }, [category]);
+  }, [category]);*/
 
    
 
@@ -69,6 +69,17 @@ const CreateFeedback = () => {
           setSubCategory('');
       }
   }*/
+
+  /* <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
+                                                <Col lg={3} xs={6}>
+                                                    <label htmlFor="boardingId" className={CreateFeedbackStyles.lbl}>
+                                                        Boarding ID/Anex ID
+                                                    </label>
+                                                </Col>
+                                                <Col lg={9} xs={6} className="mt-3">
+                                                    <TextField id="outlined-read-only-input" size="small" value={boardingId} InputProps={{ readOnly: true }} />
+                                                </Col>
+                                            </Row>*/
   
     const submitHandler = async (e) => {
       e.preventDefault();
@@ -172,16 +183,6 @@ const CreateFeedback = () => {
                                                         </Col>
 
 
-                                                        <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
-                                                <Col lg={3} xs={6}>
-                                                    <label htmlFor="boardingId" className={CreateFeedbackStyles.lbl}>
-                                                        Boarding ID/Anex ID
-                                                    </label>
-                                                </Col>
-                                                <Col lg={9} xs={6} className="mt-3">
-                                                    <TextField id="outlined-read-only-input" size="small" value={boardingId} InputProps={{ readOnly: true }} />
-                                                </Col>
-                                            </Row>
 
                                                       
                           </Row>
