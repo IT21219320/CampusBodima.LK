@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {Row, Col} from "react-bootstrap";
 import { Elements } from "@stripe/react-stripe-js";
 import Stepper from '@mui/material/Stepper';
@@ -7,14 +7,25 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import { loadStripe } from "@stripe/stripe-js";
 import paymentScreenStyles from "../Styles/paymentScreen.module.css";
+import { useMakePaymentMutation } from "../slices/paymentApiSlice";
+import { useParams } from "react-router-dom";
+import {setConfirmPaymentStatus} from '../slices/customizeSlice';
 
 function ConfirmReservationPage() {
 
   const { userInfo } = useSelector((state) => state.auth);
 
-  const [activeStep, setActiveStep] = useState(4);
-  
-  
+  /*const insertData = async() => {
+    const reqData = { userID: userInfo._id, id };
+      try {
+        console.log('dcdf');
+        dispatch(setConfirmPaymentStatus({status:1})); 
+        const res = await makePayment({ reqData }).unwrap();
+      } catch (error) {
+        console.error(error);
+      }
+  }*/
+
 
   return (
     <>

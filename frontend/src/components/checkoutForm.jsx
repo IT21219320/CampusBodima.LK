@@ -1,16 +1,20 @@
 import { PaymentElement, LinkAuthenticationElement } from "@stripe/react-stripe-js";
 import { useState } from "react";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useMakePaymentMutation } from "../slices/paymentApiSlice";
+import {setConfirmPaymentStatus} from '../slices/customizeSlice';
+import { CardElement, CardCvcElement } from "@stripe/react-stripe-js";
 
-export default function CheckoutForm() {
+export default function CheckoutForm({clientSecret}) {
   const stripe = useStripe();
+  const dispatch = useDispatch();
   const elements = useElements();
   
   const { userInfo } = useSelector((state) => state.auth);
   const [message, setMessage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+ 
   const [makePayment] = useMakePaymentMutation();
 
   const handleSubmit = async (e) => {
@@ -23,24 +27,34 @@ export default function CheckoutForm() {
     }
 
     setIsProcessing(true);
-
-    const { error } = await stripe.confirmPayment({
+    dispatch(setConfirmPaymentStatus({status:0})); 
+    
+    /*const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         
         // Make sure to change this to your payment completion page
-        return_url: `http://localhost:3001/success`,
+        return_url: `http://localhost:3000/occupant/reservation/confirm`,
+      },
+    });*/
+    const cardElement = elements.getElement(Card);
+    console.log(cardElement)
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: elements.getElement(CardElement) ,
       },
     });
 
-    if (error.type === "card_error" || error.type === "validation_error") {
+    setMessage(result)
+    //error.type === "card_error" || error.type === "validation_error"
+    if (result.error) {
       setMessage(error.message);
       setIsProcessing(false);
     } else {
       
       const id = userInfo._id
       const reqData = {userID: id}
-      const res = await makePayment({reqData}).unwrap();
+      const res = makePayment({reqData}).unwrap()
       setIsProcessing(false);
     }
     
@@ -51,7 +65,7 @@ export default function CheckoutForm() {
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" />
-      <button disabled={isProcessing || !stripe || !elements} style={{backgroundColor: "blue", width:"25%", borderRadius:"5px", float:"right", transition: "background-color 0.3s",}} onMouseEnter={() => {this.style.backgroundColor = "red";}}  onMouseLeave={() => {this.style.backgroundColor = "blue";}} >
+      <button disabled={isProcessing || !stripe || !elements} style={{backgroundColor: "blue", width:"25%", borderRadius:"5px", float:"right", transition: "background-color 0.3s",}}  >
         <span id="button-text">
           {isProcessing ? "Processing ... " : "Pay now"}
         </span>

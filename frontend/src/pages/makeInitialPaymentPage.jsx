@@ -3,11 +3,13 @@ import { useSelector } from "react-redux";
 import {Row, Col} from "react-bootstrap";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "../components/checkoutForm";
+import paymentForm from "../components/paymentForm";
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import { loadStripe } from "@stripe/stripe-js";
 import paymentScreenStyles from "../Styles/paymentScreen.module.css";
+import PaymentForm from "../components/paymentForm.jsx";
 
 function MakeInitialPaymentPage() {
   const [stripePromise, setStripePromise] = useState('');
@@ -39,7 +41,11 @@ function MakeInitialPaymentPage() {
     .then(({clientSecret}) =>setClientSecret(clientSecret));
 
   }, []);
-
+  /*{clientSecret && stripePromise && (
+    <Elements stripe={stripePromise} options={{ clientSecret }}>
+      <CheckoutForm clientSecret={clientSecret}/>
+    </Elements>
+  )}*/
   return (
     <>
       <div style={{width:'100%'}}>
@@ -74,11 +80,7 @@ function MakeInitialPaymentPage() {
             <Col>
             <h3 className={paymentScreenStyles.h3Topic}>Enter card details</h3>
             <div className={paymentScreenStyles.paymentForm}>
-                {clientSecret && stripePromise && (
-                  <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <CheckoutForm />
-                  </Elements>
-                )}
+                <PaymentForm/>
               </div>
             </Col>
         </Row>
