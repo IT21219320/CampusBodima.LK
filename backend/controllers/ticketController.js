@@ -68,12 +68,17 @@ const getUserTickets = asyncHandler(async (req,res) => {
     const category = req.body.category;
     const subCategory = req.body.subCategory;
     const status = req.body.status;
-    const startDate = req.body.startDate;
-    const endDate = req.body.endDate;
+    const startDate = new Date(req.body.startDate);
+    const endDate = new Date(req.body.endDate);
     const date = req.body.date;
     const search = req.body.search;
 
     const skip = (page) * pageSize;
+    
+    if (startDate.toDateString() === endDate.toDateString()) {
+        // If the start and end dates are the same day, adjust the end date to the end of that day
+        endDate.setHours(23, 59, 59, 999); // Set to just before midnight of the following day
+    }
 
     var totalRows = await Ticket.countDocuments({
         'senderId._id': id,

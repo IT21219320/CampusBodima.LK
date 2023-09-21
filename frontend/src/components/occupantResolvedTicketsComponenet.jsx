@@ -182,6 +182,7 @@ const OccupantResolvedTickets = ({search, activeTab}) =>{
                                 <DateRange
                                     ranges={[selectionRange]}
                                     onChange={handleDateRangeSelect}
+                                    maxDate={new Date()}
                                 />
                             </Select>
                         </FormControl>

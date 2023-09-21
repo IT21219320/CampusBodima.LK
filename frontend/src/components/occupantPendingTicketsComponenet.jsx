@@ -197,6 +197,7 @@ const OccupantPendingTickets = ({search}) =>{
                                 <DateRange
                                     ranges={[selectionRange]}
                                     onChange={handleDateRangeSelect}
+                                    maxDate={new Date()}
                                 />
                             </Select>
                         </FormControl>
