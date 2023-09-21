@@ -40,7 +40,6 @@ import CreateFeedback from './pages/createFeedbackPage.jsx';
 import OccupantFeedback from './pages/occupantFeedbackPage.jsx';
 import UpdateFeedbackpage from './pages/updateFeedbackPage.jsx';
 
-
 import OccupantPaymentDash from './pages/occupantPaymentsDashboard.jsx';
 import MakeInitialPaymentPage from './pages/makeInitialPaymentPage.jsx';
 
@@ -48,7 +47,7 @@ import ViewAllReservationsPage from './pages/viewAllReservationsPage.jsx'
 import ConfirmReservationPage from './pages/confirmReservationPage.jsx';
 
 import OrderList from './pages/OrderList.jsx'
-
+import OrderPage from './pages/OrderPage';
 
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
@@ -94,6 +93,8 @@ const router = createBrowserRouter(
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
+          
+          <Route path='/owner/order/' element={<OrderPage />} />
 
           <Route path='/owner/utility/' element={<AllUtilitiesPage />} />
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
