@@ -50,11 +50,7 @@ import Sidebar from '../components/sideBar';
          
          <ul>
           <p></p>
-           {orders.map((order) => (
-             <li key={order._id}>
-               Product: {order.product},Food Type: {order.foodType}, Quantity: {order.quantity}, Price: {order.price}
-             </li>
-           ))}
+          
          </ul>
          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
          <tr>
