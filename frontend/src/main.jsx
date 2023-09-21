@@ -34,6 +34,7 @@ import TicketThreadPage from './pages/ticketThreadPage.jsx'
 import CreateTicketPage from './pages/createTicketPage.jsx';
 
 import AddUtilitiesPage from './pages/addUtilityPage.jsx';
+import AllUtilitiesPage from './pages/allUtilitiesPage.jsx';
 
 import CreateFeedback from './pages/createFeedbackPage';
 
@@ -88,6 +89,7 @@ const router = createBrowserRouter(
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
 
+          <Route path='/owner/utility/' element={<AllUtilitiesPage />} />
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
         </Route>
 
