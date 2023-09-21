@@ -7,11 +7,13 @@ import { NavigateNext } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { toast } from 'react-toastify';
 import { useCreateFeedbackMutation } from '../slices/feedbackApiSlice'; // Corrected import
+import StarRating from '../pages/StarRating.jsx';
 
 import CreateFeedbackStyles from '../styles/createFeedbackStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { feedbackApiSlice } from '../slices/feedbackApiSlice';
 import Sidebar from '../components/sideBar';
+
 
 const CreateFeedback = () => {
     const { userInfo } = useSelector((state) => state.auth);
@@ -20,9 +22,11 @@ const CreateFeedback = () => {
     const [occupantId, setOccupantId] = useState(userInfo._id);
     const [occupantName, setOccupantName] = useState(userInfo.firstName + ' ' + userInfo.lastName);
     const [occupantEmail, setOccupantEmail] = useState(userInfo.email);
+    const [boardingId, setBoardingId] = useState('');
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
-    const [starRating, setstarRating]= useState("");
+    const [rating, setRating] = useState(0);
+   
   
     //const [CreateFeedback, { isLoading }] = usecreateFeedbackMutation(); // Use the appropriate feedback mutation hook
     const [createFeedback, { isLoading }] = useCreateFeedbackMutation(); // Corrected hook name
@@ -32,6 +36,22 @@ const CreateFeedback = () => {
     useEffect(() => {
       setViewUserInfo(true);
     }, []);
+
+    // Update the boardingId when the category changes
+    useEffect(() => {
+      if (category === 'boarding') {
+          // Retrieve the boardingId based on your logic (e.g., from an API call)
+          const fetchedBoardingId = 'YourBoardingIdHere';
+          setBoardingId(fetchedBoardingId);
+      } else if (category === 'anex') {
+          // Retrieve the boardingId based on your logic for 'anex'
+          const fetchedBoardingId = 'YourAnexIdHere';
+          setBoardingId(fetchedBoardingId);
+      } else {
+          // Reset boardingId if category is not 'boarding' or 'anex'
+          setBoardingId('');
+      }
+  }, [category]);
 
    
 
@@ -54,7 +74,7 @@ const CreateFeedback = () => {
       e.preventDefault();
   
       try {
-        const res = await createFeedback({ senderId: occupantId, feedback }).unwrap();
+        const res = await createFeedback({ senderId: occupantId, feedback,rating,boardingId }).unwrap();
         toast.success('Feedback submitted successfully');
         navigate('/occupant/feedback'); // Redirect to the feedback page after submission
       } catch (err) {
@@ -150,8 +170,33 @@ const CreateFeedback = () => {
                                                             </Select>
                                                         </FormControl>
                                                         </Col>
+
+
+                                                        <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
+                                                <Col lg={3} xs={6}>
+                                                    <label htmlFor="boardingId" className={CreateFeedbackStyles.lbl}>
+                                                        Boarding ID/Anex ID
+                                                    </label>
+                                                </Col>
+                                                <Col lg={9} xs={6} className="mt-3">
+                                                    <TextField id="outlined-read-only-input" size="small" value={boardingId} InputProps={{ readOnly: true }} />
+                                                </Col>
+                                            </Row>
+
                                                       
                           </Row>
+                          <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
+                            <Col lg={3} xs={6}>
+                              <label htmlFor="rating" className={CreateFeedbackStyles.lbl}>
+                                 Rating<span className={CreateFeedbackStyles.require}><b>*</b></span>
+                              </label>
+                            </Col>
+                            <Col>
+                               <StarRating rating={rating} onChange={setRating} />
+                            </Col>
+                          </Row>
+
+                          
                         
                           <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
                             <Col lg={3} xs={6}>
@@ -181,6 +226,9 @@ const CreateFeedback = () => {
                         
                         <LoadingButton type="submit" loading={isLoading} className="mt-4 mb-4 me-4" style={{ float: 'right' }} variant="contained">
                           Submit Feedback
+                        </LoadingButton>
+                        <LoadingButton type="submit" loading={isLoading} onClick={() => navigate('/occupant/feedback')} className="mt-4 mb-4 me-3" style={{ float: 'right' }} variant="contained">
+                          Cancel Feedback
                         </LoadingButton>
                         
                       </CardContent>

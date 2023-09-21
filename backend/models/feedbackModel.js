@@ -6,8 +6,11 @@ const feedbackSchema = mongoose.Schema({
         type:String,
         required:true,
     },
-
-
+    senderId:{
+        type:User.schema,
+        required:true,
+    },
+    
     category:{
       type:String,
       required:true,  

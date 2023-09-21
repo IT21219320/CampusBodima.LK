@@ -37,6 +37,9 @@ import AddUtilitiesPage from './pages/addUtilityPage.jsx';
 import AllUtilitiesPage from './pages/allUtilitiesPage.jsx';
 
 import CreateFeedback from './pages/createFeedbackPage';
+import OccupantFeedback from './pages/occupantFeedbackPage';
+//import UpdateFeedbackpage from './pages/updateFeedbackPage';
+
 
 import OccupantPaymentDash from './pages/occupantPaymentsDashboard';
 import MakeInitialPaymentPage from './pages/makeInitialPaymentPage';
@@ -54,6 +57,7 @@ import OccupantRoute from './components/occupantRoute';
 import Spinner from 'react-bootstrap/Spinner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
+import UpdateFeedbackpage from './pages/updateFeedbackPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -105,8 +109,13 @@ const router = createBrowserRouter(
           <Route path='/occupant/makePayment/' element={<MakeInitialPaymentPage />} />
 
           <Route path='/occupant/reservation/confirm/' element={<ConfirmReservationPage />} />
-
+          
+          <Route path='/occupant/feedback' element={<OccupantFeedback />} />
           <Route path='/occupant/feedback/create' element={<CreateFeedback />} />
+          
+          
+          
+
         </Route>
       </Route>
 

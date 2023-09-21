@@ -10,7 +10,8 @@ import{ createFeedback,getFeedbackById,updateFeedback,deleteFeedback } from '../
 
 router.post('/create', createFeedback);
 router.post('/getfeedback', getFeedbackById);
-router.put('/update', updateFeedback);
+router.put('/occupant/feedback/update/:feedbackId', updateFeedback);
 router.delete('/delete',deleteFeedback); 
+//router.post('/search', search);
 
 export default router;

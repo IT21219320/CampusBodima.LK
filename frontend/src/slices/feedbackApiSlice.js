@@ -33,6 +33,14 @@ export const feedbackApiSlice = apiSlice.injectEndpoints({
                 url: `${FEEDBACKS_URL}/delete/${data}`,
                 method: 'DELETE',
            }),
+        }),
+
+        searchFeedback:builder.mutation({
+            query: (data) => ({
+                url: `${FEEDBACKS_URL}/search`,
+                method:'POST',
+                body: data,
+            })
         })
     })
 });
@@ -41,5 +49,6 @@ export const {
     useGetFeedbackByIdMutation, // Also fix the capitalization here
     useUpdateFeedbackMutation, // Also fix the capitalization here
     useDeleteFeedbackMutation, // Also fix the capitalization here
+    useSearchFeedbackMutation,
   } = feedbackApiSlice;
 

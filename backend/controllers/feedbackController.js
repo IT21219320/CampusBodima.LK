@@ -8,23 +8,38 @@ import Boarding from '../models/boardingModel.js';
 
 
 // @desc Create a feedback
-// @route POST /api/feedbacks/create
+// @route POST /api/feedback/create
 // @access Private
 
 
 
 const createFeedback = asyncHandler(async (req, res) => {
-    const { feedbackId, category, description, ratingStar } = req.body;
+    const { category, description, ratingStar } = req.body;
 
     const reservation = await Reservation.findOne({occupantID: senderId});
    
 
     if(!reservation){
         res.status(400);
-        throw new Error('Please join a boarding to raise ticket')
+        throw new Error('Please join a boarding if you wont to create Feedback')
     }
 
     const boarding = await Boarding.findOne({_id: reservation.boardingId});
+
+    console.log(reservation.boardingId);
+    //const owner = await User.findById(boarding.owner);
+
+    const largestFeedbackNo = await Feedback.findOne({}, { feedbackId: 1}).sort({feedbackId: -1});
+    
+    var feedbackId;
+
+    if(largestFeedbackNo){
+        feedbackId = parseInt(largestFeedbackNo.feedbackId) + 1;
+    }else{
+        feedbackId = 1;
+    }
+
+    feedbackId = feedbackId.toString();
 
       const feedback = await Feedback.create({
         feedbackId,
@@ -47,8 +62,11 @@ const createFeedback = asyncHandler(async (req, res) => {
 
   // Getfeedback by feedbackId
   // @access Private
+
   const getFeedbackById = asyncHandler(async (req, res) => {
+
     const { feedbackId } = req.params;
+    
   
     try {
       const feedback = await Feedback.findById(feedbackId);

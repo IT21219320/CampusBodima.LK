@@ -4,7 +4,7 @@ import { Link, useLocation  } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
 import { Box, List, CssBaseline, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
-import { HomeRounded, Person, HomeWorkRounded, MenuRounded, MenuOpenRounded, ContactSupportRounded, Kitchen  } from '@mui/icons-material';
+import { HomeRounded, Person, HomeWorkRounded, MenuRounded, MenuOpenRounded, ContactSupportRounded, Kitchen,RateReviewRounded  } from '@mui/icons-material';
 import { Button, Image } from 'react-bootstrap';
 import {setSideBarStatus} from '../slices/customizeSlice';
 
@@ -171,6 +171,15 @@ export default function Sidebar() {
                 <ContactSupportRounded />
               </ListItemIcon>
               <ListItemText primary={"My Tickets"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+            </ListItem></Link>
+
+            <Link to='/occupant/feedback' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute == '/occupant/feedback' || activeRoute == '/occupant/feedback/create') ? sideBarStyles.active : ''}`}>
+              <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+              <RateReviewRounded />
+              </ListItemIcon>
+              <ListItemText primary={"My Feedbacks"} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
             </ListItem></Link>
           </>
