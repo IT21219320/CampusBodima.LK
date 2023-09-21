@@ -21,26 +21,22 @@ const orderSchema = mongoose.Schema({
     orderNo:{
         type:Number,
     },
-    occupant: {
+    /*occupant: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
+        ref: 'User',
+        required: true,
+    },*/
     status:{
         type:Boolean,
-        required:true,
     },
     date:{
         type:Date,
-        required:true,
     },
     total:{
         type:String,
-        required:true,
-    }
-},{
-    timestamps: true
+    },
 });
 
-const Order =  mongoose.model('Order' ,orderSchema );
+const Order =  mongoose.model('Order',orderSchema);
 
 export default Order;
