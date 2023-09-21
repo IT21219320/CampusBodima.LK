@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useGetUserTicketsMutation, useSearchTicketMutation } from "../slices/ticketsApiSlices";
+import { useGetUserTicketsMutation, useSearchTicketMutation, useUpdateTicketStatusMutation } from "../slices/ticketsApiSlices";
 import { toast } from "react-toastify";
 import { Row, Col, Table} from 'react-bootstrap';
-import { Card, CardContent, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress} from '@mui/material';
-import { GridViewRounded } from '@mui/icons-material';
+import { Card, CardContent, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress, Button} from '@mui/material';
+import { GridViewRounded, CheckCircleRounded } from '@mui/icons-material';
 import { DateRange } from 'react-date-range';
 import occupantAllTicketsStyles from '../styles/occupantAllTicketsStyles.module.css';
 import 'react-date-range/dist/styles.css'; // main style file
@@ -13,7 +13,7 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import { formatDistanceToNow } from 'date-fns';
 
 
-const OccupantAllTickets = ({search}) =>{
+const OccupantPendingTickets = ({search}) =>{
 
     const [tickets, setTickets] = useState([]);
     const [page, setPage] = useState(0);
@@ -27,6 +27,8 @@ const OccupantAllTickets = ({search}) =>{
     const [date, setDate] = useState('all');
     const [newSearch, setNewSearch] = useState('');
 
+    const [isLoading3, setIsLoading3] = useState(false);
+
     const TimeAgo = ( date ) => {
         const formattedDate = formatDistanceToNow(date, { addSuffix: true });
         
@@ -39,12 +41,14 @@ const OccupantAllTickets = ({search}) =>{
 
     const [getUserTickets, { isLoading }] = useGetUserTicketsMutation();
     const [searchTicket, { isLoading2 }] = useSearchTicketMutation();
+    const [updateTicketStatus] = useUpdateTicketStatusMutation();
     
     const loadData = async () => {
         try{
-            const res = await getUserTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status, startDate, endDate, date, search} ).unwrap();
+            const res = await getUserTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status:'Pending', startDate, endDate, date, search} ).unwrap();
             setTickets(res.tickets);
             setTotalRows(res.totalRows);
+            console.log(res);
         } catch(err){
             toast.error(err.data?.message || err.error);
         }
@@ -89,6 +93,18 @@ const OccupantAllTickets = ({search}) =>{
 
    const handleChangePage = (event, newPage) => {
         setPage(newPage);
+   }
+
+   const handleResolvedBtn = async(_id) =>{
+        setIsLoading3(true);
+        try{
+            const res = await updateTicketStatus( {_id} ).unwrap();
+            loadData();
+            toast.success('Successfully marked as resolved');
+        } catch(err){
+            toast.error(err.data?.message || err.error);
+        }        
+        setIsLoading3(false);
    }
 
    const handleSearch = async(newSearch) => {
@@ -167,25 +183,6 @@ const OccupantAllTickets = ({search}) =>{
                         </FormControl>
                     </Box>
                 </Col>
-
-                <Col>
-                    <Box sx={{ minWidth: 120, minHeight:50 }}>
-                        <FormControl fullWidth>
-                            <InputLabel>Status</InputLabel>
-                            <Select
-                                value={status}
-                                label="Status"
-                                onChange={(event) => setStatus(event.target.value)}
-                            >
-                                <MenuItem value={'all'}>All</MenuItem>
-                                <MenuItem value={'Resolved'}>Resolved</MenuItem>
-                                <MenuItem value={'Pending'}>Pending</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Box>
-                
-                </Col>
-
                 <Col>
                     <Box sx={{ minWidth: 120, minHeight:50 }}>
                         <FormControl fullWidth>
@@ -215,10 +212,11 @@ const OccupantAllTickets = ({search}) =>{
                                     <th>Reference Id</th>
                                     <th>Ticket Details</th>
                                     <th>Status</th>
+                                    <th>Mark As Resolved</th>
                                 </tr>
                         </thead>
                         <tbody>
-                            {isLoading ? <tr style={{width:'100%',height:'100%',textAlign: 'center'}}><td colSpan={3}><CircularProgress /></td></tr> : 
+                            {(isLoading || isLoading3) ? <tr style={{width:'100%',height:'100%',textAlign: 'center'}}><td colSpan={4}><CircularProgress /></td></tr> : 
                                 tickets.length > 0 ?
                                     tickets.map((ticket, index) => (
                                         <tr key={index}>
@@ -242,19 +240,18 @@ const OccupantAllTickets = ({search}) =>{
                                                     </CardContent>
                                                 </Card>
                                             </td>
-                                            {/*<td>
+                                            <td>
                                                 <Row style={{textAlign:"center"}}>
                                                     <Col>
-                                                        <Button className={occupantAllTicketsStyles.actionBtns} onClick={() => navigate(`/occupant/ticket/update/${ticket._id}`)}><FiEdit style={{color:"#3366ff" }} /></Button>
-                                                        <Button><RiDeleteBinLine style={{color:"#f73b54"}}/></Button>
+                                                        <Button onClick={() => handleResolvedBtn(ticket._id)}><CheckCircleRounded style={{color:"#00f17b", width:"40px", height:"40px" }} /></Button>
                                                     </Col>
                                                 </Row>
-                                            </td>*/}
+                                            </td>
                                         </tr>
                                     ))
                                 :
                                 <tr style={{height:'100%', width:'100%',textAlign:'center',color:'dimgrey'}}>
-                                    <td colSpan={3}><h2>You don't have any tickets!</h2></td>
+                                    <td colSpan={4}><h2>You don't have any tickets!</h2></td>
                                 </tr>
                             }
                         </tbody>
@@ -284,4 +281,4 @@ const OccupantAllTickets = ({search}) =>{
 
 }
 
-export default OccupantAllTickets;
+export default OccupantPendingTickets;

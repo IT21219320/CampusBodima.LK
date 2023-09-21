@@ -49,14 +49,18 @@ const CreateTicket = () => {
         e.preventDefault();
                 try {
                     setBackDropOpen(true);
-                    const timestamp = new Date().getTime();
-                    const random = Math.floor(Math.random() * 1000) + 1;
-                    const uniqueName = `${timestamp}_${random}.${attachment.name.split('.').pop()}`;
-                
-                    const storageRef = ref(storage, `${uniqueName}`);
-                    const uploadTask = uploadBytesResumable(storageRef, attachment);
+                    
+                    var uniqueName;
+                    if(attachment != ''){
+                        const timestamp = new Date().getTime();
+                        const random = Math.floor(Math.random() * 1000) + 1;
+                        uniqueName = `${timestamp}_${random}.${attachment.name.split('.').pop()}`;
+                    
+                        const storageRef = ref(storage, `${uniqueName}`);
+                        const uploadTask = uploadBytesResumable(storageRef, attachment);
 
-                    await uploadTask;
+                        await uploadTask;
+                    }
                     
                     console.log(uniqueName);   
 

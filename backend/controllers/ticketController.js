@@ -84,8 +84,6 @@ const getUserTickets = asyncHandler(async (req,res) => {
         subject: { $regex: search, $options: "i" } 
     });
 
-    console.log(totalRows);
-
     try{
         const tickets = await Ticket.find({
             'senderId._id': id,
@@ -130,8 +128,6 @@ const search = asyncHandler(async (req,res) => {
           ],  
     });
 
-    console.log(totalRows);
-
     try{
         const tickets = await Ticket.find({
             'senderId._id': id,
@@ -158,12 +154,14 @@ const search = asyncHandler(async (req,res) => {
     }
 });
 
-//getTicket by ticketId      ticket ekata adala tickets tika(thread)
+//getTicket by Id      uniquetika(thread)
 
-const getTicketsbyTicketId = asyncHandler(async (req,res) => {
-    const{ticketId} = req.body;
+const getTicketByUniqueId = asyncHandler(async (req,res) => {
+    const ticketId = req.params._id;
 
-    const ticket = await Ticket.find({ticketId});
+    console.log(ticketId);
+
+    const ticket = await Ticket.findOne({_id:ticketId});
 
     if(ticket){
         res.status(201).json({ticket});
@@ -205,6 +203,30 @@ const updateTicket = asyncHandler(async (req,res) => {
 
 });
 
+//updateTicket status: Mark as resolved
+
+const updateStatus = asyncHandler(async (req, res) => {
+    const{_id} = req.body;
+
+    const ticketStatus = await Ticket.findById(_id);
+
+    if(ticketStatus){
+        ticketStatus.status = "Resolved";
+    
+     const updatedTicketStatus = await ticketStatus.save();
+
+        res.status(200).json({
+            updatedTicketStatus
+        })
+    }
+    else{
+            res.status(404);
+            throw new Error('ticket not found');
+    
+        }
+    
+});
+
 //deleteTicket
 
 const deleteTicket = asyncHandler(async (req,res) => {
@@ -227,9 +249,10 @@ const deleteTicket = asyncHandler(async (req,res) => {
 
 export { createTicket,
         getUserTickets,
-        getTicketsbyTicketId,
+        getTicketByUniqueId,
         updateTicket,
         deleteTicket,
+        updateStatus,
         search
         }
 

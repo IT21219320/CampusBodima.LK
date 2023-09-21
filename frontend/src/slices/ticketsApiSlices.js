@@ -19,18 +19,35 @@ export const ticketsApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
+        //search handler
         searchTicket:builder.mutation({
             query: (data) => ({
                 url: `${TICKETS_URL}/search`,
                 method:'POST',
                 body: data,
             }), 
-        })
+        }),
+
+        updateTicketStatus:builder.mutation({
+            query: (data) => ({
+                url: `${TICKETS_URL}/updateStatus`,
+                method:'PUT',
+                body: data,
+            }), 
+        }),
+        getTicketByUniqueId:builder.mutation({
+            query: (data) => ({
+                url: `${TICKETS_URL}/${data}`,
+                method:'GET',
+            }), 
+        }),
     }),
 });
 
 export const{
     useCreateTicketMutation,
     useGetUserTicketsMutation,
+    useUpdateTicketStatusMutation,
+    useGetTicketByUniqueIdMutation,
     useSearchTicketMutation,
 } = ticketsApiSlice

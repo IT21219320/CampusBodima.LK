@@ -13,7 +13,7 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import { formatDistanceToNow } from 'date-fns';
 
 
-const OccupantAllTickets = ({search}) =>{
+const OccupantResolvedTickets = ({search, activeTab}) =>{
 
     const [tickets, setTickets] = useState([]);
     const [page, setPage] = useState(0);
@@ -42,7 +42,7 @@ const OccupantAllTickets = ({search}) =>{
     
     const loadData = async () => {
         try{
-            const res = await getUserTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status, startDate, endDate, date, search} ).unwrap();
+            const res = await getUserTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status:"Resolved", startDate, endDate, date, search, activeTab} ).unwrap();
             setTickets(res.tickets);
             setTotalRows(res.totalRows);
         } catch(err){
@@ -65,7 +65,7 @@ const OccupantAllTickets = ({search}) =>{
             loadData();
         }*/
 
-    },[page,rowsPerPage,category, subCategory, status, startDate, endDate, date, search]);  //when the values that are inside the box brackets change,each time loadData function runs
+    },[page,rowsPerPage,category, subCategory, status, startDate, endDate, date, search, activeTab]);  //when the values that are inside the box brackets change,each time loadData function runs
 
     const handleDateRangeSelect = (ranges) =>{
         console.log(ranges);
@@ -171,24 +171,6 @@ const OccupantAllTickets = ({search}) =>{
                 <Col>
                     <Box sx={{ minWidth: 120, minHeight:50 }}>
                         <FormControl fullWidth>
-                            <InputLabel>Status</InputLabel>
-                            <Select
-                                value={status}
-                                label="Status"
-                                onChange={(event) => setStatus(event.target.value)}
-                            >
-                                <MenuItem value={'all'}>All</MenuItem>
-                                <MenuItem value={'Resolved'}>Resolved</MenuItem>
-                                <MenuItem value={'Pending'}>Pending</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Box>
-                
-                </Col>
-
-                <Col>
-                    <Box sx={{ minWidth: 120, minHeight:50 }}>
-                        <FormControl fullWidth>
                             <InputLabel>Date</InputLabel>
                             <Select
                                 label="Date"
@@ -284,4 +266,4 @@ const OccupantAllTickets = ({search}) =>{
 
 }
 
-export default OccupantAllTickets;
+export default OccupantResolvedTickets;
