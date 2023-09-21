@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "../models/userModel.js";
 
 const reservationHistorySchema = mongoose.Schema({
     boardingId: {
@@ -17,8 +18,7 @@ const reservationHistorySchema = mongoose.Schema({
     },
 
     occupantID: {
-        type: String,
-        ref: 'User',
+        type: User.schema,
         required: true,
     },
 

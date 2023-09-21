@@ -33,10 +33,11 @@ const reserveRoom = asyncHandler(async(req,res) =>{
             const roomID = RoomID;
             console.log(boardingId);
 
-            const currentNoOfBeds = parseInt(room.noOfBeds, 10);
+            const noOfBeds = parseInt(room.noOfBeds);
+            const occupantCount = room.occupant.length;
             const updatedNoOfBeds = currentNoOfBeds - 1;
 
-            if(currentNoOfBeds>0){
+            if(noOfBeds > occupantCount){
                 if(Gender === boarding.gender || boarding.gender==='Any'){
                     const Reserve = await Reservation.create({
                         boardingId,
@@ -51,13 +52,11 @@ const reserveRoom = asyncHandler(async(req,res) =>{
         
                         const updatedRoom = await Room.findOneAndUpdate(
                             { _id: RoomID },
-                            { 
-                                
-                                $push: { occupant: occupantID },
-                                $set: { noOfBeds: toString(updatedNoOfBeds) }
+                            {
+                                $push: { occupant: occupantID }
                             },
                             { new: true }
-                        ).populate('room');
+                        );
         
                             res.status(201).json({
                             message: "inserted"
@@ -286,7 +285,7 @@ const deleteReservation = asyncHandler(async(req, res) => {
 
             boardingId : deleteReservation.boardingId,
             boardingType: deleteReservation.boardingType,
-            occupantID: occupantString,
+            occupantID: user,
             ReservedDate: deleteReservation.createdAt,
             
           });
