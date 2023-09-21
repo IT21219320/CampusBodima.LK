@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import Boarding from '../models/boardingModel.js';
 import Ingredient from '../models/ingredientModel.js';
+import IngredientHistory from '../models/ingredientHistoryModel.js';
 
 
 // @desc    Add a new Ingredient
@@ -35,6 +36,15 @@ const addIngredient = asyncHandler(async (req, res) => {
     });
 
     if(ingredient){
+
+        await IngredientHistory.create({
+            ingredientName,
+            quantity,
+            purchaseDate,
+            type: 'Purchase',  
+            boarding: boardingId,
+        });
+
         res.status(201).json({
             ingredient
         });
@@ -50,16 +60,23 @@ const addIngredient = asyncHandler(async (req, res) => {
 // route    GET /api/ingredient/owner/:boardingId/:page
 // @access  Private - Owner
 const getBoardingIngredient = asyncHandler(async (req, res) => {
-    const boardingId = req.params.boardingId;
-    const page = req.params.page || 1;
+    const boardingId = req.body.boardingId;
+    const page = req.body.pageNo || 1;
+    const searchQuery = req.body.searchQuery;
     const pageSize = 10;
 
     const skipCount = (page - 1) * pageSize;
 
-    var totalPages = await Ingredient.countDocuments({boarding:boardingId});
+    var totalPages = await Ingredient.countDocuments({
+        boarding:boardingId,
+        ingredientName: {$regex: searchQuery, $options: 'i'}
+    });
     totalPages = Math.ceil(parseInt(totalPages)/pageSize);
 
-    const ingredient = await Ingredient.find({boarding:boardingId}).skip(skipCount).limit(pageSize);
+    const ingredient = await Ingredient.find({
+        boarding:boardingId,
+        ingredientName: {$regex: searchQuery, $options: 'i'}
+    }).skip(skipCount).limit(pageSize);
     
     if(ingredient){
         res.status(200).json({
@@ -73,6 +90,29 @@ const getBoardingIngredient = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Search all Ingredient for Ingredient Name 
+// route    GET /api/ingredient/owner/:boardingId/:page
+// @access  Private - Owner
+/*const searchIngredient = asyncHandler(async (req, res) => {
+    const { boardingId } = req.params;
+    const { ingredientName } = req.query; // ingredientName from query parameters
+
+    const ingredient = await Ingredient.findOne({
+        boarding: boardingId,
+        ingredientName: ingredientName,
+    });
+
+    if (ingredient) {
+        res.status(200).json({
+            ingredient,
+        });
+    } else {
+        res.status(404);
+        throw new Error('Ingredient not found');
+    }
+});*/
+
+ 
 // @desc    Get all Boardings of particular owner if they selected Food
 // route    GET /api/ingredient/owner/:ownerId
 // @access  Private - Owner
@@ -91,6 +131,43 @@ const getOwnerBoarding = asyncHandler(async (req, res) => {
         throw new Error("No Boardings Available")
     }
 });
+
+// @desc    Get Ingredients for Update
+// route    GET /api/ingredient/owner/update/:boardingId/:ingredientId
+// @access  Private - Owner
+const getUpdateIngredients = asyncHandler(async (req, res) => {
+    const boardingId = req.params.boardingId;
+    const ingredientId = req.params.ingredientId;
+  
+    try {
+      const ingredient = await Ingredient.findOne({
+        _id: ingredientId,
+        boarding: boardingId,
+      });
+  
+      if (ingredient) {
+         
+        const boarding = await Boarding.findById(boardingId);
+  
+        if (boarding) {
+          res.status(200).json({
+            ingredient,
+            boarding,
+          });
+        } else {
+          res.status(404);
+          throw new Error("Boarding not found");
+        }
+      } else {
+        res.status(404);
+        throw new Error("Ingredient not found");
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: error.message || "Server error while fetching ingredient",
+      });
+    }
+  });
 
 
 // @desc    Update ingredient of particular boarding
@@ -163,5 +240,6 @@ export {
     getBoardingIngredient,
     getOwnerBoarding,
     updateIngredient,
+    getUpdateIngredients,
     deleteIngredient    
 };

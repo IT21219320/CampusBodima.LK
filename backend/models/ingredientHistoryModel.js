@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const ingredientSchema = mongoose.Schema({
+const ingredientHistorySchema = mongoose.Schema({
     ingredientName:{
         type: String, 
         required: true,
@@ -9,11 +9,11 @@ const ingredientSchema = mongoose.Schema({
         type: String, 
         required: true
     },
-    measurement: {
+    purchaseDate: {
         type: String, 
         required: true
     },
-    purchaseDate: {
+    type: {
         type: String, 
         required: true
     }, 
@@ -24,6 +24,6 @@ const ingredientSchema = mongoose.Schema({
     },
 });
 
-const Ingredient = mongoose.model('Ingredient', ingredientSchema);
+const IngredientHistory = mongoose.model('IngredientHistory', ingredientHistorySchema);
 
-export default Ingredient
+export default IngredientHistory

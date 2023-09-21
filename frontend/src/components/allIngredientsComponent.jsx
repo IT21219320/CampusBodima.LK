@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Row, Col, Table, Button } from 'react-bootstrap';
-import { Link, Pagination, CircularProgress } from "@mui/material";
+import { Row, Col, Table, Button, Form } from 'react-bootstrap';
+import { Link, Pagination, CircularProgress,IconButton } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
+import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
 import KitchenIcon from '@mui/icons-material/Kitchen';
+import { BrowserUpdated as BrowserUpdatedIcon } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetBoardingIngredientsMutation } from '../slices/ingredientsApiSlice';
+import { useGetBoardingIngredientsMutation, useDeleteIngredientsMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
-import ingredientStyles from '../styles/ingredientStyles.module.css';  
+import ingredientStyles from '../styles/ingredientStyles.module.css'; 
+import { Link as CustomLink } from "react-router-dom";
+
+ 
 
 const AllIngredients = ({ boardingId }) => {
     
@@ -20,22 +25,24 @@ const AllIngredients = ({ boardingId }) => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState();
     const [ingredients, setIngredients] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const [getBoardingIngredient, { isLoading }] = useGetBoardingIngredientsMutation();
+    const [deleteBoardingIngredient, { isLoading2 }] = useDeleteIngredientsMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
 
     const loadData = async (pageNo) => {
         try {
-            if(boardingId){
-                console.log(boardingId);
-                const data = boardingId+'/'+pageNo;
-                const res = await getBoardingIngredient( data ).unwrap();
-                setIngredients(res.ingredient);  
-                setTotalPages(res.totalPages);  
+            if (boardingId) {
+    
+                const res = await getBoardingIngredient({boardingId,pageNo,searchQuery}).unwrap();
+                console.log(res);
+                setIngredients(res.ingredient);
+                setTotalPages(res.totalPages);
             }
         } catch (err) {
             toast.error(err.data?.message || err.error);
@@ -44,7 +51,7 @@ const AllIngredients = ({ boardingId }) => {
 
     useEffect(() => {
         loadData(page);     
-    },[boardingId]);
+    },[boardingId,searchQuery]);
 
     const handlePageChange = (event, value) => {
         setPage(value);
@@ -52,9 +59,46 @@ const AllIngredients = ({ boardingId }) => {
         console.log(ingredients);   
     };
 
+    const handleDeleteIngredient = async (boardingId, ingredientId) => {
+        try {
+          const data = `${boardingId}/${ingredientId}`;
+          const res = await deleteBoardingIngredient(data).unwrap();
+          
+          if (res.message == "Ingredient deleted successfully") {
+            toast.success("Ingredient deleted successfully");
+            loadData(page);
+          } else {
+            toast.error("Failed to delete ingredient");
+          }
+        } catch (err) {
+          toast.error(err.data?.message || err.error);
+        }
+      };
+
+    // Function to handle search query change
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };  
+
     return(
         <>
             <Row style={{textAlign:'right', marginBottom:'20px'}}>
+                <Col className="mt-4">
+                    {/* This is where the search bar will be placed */}
+                    <Form.Group controlId="searchQuery" style={{ maxWidth: '300px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Form.Control
+                                type="text"
+                                placeholder="Search…"
+                                value={searchQuery}
+                                onChange={handleSearchChange} // Handle search query change
+                            />
+                            <IconButton>
+                                <SearchIcon />
+                            </IconButton>
+                        </div>
+                    </Form.Group>
+                </Col>
                 <Col><Link href='/owner/ingredient/add'><Button className="mt-4" style={{background: '#685DD8'}}><KitchenIcon/> Add New Ingredient</Button></Link></Col>
             </Row>
             <Row style={{minHeight:'calc(100vh - 240px)'}}>
@@ -82,16 +126,17 @@ const AllIngredients = ({ boardingId }) => {
                                 <td>{ingredient.measurement}</td>
                                 <td>{ingredient.purchaseDate}</td>
                                 <td className={ingredientStyles.nohover}> 
-                                    <Link href=''>
+                                    <CustomLink to={`/owner/ingredient/update/${boardingId}/${ingredient._id}`}>
                                         <Button  style={{ background: 'yellow', color: 'black', marginRight: '10px' }}>
                                         <BrowserUpdatedIcon /> Update
                                         </Button>
-                                    </Link>
-                                    <Link href=''>
-                                        <Button  style={{ background: 'red',color: 'black' }}>
+                                    </CustomLink>
+                                        <Button  
+                                        style={{ background: 'red',color: 'black' }}
+                                        onClick={() => handleDeleteIngredient(boardingId, ingredient._id)}
+                                        >
                                         <DeleteIcon /> Delete
                                         </Button>
-                                    </Link>
                                 </td> 
                                 </tr>
                             ))}

@@ -62,8 +62,8 @@ const AddIngredientPage = () => {
         const data = {
           boardingId: boardingId,  
           ingredientName,
-          quantity:quantity+''+measurement,  
-          measurement:alertquantity+''+measurement,
+          quantity:quantity+' '+measurement,  
+          measurement:alertquantity+' '+measurement,
           purchaseDate,
         };
 
