@@ -46,7 +46,6 @@ const RegisterBoardingPage = () => {
     const [description, setDescription] = useState('');
     const [boardingImages, setBoardingImages] = useState([]);
     const [boardingPreviewImages, setBoardingPreviewImages] = useState([]);
-    const [percent, setPercent] = useState('101');
     const [phoneNo, setPhoneNo] = useState(userInfo.phoneNo ? userInfo.phoneNo : '');
     const [bankAccNo, setBankAccNo] = useState(userInfo.bankAccNo ? userInfo.bankAccNo : '');
     const [bankAccName, setBankAccName] = useState(userInfo.bankAccName ? userInfo.bankAccName : '');
@@ -536,7 +535,6 @@ const RegisterBoardingPage = () => {
                                                                         <Form.Group controlId="formFile" className="mb-0">
                                                                             <Form.Label className={`${CreateBoardingStyles.addImgLabel}`}><AddPhotoAlternate/> Add a photo</Form.Label>
                                                                             <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
-                                                                            <p>{percent=='101' ? '' : <><LinearProgress variant="determinate" value={percent} />{percent}%</>}</p>
                                                                         </Form.Group>
                                                                     :<></>}
                                                                     {boardingPreviewImages.length > 0 ?
@@ -673,7 +671,6 @@ const RegisterBoardingPage = () => {
                                                                     <Form.Group controlId="formFile" className="mb-0">
                                                                         <Form.Label className={`${CreateBoardingStyles.addImgLabel}`}><AddPhotoAlternate/> Add a photo</Form.Label>
                                                                         <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
-                                                                        <p>{percent=='101' ? '' : <><LinearProgress variant="determinate" value={percent} />{percent}%</>}</p>
                                                                     </Form.Group>
                                                                 :<></>}
                                                                 {boardingPreviewImages.length > 0 ?
