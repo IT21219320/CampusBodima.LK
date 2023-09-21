@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import User from "./userModel";
 
 const reservationHistorySchema = mongoose.Schema({
     boardingId: {
@@ -7,14 +6,18 @@ const reservationHistorySchema = mongoose.Schema({
         required: true,
     },
 
-    roomID: {
+    boardingType:{
         type: String,
-        required: true,    
+        required: true,
+    },
+
+    roomID: {
+        type: String,    
         unique: true
     },
 
     occupantID: {
-        type: User.Schema,
+        type: String,
         ref: 'User',
         required: true,
     },
@@ -26,13 +29,14 @@ const reservationHistorySchema = mongoose.Schema({
 
     cancelledDate: {
         type: Date,
-        required: true
+        required: true,
+        default: Date.now,
     }
 
 },{
     timestamps :true
 });
 
-const Reservation =  mongoose.model('reservationHistory' ,reservationHistorySchema );
+const ReservationHistory =  mongoose.model('ReservationHistory' ,reservationHistorySchema );
 
-export default reservationHistorySchema;
+export default ReservationHistory;

@@ -26,9 +26,9 @@ const getPublichkey = expressAsyncHandler(async(req,res)=>{
 
 const makePayment = expressAsyncHandler(async(req,res) =>{
 
-  const {userInfo_id, description, } = req.body;
-
+  const {userInfo_id, description, id} = req.body;
   const user = await User.findById(userInfo_id);
+  console.log('bfgh');
 
   const response = await payment.create({
     occupant: user,

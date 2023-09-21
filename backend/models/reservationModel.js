@@ -2,13 +2,18 @@ import mongoose from "mongoose";
 
 const reservationSchema = mongoose.Schema({
     boardingId: {
-        type: String, 
+        type: mongoose.Schema.Types.ObjectId, 
+        required: true,
+        
+    },
+
+    boardingType:{
+        type: String,
         required: true,
     },
 
     roomID: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
         unique: true
     },
 
@@ -18,19 +23,16 @@ const reservationSchema = mongoose.Schema({
         required: true,
     },
 
-    ReservedDate: {
-        type: Date,
-        required: true
-    },
-
     Duration: {
-        type: Date,
+        type: String,
         required:true
     },
 
-    DurationUpdatedAt: {
-        type: Date,
-    }
+    status:{
+        type: String,
+        required: true,
+        default: 'Pending',
+    },
 
 },{
     timestamps :true

@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Utility from '../models/utilityModel.js';
 import Boarding from '../models/boardingModel.js';
+import Occupants from '../models/reservationModel.js';
 
 
 // @desc    Add utilities
@@ -47,12 +48,20 @@ const addUtilities = asyncHandler(async (req, res) => {
 const getUtilitiesForBoarding = asyncHandler(async (req, res) =>{
     const boardingId = req.params. boardingId;
     const utilityType = req.params.utilityType;
+    const page = req.params.page || 1;
+    const pageSize = 10
+    
+    const skipCount = (page - 1) * pageSize;
+
+    var totalPages = await Utility.countDocuments({boarding:boardingId});
+    totalPages = Math.ceil(parseInt(totalPages)/pageSize);
 
     const utilities = await Utility.find({boarding:boardingId, utilityType:utilityType});
     
     if(utilities){
         res.status(200).json({
             utilities,
+            totalPages,
         })
     }
     else{
@@ -141,11 +150,103 @@ const deleteUtility = asyncHandler(async (req, res) => {
         });
     }
 });
+ // @desc    Get all Boardings of particular owner for utilities
+// route    GET /api/utilities/owner/:ownerId
+// @access  Private - Owner
+const getBoarding = asyncHandler(async (req, res) => {
+    const ownerId = req.params.ownerId;
 
+    const boardings = await Boarding.find({owner:ownerId});
+    
+    if(boardings){
+        res.status(200).json({
+            boardings,
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("No Boardings Available")
+    }
+});
+// @desc    Get all Boardings of particular owner if they selected UtilityBills
+// route    GET /api/utilities/owner/:ownerId
+// @access  Private - Owner
+const getUtilityBoarding = asyncHandler(async (req, res) => {
+    const ownerId = req.params.ownerId;
+    
+    const boardings = await Boarding.find({ owner: ownerId, utilityBills: true });
+    
+    if(boardings){
+        res.status(200).json({
+            boardings, 
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("No Boardings Available")
+    }
+});
+// @desc    Get all occupants  for boarding
+// route    GET /api/utilities/boarding/:boardingId
+// @access  Private - Owner
+const getOccupant = asyncHandler(async (req, res) => {
+    const boardingId = req.params.boardingId;
+
+    const occupants = await Occupants.find({boardingId:boardingId});
+    
+    if(occupants){
+        res.status(200).json({
+           occupants,
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("No occupants")
+    }
+});
+// @desc    Get all Boardings of a particular owner if they selected facilities
+// route    GET /api/utilities/owner/:ownerId/:facilities
+// @access  Private - Owner
+const getFacilitiesBoarding = asyncHandler(async (req, res) => {
+    const ownerId = req.params.ownerId;
+    const selectedFacilities = req.query.facilities; // Assuming you pass selected facilities as query parameters
+
+    try {
+        // Find the owner by ID
+        const owner = await User.findById(ownerId);
+
+        if (!owner) {
+            res.status(404);
+            throw new Error("Owner not found");
+        }
+
+        // Filter the owner's boardings based on selected facilities
+        const boardings = owner.boardings.filter((boarding) =>
+            boarding.facilities.some((facilities) => selectedFacilities.includes(facilities))
+        );
+
+        if (boardings.length > 0) {
+            res.status(200).json({
+                boardings,
+            });
+        } else {
+            res.status(404);
+            throw new Error("No boardings matching the selected facilities");
+        }
+    } catch (error) {
+        res.status(500).json({
+            error: error.message,
+        });
+    }
+});
 export{
     addUtilities,
     getUtilitiesForBoarding,
     getUtilitiesForOccupant,
     updateUtility,
     deleteUtility,
+    getBoarding,
+    getUtilityBoarding,
+    getOccupant,
+    getFacilitiesBoarding,
 };

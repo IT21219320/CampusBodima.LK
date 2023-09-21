@@ -34,9 +34,11 @@ import TicketThreadPage from './pages/ticketThreadPage.jsx'
 import CreateTicketPage from './pages/createTicketPage.jsx';
 
 import AddUtilitiesPage from './pages/addUtilityPage.jsx';
+import AllUtilitiesPage from './pages/allUtilitiesPage.jsx';
 
 import CreateFeedback from './pages/createFeedbackPage';
 
+import OccupantPaymentDash from './pages/occupantPaymentsDashboard';
 import MakeInitialPaymentPage from './pages/makeInitialPaymentPage';
 
 import ConfirmReservationPage from './pages/confirmReservationPage';
@@ -87,6 +89,7 @@ const router = createBrowserRouter(
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
 
+          <Route path='/owner/utility/' element={<AllUtilitiesPage />} />
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
         </Route>
 
@@ -98,6 +101,7 @@ const router = createBrowserRouter(
 
           <Route path='/occupant/order/' element={<OrderList />} />
 
+          <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/' element={<MakeInitialPaymentPage />} />
 
           <Route path='/occupant/reservation/confirm/' element={<ConfirmReservationPage />} />
