@@ -28,9 +28,14 @@ const utilitySchema = mongoose.Schema ({
         required: true,
     },
     utilityImage: {
-        type: String, 
-        required: false,
+        type: [String] , 
+        required: true,
     },
+    occupantID:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Reservation',
+        required: false,
+    }
 
 
 });
