@@ -13,7 +13,7 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
             }),
         }),
     }),
-    /*endpoints:(builder) => ({
+    endpoints:(builder) => ({
         getPaymentByUser: builder.mutation({
             query:(data) => ({
                 url: `${PAYMENT_URL}/getPayment`,
@@ -21,7 +21,7 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
-    })*/
+    })
 })
 
 export const { useMakePaymentMutation } = paymentApiSlice;
