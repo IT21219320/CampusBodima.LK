@@ -37,6 +37,7 @@ import AddUtilitiesPage from './pages/addUtilityPage.jsx';
 
 import CreateFeedback from './pages/createFeedbackPage';
 
+import OccupantPaymentDash from './pages/occupantPaymentsDashboard';
 import MakeInitialPaymentPage from './pages/makeInitialPaymentPage';
 
 import ConfirmReservationPage from './pages/confirmReservationPage';
@@ -98,6 +99,7 @@ const router = createBrowserRouter(
 
           <Route path='/occupant/order/' element={<OrderList />} />
 
+          <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/' element={<MakeInitialPaymentPage />} />
 
           <Route path='/occupant/reservation/confirm/' element={<ConfirmReservationPage />} />
