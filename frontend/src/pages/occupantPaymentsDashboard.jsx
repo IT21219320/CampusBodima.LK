@@ -13,3 +13,5 @@ const OccupantPaymentDash = () =>{
         </>
     )
 }
+
+export default OccupantPaymentDash
