@@ -67,50 +67,56 @@ const getBoardingIngredient = asyncHandler(async (req, res) => {
 
     const skipCount = (page - 1) * pageSize;
 
-    var totalPages = await Ingredient.countDocuments({
-        boarding:boardingId,
-        ingredientName: {$regex: searchQuery, $options: 'i'}
-    });
-    totalPages = Math.ceil(parseInt(totalPages)/pageSize);
-
-    const ingredient = await Ingredient.find({
-        boarding:boardingId,
-        ingredientName: {$regex: searchQuery, $options: 'i'}
-    }).skip(skipCount).limit(pageSize);
-    
-    if(ingredient){
-        res.status(200).json({
-            ingredient,
-            totalPages
+    try {
+        // Query to find ingredients based on boardingId and ingredientName, sorted alphabetically
+        const ingredients = await Ingredient.find({
+            boarding: boardingId,
+            ingredientName: { $regex: searchQuery, $options: 'i' } // Case-insensitive search
         })
-    }
-    else{
-        res.status(400);
-        throw new Error("No Ingredient Available")
+        .sort({ ingredientName: 1 }) // Sort in ascending alphabetical order by ingredientName
+        .skip(skipCount)
+        .limit(pageSize);
+
+        // Query to count the total number of matching ingredients
+        const totalIngredientsCount = await Ingredient.countDocuments({
+            boarding: boardingId,
+            ingredientName: { $regex: searchQuery, $options: 'i' } // Case-insensitive search
+        });
+
+        const totalPages = Math.ceil(totalIngredientsCount / pageSize);
+
+        res.status(200).json({
+            ingredient: ingredients,
+            totalPages: totalPages
+        });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 });
 
 // @desc    Search all Ingredient for Ingredient Name 
-// route    GET /api/ingredient/owner/:boardingId/:page
+// route    Post /api/ingredient/owner/ingredients/name
 // @access  Private - Owner
-/*const searchIngredient = asyncHandler(async (req, res) => {
-    const { boardingId } = req.params;
-    const { ingredientName } = req.query; // ingredientName from query parameters
-
-    const ingredient = await Ingredient.findOne({
-        boarding: boardingId,
-        ingredientName: ingredientName,
-    });
-
-    if (ingredient) {
+const getBoardingIngredientNames = asyncHandler(async (req, res) => {
+    const boardingId = req.body.boardingId;
+    const searchQuery = req.body.searchQuery;
+    
+    try {
+        // Query to find ingredients based on boardingId and ingredientName, sorted alphabetically
+        const ingredients = await Ingredient.find({
+            boarding: boardingId,
+            ingredientName: { $regex: searchQuery, $options: 'i' } // Case-insensitive search
+        })
+        .sort({ ingredientName: 1 }) // Sort in ascending alphabetical order by ingredientName
+         
         res.status(200).json({
-            ingredient,
+            ingredient: ingredients,
         });
-    } else {
-        res.status(404);
-        throw new Error('Ingredient not found');
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
-});*/
+});
+
 
  
 // @desc    Get all Boardings of particular owner if they selected Food
@@ -238,6 +244,7 @@ const deleteIngredient = asyncHandler(async (req, res) => {
 export { 
     addIngredient,
     getBoardingIngredient,
+    getBoardingIngredientNames,
     getOwnerBoarding,
     updateIngredient,
     getUpdateIngredients,
