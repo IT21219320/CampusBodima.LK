@@ -55,20 +55,26 @@ const createOrder = async (req, res) => {
       quantity,
       price,
       orderNo,
+      foodImages,
+      owner,
+      occupantId,
       status,
-      date,
+
       total,
     } = req.body;
 
     const order = new Order({
-      product,
-      foodType,
-      quantity,
-      price,
-      orderNo,
-      status,
-      date,
-      total,
+      product:product,
+      foodType:foodType,
+      quantity:quantity,
+      price:price,
+      orderNo:orderNo,
+      
+      owner:owner,
+      occupant: occupantId,
+      status:status,
+  
+      total:total,
     });
 
     await order.save();
@@ -80,25 +86,35 @@ const createOrder = async (req, res) => {
 };
 
 // Get a specific order by its ID
-const getOrder = async (req, res) => {
+const getOrder = asyncHandler(async (req, res) => {
+  const userId = req.body;
+  const all = req.query;
+  console.log(userId)
   try {
-    const order = await Order.findById(req.params.id);
+      const order = await Order.findOne({occupant:userId.userId});
 
-    if (!order) {
-      return res.status(404).json({ error: "Order not found" });
-    }
-
-    res.status(200).json(order);
+      if (order) {
+          res.status(200).json({
+              order,
+          });
+      } else {
+          res.status(404).json({
+              message: "Order not found",
+          });
+      }
   } catch (error) {
-    res.status(500).json({ error: "Could not get the order" });
+      res.status(500).json({
+          message: "Server error",
+      });
   }
-};
+});
+
 
 // Update a specific order by its ID
 const updateOrder = async (req, res) => {
   try {
     const order = await Order.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, // Return the updated order
+      new: true,
     });
 
     if (!order) {

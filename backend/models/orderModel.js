@@ -20,17 +20,27 @@ const orderSchema = mongoose.Schema({
     },
     orderNo:{
         type:Number,
+        required:true,
     },
-    /*occupant: {
+    foodImages:{
+        type:[String],
+    },
+    owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },*/
+        ref: 'User'
+    },
+    occupant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     status:{
-        type:Boolean,
+        type: String,
+        required: true,
+        default: 'Pending'
     },
     date:{
         type:Date,
+        default : Date.now
     },
     total:{
         type:String,
