@@ -47,7 +47,7 @@ import ReserveBoardingPage from './pages/reserveBoardingPage.jsx';
 import ViewAllReservationsPage from './pages/viewAllReservationsPage.jsx';
 import ConfirmReservationPage from './pages/confirmReservationPage.jsx';
 
-import OrderList from './pages/OrderList.jsx'
+import OrderForm from './pages/orderForm.jsx'
 import OrderPage from './pages/OrderPage';
 
 import PrivateRoute from './components/privateRoute';
@@ -106,7 +106,7 @@ const router = createBrowserRouter(
           <Route path='/occupant/ticket/:ticketId' element={<OccupantTicketThreadPage />} />
           <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
 
-          <Route path='/occupant/order/' element={<OrderList />} />
+          <Route path='/occupant/order/' element={<OrderForm />} />
 
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/' element={<MakeInitialPaymentPage />} />

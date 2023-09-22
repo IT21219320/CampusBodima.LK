@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useCreateOrderMutation } from '../slices/ordersApiSlice'; // Import the generated mutation function
+import { useCreateOrderMutation } from '../slices/orderApiSlice'; // Import the generated mutation function
 
 const OrderForm = () => {
   const [formData, setFormData] = useState({
