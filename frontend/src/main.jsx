@@ -30,6 +30,7 @@ import AddIngredientPage from './pages/addIngredientPage.jsx';
 import UpdateIngredientPage from './pages/updateIngredientPage.jsx';
 
 import OccupantTicketsPage from './pages/occupantTicketsPage.jsx';
+import OwnerTicketsPage from './pages/ownerTicketsPage.jsx';
 import OccupantTicketThreadPage from './pages/occupantTicketThreadPage.jsx'
 import CreateTicketPage from './pages/createTicketPage.jsx';
 
@@ -96,6 +97,8 @@ const router = createBrowserRouter(
           
           <Route path='/owner/order/' element={<OrderPage />} />
 
+          <Route path='/owner/ticket' element={<OwnerTicketsPage />} />
+
           <Route path='/owner/utility/' element={<AllUtilitiesPage />} />
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
         </Route>
@@ -109,7 +112,7 @@ const router = createBrowserRouter(
           <Route path='/occupant/order/' element={<OrderForm />} />
 
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
-          <Route path='/occupant/makePayment/' element={<MakeInitialPaymentPage />} />
+          <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
 
           <Route path='/occupant/reservation/reserve' element={<ReserveBoardingPage />} />
 
