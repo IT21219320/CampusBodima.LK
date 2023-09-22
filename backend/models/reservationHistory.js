@@ -13,8 +13,7 @@ const reservationHistorySchema = mongoose.Schema({
     },
 
     roomID: {
-        type: String,    
-        unique: true
+        type: String,
     },
 
     occupantID: {

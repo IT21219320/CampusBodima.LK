@@ -10,46 +10,45 @@ import ReservationHistory from "../models/reservationHistory.js";
 //route post/api/reservations/bookRoom
 // @access  Private - occupant
 
-const reserveRoom = asyncHandler(async(req,res) =>{
+const reserveRoom = asyncHandler(async (req, res) => {
     const RoomID = req.query.roomID;
     const BoardingId = req.query.boardingId;
-    const {userInfo_id , Gender, Duration} = req.body;
+    const { userInfo_id, Gender, Duration } = req.body;
+
+    const user = await User.findOne({ _id: userInfo_id });
+    const room = await Room.findById(RoomID);
     
-    const user = await User.findOne({_id:userInfo_id});
-    const room =await Room.findById(RoomID);
     const boarding = await Boarding.findById(BoardingId);
-    
-    const boardingType= boarding.boardingType
+    console.log(boarding)
+    const boardingType = boarding.boardingType
     const occupantID = user._id;
-   
-    var reservationExist =  await Reservation.findOne({occupantID:occupantID});
 
-    if(!reservationExist){
+    var reservationExist = await Reservation.findOne({ occupantID: occupantID });
 
-        if(boarding.boardingType == 'Hostel')
-        {
-            const boardingId= BoardingId;
+    if (!reservationExist) {
+
+        if (boarding.boardingType == 'Hostel') {
+            const boardingId = BoardingId;
             console.log(boardingId);
             const roomID = RoomID;
-            console.log(boardingId);
+            console.log(roomID);
 
             const noOfBeds = parseInt(room.noOfBeds);
+            console.log(noOfBeds);
+            console.log(room.occupant)
             const occupantCount = room.occupant.length;
-            const updatedNoOfBeds = currentNoOfBeds - 1;
-
-            if(noOfBeds > occupantCount){
-                if(Gender === boarding.gender || boarding.gender==='Any'){
+            console.log(occupantCount);
+            if (noOfBeds > occupantCount) {
+                if (Gender === boarding.gender || boarding.gender === 'Any') {
                     const Reserve = await Reservation.create({
                         boardingId,
                         boardingType,
                         roomID,
                         occupantID,
                         Duration,
-                    }); 
-                    if (Reserve){
-        
-                        
-        
+                    });
+                    if (Reserve) {
+
                         const updatedRoom = await Room.findOneAndUpdate(
                             { _id: RoomID },
                             {
@@ -57,89 +56,85 @@ const reserveRoom = asyncHandler(async(req,res) =>{
                             },
                             { new: true }
                         );
-        
-                            res.status(201).json({
+
+                        res.status(201).json({
                             message: "inserted"
-                        }); 
-                    }else{
+                        });
+                    } else {
                         res.status(400);
                         throw new Error('problem in inserting');
-        
-                        }
-                    }else{
-                        res.status(404);
-                        throw new Error('genders are not matching');
+
                     }
-            }else
-            {
+                } else {
+                    res.status(404);
+                    throw new Error('genders are not matching');
+                }
+            } else {
                 res.status(404);
                 throw new Error('no beds are available');
             }
-            
+
 
 
         }
-        else if(boarding.boardingType == 'Annex')
-        {
-            const boardingId= BoardingId;
+        else if (boarding.boardingType == 'Annex') {
+            const boardingId = BoardingId;
             console.log(boardingId)
-            if(Gender === boarding.gender || boarding.gender==='Any'){
-            const Reserve = await Reservation.create({
-                boardingId,
-                boardingType,
-                occupantID,
-                Duration,
-            });
+            if (Gender === boarding.gender || boarding.gender === 'Any') {
+                const Reserve = await Reservation.create({
+                    boardingId,
+                    boardingType,
+                    occupantID,
+                    Duration,
+                });
 
-                if (Reserve){
+                if (Reserve) {
 
-                   if(boarding){
+                    if (boarding) {
                         boarding.occupant = occupantID;
                         console.log(occupantID);
                         await boarding.save();
-                        
-                    }else 
 
-                        {
-                            res.status(404);
-                            throw new Error('Boarding not found');
-                        }
-                        
-                        
+                    } else {
+                        res.status(404);
+                        throw new Error('Boarding not found');
+                    }
+
+
                     res.status(201).json({
-                    message: "inserted to the reservations and inserted occupant to the annex"
-                    });    
-                     
-                }else{
+                        message: "inserted to the reservations and inserted occupant to the annex"
+                    });
+
+                } else {
                     res.status(400);
                     throw new Error('problem in inserting');
-                } 
-            }else{
+                }
+            } else {
                 res.status(404);
                 throw new Error('genders are not matching');
             }
         }
 
-    }else{
+    } else {
         res.status(404);
-            throw new Error('you have already reserved');
+        throw new Error('you have already reserved');
     }
 
-    
-    
+
+
 });
 
 //@desc update reservation duration
 //route PUT/api/reservations/updateDuration
 // @access  Private - occupant
 
-const updateDuration = asyncHandler(async(req, res) => {
+const updateDuration = asyncHandler(async (req, res) => {
 
-    const {userInfo_id, Duration} = req.body;
+    const { userInfo_id, Duration } = req.body;
 
-    const reservation = await Reservation.findOne({occupantID:userInfo_id});
+    const reservation = await Reservation.findOne({ occupantID: userInfo_id });
 
-    if(reservation){
+    if (reservation) {
         reservation.Duration = Duration || reservation.Duration;
 
         const updatedDuration = await reservation.save();
@@ -147,7 +142,7 @@ const updateDuration = asyncHandler(async(req, res) => {
         res.status(200).json({
             updatedDuration
         })
-    }else{
+    } else {
         res.status(404);
         throw new Error('reservation not Found');
     }
@@ -157,16 +152,17 @@ const updateDuration = asyncHandler(async(req, res) => {
 //route GET/api/reservations/myRoom
 // @access  Private - occupant
 
-const getMyReservation = asyncHandler(async(req, res) => {
+const getMyReservation = asyncHandler(async (req, res) => {
     const userInfo_id = req.body;
-    const ViewMyReservation = await Reservation.findOne({occupantID:userInfo_id});
+    const ViewMyReservation = await Reservation.findOne({ occupantID: userInfo_id });
 
-    if(ViewMyReservation){
+    if (ViewMyReservation) {
         res.status(200).json({
             ViewMyReservation,
         })
-    userInfo_id}
-    else{
+        userInfo_id
+    }
+    else {
         res.status(400);
         throw new Error("you have't done any reservations");
     }
@@ -177,17 +173,17 @@ const getMyReservation = asyncHandler(async(req, res) => {
 //route GET/api/reservations/veiwReservations
 // @access  Private - Owner
 
-const getBoardingReservations = asyncHandler(async(req, res) => {
+const getBoardingReservations = asyncHandler(async (req, res) => {
     const boardingId = req.query.boardingId;
 
-    const reserve = await Reservation.find({boardingId:boardingId,status: 'Paid'});
+    const reserve = await Reservation.find({ boardingId: boardingId, status: 'Paid' });
 
-    if(reserve){
+    if (reserve) {
         res.status(200).json({
             reserve,
         })
     }
-    else{
+    else {
         res.status(400);
         throw new Error("No reservations for boarding");
     }
@@ -198,17 +194,17 @@ const getBoardingReservations = asyncHandler(async(req, res) => {
 //route GET/api/reservations/pending
 // @access  Private - owner
 
-const getPendingReservations = asyncHandler(async(req, res) => {
+const getPendingReservations = asyncHandler(async (req, res) => {
     const boardingId = req.query.boardingId;
     console.log(boardingId)
-    const pendingReservation = await Reservation.find({boardingId:boardingId, status: 'Pending'});
+    const pendingReservation = await Reservation.find({ boardingId: boardingId, status: 'Pending' });
     console.log(pendingReservation)
-    if(pendingReservation){
+    if (pendingReservation) {
         res.status(200).json({
             pendingReservation,
         })
     }
-    else{
+    else {
         res.status(400);
         throw new Error("No pending reservations for this boarding");
     }
@@ -219,21 +215,21 @@ const getPendingReservations = asyncHandler(async(req, res) => {
 //route PUT/api/reservations/aprovePending
 // @access  Private - owner
 
-const approvePendingStatus = asyncHandler(async(req, res) => {
+const approvePendingStatus = asyncHandler(async (req, res) => {
 
     const ReservationId = req.query.reservationId;
-    
+
     const reservation = await Reservation.findById(ReservationId);
 
-    if(reservation){
-        reservation.status = 'Paid' ;
+    if (reservation) {
+        reservation.status = 'Paid';
 
         const paidReservation = await reservation.save();
 
         res.status(200).json({
             paidReservation
         })
-    }else{
+    } else {
         res.status(404);
         throw new Error('reservation not Found');
     }
@@ -242,17 +238,17 @@ const approvePendingStatus = asyncHandler(async(req, res) => {
 //@desc delete pending reservation
 //route GET/api/reservations/deletePending
 // @access  Private - owner
-const deletePendingStatus = asyncHandler(async(req, res) => {
+const deletePendingStatus = asyncHandler(async (req, res) => {
 
     const ReservationId = req.query.reservationId;
     console.log(ReservationId)
-    const reservation = await Reservation.findById(ReservationId); 
+    const reservation = await Reservation.findById(ReservationId);
 
-    if(reservation){
+    if (reservation) {
         await Reservation.findOneAndDelete(ReservationId)
         res.status(200).json("Pending reservation Successfully Deleted")
     }
-    else{
+    else {
         res.status(404);
         throw new Error('Reservation not found')
 
@@ -264,68 +260,75 @@ const deletePendingStatus = asyncHandler(async(req, res) => {
 //route GET/api/reservations/deleteReservation
 // @access  Private - occupant 
 
-const deleteReservation = asyncHandler(async(req, res) => {
+const deleteReservation = asyncHandler(async (req, res) => {
 
 
     const ReservationId = req.query.reservationId;
-    console.log(ReservationId)
 
-    const deletedReservation = await Reservation.findByIdAndDelete(ReservationId); 
+    const deletedReservation = await Reservation.findByIdAndDelete(ReservationId);
+    console.log(deletedReservation)
+    if (deletedReservation) {
 
-    if(deletedReservation){
+        const user = await User.findById(deletedReservation.occupantID);
 
+        if (deletedReservation.boardingType === "Annex") {
+            console.log(deletedReservation.boardingId);
+
+            const reservationHistory = new ReservationHistory({
+                
+                boardingId: deletedReservation.boardingId,
+                boardingType: deletedReservation.boardingType,
+                occupantID: user,
+                ReservedDate: deletedReservation.createdAt,
+
+            });
+
+            console.log(reservationHistory)
+
+            const res = await reservationHistory.save();
+            if (res) {
+                console.log("inserted to history")
+            }
+            console.log("after inserting in to table")
+            const updatedBoarding = await Boarding.findOneAndUpdate(
+                { _id: deletedReservation.BoardingId },
+                { $pull: { occupant: deletedReservation.occupantID } },
+                { new: true }
+              );
+
+        } else if (deletedReservation.boardingType === "Hostel") {
+            const reservationHistory = new ReservationHistory({
+
+                boardingId: deletedReservation.boardingId,
+                boardingType: deletedReservation.boardingType,
+                roomID: deletedReservation.roomID,
+                occupantID: user,
+                ReservedDate: deletedReservation.createdAt,
+
+            });
+
+            await reservationHistory.save();
+
+        }
         res.status(200).json("Reservation Successfully Deleted");
 
-        const user =  await findById(deletedReservation.occupantID);
-
-        const occupantString = JSON.stringify(user)
-
-        if(deleteReservation.boardingType==="Annex")
-        {const reservationHistory  = new ReservationHistory({
-
-            boardingId : deleteReservation.boardingId,
-            boardingType: deleteReservation.boardingType,
-            occupantID: user,
-            ReservedDate: deleteReservation.createdAt,
-            
-          });
-        
-          await reservationHistory.save();
-        
-        }else if(deleteReservation.boardingType==="Hostel")
-
-        {const reservationHistory  = new ReservationHistory({
-
-            boardingId : deleteReservation.boardingId,
-            boardingType: deleteReservation.boardingType,
-            roomID: deleteReservation.roomID,
-            occupantID: occupantString,
-            ReservedDate: deleteReservation.createdAt,
-            
-          });
-        
-          await reservationHistory.save();
-        
-        }
-
-          
     }
-    else{
+    else {
         res.status(404);
         throw new Error('Reservation not found')
 
     }
 
-})
+});
 
 
-export{
+export {
     reserveRoom,
     updateDuration,
     getMyReservation,
     getBoardingReservations,
     getPendingReservations,
     approvePendingStatus,
-    deletePendingStatus,                                                                                                           
+    deletePendingStatus,
     deleteReservation,
 }

@@ -19,6 +19,6 @@ router.get('/veiwReservations',getBoardingReservations);
 router.get('/pending' ,getPendingReservations);
 router.put('/aprovePending', approvePendingStatus);
 router.delete('/deletePending', deletePendingStatus);
-router.delete('daleteReservation' , deleteReservation);
+router.delete('/deleteReservation' , deleteReservation);
 
 export default router;

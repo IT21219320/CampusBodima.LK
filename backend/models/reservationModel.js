@@ -14,7 +14,7 @@ const reservationSchema = mongoose.Schema({
 
     roomID: {
         type: mongoose.Schema.Types.ObjectId,
-        unique: true
+        
     },
 
     occupantID: {
