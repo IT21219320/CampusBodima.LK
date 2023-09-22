@@ -1,5 +1,5 @@
 import React from "react";
-import OrderDetail from "../components/OrderDetail.jsx";
+import OrderDetail from "./OrderDetail.jsx";
 
 const OrderPage = () => {
   const orderId = "1"; 
