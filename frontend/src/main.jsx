@@ -43,7 +43,8 @@ import UpdateFeedbackpage from './pages/updateFeedbackPage.jsx';
 import OccupantPaymentDash from './pages/occupantPaymentsDashboard.jsx';
 import MakeInitialPaymentPage from './pages/makeInitialPaymentPage.jsx';
 
-import ViewAllReservationsPage from './pages/viewAllReservationsPage.jsx'
+import ReserveBoardingPage from './pages/reserveBoardingPage.jsx';
+import ViewAllReservationsPage from './pages/viewAllReservationsPage.jsx';
 import ConfirmReservationPage from './pages/confirmReservationPage.jsx';
 
 import OrderList from './pages/OrderList.jsx'
@@ -54,7 +55,6 @@ import AdminRoute from './components/adminRoute';
 import OwnerRoute from './components/ownerRoute';
 import OccupantRoute from './components/occupantRoute';
 
-import Spinner from 'react-bootstrap/Spinner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
@@ -110,6 +110,8 @@ const router = createBrowserRouter(
 
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/' element={<MakeInitialPaymentPage />} />
+
+          <Route path='/occupant/reservation/reserve' element={<ReserveBoardingPage />}
 
           <Route path='/occupant/reservation/confirm/' element={<ConfirmReservationPage />} />
           
