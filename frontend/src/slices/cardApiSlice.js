@@ -1,25 +1,25 @@
 import id from "date-fns/locale/id";
 import { apiSlice } from "./apiSlice";
 
-const PAYMENT_URL = '/api/payments';
+const CARD_URL = '/api/cards';
 
 export const paymentApiSlice = apiSlice.injectEndpoints({
     endpoints:(builder) => ({
-        makePayment: builder.mutation({
+        addCard: builder.mutation({
             query:(data) => ({
-                url: `${PAYMENT_URL}/make`,
+                url: `${CARD_URL}/addCard`,
                 method: 'POST',
                 body: data,
             }),
         }),
-        getPaymentByUser: builder.mutation({
+        /*getPaymentByUser: builder.mutation({
             query:(data) => ({
                 url: `${PAYMENT_URL}/getPayment`,
                 method: 'POST',
                 body: data,
             }),
-        }),
+        }),*/
     }),
 });
 
-export const { useGetPaymentByUserMutation, useMakePaymentMutation } = paymentApiSlice;
+export const { useAddCardMutation } = paymentApiSlice;

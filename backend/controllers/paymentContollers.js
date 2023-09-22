@@ -72,10 +72,11 @@ const makePayment = expressAsyncHandler(async(req,res) =>{
           message: "payment inserted",
         });
     }
-  }
-  res.status(200).json({
+  }else{
+    res.status(200).json({
     message: "No reservation",
-  });
+  });}
+  
 
 })
 
