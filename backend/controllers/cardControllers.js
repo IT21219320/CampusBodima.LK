@@ -3,84 +3,108 @@ import User from "../models/userModel.js";
 import cardDetails from "../models/cardDetailsModel.js";
 import crypto from "crypto";
 
-
 // Encryption settings
 const algorithm = 'aes-256-cbc'; // Advanced Encryption Standard (AES) with a 256-bit key in Cipher Block Chaining (CBC) mode
-const encryptionKey =  crypto.randomBytes(32);// Replace with your secret key (must be 32 bytes for AES-256)
-const iv = crypto.randomBytes(16); // Initialization Vector (IV), 16 bytes for AES-256
-
-// Data to be encrypted
-const originalData = 'This is the secret data';
+const encryptionKey = 'b415b7abc3f436dfc36b66593a6fecd45d2df775b2548f362e8d6b7b1b5789c7'; // Replace with your secret key (must be 32 bytes for AES-256)
+const iv = 'fa755257c212abaeae4a55c3c6dbbc95'; // Initialization Vector (IV), 16 bytes for AES-256
 
 // Encryption function
 function encrypt(text) {
-  const cipher = crypto.createCipheriv(algorithm, Buffer.from(encryptionKey), iv);
+  const cipher = crypto.createCipheriv(algorithm, Buffer.from(encryptionKey,'hex'), Buffer.from(iv,'hex'));
   let encrypted = cipher.update(text, 'utf-8', 'hex');
   encrypted += cipher.final('hex');
   return {
-    iv: iv.toString('hex'),
     encryptedData: encrypted,
   };
 }
 
 // Decrypt function
-function decrypt(encryptedData, iv) {
-  const decipher = crypto.createDecipheriv(algorithm, Buffer.from(encryptionKey), Buffer.from(iv, 'hex'));
+function decrypt(encryptedData) {
+  const decipher = crypto.createDecipheriv(algorithm, Buffer.from(encryptionKey,'hex'), Buffer.from(iv,'hex'));
   let decrypted = decipher.update(encryptedData, 'hex', 'utf-8');
   decrypted += decipher.final('utf-8');
   return decrypted;
 }
 
+const addCard = expressAsyncHandler(async (req, res) => {
+  const { userInfo_id, cardNumber, exDate, cvv } = req.body;
 
-const addCard = expressAsyncHandler(async(req,res) =>{
+  const hashCardNumberFisrt = encrypt(cardNumber);
 
-    const {userInfo_id, cardNumber, exDate, cvv} = req.body;
-  
-    const user = await User.findById(userInfo_id);
+  const user = await User.findById(userInfo_id);
 
+  const cardExist = await cardDetails.findOne({cardNumber:hashCardNumberFisrt})
+
+  if(cardExist){
+    res.status(200).json({ message: "Card exist" });
+  }
+  else{
     const hashCardNumber = encrypt(cardNumber);
-    const cardNumberString = JSON.stringify(hashCardNumber);
+    const cardNumberString = (hashCardNumber);
+
     const hashCvv = encrypt(cvv);
-    const cvvString = JSON.stringify(hashCvv);
-    
-    console.log(hashCardNumber)
+    const cvvString = (hashCvv);
+
     const response = await cardDetails.create({
-        occupant : user,
-        cardNumber : cardNumberString,
-        expireDate : exDate,
-        cvv : cvvString
-    })
-    if(response){
+      occupant: user,
+      cardNumber: cardNumberString,
+      expireDate: exDate,
+      cvv: cvvString,
+    });
+    if (response) {
       res.status(200).json({ message: "card successfully added" });
     }
-    
-  });
-  const getCardById = expressAsyncHandler(async(req,res) =>{
+  }
+  
+});
 
-    const userInfo_id = req.body;
-    
-    const user_cards = await cardDetails.find({occupant:userInfo_id.userInfo_id});
+const getCardById = expressAsyncHandler(async (req, res) => {
+  const userInfo_id = req.body;
 
-    const user_card = user_cards[0];
-    
-    const cardNumberObject = JSON.parse(user_card.cardNumber);
-    const cvvObject = JSON.parse(user_card.cvv);
-    
-    console.log(cardNumberObject.encryptedData);
-    console.log(cardNumberObject.iv)
-    // Decrypt the card number
-    const decryptedCardNumber = decrypt(cardNumberObject.encryptedData, cardNumberObject.iv);
+  const user_cards = await cardDetails.find({ occupant: userInfo_id.userInfo_id });
 
-    console.log('Decrypted Card Number:', decryptedCardNumber);
+  if (user_cards.length === 0) {
+    res.status(404).json({ message: "No card details found for this user" });
+    return;
+  }
+  const userCards = []
+  for(const user_card of user_cards){
+    const cardNumberObject = user_card.cardNumber;
+    const cvvObject = user_card.cvv;
+    console.log(cardNumberObject)
+    const decryptedCardNumber = decrypt(cardNumberObject.encryptedData);
+    const decryptedCvv = decrypt(cvvObject.encryptedData);
 
-    res.status(200).json({ cardNumber: decryptedCardNumber });
+    userCards.push({
+      cardNumber : decryptedCardNumber,
+      exNumber : user_card.expireDate,
+      cvv : decryptedCvv
+    })
+  }
 
-    //const decryptData = decrypt(user_cards.cardNumber, user_cards.cardNumber.iv);
-    //console.log(decryptData);
-    //if(user_cards){
-      //res.status(200).json({ user_cards });
-    //}
-    
-  });
+  res.status(200).json(userCards);
+});
 
-  export {addCard, getCardById};
+const updateCard = expressAsyncHandler(async (req, res) => {
+  const { cardNumberF, expireDate, cvvF, cNo } = req.body;
+
+  const hashCardNumberFisrt = encrypt(cNo);
+
+  //const user = await User.findById(userInfo_id);
+
+  const cardNumber = encrypt(cardNumberF);
+  const cvv = encrypt(cvvF);
+
+  const cardExist = await cardDetails.findOneAndUpdate({cardNumber:hashCardNumberFisrt},{cardNumber,expireDate,cvv})
+
+  if(cardExist){
+    res.status(200).json({ message: "card successfully updated" });
+  }
+  else{
+    res.status(200).json({ message: "Failed" });
+  }
+  
+});
+
+
+export { addCard, getCardById, updateCard };
