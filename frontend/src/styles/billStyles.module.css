@@ -27,7 +27,7 @@
     box-shadow: 0px 0px 5px 0px #0000001f;
 }
 .custombutton {
-    
+    background-color:rgb(113, 161, 209);
     color:darkslategrey; /* Text color */
     border:darkslategrey;
     padding: 10px 20px; /* Padding around the button text */
