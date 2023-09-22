@@ -106,5 +106,26 @@ const updateCard = expressAsyncHandler(async (req, res) => {
   
 });
 
+const deleteCard = expressAsyncHandler(async (req, res) => {
+  console.log('hi')
+  const { cNo } = req.body;
+  
+  const hashCardNumberFisrt = encrypt(cNo);
 
-export { addCard, getCardById, updateCard };
+  //const user = await User.findById(userInfo_id);
+
+  
+
+  const cardExist = await cardDetails.findByIdAndDelete(cNo)
+
+  if(cardExist){
+    res.status(200).json({ message: "card successfully deleted" });
+  }
+  else{
+    res.status(200).json({ message: "Failed to delete" });
+  }
+  
+});
+
+
+export { addCard, getCardById, updateCard, deleteCard };
