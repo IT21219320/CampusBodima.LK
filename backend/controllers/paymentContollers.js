@@ -4,7 +4,9 @@ import Stripe from "stripe";
 import cron from "node-cron";
 import payment from "../models/paymentModel.js";
 import User from "../models/userModel.js";
+import Boarding from "../models/boardingModel.js";
 import reservations from "../models/reservationModel.js";
+import Room from "../models/roomModel.js";
 dotenv.config();
 
 
@@ -26,30 +28,61 @@ const getPublichkey = expressAsyncHandler(async(req,res)=>{
 
 const makePayment = expressAsyncHandler(async(req,res) =>{
 
-  const {userInfo_id, description, id} = req.body;
+  const {userInfo_id, description, bId} = req.body;
   const user = await User.findById(userInfo_id);
-  console.log('bfgh');
-
-  const response = await payment.create({
-    occupant: user,
-    paymentType: "Card",
-    amount: 10000,
-    description: description,
-    credited : 10000,
-  })
-  if(response){
-    res.status(200).json({
-        message: "payment inserted",
-      });
+  
+  const boarding = await Boarding.findById(bId);
+  const oUser = await User.findById(boarding.owner);
+  const reserve = await reservations.findOne({occupantID: userInfo_id });
+  const room = null
+  if(reserve){
+    room = await Room.findOne(reserve.roomID);
   }
-  console.log("payment inserted");
+  
+  if(boarding.boardingType === "Annex"){
+    const response = await payment.create({
+      occupant: user,
+      owner : oUser,
+      paymentType: "Card",
+      amount: boarding.keyMoney,
+      description: description,
+      boarding : boarding,
+      credited : boarding.keyMoney,
+    })
+    if(response){
+      res.status(200).json({
+          message: "payment inserted",
+        });
+    }
+  }
+  else if(boarding.boardingType === "Hostel" && reserve){
+    console.log(room)
+    const response = await payment.create({
+      occupant: user,
+      owner : oUser,
+      paymentType: "Card",
+      amount: room.keyMoney,
+      description: description,
+  
+      boarding : boarding,
+      credited : room.keyMoney,
+    })
+    if(response){
+      res.status(200).json({
+          message: "payment inserted",
+        });
+    }
+  }
+  res.status(200).json({
+    message: "No reservation",
+  });
+
 })
 
 const getPaymentsByUserID = expressAsyncHandler(async(req, res) =>{
     const userInfo_id = req.body;
     const user = await User.findById(userInfo_id);
-    const payments = await payment.find({occupant:userInfo_id});
-    console.log(userInfo_id)
+    const payments = await payment.find({"occupant._id":userInfo_id});
     if(payments){
         res.status(200).json({
             payments

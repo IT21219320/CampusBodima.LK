@@ -25,9 +25,9 @@ import EditBoardingPage from './pages/editBoardingPage.jsx';
 import OwnerBoardingRoomPage from './pages/ownerBoardingRoomPage.jsx';
 import AddBoardingRoomPage from './pages/addBoardingRoomPage.jsx';
 
-import OwnerIngredientPage from './pages/OwnerIngredientPage';
-import AddIngredientPage from './pages/addIngredientPage';
-import UpdateIngredientPage from './pages/updateIngredientPage';
+import OwnerIngredientPage from './pages/OwnerIngredientPage.jsx';
+import AddIngredientPage from './pages/addIngredientPage.jsx';
+import UpdateIngredientPage from './pages/updateIngredientPage.jsx';
 
 import OccupantTicketsPage from './pages/occupantTicketsPage.jsx';
 import OccupantTicketThreadPage from './pages/occupantTicketThreadPage.jsx'
@@ -36,18 +36,18 @@ import CreateTicketPage from './pages/createTicketPage.jsx';
 import AddUtilitiesPage from './pages/addUtilityPage.jsx';
 import AllUtilitiesPage from './pages/allUtilitiesPage.jsx';
 
-import CreateFeedback from './pages/createFeedbackPage';
-import OccupantFeedback from './pages/occupantFeedbackPage';
-//import UpdateFeedbackpage from './pages/updateFeedbackPage';
+import CreateFeedback from './pages/createFeedbackPage.jsx';
+import OccupantFeedback from './pages/occupantFeedbackPage.jsx';
+import UpdateFeedbackpage from './pages/updateFeedbackPage.jsx';
 
+import OccupantPaymentDash from './pages/occupantPaymentsDashboard.jsx';
+import MakeInitialPaymentPage from './pages/makeInitialPaymentPage.jsx';
 
-import OccupantPaymentDash from './pages/occupantPaymentsDashboard';
-import MakeInitialPaymentPage from './pages/makeInitialPaymentPage';
-
-import ConfirmReservationPage from './pages/confirmReservationPage';
+import ViewAllReservationsPage from './pages/viewAllReservationsPage.jsx'
+import ConfirmReservationPage from './pages/confirmReservationPage.jsx';
 
 import OrderList from './pages/OrderList.jsx'
-
+import OrderPage from './pages/OrderPage';
 
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
@@ -57,7 +57,6 @@ import OccupantRoute from './components/occupantRoute';
 import Spinner from 'react-bootstrap/Spinner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
-import UpdateFeedbackpage from './pages/updateFeedbackPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -89,9 +88,13 @@ const router = createBrowserRouter(
           <Route path='/owner/boardings/:boardingId/edit' element={ <EditBoardingPage /> } />
           <Route path='/owner/boardings/:boardingId/:boardingName/rooms/add' element={ <AddBoardingRoomPage /> } />
 
+          <Route path='/owner/reservations/ViewReservation:boardingId' element={<ViewAllReservationsPage />} />
+
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
+          
+          <Route path='/owner/order/' element={<OrderPage />} />
 
           <Route path='/owner/utility/' element={<AllUtilitiesPage />} />
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />

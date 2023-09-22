@@ -115,7 +115,7 @@ const OwnerBoardingsForStatus = ({children}) => {
         }
     }
 
-    const handleDialogOpen = (e, id) => {
+    const handleDialogOpen = (e, id, images) => {
         e.preventDefault();
         setTempDeleteId(id);
         setConfirmDialog(true);
@@ -232,7 +232,7 @@ const OwnerBoardingsForStatus = ({children}) => {
                                                                 </Col>
                                                                 <Col style={{display:'contents'}}>
                                                                     <Tooltip title="Delete" placement="top" arrow>
-                                                                        <button className={`${ownerStyles.ctrls} ${ownerStyles.deleteBtn}`} onClick={(e) => handleDialogOpen(e,boarding._id)}>
+                                                                        <button className={`${ownerStyles.ctrls} ${ownerStyles.deleteBtn}`} onClick={(e) => handleDialogOpen(e,boarding._id,boarding.boardingImages)}>
                                                                             <RiDeleteBinLine />
                                                                         </button>
                                                                     </Tooltip>
@@ -287,11 +287,11 @@ const OwnerBoardingsForStatus = ({children}) => {
                         :
                             <div style={{height:'100%', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
                                 {children=='Approved' ? 
-                                    <h2>You don't have any approved boardings!</h2>
+                                    <h2>You don't have any registered boardings!</h2>
                                 : children=='PendingRoom' ?
                                     <h2>You don't have any Hostels without rooms!</h2>
                                 :   
-                                    <h2>You don't have any registered boardings!</h2>
+                                    <h2>You don't have any boardings pending approval!</h2>
                                 }
                             </div>
                     }

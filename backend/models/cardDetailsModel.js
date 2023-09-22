@@ -7,7 +7,7 @@ const cardDetailsSchema = mongoose.Schema({
         ref: 'User'
     },
     cardNumber : {
-        type : String,
+        type : Object,
         require: true
     },
     expireDate : {
@@ -15,7 +15,7 @@ const cardDetailsSchema = mongoose.Schema({
         require : true,
     },
     cvv : {
-        type : String,
+        type : Object,
         require: true
     }
 });

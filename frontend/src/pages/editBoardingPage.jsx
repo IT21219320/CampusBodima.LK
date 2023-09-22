@@ -1,19 +1,18 @@
 import { useState, useEffect } from "react";
 import { GoogleMap, Marker } from '@react-google-maps/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Form, Container, Row, Col, Image, InputGroup } from 'react-bootstrap';
 import { Breadcrumbs, Typography, Fade, Card, CardContent, Button, Link, CircularProgress, Box, Tooltip, Checkbox, FormControlLabel, ToggleButton, ToggleButtonGroup, Collapse, IconButton, Alert, Badge, Slider, Modal, Backdrop, LinearProgress } from "@mui/material";
-import { MuiOtpInput } from 'mui-one-time-password-input'
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from "../slices/authSlice";
-import { useRegisterBoardingMutation } from '../slices/boardingsApiSlice';
+import { useGetBoardingByIdMutation, useUpdateBoardingMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
 
 import { geoCoding } from '../utils/geoCoding.js'
 import { ImageToBase64 } from "../utils/ImageToBase64";
 import storage from "../utils/firebaseConfig";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject  } from "firebase/storage";
 
 import Sidebar from '../components/sideBar';
 
@@ -25,7 +24,7 @@ const EditBoardingPage = () => {
     const { userInfo } = useSelector((state) => state.auth);
     
     const [noticeStatus, setNoticeStatus] = useState(true);
-    const [userLocation, setUserLocation] = useState();
+    const [userLocation, setUserLocation] = useState('');
     const [viewUserInfo, setViewUserInfo] = useState();
     const [boardingName, setBoardingName] = useState('');
     const [address, setAddress] = useState('');
@@ -43,10 +42,16 @@ const EditBoardingPage = () => {
     const [keyMoney, setKeyMoney] = useState(0);
     const [description, setDescription] = useState('');
     const [boardingImages, setBoardingImages] = useState([]);
+    const [boardingImagesToDelete, setBoardingImagesToDelete] = useState([]);
     const [boardingPreviewImages, setBoardingPreviewImages] = useState([]);
+    const [newBoardingImages, setNewBoardingImages] = useState([]);
+    const [newBoardingPreviewImages, setNewBoardingPreviewImages] = useState([]);
     const [backDropOpen, setBackDropOpen] = useState(false);   
 
-    const [registerBoarding, {isLoading3}] = useRegisterBoardingMutation();
+    const [getBoardingById, {isLoading}] = useGetBoardingByIdMutation();
+    const [updateBoarding, {isLoading2}] = useUpdateBoardingMutation();
+    
+    const { boardingId } = useParams();
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -56,28 +61,68 @@ const EditBoardingPage = () => {
     const roomMarks = [{value: 1, label: '1'}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}, {value: 8}, {value: 9}, {value: 10}, {value: 11, label: '10+'}]
     const bathMarks = [{value: 0, label: '0'}, {value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}, {value: 8}, {value: 9}, {value: 10}, {value: 11, label: '10+'}]
 
+
+    const loadData = async () => {
+        try {
+            setBackDropOpen(true);
+            const res = await getBoardingById( boardingId ).unwrap();
+
+            setBoardingName(res.boarding.boardingName);
+            setAddress(res.boarding.address);
+            setCity(res.boarding.city);
+            setLocation(res.boarding.location);
+            setFacilities(res.boarding.facilities);
+            setUtilityBills(res.boarding.utilityBills ? 'Yes' : 'No');
+            setFood(res.boarding.food ? 'Yes' : 'No');
+            setGender(res.boarding.gender);
+            setBoardingType(res.boarding.boardingType);
+            setBoardingImages(res.boarding.boardingImages);
+
+            if(res.boarding.boardingType == 'Annex'){
+                setNoOfRooms(parseInt(res.boarding.noOfRooms));
+                setNoOfAttachBaths(parseInt(res.boarding.noOfAttachBaths));
+                setNoOfCommonBaths(parseInt(res.boarding.noOfCommonBaths));
+                setRent(parseInt(res.boarding.rent));
+                setKeyMoney(parseInt(res.boarding.keyMoney));
+                setDescription(res.boarding.description);
+            }
+
+            // Create an array of promises for image retrieval
+                const updatedImages = await Promise.all(res.boarding.boardingImages.map(async (image, index) => {
+                    try {
+                        const imageUrl = await getDownloadURL(ref(storage, image));
+                        // Update the URL for the image in the boardingImages array
+                        return imageUrl
+                    } catch (error) {
+                        console.error('Error retrieving image URL:', error);
+                        // Handle the error as needed
+                        return null;
+                    }
+                }));
+
+            Promise.all(updatedImages)
+                .then((imageUrl) => {
+                    setBoardingPreviewImages(imageUrl);
+                })
+                .catch((error) => {
+                    console.error('Error updating image URLs:', error);
+                    // Handle the error as needed
+                });
+
+
+
+
+                setBackDropOpen(false);
+            
+        } catch (err) {
+            setBackDropOpen(false);
+            toast.error(err.data?.message || err.error);
+        }
+    }
+
     useEffect(() => {
         setViewUserInfo(true);
-
-        // Check if geolocation is available in the browser
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                // Retrieve the user's latitude and longitude
-                const userLat = position.coords.latitude;
-                const userLng = position.coords.longitude;
-
-                // Set the user's location in state
-                setUserLocation({ lat: userLat, lng: userLng });
-                },
-                (error) => {
-                toast.error('Error getting user location:', error);
-                }
-            );
-        } else {
-        toast.error('Geolocation is not available in this browser.');
-        }
-
+        loadData();
     },[]);
 
     const handleMapClick = (event) => {
@@ -111,42 +156,51 @@ const EditBoardingPage = () => {
     const previewImage = async(e) => {
         const data = await ImageToBase64(e.target.files[0]);
 
-        setBoardingImages([...boardingImages,e.target.files[0]]);
-        setBoardingPreviewImages([...boardingPreviewImages,data]);
+        setNewBoardingImages([...newBoardingImages,e.target.files[0]]);
+        setNewBoardingPreviewImages([...newBoardingPreviewImages,data]);
     }
 
-    const removeImage = (imageToRemove) => {
+    const removeOldImage = async(imageToRemove) => {
         // Find the index of the item to remove in boardingImages
         const indexToRemove = boardingPreviewImages.indexOf(imageToRemove);
-
+        
         if (indexToRemove !== -1) {
             // Create a copy of the arrays with the item removed
             const updatedPreviewImages = [...boardingPreviewImages];
             const updatedImages = [...boardingImages];
+            const updatedImagesToDelete = [...boardingImagesToDelete];
 
+            updatedImagesToDelete.push(updatedImages[indexToRemove]);
             updatedPreviewImages.splice(indexToRemove, 1);
             updatedImages.splice(indexToRemove, 1);
 
             // Update the state with the updated arrays
             setBoardingPreviewImages(updatedPreviewImages);
             setBoardingImages(updatedImages);
+            setBoardingImagesToDelete(updatedImagesToDelete);
+
         }
         
     };
 
-    const handleBoardingTypeChange = (e) => {
-        setBoardingType(e.target.value);
+    const removeImage = (imageToRemove) => {
+        // Find the index of the item to remove in boardingImages
+        const indexToRemove = newBoardingPreviewImages.indexOf(imageToRemove);
 
-        if(e.target.value == 'Hostel' && boardingImages.length > 2){
-            while (boardingImages.length > 2) {   
-                boardingImages.pop();
-            }
-            while (boardingPreviewImages.length > 2){
-                boardingPreviewImages.pop();
-            }
+        if (indexToRemove !== -1) {
+            // Create a copy of the arrays with the item removed
+            const updatedPreviewImages = [...newBoardingPreviewImages];
+            const updatedImages = [...newBoardingImages];
+
+            updatedPreviewImages.splice(indexToRemove, 1);
+            updatedImages.splice(indexToRemove, 1);
+
+            // Update the state with the updated arrays
+            setNewBoardingPreviewImages(updatedPreviewImages);
+            setNewBoardingImages(updatedImages);
         }
-
-    }
+        
+    };
 
     const sliderValueText = (value) => {
         if(value < 11){
@@ -168,9 +222,6 @@ const EditBoardingPage = () => {
         else if(boardingImages.length < 1){
             toast.error('Please add atleast 1 image to proceed');
         }
-        else if(userInfo.phoneNo == '' || userInfo.phoneNo == null){
-            toast.error('Please add a phone No');
-        }
         else if(boardingType == 'Annex' && noOfAttachBaths == '0' && noOfCommonBaths == '0'){
             toast.error("You should have atleast 1 bathroom")
         }
@@ -181,42 +232,58 @@ const EditBoardingPage = () => {
             setBackDropOpen(true);
             
             var res;
+            var fileRef;
 
             try {
 
-                const uploadPromises = boardingImages.map(async (boardingImage) => {
-                    const file = boardingImage;
+                for(let i = 0; i < boardingImagesToDelete.length; i++){
+                    fileRef = ref(storage,boardingImagesToDelete[i]);
+    
                     try {
-                        const timestamp = new Date().getTime();
-                        const random = Math.floor(Math.random() * 1000) + 1;
-                        const uniqueName = `${timestamp}_${random}.${file.name.split('.').pop()}`;
-                    
-                        const storageRef = ref(storage, `${uniqueName}`);
-                        const uploadTask = uploadBytesResumable(storageRef, file);
-
-                        await uploadTask;
-                        
-                        return uniqueName;                  
-            
-                    } catch (error) {
-                        console.error('Error uploading and retrieving image:', error);
-                        return null; // Handle the error as needed
+                        await deleteObject(fileRef);
+                    } catch (err) {
+                        console.log(err); 
+                        toast.error(err);
                     }
-                });
+                }
 
-                // Wait for all uploads to complete
-                const uploadedImageNames = await Promise.all(uploadPromises);
+                let finalBoardingImages = boardingImages;
+                if(newBoardingImages.length > 0){
+                    const uploadPromises = newBoardingImages.map(async (boardingImage) => {
+                        const file = boardingImage;
+                        try {
+                            const timestamp = new Date().getTime();
+                            const random = Math.floor(Math.random() * 1000) + 1;
+                            const uniqueName = `${timestamp}_${random}.${file.name.split('.').pop()}`;
+                        
+                            const storageRef = ref(storage, `${uniqueName}`);
+                            const uploadTask = uploadBytesResumable(storageRef, file);
 
-                // Filter out any null values from failed uploads
-                const validImageNames = uploadedImageNames.filter((name) => name !== null);
+                            await uploadTask;
+                            
+                            return uniqueName;                  
+                
+                        } catch (error) {
+                            console.error('Error uploading and retrieving image:', error);
+                            return null; // Handle the error as needed
+                        }
+                    });
 
-                console.log(validImageNames)
+                    // Wait for all uploads to complete
+                    const uploadedImageNames = await Promise.all(uploadPromises);
 
+                    // Filter out any null values from failed uploads
+                    const validImageNames = uploadedImageNames.filter((name) => name !== null);
+
+                    finalBoardingImages = boardingImages.concat(validImageNames)
+                }
+                
                 if(boardingType == 'Annex'){
-                    res = await registerBoarding({ ownerId:userInfo._id, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, noOfRooms, noOfCommonBaths, noOfAttachBaths, rent, keyMoney, description, boardingImages:validImageNames, phoneNo, bankAccNo, bankAccName, bankName, bankBranch });
+                    res = await updateBoarding({ boardingId, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, noOfRooms, noOfCommonBaths, noOfAttachBaths, rent, keyMoney, description, boardingImages:finalBoardingImages });
                 }
                 else{
-                    res = await registerBoarding({ ownerId:userInfo._id, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, boardingImages:validImageNames, phoneNo, bankAccNo, bankAccName, bankName, bankBranch });
+                    res = await updateBoarding({ boardingId, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, boardingImages:finalBoardingImages });
+                    console.log(res);
                 }
 
                 if(res.error){
@@ -225,15 +292,8 @@ const EditBoardingPage = () => {
                 }
                 else{
                     toast.success('Boarding Registered Successfully!')
-                    dispatch(setUserInfo({...res.data.owner}));
 
-                    if(boardingType == 'Annex'){
-                        navigate('/owner/boardings/');
-                    }
-                    else{
-                        const boardingId = res.data.boarding._id;
-                        navigate(`/owner/boardings/${boardingId}/${boardingName}/rooms/add`);
-                    }
+                    navigate('/owner/boardings/');
 
                 }
 
@@ -256,26 +316,18 @@ const EditBoardingPage = () => {
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
                                 <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
                                 <Link underline="hover" key="3" color="inherit" href="/owner/boardings">Boardings</Link>,
-                                <Typography key="4" color="text.primary">Add</Typography>
+                                <Link underline="hover" key="3" color="inherit" href={`/owner/boardings/${boardingId}/rooms`}>{boardingName}</Link>,
+                                <Typography key="4" color="text.primary">Edit</Typography>
                             </Breadcrumbs>
                         </Col>
                     </Row>
-                    <Collapse in={noticeStatus}>
-                        <Alert
-                            action={ <IconButton aria-label="close" color="inherit" size="small" onClick={() => { setNoticeStatus(false); }} > <Close fontSize="inherit" /> </IconButton> }
-                            sx={{ mt: 2, bgcolor:'rgb(177 232 255)' }}
-                            severity="info"
-                        >
-                            <strong>Info</strong> -  You only need to complete this form once, so take your time, relax, and complete it at your convenience.
-                        </Alert>
-                    </Collapse>
                     <Fade in={viewUserInfo} >
                         <Form onSubmit={submitHandler}>
                             <Row className='mt-4'>
                                 <Col className="mb-1">
                                     <Card className={CreateBoardingStyles.card}>
                                         <CardContent style={{padding:'25px', textAlign:'center'}}>
-                                            <h4 style={{margin:0}}><b>Register Boarding</b></h4>
+                                            <h4 style={{margin:0}}><b>Edit Boarding</b></h4>
                                         </CardContent>
                                     </Card>
                                 </Col>
@@ -454,7 +506,6 @@ const EditBoardingPage = () => {
                                                                         color="primary"
                                                                         value={boardingType}
                                                                         exclusive
-                                                                        onChange={handleBoardingTypeChange}
                                                                         required
                                                                     >
                                                                         <ToggleButton value={boardingType} >{boardingType}</ToggleButton>
@@ -470,22 +521,28 @@ const EditBoardingPage = () => {
                                                             <Tooltip title="Add a few photos of the *outside* of the boarding." placement="top" arrow>
                                                                 <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
                                                             </Tooltip>
-                                                            <p>({boardingImages.length}/2)</p>
+                                                            <p>({boardingImages.length+newBoardingImages.length}/2)</p>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
                                                             <Row>
                                                                 <Col>
-                                                                    {boardingImages.length < 2 ?
+                                                                    {(boardingImages.length+newBoardingImages.length) < 2 ?
                                                                         <Form.Group controlId="formFile" className="mb-0">
                                                                             <Form.Label className={`${CreateBoardingStyles.addImgLabel}`}><AddPhotoAlternate/> Add a photo</Form.Label>
                                                                             <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
-                                                                            <p>{percent=='101' ? '' : <><LinearProgress variant="determinate" value={percent} />{percent}%</>}</p>
                                                                         </Form.Group>
                                                                     :<></>}
                                                                     {boardingPreviewImages.length > 0 ?
                                                                         boardingPreviewImages.map((boardingPreviewImage, index) => (
-                                                                            <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(boardingPreviewImage)}>
+                                                                            <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeOldImage(boardingPreviewImage)}>
                                                                                 <Image src={boardingPreviewImage} width={100} height={100} style={{cursor:'auto'}}/>
+                                                                            </Badge>
+                                                                        ))
+                                                                    :<></>}
+                                                                    {newBoardingPreviewImages.length > 0 ?
+                                                                        newBoardingPreviewImages.map((newBoardingPreviewImage, index) => (
+                                                                            <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(newBoardingPreviewImage)}>
+                                                                                <Image src={newBoardingPreviewImage} width={100} height={100} style={{cursor:'auto'}}/>
                                                                             </Badge>
                                                                         ))
                                                                     :<></>}
@@ -607,22 +664,28 @@ const EditBoardingPage = () => {
                                                         <Tooltip title="Add up to a maximum of 5 photos of the Annex." placement="top" arrow>
                                                             <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
                                                         </Tooltip>
-                                                        <p>({boardingImages.length}/5)</p>
+                                                        <p>({boardingImages.length+newBoardingImages.length}/5)</p>
                                                     </Col>
                                                     <Col style={{height:'100%'}} xs={12} md={8} lg={10}>
                                                         <Row>
                                                             <Col>
-                                                                {boardingImages.length < 5 ?
+                                                                {(boardingImages.length+newBoardingImages.length) < 5 ?
                                                                     <Form.Group controlId="formFile" className="mb-0">
                                                                         <Form.Label className={`${CreateBoardingStyles.addImgLabel}`}><AddPhotoAlternate/> Add a photo</Form.Label>
                                                                         <Form.Control type="file" accept="image/*" onChange={previewImage} hidden/>
-                                                                        <p>{percent=='101' ? '' : <><LinearProgress variant="determinate" value={percent} />{percent}%</>}</p>
                                                                     </Form.Group>
                                                                 :<></>}
                                                                 {boardingPreviewImages.length > 0 ?
-                                                                    boardingPreviewImages.map((boardingPreviewImage,index) => (
-                                                                        <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(boardingPreviewImage)}>
+                                                                    boardingPreviewImages.map((boardingPreviewImage, index) => (
+                                                                        <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeOldImage(boardingPreviewImage)}>
                                                                             <Image src={boardingPreviewImage} width={100} height={100} style={{cursor:'auto'}}/>
+                                                                        </Badge>
+                                                                    ))
+                                                                :<></>}
+                                                                {newBoardingPreviewImages.length > 0 ?
+                                                                    newBoardingPreviewImages.map((newBoardingPreviewImage, index) => (
+                                                                        <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeImage(newBoardingPreviewImage)}>
+                                                                            <Image src={newBoardingPreviewImage} width={100} height={100} style={{cursor:'auto'}}/>
                                                                         </Badge>
                                                                     ))
                                                                 :<></>}
@@ -634,7 +697,7 @@ const EditBoardingPage = () => {
                                             : <></>}
                                             <Row style={{marginTop:'40px'}}>
                                                 <Col>
-                                                    <Button type="submit" className={CreateBoardingStyles.submitBtn} variant="contained">Register Boarding</Button>
+                                                    <Button type="submit" className={CreateBoardingStyles.submitBtn} variant="contained">Update</Button>
                                                     <Backdrop
                                                         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                                                         open={backDropOpen}

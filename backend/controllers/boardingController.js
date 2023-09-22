@@ -2,6 +2,8 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import Boarding from '../models/boardingModel.js';
 import Room from '../models/roomModel.js';
+import storage from '../utils/firebaseConfig.js';
+import { ref, uploadBytesResumable, deleteObject  } from "firebase/storage";
 
 // @desc    Register a new Boarding
 // route    POST /api/boardings/register
@@ -183,6 +185,24 @@ const getOwnerBoardings = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Get Boarding by ID
+// route    GET /api/boardings/:boardingId
+const getBoardingById = asyncHandler(async (req, res) => {
+    const boardingId = req.params.boardingId;
+
+    const boarding = await Boarding.findById(boardingId);
+
+    if(boarding){
+        res.status(200).json({
+            boarding
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("No Boardings Available")
+    }
+});
+
 // @desc    Get all Boardings of particular owner
 // route    GET /api/boardings/occupant/:occupantId
 const getOccupantBoarding = asyncHandler(async (req, res) => {
@@ -243,12 +263,102 @@ const updateBoardingVisibility = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Update Boarding
+// route    POST /api/boardings/updateBoarding
+const updateBoarding = asyncHandler(async (req, res) => {
+
+    const {
+        boardingId,
+        boardingName, 
+        address, 
+        city,
+        location,
+        boardingImages, 
+        noOfRooms,
+        noOfCommonBaths,
+        noOfAttachBaths, 
+        facilities, 
+        utilityBills, 
+        food,
+        gender, 
+        boardingType,
+        keyMoney,
+        rent,
+        description
+    } = req.body;
+
+    
+    console.log(boardingId);
+    var boarding = await Boarding.findById(boardingId).populate('room');
+
+    var boardingNameExists = await Boarding.findOne({boardingName});
+
+    var roomOccupantCount = 0;
+    if(boarding.boardingType == 'Hostel'){
+        for (let i = 0; i < boarding.room.length; i++) {
+            roomOccupantCount += boarding.room[i].occupant.length;
+        }
+    }
+    
+    if(!boarding){
+        res.status(400);
+        throw new Error('Boarding Not Found!');
+    }
+    else if(roomOccupantCount > 0 && boarding.gender!=gender){
+        res.status(400);
+        throw new Error('Cannot update gender while boarding is occupied!');
+    }
+    else if(boarding.boardingName!=boardingName && boardingNameExists){
+        res.status(400);
+        throw new Error('Boarding Name already Taken!');
+    }
+    else{
+    
+        boarding.boardingName = boardingName || boarding.boardingName;
+        boarding.address = address || boarding.address;
+        boarding.city = city || boarding.city;
+        boarding.location = location || boarding.location;
+        boarding.boardingImages = boardingImages || boarding.boardingImages;
+        boarding.facilities = facilities || boarding.facilities;
+        boarding.utilityBills = utilityBills || boarding.utilityBills;
+        boarding.food = food || boarding.food;
+        boarding.gender = gender || boarding.gender;
+        boarding.boardingType = boardingType || boarding.boardingType;
+        boarding.status = 'PendingApproval';
+
+        if(boarding.boardingType == 'Annex'){
+            boarding.description = description || boarding.description;
+            boarding.noOfRooms = noOfRooms || boarding.noOfRooms;
+            boarding.noOfCommonBaths = noOfCommonBaths || boarding.noOfCommonBaths;
+            boarding.noOfAttachBaths = noOfAttachBaths || boarding.noOfAttachBaths;
+            boarding.keyMoney = keyMoney || boarding.keyMoney;
+            boarding.rent = rent || boarding.rent;
+        }
+
+        boarding = await boarding.save();
+
+        if(boarding){
+            res.status(201).json({
+                message: 'successfully updated',
+            });
+        }else{
+            res.status(400);
+            throw new Error('Invalid Boarding Data');
+        }
+    }
+
+
+});
+
 // @desc    Delete particular boarding
 // route    DELETE /api/boardings/deleteBoarding/:boardingId
 const deleteBoarding = asyncHandler(async (req, res) => {
     const boardingId = req.params.boardingId;
 
     const boarding = await Boarding.findById(boardingId).populate('room');
+
+    console.log(boarding);
+
     
     if(boarding){
 
@@ -258,15 +368,35 @@ const deleteBoarding = asyncHandler(async (req, res) => {
             occupantCount += boarding.room[i].occupant.length;
         }
 
-        console.log(boarding.occupant);
         if(occupantCount == 0 && !boarding.occupant){
 
             if(boarding.boardingType == 'Hostel' && boarding.room.length > 0){
+                var fileRef;
                 for(let i = 0; i < boarding.room.length; i++){
-                    await Room.findByIdAndDelete(boarding.room[i]._id);
+
+                    for (let j = 0; j < boarding.room[i].roomImages.length; j++) {
+                        fileRef = ref(storage,boarding.room[i].roomImages[j]);
+                    
+                        try {
+                            await deleteObject(fileRef); // deleteing images of the room
+                        } catch (err) {
+                            console.log(err);;
+                        }        
+                    }
+                    await Room.findByIdAndDelete(boarding.room[i]._id); // deleting the room
+
                 }
             }
 
+            for (let i = 0; i < boarding.boardingImages.length; i++) {
+                fileRef = ref(storage,boarding.boardingImages[i]);
+            
+                try {
+                    await deleteObject(fileRef); // deleting images of boarding
+                } catch (err) {
+                    console.log(err);
+                }        
+            }
             await Boarding.findByIdAndDelete(boardingId);
 
             res.status(200).json({
@@ -288,7 +418,9 @@ export {
     registerBoarding,
     addRoom,
     getOwnerBoardings,
+    getBoardingById,
     getOccupantBoarding,
     updateBoardingVisibility,
+    updateBoarding,
     deleteBoarding
 };

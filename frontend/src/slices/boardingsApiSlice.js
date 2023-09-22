@@ -24,9 +24,22 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 method: 'GET',
             }),
         }),
+        getBoardingById: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/${data}`,
+                method: 'GET',
+            }),
+        }),
         updateVisibility: builder.mutation({
             query: (data) => ({
                 url: `${BOARDINGS_URL}/updateBoardingVisibility`,
+                method: 'PUT',
+                body: data
+            }),
+        }),
+        updateBoarding:builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/updateBoarding`,
                 method: 'PUT',
                 body: data
             }),
@@ -40,4 +53,4 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useRegisterBoardingMutation, useAddRoomMutation, useGetOwnerBoardingsMutation, useUpdateVisibilityMutation, useDeleteBoardingMutation } = boardingsApiSlice;
+export const { useRegisterBoardingMutation, useAddRoomMutation, useGetOwnerBoardingsMutation, useGetBoardingByIdMutation, useUpdateVisibilityMutation, useUpdateBoardingMutation, useDeleteBoardingMutation } = boardingsApiSlice;
