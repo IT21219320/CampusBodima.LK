@@ -14,8 +14,9 @@ export const utilitiesApiSlice = apiSlice.injectEndpoints({
         }),
         getUtilitiesForBoarding : builder.mutation({
             query: (data) => ({
-                url: `${UTILITIES_URL}/owner/${data}`,
-                method: 'GET',
+                url: `${UTILITIES_URL}/owner/utilities`,
+                method: 'POST',
+                body:data,
             }),
         }),
         getUtilitiesForOccupant: builder.mutation({
@@ -29,6 +30,12 @@ export const utilitiesApiSlice = apiSlice.injectEndpoints({
                 url: `${UTILITIES_URL}/owner/${data}`,
                 method: 'PUT',
                 body: data,
+            }),
+        }),
+        getUpdateUtility: builder.mutation({
+            query: ( data) => ({
+                url: `${UTILITIES_URL}/owner/update/${data}`,
+                method: 'GET',
             }),
         }),
         deleteUtility: builder.mutation({
@@ -58,4 +65,4 @@ export const utilitiesApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useAddUtilitiesMutation,useGetUtilitiesForBoardingMutation,useGetUtilitiesForOccupantMutation,useUpdateUtilityMutation,useDeleteUtilityMutation,useGetOccupantMutation,useGetUtilityBoardingMutation,useGetFacilitiesBoardingMutation} = utilitiesApiSlice;
+export const { useAddUtilitiesMutation,useGetUtilitiesForBoardingMutation,useGetUtilitiesForOccupantMutation,useUpdateUtilityMutation,useDeleteUtilityMutation,useGetOccupantMutation,useGetUtilityBoardingMutation,useGetFacilitiesBoardingMutation,useGetUpdateUtilityMutation} = utilitiesApiSlice;

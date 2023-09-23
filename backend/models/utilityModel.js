@@ -14,7 +14,7 @@ const utilitySchema = mongoose.Schema ({
     },
 
     date:{
-        type:Date,
+        type:String,
         required:true,
     },
 

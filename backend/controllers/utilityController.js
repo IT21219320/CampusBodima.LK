@@ -46,9 +46,9 @@ const addUtilities = asyncHandler(async (req, res) => {
 // @access  Private - Owner
 
 const getUtilitiesForBoarding = asyncHandler(async (req, res) =>{
-    const boardingId = req.params. boardingId;
-    const utilityType = req.params.utilityType;
-    const page = req.params.page || 1;
+    const boardingId = req.body. boardingId;
+    const utilityType = req.body.utilityType;
+    const page = req.body.page || 1;
     const pageSize = 10
     
     const skipCount = (page - 1) * pageSize;
@@ -56,11 +56,11 @@ const getUtilitiesForBoarding = asyncHandler(async (req, res) =>{
     var totalPages = await Utility.countDocuments({boarding:boardingId});
     totalPages = Math.ceil(parseInt(totalPages)/pageSize);
 
-    const utilities = await Utility.find({boarding:boardingId, utilityType:utilityType});
+    const utility = await Utility.find({boarding:boardingId, utilityType:utilityType});
     
-    if(utilities){
+    if(utility){
         res.status(200).json({
-            utilities,
+            utility,
             totalPages,
         })
     }
@@ -75,7 +75,7 @@ const getUtilitiesForBoarding = asyncHandler(async (req, res) =>{
 // route    GET /api/utilities/occupants/:occupantId/:boardingId/:utilityType'
 // @access  Private - Occupant
 const getUtilitiesForOccupant = asyncHandler (async(req, res) => {
-    const occupantId = req.params.occupantId;
+    const occupantId = req.body.occupantId;
     const boardingId = req.params.boardingId;
     const utilityType = req.params.utilityType;
     
@@ -124,17 +124,55 @@ const updateUtility = asyncHandler(async (req, res) => {
 
     }
 });
+// @desc    Get Utilities for Update
+// route    GET /api/utilities/owner/update/:boardingId/:utilityType/:utilityId
+// @access  Private - Owner
+const getUpdateUtility = asyncHandler(async (req, res) => {
+    const boardingId = req.params.boardingId;
+    const utilityType = req.params.utilityType;
+    const utilityId=req.params.utilityId;
+  
+    try {
+      const utility = await Utility.findOne({
+        _id:utilityId,
+        boarding: boardingId,
+        utilityType:utilityType,
+      });
+  
+      if (utility) {
+         
+        const boarding = await Boarding.findById(boardingId);
+  
+        if (boarding) {
+          res.status(200).json({
+            utility,
+            boarding,
+          });
+        } else {
+          res.status(404);
+          throw new Error("Boarding not found");
+        }
+      } else {
+        res.status(404);
+        throw new Error("Utility not found");
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: error.message || "Server error while fetching utility",
+      });
+    }
+  });
 
 // @desc    delete utilitybill for a bording 
 // route    DELETE /api/utilities/owner/:boardingId/:utilityType/ :utilityId
 // @access  Private - Owner
 const deleteUtility = asyncHandler(async (req, res) => {
-    const boardingId = req.params.boardingId;
-    const utilityId = req.params.utilityId;
-    const utilityType = req.params.utilityType;  
+    
+    const utilityId = req.params.utilityId; 
+    
 
     try {
-        const utility = await Utility.findOneAndDelete({ boarding:boardingId ,utilityType:utilityType, _id:utilityId });
+        const utility = await Utility.findOneAndDelete({  _id:utilityId });
 
         if (!utility) {
             res.status(404);
@@ -244,6 +282,7 @@ export{
     getUtilitiesForBoarding,
     getUtilitiesForOccupant,
     updateUtility,
+    getUpdateUtility,
     deleteUtility,
     getBoarding,
     getUtilityBoarding,
