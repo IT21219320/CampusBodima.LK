@@ -59,7 +59,7 @@ const createTicket = asyncHandler(async (req,res) =>{
 
 });
 
-//getTicket by userId   userta adala tiket tika
+//getTicket by userId   occupant ta adala tiket tika
 
 const getUserTickets = asyncHandler(async (req,res) => {
     const id = req.body.id;
@@ -75,10 +75,7 @@ const getUserTickets = asyncHandler(async (req,res) => {
 
     const skip = (page) * pageSize;
     
-    if (startDate.toDateString() === endDate.toDateString()) {
-        // If the start and end dates are the same day, adjust the end date to the end of that day
-        endDate.setHours(23, 59, 59, 999); // Set to just before midnight of the following day
-    }
+    endDate.setHours(23, 59, 59, 999); // Set to just before midnight of the following day
 
     var totalRows = await Ticket.countDocuments({
         'senderId._id': id,
@@ -159,12 +156,12 @@ const search = asyncHandler(async (req,res) => {
     }
 });
 
-//getTicket by Id      uniquetika(thread)
+//getTicket by uniqueId     uniquetika(thread)
 
 const getTicketByUniqueId = asyncHandler(async (req,res) => {
     const ticketId = req.params._id;
 
-    console.log(ticketId);
+    
 
     const ticket = await Ticket.findOne({_id:ticketId});
 
@@ -177,34 +174,55 @@ const getTicketByUniqueId = asyncHandler(async (req,res) => {
     }
 });
 
-//updatetickets
 
-const updateTicket = asyncHandler(async (req,res) => {
-    const {_id,ticketId,senderId,recieverId,subject,category,subCategory,description,status,attachment} = req.body;
+//replyTicket
 
-    const tickets = await Ticket.findById(_id);
+const replyTicket = asyncHandler(async (req, res) => {
+    const{_id, senderId, recieverId, description, attachment } = req.body;
 
-    if(tickets){
-        tickets.subject = subject || tickets.subject;
-        tickets.category = category || tickets.category;
-        tickets.subCategory = subCategory || tickets.subCategory;
-        tickets.description = description || tickets.description;
-        tickets.status = status || tickets.status;
-        tickets.attachment = attachment || tickets.attachment;
+    const ticket = await Ticket.findById(_id);
+    
 
-        const updatedTicket = await tickets.save();
+    if(ticket){
+
+        var latestReplyId;
+        if(ticket.reply.length == 0){
+            latestReplyId = 1.1;
+        }
+        else{
+             latestReplyId = parseFloat(ticket.reply[ticket.reply.length - 1].ticketId)+0.1;
+        }
+                
+        
+        const reply = {
+            ticketId: latestReplyId.toFixed(1),
+            senderId: senderId,
+            recieverId: recieverId,
+            subject: ticket.subject,
+            category: ticket.category,
+            subCategory: ticket.subCategory,
+            description: description,
+            attachment: attachment
+        }
+
+        const updatedTicket = await Ticket.findOneAndUpdate(
+            { _id: _id }, // Find the parent ticket by _id
+            { $push: { reply: reply } },
+            { $set : {status: "Pending"}}
+        );
+
 
         res.status(200).json({
             updatedTicket
         })
 
     }
-
     else{
         res.status(404);
         throw new Error('ticket not found');
-
     }
+
+    
 
 });
 
@@ -232,24 +250,136 @@ const updateStatus = asyncHandler(async (req, res) => {
     
 });
 
+//updateticket (update last ticket)
+
+const updateTicket = asyncHandler(async (req,res) => {
+    const {ticketId,subject,category,subCategory,description,status,attachment,replyTktId } = req.body;
+
+    let ticket = await Ticket.findById(ticketId).populate('reply'); 
+    let reply = JSON.parse(JSON.stringify(ticket)).reply;
+
+    if (ticket) {
+        if(ticketId == replyTktId){
+            ticket = await Ticket.findOne({_id:ticketId});
+
+            ticket.subject = subject || ticket.subject;
+            ticket.category = category || ticket.category;
+            ticket.subCategory = subCategory || ticket.subCategory;
+            ticket.description = description || ticket.description;
+            ticket.status = status || ticket.status;
+            ticket.attachment = attachment || ticket.attachment;
+            ticket = await ticket.save();
+        }
+        else{
+            for(let i = 0; i < reply.length; i++){
+                if(reply[i]._id == replyTktId){
+                    reply.splice(i, 1);
+                }
+            }
+            ticket.reply = reply;
+
+            ticket.reply.subject = subject || ticket.reply.subject;
+            ticket.reply.category = category || ticket.reply.category;
+            ticket.reply.subCategory = subCategory || ticket.reply.subCategory;
+            ticket.reply.description = description || ticket.reply.description;
+            ticket.reply.status = status || ticket.reply.status;
+            ticket.reply.attachment = attachment || ticket.reply.attachment;
+            ticket = await ticket.reply.save();
+        }
+        res.status(200).json({ticket});
+    } else {
+        res.status(404)
+        throw new Error("Ticket not found.");
+    }
+
+});
+
+
 //deleteTicket
 
 const deleteTicket = asyncHandler(async (req,res) => {
 
-    const {_id} = req.query;
+    const {ticketId, replyTktId } = req.params;
 
-    const tickets = await Ticket.findById(_id); 
+    let ticket = await Ticket.findById(ticketId).populate('reply'); 
+    let reply = JSON.parse(JSON.stringify(ticket)).reply;
 
-    if(tickets){
-        await Ticket.findOneAndDelete({_id})
-        res.status(200).json("Successfully Deleted")
+    if (ticket) {
+        if(ticketId == replyTktId){
+            ticket = await Ticket.findOneAndDelete({_id:ticketId});
+        }
+        else{
+            for(let i = 0; i < reply.length; i++){
+                if(reply[i]._id == replyTktId){
+                    reply.splice(i, 1);
+                }
+            }
+            ticket.reply = reply;
+
+            console.log(ticket);
+            ticket = await ticket.save();
+        }
+        res.status(200).json({ticket});
+    } else {
+        res.status(404)
+        throw new Error("Ticket not found.");
     }
-    else{
-        res.status(404);
-        throw new Error('Ticket not found')
+}); 
 
+
+//owner
+
+//getTicket by ownerId   oonwert ta adala tiket tika
+
+const getOwnerTickets = asyncHandler(async (req,res) => {
+    const id = req.body.id;
+    const page = req.body.page || 0;
+    const pageSize = req.body.rowsPerPage;
+    const category = req.body.category;
+    const subCategory = req.body.subCategory;
+    const status = req.body.status;
+    const startDate = new Date(req.body.startDate);
+    const endDate = new Date(req.body.endDate);
+    const date = req.body.date;
+    const search = req.body.search;
+
+    const skip = (page) * pageSize;
+    
+    endDate.setHours(23, 59, 59, 999); // Set to just before midnight of the following day
+
+    var totalRows = await Ticket.countDocuments({
+        'recieverId._id': id,
+        ...(category !== 'all' ? { category } : {}),
+        ...(subCategory !== 'all' ? { subCategory } : {}),
+        ...(status !== 'all' ? { status } : {}),
+        ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+        subject: { $regex: search, $options: "i" } 
+    });
+
+    try{
+        const tickets = await Ticket.find({
+            'senderId._id': id,
+            ...(category !== 'all' ? { category } : {}),
+            ...(subCategory !== 'all' ? { subCategory } : {}),
+            ...(status !== 'all' ? { status } : {}),
+            ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
+            subject: { $regex: search, $options: "i" } 
+        })
+        .skip(skip)
+        .limit(pageSize);
+
+        if(tickets){
+            res.status(201).json({tickets,totalRows});
+        }
+         else{
+            res.status(400);
+            throw new Error('No tickets');
+        } 
+    }catch(err){
+        res.status(500).json({err});
     }
 });
+
 
 
 export { createTicket,
@@ -258,6 +388,7 @@ export { createTicket,
         updateTicket,
         deleteTicket,
         updateStatus,
+        replyTicket,
         search
         }
 

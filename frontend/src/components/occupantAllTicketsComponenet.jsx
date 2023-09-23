@@ -4,13 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { useGetUserTicketsMutation, useSearchTicketMutation } from "../slices/ticketsApiSlices";
 import { toast } from "react-toastify";
 import { Row, Col, Table} from 'react-bootstrap';
-import { Card, CardContent, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress} from '@mui/material';
-import { GridViewRounded } from '@mui/icons-material';
+import { Card, CardContent, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress, IconButton} from '@mui/material';
+import { GetAppRounded, GridViewRounded } from '@mui/icons-material';
 import { DateRange } from 'react-date-range';
 import occupantAllTicketsStyles from '../styles/occupantAllTicketsStyles.module.css';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { formatDistanceToNow } from 'date-fns';
+import jsPDF from 'jspdf';
 
 
 const OccupantAllTickets = ({search}) =>{
@@ -108,8 +109,58 @@ const OccupantAllTickets = ({search}) =>{
         setPage(0);
    }
 
+   const exportToPDF = () => {;
+               
+           // Create a new jsPDF instance
+           const doc = new jsPDF();
+       
+           // Define the table headers
+           const headers = [["Reference Id", "Subject", "Description", "Category", "Sub Category", "Status", "Date"]];
+       
+           // Map the admin data to table rows
+       
+           const data = tickets.map((ticket) => [
+             ticket.ticketId,
+             ticket.subject,
+             ticket.description,
+             ticket.category,
+             ticket.subCategory,
+             ticket.status,
+             new Date(ticket.createdAt).toLocaleString('en-GB')
+           ]);
+       
+           // Set the table styles
+           const styles = {
+             halign: "center",
+             valign: "middle",
+             fontSize: 10,
+           };
+       
+           // Add the table to the PDF document
+           doc.autoTable({
+             head: headers,
+             body: data,
+             styles,
+             margin: { top: 70 },
+             startY: 20
+           });
+       
+           
+       
+           doc.text("Tickets List", 90, 10);
+           doc.setFontSize(9);
+       
+           doc.save("Tiickets.pdf");
+       
+   };
+
     return(
         <> 
+            <Row>
+                <Col style={{textAlign:'right'}}>
+                    <IconButton variant="contained" style={{marginRight:'10px'}} onClick={exportToPDF}><GetAppRounded /></IconButton>
+                </Col>
+            </Row>
             <Row style={{marginTop:'20px'}}>
                 <Col><div style={{border: '1px solid #00000066', padding:'15px'}}>Filter Ticket By: </div></Col>
                 <Col>
@@ -141,6 +192,7 @@ const OccupantAllTickets = ({search}) =>{
                                     <MenuItem value={'all'}>All</MenuItem>
                                     <MenuItem value={'utilities'}>Utilities</MenuItem>
                                     <MenuItem value={'payments'}>Payment Issue</MenuItem>
+                                    <MenuItem value={'facilities'}>Facilities</MenuItem>
                                     <MenuItem value={'other'}>Other</MenuItem>
                                 </Select>
                             :
@@ -210,7 +262,7 @@ const OccupantAllTickets = ({search}) =>{
 
             <Row>
                 <Col>
-                    <Table striped bordered hover className={occupantAllTicketsStyles.table}>
+                    <Table striped bordered hover className={occupantAllTicketsStyles.table} id="printable">
                         <thead>
                                 <tr style={{textAlign:'center'}}>
                                     <th>Reference Id</th>
@@ -224,16 +276,16 @@ const OccupantAllTickets = ({search}) =>{
                                     tickets.map((ticket, index) => (
                                         <tr key={index}>
                                             <td>{ticket.ticketId}</td>
-                                            <td>
+                                            <td style={{padding:"12px"}}>
                                                 <Row>
                                                     <Col style={{fontStyle:'italic', fontSize:'medium' , fontWeight:'600'}}>
                                                         <span onClick={() => navigate(`/occupant/ticket/${ticket._id}`)} className={occupantAllTicketsStyles.ticketSubject}>{ticket.subject}</span>
                                                     </Col>
                                                 </Row>
-                                                <Row style={{fontSize:'small', fontWeight:'200 !important', fontStyle:'normal', color:'dimgray'}}>
+                                                <Row style={{fontSize:'small', fontWeight:'200 !important', fontStyle:'normal', color:'dimgray', marginTop:'5px'}}>
                                                     <Col lg={3}>{new Date(ticket.createdAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', /*hour: '2-digit', minute: '2-digit', second: '2-digit' */})}</Col>
                                                     <Col lg={3}><GridViewRounded fontSize="small" />&nbsp;{ticket.category}</Col>
-                                                    <Col lg={3}>{TimeAgo(new Date(ticket.createdAt))}</Col>
+                                                    <Col lg={3}>{TimeAgo(new Date(ticket.updatedAt))}</Col>
                                                 </Row>
                                             </td>
                                             <td>    

@@ -1,0 +1,30 @@
+.card{
+    margin-top: 10px;
+    box-shadow: 2px 1px 10px -5px black;
+    height: 60px;
+    margin-bottom: 16px;
+}
+/*ticket description, not the reply ticket description*/
+.description{
+    font-size: 20px;
+    font-family: unset;
+    color: #3d3f3fe8;
+    padding-left: 45px;
+    padding-top: 10px;
+}
+
+/*reply ticket description*/
+.rplyTktDesc{
+    min-height: 100px !important;
+    border: 1px solid !important;
+    background-color: #e6ebef3d !important;
+}
+
+.confirmIcon{
+    padding-bottom: 0 !important;
+    color: orange;
+    text-align: center;
+}
+
+
+

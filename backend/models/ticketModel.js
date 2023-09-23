@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import User from "../models/userModel.js";
 
-const ticketSchema = mongoose.Schema({
+const replySchema = mongoose.Schema({
     ticketId:{
         type:String,
         required:true,
@@ -50,12 +50,59 @@ const ticketSchema = mongoose.Schema({
     timestamps:true
 });
 
-const Ticket = mongoose.model('Ticket',ticketSchema);
-
-ticketSchema.add({
-    reply: {
-        type: [Ticket.schema], // Reference to itself for handling replies
+const ticketSchema = mongoose.Schema({
+    ticketId:{
+        type:String,
+        required:true,
     },
+
+    senderId:{
+        type:User.schema,
+        required:true,
+    },
+
+    recieverId:{
+        type:User.schema,
+        required:true,
+    },
+
+    subject:{
+        type:String,
+        required:true,
+    },
+
+    category:{
+      type:String,
+      required:true,  
+    },
+
+    subCategory:{
+        type:String,
+        required:true,
+    },
+
+    description:{
+        type:String,
+        required:true
+    },
+
+    status:{
+        type:String,
+        default:'Pending'
+    },
+
+    attachment:{
+        type:String
+    },
+
+    reply: {
+        type: [replySchema]
+    }
+
+},{
+    timestamps:true
 });
+
+const Ticket = mongoose.model('Ticket',ticketSchema);
 
 export default Ticket;
