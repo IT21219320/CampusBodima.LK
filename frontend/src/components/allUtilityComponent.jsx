@@ -68,7 +68,8 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
         try {
             const data = `${utilityId}`;
             const res = await deleteUtility(data).unwrap();
-            if (res.message === "Utility deleted successfully") {
+            console.log(res);
+            if (res.message === " Utility deleted successfully") {
                 toast.success("Utility deleted successfully");
                 loadData(page);
             } else {
