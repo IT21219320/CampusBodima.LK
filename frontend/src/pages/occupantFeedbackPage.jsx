@@ -1,9 +1,7 @@
-
-
 import { useEffect, useState } from "react"
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useGetFeedbackByIdMutation, useSearchFeedbackMutation } from "../slices/feedbackApiSlice";
+import { useGetFeedbackByUserIdMutation, useSearchFeedbackMutation } from "../slices/feedbackApiSlice";
 import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
@@ -18,23 +16,48 @@ import { fontFamily } from "@mui/system";
 import { formatDistanceToNow } from 'date-fns';
 import { FiEdit } from 'react-icons/fi';
 import {RiDeleteBinLine} from 'react-icons/ri'
+import { BrowserUpdated as BrowserUpdatedIcon } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const OccupantFeedback = () =>{
+
     const [feedbacks, setFeedbacks] = useState([]);
-    const [page, setPage] = useState(0);
-    const [category, setCategory] = useState('all');
-    const [description, setDescription] = useState('');
-    const [rating, setRating] = useState(0);
+    //const [page, setPage] = useState(0);
+    //const [category, setCategory] = useState('all');
+    //const [description, setDescription] = useState('');
+    //const [rating, setRating] = useState(0);
 
     const [search, setSearch] = useState('');
+    
 
 
     const { userInfo } = useSelector((state) => state.auth);
 
+    
+
     const navigate = useNavigate();
 
-    const [getFeedbackById, { isLoading }] = useGetFeedbackByIdMutation();
-    const [searchFeedbackt, { isLoading2 }] =  useSearchFeedbackMutation();
+    const [getFeedbackByUserId, { isLoading }] = useGetFeedbackByUserIdMutation();
+    //const [searchFeedbackt, { isLoading2 }] =  useSearchFeedbackMutation();
+    
+    const loadFeedbackData = async () => {
+        try {
+            console.log(userInfo._id)
+          // Make an API call to fetch feedback data
+        const res = await getFeedbackByUserId({userId: userInfo._id}).unwrap(); // Adjust the API call according to your API definition
+          console.log(res);
+          setFeedbacks(res.feedback);
+        } catch (error) {
+          console.error('Error getting feedbacks', error);
+        }
+      };
+
+    
+
+    useEffect(() => {
+        // Dispatch the action to fetch feedback data
+        loadFeedbackData();
+      }, []); // Empty dependency array to trigger the effect on component mount
 
 
 
@@ -95,42 +118,48 @@ const OccupantFeedback = () =>{
                             <Table striped bordered hover className={occupantFeedbackStyles.table}>
                                 <thead>
                                         <tr style={{textAlign:'center'}}>
-                                            <th>Boarding Id/ Anex Id</th>
+                                            
+                                            <th>Category</th>
                                             <th>Feedback Details</th>
                                             <th>Star Rating</th>
-                                            <th>Delete</th>
-                                            <th>Update</th>
+                                            <th>Options</th>
+                                            
                                         </tr>
                                 </thead>
                                 <tbody>
-                                    {isLoading ? <tr style={{width:'100%',height:'100%',textAlign: 'center'}}><td colSpan={3}><CircularProgress /></td></tr> : 
-                                        feedbacks.length > 0 ?
-                                            feedbacks.map((feedback, index) => (
-                                                <tr key={index}>
-                                                    <td>{feedback.feedbackId}</td>
-                                                    <td>{feedback.boardingId || feedback.anexId}</td>
-                                                    <td>{feedback.description}</td>
-                                                    <td>{feedback.rating}</td>
-                                                    <td>
-                                                        <IconButton onClick={() => handleDeleteFeedback(feedback.id)}>
-                                                        <RiDeleteBinLine />
-                                                        </IconButton>
-                                                    </td>
-                                                    <td>
-                                                        <IconButton onClick={() => handleEditFeedback(feedback.id)}>
-                                                            <FiEdit />
-                                                        </IconButton>
-                                                    </td>
+                                {isLoading ? (
+                                        <tr style={{ width: '100%', height: '100%', textAlign: 'center' }}>
+                                            <td colSpan={3}><CircularProgress /></td>
+                                        </tr>
+                                    ) : feedbacks && feedbacks.length > 0 ? (
+                                        feedbacks.map((feedback, index) => (
+                                            <tr key={index}>
+                                                <td>{feedback.category}</td>
+                                                <td>{feedback.description}</td>
+                                                <td>{feedback.rating}</td>
+                                                {/* Render additional feedback data as needed */}
+                                                <td > 
                                                     
+                                                        <Button  style={{ background: ' blue', color: 'black', marginRight: '10px' }}>
+                                                        <BrowserUpdatedIcon /> Update
+                                                        </Button>
                                                     
-                                                </tr>
-                                            ))
+                                                        <Button  
+                                                        style={{ background: 'red',color: 'black' , marginLeft: '10px' }}
+                                                        
+                                                        >
+                                                        <DeleteIcon /> Delete
+                                                        </Button>
+                                                 </td> 
+                                
+                                            </tr>
                                             
-                                        :
-                                        <tr style={{height:'100%', width:'100%',textAlign:'center',color:'blue'}}>
+                                        ))
+                                    ) : (
+                                        <tr style={{ height: '100%', width: '100%', textAlign: 'center', color: 'blue' }}>
                                             <td colSpan={5}><h4>You don't have any Feedbacks!</h4></td>
                                         </tr>
-                                    }
+                                    )}
                                 </tbody>
                             </Table>
                         </Col>

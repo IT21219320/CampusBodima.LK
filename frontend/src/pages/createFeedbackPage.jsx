@@ -22,11 +22,10 @@ const CreateFeedback = () => {
     const [occupantId, setOccupantId] = useState(userInfo._id);
     const [occupantName, setOccupantName] = useState(userInfo.firstName + ' ' + userInfo.lastName);
     const [occupantEmail, setOccupantEmail] = useState(userInfo.email);
-    const [boardingId, setBoardingId] = useState('');
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
     const [rating, setRating] = useState(0);
-   
+                                    
   
     //const [CreateFeedback, { isLoading }] = usecreateFeedbackMutation(); // Use the appropriate feedback mutation hook
     const [createFeedback, { isLoading }] = useCreateFeedbackMutation(); // Corrected hook name
@@ -83,11 +82,15 @@ const CreateFeedback = () => {
   
     const submitHandler = async (e) => {
       e.preventDefault();
+      
   
       try {
-        const res = await createFeedback({ senderId: occupantId, feedback,rating,boardingId }).unwrap();
-        toast.success('Feedback submitted successfully');
-        navigate('/occupant/feedback'); // Redirect to the feedback page after submission
+        const res = await createFeedback({ senderId: occupantId, description,rating,category }).unwrap();
+        console.log("value",res);
+        if(res){
+          toast.success('Feedback submitted successfully');
+          navigate('/occupant/feedback'); // Redirect to the feedback page after submission
+        }  
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
@@ -193,7 +196,11 @@ const CreateFeedback = () => {
                               </label>
                             </Col>
                             <Col>
-                               <StarRating rating={rating} onChange={setRating} />
+                               <StarRating
+                                rating={rating} 
+                                onChange={setRating} 
+                                />
+                               
                             </Col>
                           </Row>
 
@@ -228,7 +235,7 @@ const CreateFeedback = () => {
                         <LoadingButton type="submit" loading={isLoading} className="mt-4 mb-4 me-4" style={{ float: 'right' }} variant="contained">
                           Submit Feedback
                         </LoadingButton>
-                        <LoadingButton type="submit" loading={isLoading} onClick={() => navigate('/occupant/feedback')} className="mt-4 mb-4 me-3" style={{ float: 'right' }} variant="contained">
+                        <LoadingButton type="button" loading={isLoading} onClick={() => navigate('/occupant/feedback')} className="mt-4 mb-4 me-3" style={{ float: 'right' }} variant="contained">
                           Cancel Feedback
                         </LoadingButton>
                         
