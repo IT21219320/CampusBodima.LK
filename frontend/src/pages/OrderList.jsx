@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useGetFeedbackByUserIdMutation } from "../slices/feedbackApiSlice";
+import { useGetOrderQuery } from "../slices/orderApiSlice";
 import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
@@ -21,7 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const OrderList = () =>{
 
-    const [feedbacks, setFeedbacks] = useState([]);
+    const [product, setFeedbacks] = useState([]);
     //const [page, setPage] = useState(0);
     //const [category, setCategory] = useState('all');
     //const [description, setDescription] = useState('');
@@ -37,14 +37,14 @@ const OrderList = () =>{
 
     const navigate = useNavigate();
 
-    const [getFeedbackByUserId, { isLoading }] = useGetFeedbackByUserIdMutation();
+    const [getOrder, { isLoading }] = useGetOrderQuery();
     //const [searchFeedbackt, { isLoading2 }] =  useSearchFeedbackMutation();
     
-    const loadFeedbackData = async () => {
+    const loadOrderData = async () => {
         try {
             console.log(userInfo._id)
           // Make an API call to fetch feedback data
-        const res = await getFeedbackByUserId({userId: userInfo._id}).unwrap(); // Adjust the API call according to your API definition
+        const res = await getOrder({userId: userInfo._id}).unwrap(); // Adjust the API call according to your API definition
           console.log(res);
           setFeedbacks(res.feedback);
         } catch (error) {
@@ -56,7 +56,7 @@ const OrderList = () =>{
 
     useEffect(() => {
         // Dispatch the action to fetch feedback data
-        loadFeedbackData();
+        loadOrderData();
       }, []); // Empty dependency array to trigger the effect on component mount
 
 
@@ -131,8 +131,8 @@ const OrderList = () =>{
                                         <tr style={{ width: '100%', height: '100%', textAlign: 'center' }}>
                                             <td colSpan={3}><CircularProgress /></td>
                                         </tr>
-                                    ) : feedbacks && feedbacks.length > 0 ? (
-                                        feedbacks.map((feedback, index) => (
+                                    ) : product && product.length > 0 ? (
+                                        product.map((feedback, index) => (
                                             <tr key={index}>
                                                 <td>{feedback.category}</td>
                                                 <td>{feedback.description}</td>
