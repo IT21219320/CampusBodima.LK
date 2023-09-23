@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useGetFeedbackByUserIdMutation, useSearchFeedbackMutation } from "../slices/feedbackApiSlice";
+import { useGetFeedbackByUserIdMutation } from "../slices/feedbackApiSlice";
 import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
