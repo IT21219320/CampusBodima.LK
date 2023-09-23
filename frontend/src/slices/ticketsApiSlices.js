@@ -41,6 +41,29 @@ export const ticketsApiSlice = apiSlice.injectEndpoints({
                 method:'GET',
             }), 
         }),
+        replyTicket:builder.mutation({
+            query: (data) => ({
+                url: `${TICKETS_URL}/reply`,
+                method:'PUT',
+                body: data,
+            }), 
+        }),
+
+        deleteTicket:builder.mutation({
+            query: (data) =>({
+                url: `${TICKETS_URL}/delete/${data}`,
+                method: 'DELETE',
+            }),
+        }),
+
+        updateTicket:builder.mutation({
+            query: (data) => ({
+                url: `${TICKETS_URL}/updateTicket`,
+                method:'PUT',
+                body: data,
+            }), 
+        }),
+
     }),
 });
 
@@ -49,5 +72,8 @@ export const{
     useGetUserTicketsMutation,
     useUpdateTicketStatusMutation,
     useGetTicketByUniqueIdMutation,
+    useReplyTicketMutation,
+    useDeleteTicketMutation,
+    useUpdateTicketMutation,
     useSearchTicketMutation,
 } = ticketsApiSlice

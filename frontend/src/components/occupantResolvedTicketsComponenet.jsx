@@ -141,6 +141,7 @@ const OccupantResolvedTickets = ({search, activeTab}) =>{
                                     <MenuItem value={'all'}>All</MenuItem>
                                     <MenuItem value={'utilities'}>Utilities</MenuItem>
                                     <MenuItem value={'payments'}>Payment Issue</MenuItem>
+                                    <MenuItem value={'facilities'}>Facilities</MenuItem>
                                     <MenuItem value={'other'}>Other</MenuItem>
                                 </Select>
                             :
@@ -206,13 +207,13 @@ const OccupantResolvedTickets = ({search, activeTab}) =>{
                                     tickets.map((ticket, index) => (
                                         <tr key={index}>
                                             <td>{ticket.ticketId}</td>
-                                            <td>
+                                            <td style={{padding:"12px"}}>
                                                 <Row>
                                                     <Col style={{fontStyle:'italic', fontSize:'medium' , fontWeight:'600'}}>
                                                         <span onClick={() => navigate(`/occupant/ticket/${ticket._id}`)} className={occupantAllTicketsStyles.ticketSubject}>{ticket.subject}</span>
                                                     </Col>
                                                 </Row>
-                                                <Row style={{fontSize:'small', fontWeight:'200 !important', fontStyle:'normal', color:'dimgray'}}>
+                                                <Row style={{fontSize:'small', fontWeight:'200 !important', fontStyle:'normal', color:'dimgray', marginTop:'5px'}}>
                                                     <Col lg={3}>{new Date(ticket.createdAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', /*hour: '2-digit', minute: '2-digit', second: '2-digit' */})}</Col>
                                                     <Col lg={3}><GridViewRounded fontSize="small" />&nbsp;{ticket.category}</Col>
                                                     <Col lg={3}>{TimeAgo(new Date(ticket.createdAt))}</Col>
