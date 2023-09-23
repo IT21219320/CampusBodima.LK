@@ -18,7 +18,7 @@ import Sidebar from './sideBar';
 import ownerStyles from '../styles/ownerStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 
-import defaultImage from '/images/defaultImage.png'
+import defaultImage from '/images/defaultImage.png';
 
 const OwnerBoardingsForStatus = ({children}) => {
 
@@ -115,7 +115,7 @@ const OwnerBoardingsForStatus = ({children}) => {
         }
     }
 
-    const handleDialogOpen = (e, id, images) => {
+    const handleDialogOpen = (e, id) => {
         e.preventDefault();
         setTempDeleteId(id);
         setConfirmDialog(true);
@@ -183,35 +183,11 @@ const OwnerBoardingsForStatus = ({children}) => {
                     {loading ? <div style={{width:'100%',height:'100%',display: 'flex',alignItems: 'center',justifyContent: 'center'}}><CircularProgress /></div> : 
                         boardings.length > 0 ? 
                             boardings.map((boarding, index) => (
-                                <Link key={index} to={`/owner/boardings/${userInfo._id}/rooms`} style={{textDecoration:'none'}}>
+                                <Link key={index} to={boarding.boardingType=='Hostel' ? `/owner/boardings/${boarding._id}/rooms` : ``} style={{textDecoration:'none'}}>  {/*/owner/boardings/${boarding._id}/occupants*/}
                                     <Card className={`${ownerStyles.card} mt-4`}>
                                         <CardContent className={ownerStyles.cardContent}>
                                             <Row style={{height:'100%', width:'100%'}}>
                                                 <Col style={{height:'100%'}} lg={4}>
-                                                {/*<AutoPlaySwipeableViews
-                                                    axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                                                    index={activeImage}
-                                                    onChangeIndex={handleImageChange}
-                                                    enableMouseEvents
-                                                >
-                                                    {boarding.boardingImages.map((image, index) => (
-                                                        <div key={index}>
-                                                        {Math.abs(activeImage - index) <= 2 ? (
-                                                            <Box
-                                                            component="img"
-                                                            sx={{
-                                                                height: 255,
-                                                                display: 'block',
-                                                                maxWidth: 400,
-                                                                overflow: 'hidden',
-                                                                width: '100%',
-                                                            }}
-                                                            src={image}
-                                                            />
-                                                        ) : null}
-                                                        </div>
-                                                    ))}
-                                                </AutoPlaySwipeableViews>*/}
                                                     <Image src={boarding.boardingImages[0] ?  boarding.boardingImages[0]: defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images}height='100%' width='100%'/>
                                                 </Col>
                                                 <Col lg={8}>
@@ -232,7 +208,7 @@ const OwnerBoardingsForStatus = ({children}) => {
                                                                 </Col>
                                                                 <Col style={{display:'contents'}}>
                                                                     <Tooltip title="Delete" placement="top" arrow>
-                                                                        <button className={`${ownerStyles.ctrls} ${ownerStyles.deleteBtn}`} onClick={(e) => handleDialogOpen(e,boarding._id,boarding.boardingImages)}>
+                                                                        <button className={`${ownerStyles.ctrls} ${ownerStyles.deleteBtn}`} onClick={(e) => handleDialogOpen(e,boarding._id)}>
                                                                             <RiDeleteBinLine />
                                                                         </button>
                                                                     </Tooltip>

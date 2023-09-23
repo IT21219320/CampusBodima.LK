@@ -24,8 +24,7 @@
 }
 
 .images{
-    width: 100%;
-    height: 100%;    
+    width: 100%;   
     object-fit: cover;
     background: #00000065;
     border-radius: 10px;
@@ -103,5 +102,10 @@
     padding-bottom: 0 !important;
     color: orange;
     text-align: center;
+}
+
+.carousel{
+    box-shadow: 0 0 10px #757575;
+    border-radius: 10px;
 }
   

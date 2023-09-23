@@ -119,6 +119,22 @@ export default function Sidebar() {
               <ListItemText primary={"Profile"} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem></Link>
+
+          {userInfo.userType == 'admin' ? //Navigations for Admin
+
+            <>
+              <Link to='/admin/boardings/verify' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute.startsWith('/admin/boardings')) ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <HomeWorkRounded />
+                  </ListItemIcon>
+                  <ListItemText primary={"My Boardings"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </ListItem></Link>
+
+            </>
+
+          : <></>}
           
           {userInfo.userType == 'owner' ?  //Navigations for Owner
 
@@ -133,7 +149,7 @@ export default function Sidebar() {
             </ListItem></Link>
 
             <Link to='/owner/utility' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute == '/owner/utility' || activeRoute == '/owner/utility/add') ? sideBarStyles.active : ''}`}>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/utility') ? sideBarStyles.active : ''}`}>
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
                   <RiWaterFlashFill style={{fontSize:'1.5em'}}/>
                 </ListItemIcon>
@@ -142,7 +158,7 @@ export default function Sidebar() {
             </ListItem></Link>
 
             <Link to='/owner/ingredient' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute == '/owner/ingredient' || activeRoute == '/owner/ingredient/add' || activeRoute == '/owner/ingredient/update') ? sideBarStyles.active : ''}`}>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/ingredient') ? sideBarStyles.active : ''}`}>
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
                   <Kitchen/>
                 </ListItemIcon>
@@ -157,7 +173,7 @@ export default function Sidebar() {
 
           <>
             <Link to='/occupant/boarding' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute == '/occupant/boarding' ? sideBarStyles.active : ''}`}>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/boarding') ? sideBarStyles.active : ''}`}>
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
                   <HomeWorkRounded />
                 </ListItemIcon>
@@ -166,7 +182,7 @@ export default function Sidebar() {
             </ListItem></Link>
 
             <Link to='/occupant/payment/' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute == '/occupant/payment/') ? sideBarStyles.active : ''}`}>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/payment/') ? sideBarStyles.active : ''}`}>
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
                 <MonetizationOn />
                 </ListItemIcon>
@@ -175,7 +191,7 @@ export default function Sidebar() {
             </ListItem></Link>
 
             <Link to='/occupant/ticket' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute == '/occupant/ticket' || activeRoute == '/occupant/ticket/create') ? sideBarStyles.active : ''}`}>
+            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/ticket') ? sideBarStyles.active : ''}`}>
               <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
                 <ContactSupportRounded />
               </ListItemIcon>
@@ -184,7 +200,7 @@ export default function Sidebar() {
             </ListItem></Link>
 
             <Link to='/occupant/feedback' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute == '/occupant/feedback' || activeRoute == '/occupant/feedback/create') ? sideBarStyles.active : ''}`}>
+            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/feedback') ? sideBarStyles.active : ''}`}>
               <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
               <RateReviewRounded />
               </ListItemIcon>

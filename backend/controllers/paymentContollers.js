@@ -28,7 +28,7 @@ const getPublichkey = expressAsyncHandler(async(req,res)=>{
 
 const makePayment = expressAsyncHandler(async(req,res) =>{
 
-  const {userInfo_id, description, bId} = req.body;
+  const {userInfo_id, bId} = req.body;
   const user = await User.findById(userInfo_id);
   
   const boarding = await Boarding.findById(bId);
@@ -45,7 +45,7 @@ const makePayment = expressAsyncHandler(async(req,res) =>{
       owner : oUser,
       paymentType: "Card",
       amount: boarding.keyMoney,
-      description: description,
+      description: "Initial Payment to reserve",
       boarding : boarding,
       credited : boarding.keyMoney,
     })
@@ -62,7 +62,7 @@ const makePayment = expressAsyncHandler(async(req,res) =>{
       owner : oUser,
       paymentType: "Card",
       amount: room.keyMoney,
-      description: description,
+      description: "Initial Payment to reserve",
   
       boarding : boarding,
       credited : room.keyMoney,
@@ -72,10 +72,11 @@ const makePayment = expressAsyncHandler(async(req,res) =>{
           message: "payment inserted",
         });
     }
-  }
-  res.status(200).json({
+  }else{
+    res.status(200).json({
     message: "No reservation",
-  });
+  });}
+  
 
 })
 

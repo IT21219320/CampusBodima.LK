@@ -293,7 +293,7 @@ const EditBoardingPage = () => {
                 else{
                     toast.success('Boarding Registered Successfully!')
 
-                    navigate('/owner/boardings/');
+                    navigate(`/owner/boardings/${boardingId}/rooms`);
 
                 }
 
@@ -384,6 +384,7 @@ const EditBoardingPage = () => {
                                                                 zoom={10}
                                                                 onClick={handleMapClick}
                                                             >
+                                                                {console.log(location)}
                                                                 {location && <Marker position={location} />}
                                                             </GoogleMap>
                                                         </Col>

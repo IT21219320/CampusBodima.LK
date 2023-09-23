@@ -1,0 +1,24 @@
+.durationRaw{
+    width: 94%;
+    margin: 0px -6px !important;
+}
+
+.Gender{
+    width: 94%;
+    margin: 0px 0px !important;
+}
+
+.email{
+    width: 94%;
+    margin: 0px 0px !important;
+}
+
+.name{
+    margin-top: 50px;
+}
+
+.formDiv{
+    margin: auto;
+    margin-top: 20px;
+    width: 100%;
+}

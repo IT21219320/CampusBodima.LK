@@ -4,14 +4,10 @@ import { Form, Container, Row, Col, Table, Button, Tabs, Tab } from 'react-boots
 import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, Pagination, CircularProgress, Box, FormControl,  InputLabel, MenuItem, Select  } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import { NavigateNext,} from '@mui/icons-material';
-import KitchenIcon from '@mui/icons-material/Kitchen';
-import DeleteIcon from '@mui/icons-material/Delete';
-import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetOwnerBoardingMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
-import { TableHead, TableRow } from '@mui/material'; 
-import { autoPlay } from 'react-swipeable-views-utils';
+ 
  
 //import SwipeableViews from 'react-swipeable-views';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -22,6 +18,8 @@ import dashboardStyles from '../styles/dashboardStyles.module.css';
 import ingredientStyles from '../styles/ingredientStyles.module.css';  
 
 import AllIngredients from "../components/allIngredientsComponent";
+import ReduceinventoryPage from "../components/reduceinventoryComponent";
+import CentralinventoryPage from "../components/centralinventoryComponent";
 
 import defaultImage from '/images/defaultImage.png'
 
@@ -117,10 +115,10 @@ const OwnerIngredientPage = () => {
                                                 <AllIngredients boardingId={boardingId} />
                                             </Tab>
                                             <Tab eventKey="Central Inventory" title="Central Inventory">
-                                                <h1>Central Inventory</h1>
+                                                <CentralinventoryPage boardingId={boardingId} />
                                             </Tab>
                                             <Tab eventKey="Reduce Inventory" title="Reduce Inventory">
-                                                <h1>Reduce Inventory</h1>
+                                                <ReduceinventoryPage boardingId={boardingId} />
                                             </Tab>
                                         </Tabs>
                                     </Col>
