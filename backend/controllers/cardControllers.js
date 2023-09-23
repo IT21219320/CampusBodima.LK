@@ -71,7 +71,6 @@ const getCardById = expressAsyncHandler(async (req, res) => {
   for(const user_card of user_cards){
     const cardNumberObject = user_card.cardNumber;
     const cvvObject = user_card.cvv;
-    console.log(cardNumberObject)
     const decryptedCardNumber = decrypt(cardNumberObject.encryptedData);
     const decryptedCvv = decrypt(cvvObject.encryptedData);
 

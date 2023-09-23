@@ -59,19 +59,19 @@ const PaymentForm = () => {
 
                 <Form onSubmit={submitHandler}>
                     <Row>
-                        <TextField id="outlined-basic" label="Card Number" variant="outlined" size="small" value={cardNumber} onChange={(e) => setCardNUmber(e.target.value)} inputProps={{maxLength: 16, minLength:16 ,inputMode: 'numeric',title:'Card number should be 16 digit'}}/>
+                        <TextField id="outlined-basic" label="Card Number" variant="outlined" size="small" value={cardNumber} required onChange={(e) => setCardNUmber(e.target.value)} inputProps={{maxLength: 16, minLength:16 ,inputMode: 'numeric',title:'Card number should be 16 digit'}}/>
                     </Row>
 
                     <Row>
                         <Col className={paymentFormStyle.colPadding}>
-                            <TextField id="outlined-basic" label="12/30" variant="outlined" size="small" value={exDate} onChange={(e) => setExDate(e.target.value)} inputProps={{pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY'}} />
+                            <TextField id="outlined-basic" label="12/30" variant="outlined" size="small" value={exDate} required onChange={(e) => setExDate(e.target.value)} inputProps={{pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY'}} />
                         </Col>
                         <Col className={paymentFormStyle.colPadding}>
-                            <TextField id="outlined-basic" label="CVV" variant="outlined" size="small" value={cvv} onChange={(e) => setcvv(e.target.value)} inputProps={{maxLength: 3, minLength:3 ,inputMode: 'numeric',title:'Card number should be 16 digit'}}/>
+                            <TextField id="outlined-basic" label="CVV" variant="outlined" size="small" value={cvv} required onChange={(e) => setcvv(e.target.value)} inputProps={{maxLength: 3, minLength:3 ,inputMode: 'numeric',title:'Card number should be 16 digit'}}/>
                         </Col>
                     </Row>
                     <Row>
-                        <FormControlLabel control={<Checkbox />} label="Save card" value={!isChecked} onChange={(e) => setIsChecked(e.target.value)} />
+                        <FormControlLabel control={<Checkbox />} label="Save card" value={!isChecked} required onChange={(e) => setIsChecked(e.target.value)} />
                     </Row>
                         <Button variant="contained" type="submit">Pay</Button>
 
