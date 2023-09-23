@@ -190,7 +190,12 @@ const getOwnerBoardings = asyncHandler(async (req, res) => {
 const getBoardingById = asyncHandler(async (req, res) => {
     const boardingId = req.params.boardingId;
     
-    const boarding = await Boarding.findById(boardingId).populate('room');
+    const boarding = await Boarding.findById(boardingId).populate({
+        path:'room',
+        populate: {
+            path: 'occupant', 
+        },
+    });
     
     if(boarding){
         res.status(200).json({

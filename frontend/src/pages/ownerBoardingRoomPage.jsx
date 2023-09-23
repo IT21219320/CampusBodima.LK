@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Row, Col, Image, Button, Carousel } from 'react-bootstrap';
-import { Breadcrumbs, Typography, Fade, Card, CardContent, Tabs, Tab, Link, CircularProgress, Dialog, DialogContent, Skeleton, useMediaQuery, Tooltip, Switch, DialogTitle, DialogActions, Collapse, Alert, IconButton } from "@mui/material";
+import { Container, Row, Col, Image, Button, Carousel, Tabs, Tab, } from 'react-bootstrap';
+import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, CircularProgress, Dialog, DialogContent, Skeleton, useMediaQuery, Tooltip, Switch, DialogTitle, DialogActions, Collapse, Alert, IconButton } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import { NavigateNext, MeetingRoom, Warning, Close } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -225,7 +225,7 @@ const OwnerBoardingRoomPage = () => {
                                             <Col>
                                                 <Row style={{height:'100%', width:'100%'}}>
                                                     <Col xs={12} lg={4}>
-                                                        {imgLoading ? <Skeleton variant="rounded" width='100%' height='100%' /> :
+                                                        {imgLoading ? <Skeleton variant="rounded" animation="wave" width='100%' height='100%' /> :
                                                         <Carousel controls={false} onClick={() => setImagePreview(largeScreen)} style={largeScreen? {cursor:'pointer'} : {cursor:'auto'}} className={ownerStyles.carousel}>
                                                             {boarding.boardingImages.map((image, index) => (
                                                                 <Carousel.Item key={index}>
@@ -242,7 +242,7 @@ const OwnerBoardingRoomPage = () => {
                                                                     {boarding.boardingImages.map((image, index) => (
                                                                         <Carousel.Item key={index}>
                                                                             {Math.abs(activeImage - index) <= 2 ? (
-                                                                                <Image src={image? image : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images} />
+                                                                                <Image src={image? image : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images} style={{height:'50vh', objectFit:'contain', background:'black'}}/>
                                                                             ) : null}
                                                                         </Carousel.Item>
                                                                     ))}
@@ -333,74 +333,129 @@ const OwnerBoardingRoomPage = () => {
                                                 <Tabs defaultActiveKey="registered"  id="uncontrolled-tab-example" className="mb-3">
                                                     <Tab eventKey="registered" title="Registered Rooms">
                                                         {boarding.room.length > 0 ? 
-                                                            boarding.room.map((room, index) => (
-                                                                <Card key={index} className={`${ownerStyles.card} mt-4`}>
+                                                            boarding.room.some(room => room.status == "Approved") ?
+                                                                boarding.room.map((room, index) => (
+                                                                    room.status=="Approved" ? 
+                                                                        <Card key={index} className={`${ownerStyles.card} mt-4`}>
+                                                                            <CardContent className={ownerStyles.cardContent}>
+                                                                                <Row style={{height:'100%', width:'100%'}}>
+                                                                                    <Col style={{height:'100%'}} xs={4}>
+                                                                                        {imgLoading ? <Skeleton variant="rounded" animation="wave" width='100%' height='100%' /> :<Image src={room.roomImages[0] ? room.roomImages[0] : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images}height='100%' width='100%'/> }
+                                                                                    </Col>
+                                                                                    <Col lg={8}>
+                                                                                        <Row>
+                                                                                            <Col>
+                                                                                                <h2>Room No: {room.roomNo}</h2>
+                                                                                            </Col>
+                                                                                            {room.status!='PendingApproval' && false ? 
+                                                                                            <Col lg={2}>
+                                                                                                <Row style={{marginTop:'-15px', marginRight:'-30px', justifyContent:'flex-end'}}>
+                                                                                                    <Col style={{display:'contents'}}>
+                                                                                                        <Tooltip title="Edit" placement="top" arrow>
+                                                                                                            <button className={`${ownerStyles.ctrls} ${ownerStyles.edtBtn}`} onClick={(e) => editBoarding(e,index)}>
+                                                                                                                <FiEdit />
+                                                                                                            </button>
+                                                                                                        </Tooltip>
+                                                                                                    </Col>
+                                                                                                    <Col style={{display:'contents'}}>
+                                                                                                        <Tooltip title="Delete" placement="top" arrow>
+                                                                                                            <button className={`${ownerStyles.ctrls} ${ownerStyles.deleteBtn}`} onClick={(e) => handleDialogOpen(e,boarding._id)}>
+                                                                                                                <RiDeleteBinLine />
+                                                                                                            </button>
+                                                                                                        </Tooltip>
+                                                                                                    </Col>
+                                                                                                    {boarding.status=='Approved' ?
+                                                                                                    <Col style={{display:'contents'}}>
+                                                                                                        <Tooltip title={boarding.visibility ? 'Mark as unavailable' : 'Mark as available for rent'} placement="top" arrow>
+                                                                                                            <Switch checked={boarding.visibility} color="secondary" sx={{mt:'-5px'}} onClick={(e) => toggleVisibility(e,boarding._id,index)} />
+                                                                                                        </Tooltip>
+                                                                                                    </Col>
+                                                                                                    :''}
+                                                                                                </Row>
+                                                                                            </Col>
+                                                                                            :
+                                                                                            ''}
+                                                                                        </Row>
+                                                                                        <Row>
+                                                                                            <Col>
+                                                                                                <p className={ownerStyles.paras}><b>Beds:</b> {room.noOfBeds}</p>
+                                                                                                <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(room.noOfAttachBaths)+parseInt(room.noOfCommonBaths)}</p>
+                                                                                            </Col>
+                                                                                            {room.occupant.length > 0 ?
+                                                                                            <Col>
+                                                                                                <>
+                                                                                                    <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Occupants</b></p>
+                                                                                                    <ul style={{paddingLeft:'1.5em'}}>
+                                                                                                        {room.occupant.map((occupant,index) => (
+                                                                                                        <li key={index} style={{color:'dimgray'}}>{occupant.firstName}</li>
+                                                                                                        ))}
+                                                                                                    </ul>
+                                                                                                </>
+                                                                                            </Col>
+                                                                                            :''}
+                                                                                            <Col>
+                                                                                            {boarding.boardingType == 'Hostel' ? 
+                                                                                                <>
+                                                                                                    <p className={ownerStyles.paras}><b>Rent:</b> Rs {room.rent} /Month</p>
+                                                                                                    <p className={ownerStyles.paras}><b>Key Money:</b> {room.keyMoney} Months</p>
+                                                                                                </>
+                                                                                            :''}
+                                                                                            </Col>
+                                                                                        </Row>
+                                                                                    </Col>
+                                                                                </Row>
+                                                                            </CardContent>
+                                                                        </Card>
+                                                                    : ''
+                                                                ))
+                                                            :   
+                                                                <div style={{height:'60vh', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
+                                                                    <h2>You don't have any approved rooms!</h2>
+                                                                </div>
+                                                        :
+                                                            <div style={{height:'60vh', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
+                                                                <h2>You don't have any registered rooms!</h2>
+                                                            </div>
+                                                        }
+                                                    </Tab>
+                                                    <Tab eventKey="pending" title="Pending Approval">
+                                                        {boarding.room.length > 0 ? 
+                                                            boarding.room.some(room => room.status == "PendingApproval") ?
+                                                                boarding.room.map((room, index) => (
+                                                                    room.status=="PendingApproval" ? 
+                                                                    <Card key={index} className={`${ownerStyles.card} mt-4`}>
                                                                     <CardContent className={ownerStyles.cardContent}>
                                                                         <Row style={{height:'100%', width:'100%'}}>
                                                                             <Col style={{height:'100%'}} xs={4}>
-                                                                                {imgLoading ? <Skeleton variant="rounded" width='100%' height='100%' /> :<Image src={room.roomImages[0] ? room.roomImages[0] : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images}height='100%' width='100%'/> }
+                                                                                {imgLoading ? <Skeleton variant="rounded" animation="wave" width='100%' height='100%' /> :<Image src={room.roomImages[0] ? room.roomImages[0] : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images}height='100%' width='100%'/> }
                                                                             </Col>
                                                                             <Col lg={8}>
                                                                                 <Row>
                                                                                     <Col>
-                                                                                        <h2>{boarding.boardingName.toUpperCase()}</h2>
-                                                                                        <p style={{color: 'dimgray'}}>{boarding.city}, {boarding.boardingType}</p>
+                                                                                        <h2>Room No: {room.roomNo}</h2>
                                                                                     </Col>
-                                                                                    {room.status!='PendingApproval' ? 
-                                                                                    <Col lg={2}>
-                                                                                        <Row style={{marginRight:'-30px', justifyContent:'flex-end'}}>
-                                                                                            <Col style={{display:'contents'}}>
-                                                                                                <Tooltip title="Edit" placement="top" arrow>
-                                                                                                    <button className={`${ownerStyles.ctrls} ${ownerStyles.edtBtn}`} onClick={(e) => editBoarding(e)}>
-                                                                                                        <FiEdit />
-                                                                                                    </button>
-                                                                                                </Tooltip>
-                                                                                            </Col>
-                                                                                            <Col style={{display:'contents'}}>
-                                                                                                <Tooltip title="Delete" placement="top" arrow>
-                                                                                                    <button className={`${ownerStyles.ctrls} ${ownerStyles.deleteBtn}`} onClick={(e) => handleDialogOpen(e,boarding._id,boarding.boardingImages)}>
-                                                                                                        <RiDeleteBinLine />
-                                                                                                    </button>
-                                                                                                </Tooltip>
-                                                                                            </Col>
-                                                                                            {boarding.status=='Approved' ?
-                                                                                            <Col style={{display:'contents'}}>
-                                                                                                <Tooltip title={boarding.visibility ? 'Mark as unavailable' : 'Mark as available for rent'} placement="top" arrow>
-                                                                                                    <Switch checked={boarding.visibility} color="secondary" sx={{mt:'-5px'}} onClick={(e) => toggleVisibility(e,boarding._id)} />
-                                                                                                </Tooltip>
-                                                                                            </Col>
-                                                                                            :''}
-                                                                                        </Row>
-                                                                                    </Col>
-                                                                                    :
-                                                                                    ''}
                                                                                 </Row>
                                                                                 <Row>
                                                                                     <Col>
-                                                                                        <p className={ownerStyles.paras}><b>Address:</b> {boarding.address}</p>
-                                                                                        <p className={ownerStyles.paras}><b>Rooms:</b> {boarding.boardingType=='Annex' ? boarding.noOfRooms : boarding.room.length}</p>
-                                                                                        {boarding.boardingType=='Annex' ? 
-                                                                                            <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(boarding.noOfCommonBaths)+parseInt(boarding.noOfAttachBaths)}</p> 
-                                                                                        : ''}
-                                                                                        <p className={ownerStyles.paras}><b>Gender:</b> {boarding.gender}</p>
+                                                                                        <p className={ownerStyles.paras}><b>Beds:</b> {room.noOfBeds}</p>
+                                                                                        <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(room.noOfAttachBaths)+parseInt(room.noOfCommonBaths)}</p>
                                                                                     </Col>
+                                                                                    {room.occupant.length > 0 ?
                                                                                     <Col>
-                                                                                        <p className={ownerStyles.paras}><b>Utility Bills:</b> {boarding.utilityBills ? 'Yes' : 'No'}</p>
-                                                                                        <p className={ownerStyles.paras}><b>Food:</b> {boarding.food ? 'Yes' : 'No'}</p>
-                                                                                        {boarding.facilities.length > 0 ?
-                                                                                        <>
-                                                                                            <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Facilities</b></p>
-                                                                                            <ul style={{paddingLeft:'0.5em'}}>
-                                                                                                {boarding.facilities.map((facility,index) => (
-                                                                                                <li key={index} style={{color:'dimgray', listStyleType:'none'}} className={ownerStyles.facilities}>{facility}</li>
+                                                                                            <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Occupants</b></p>
+                                                                                            <ul style={{paddingLeft:'1.5em'}}>
+                                                                                                {room.occupant.map((occupant,index) => (
+                                                                                                <li key={index} style={{color:'dimgray'}}>{occupant.firstName}</li>
                                                                                                 ))}
                                                                                             </ul>
-                                                                                        </>
-                                                                                        :''}
                                                                                     </Col>
+                                                                                    :''}
                                                                                     <Col>
-                                                                                    {boarding.boardingType == 'Annex' ? 
-                                                                                        <p className={ownerStyles.paras}><b>Rent:</b> Rs {boarding.rent} /Month</p>
+                                                                                    {boarding.boardingType == 'Hostel' ? 
+                                                                                        <>
+                                                                                            <p className={ownerStyles.paras}><b>Rent:</b> Rs {room.rent} /Month</p>
+                                                                                            <p className={ownerStyles.paras}><b>Key Money:</b> {room.keyMoney} Months</p>
+                                                                                        </>
                                                                                     :''}
                                                                                     </Col>
                                                                                 </Row>
@@ -408,15 +463,17 @@ const OwnerBoardingRoomPage = () => {
                                                                         </Row>
                                                                     </CardContent>
                                                                 </Card>
-                                                            ))
+                                                                    : ''
+                                                                ))
+                                                            :   
+                                                                <div style={{height:'60vh', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
+                                                                    <h2>You don't have any rooms pending approval!</h2>
+                                                                </div>
                                                         :
-                                                            <div style={{height:'100%', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
+                                                            <div style={{height:'60vh', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
                                                                 <h2>You don't have any registered rooms!</h2>
                                                             </div>
                                                         }
-                                                    </Tab>
-                                                    <Tab eventKey="pending" title="Pending Approval">
-                                                        
                                                     </Tab>
                                                 </Tabs>
                                             </Col>
