@@ -7,6 +7,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { useCreateOrderMutation } from '../slices/orderApiSlice'; // Import the generated mutation function
+import Sidebar from '../components/sideBar';
 
 const OrderForm = () => {
   const [product, setProduct]=useState('')
@@ -161,7 +162,8 @@ const OrderForm = () => {
     margin: '0 auto',
   };
 
-  return (
+  return (<>
+    <Sidebar />
     <form onSubmit={handleSubmit} style={formStyle}>
       <Row className={reserveFormStyle.durationRaw}>
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
@@ -203,6 +205,7 @@ const OrderForm = () => {
       </button>
       {isError && <div>Error: {error.message}</div>}
     </form>
+    </>
   );
 };
 
