@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from "react-redux";
+import { toast } from 'react-toastify';
 import { Row, Col, Form } from "react-bootstrap";
 import reserveFormStyle from "../styles/reserveFormStyle.module.css";
 import FormControl from '@mui/material/FormControl';
@@ -14,16 +15,12 @@ const OrderForm = () => {
   const [foodType, setFoodType]=useState('')
   const [quantity, setQuantity]=useState('')
   const [price, setPrice]=useState('')
-  const [orderNo, setOrderNo]=useState('')
+  //const [orderNo, setOrderNo]=useState('')
   const [total, setTotal] = useState(0); // State to store the total
   const { userInfo } = useSelector((state) => state.auth);
   const userID = userInfo._id;
 
-  const [formData, setFormData] = useState({
-    product: '',
-    foodType: '',
-    quantity: '',
-  });
+  
 
   const priceData = {
     '3': {
@@ -48,8 +45,8 @@ const OrderForm = () => {
 
   // Function to calculate price based on product and foodType
   const calculatePrice = () => {
-    const selectedProduct = formData.product;
-    const selectedFoodType = formData.foodType;
+    const selectedProduct = product;
+    const selectedFoodType = foodType;
 
     if (priceData[selectedProduct] && priceData[selectedProduct][selectedFoodType]) {
       return priceData[selectedProduct][selectedFoodType];
@@ -63,26 +60,35 @@ const OrderForm = () => {
   const handleQuantityChange = (e) => {
     const newQuantity = e.target.value;
     const price = calculatePrice();
-
+    setPrice(price);
     // Calculate and set the total
     setTotal(price * newQuantity);
 
     // Update the form data
-    setFormData({ ...formData, quantity: newQuantity });
+    setQuantity(newQuantity);
   };
 
   const [createOrder, { isLoading, isError, error }] = useCreateOrderMutation();
 
-  const handleSubmit = async (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    const resPay= await createOrder({userInfo_id:userID,product:product,foodType:foodType,quantity:quantity,price:price,orderNo:orderNo,total:total})
+    try {
+      const res= await createOrder({userInfo_id:userID,product:product,foodType:foodType,quantity:quantity,price:price,orderNo:orderNo,total:total})
+      console.log("value",res);
+      if(res){
+        toast.success('Order Submitted Successfully');
+        Navigate('occupant/profile');
+      }
+    } catch (err) {
+      toast.error(err.data?.message||err.error);
+    }
 
     try {
       // Calculate the price
       const calculatedPrice = calculatePrice();
 
       // Create the order with calculated price
-      const response = await createOrder({ ...formData, price: calculatedPrice }).unwrap();
+      const response = await createOrder(calculatedPrice ).unwrap();
       console.log('Order created:', response);
       // You can update your UI or perform other actions here
     } catch (error) {
@@ -91,15 +97,15 @@ const OrderForm = () => {
   };
 
   const renderFoodTypeDropdown = () => {
-    if (formData.product === '3' || formData.product === '6') {
+    if (product === '3' || product === '6') {
       return (
         <Row className={reserveFormStyle.durationRaw}>
           <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="demo-simple-select-standard-label">Food Type</InputLabel>
             <Select
               labelId="demo-simple-select-standard-label"
-              value={formData.foodType}
-              onChange={(e) => setFormData({ ...formData, foodType: e.target.value })}
+              value={foodType}
+              onChange={(e) => setFoodType(e.target.value )}
               required
             >
               <MenuItem value="">
@@ -112,15 +118,15 @@ const OrderForm = () => {
           </FormControl>
         </Row>
       );
-    } else if (formData.product === '12') {
+    } else if (product === '12') {
       return (
         <Row className={reserveFormStyle.durationRaw}>
           <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="demo-simple-select-standard-label">Food Type</InputLabel>
             <Select
               labelId="demo-simple-select-standard-label"
-              value={formData.foodType}
-              onChange={(e) => setFormData({ ...formData, foodType: e.target.value })}
+              value={foodType}
+              onChange={(e) => setFoodType(e.target.value )}
               required
             >
               <MenuItem value="">
@@ -139,8 +145,8 @@ const OrderForm = () => {
             <InputLabel id="demo-simple-select-standard-label">Food Type</InputLabel>
             <Select
               labelId="demo-simple-select-standard-label"
-              value={formData.foodType}
-              onChange={(e) => setFormData({ ...formData, foodType: e.target.value })}
+              value={foodType}
+              onChange={(e) => setFoodType(e.target.value )}
               required
             >
               <MenuItem value="">
@@ -164,14 +170,14 @@ const OrderForm = () => {
 
   return (<>
     <Sidebar />
-    <form onSubmit={handleSubmit} style={formStyle}>
+    <form onSubmit={submitHandler} style={formStyle}>
       <Row className={reserveFormStyle.durationRaw}>
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <InputLabel id="demo-simple-select-standard-label">Product</InputLabel>
           <Select
             labelId="demo-simple-select-standard-label"
-            value={formData.product}
-            onChange={(e) => setFormData({ ...formData, product: e.target.value })}
+            value={product}
+            onChange={(e) => setProduct( e.target.value )}
             required
           >
             <MenuItem value="">
@@ -190,7 +196,7 @@ const OrderForm = () => {
       <input
         type="number"
         placeholder="Quantity"
-        value={formData.quantity}
+        value={quantity}
         onChange={handleQuantityChange}
         required
       />
@@ -200,7 +206,7 @@ const OrderForm = () => {
       {/* Display the total by multiplying quantity by price */}
       <div>Total: {total}</div>
 
-      <button type="submit" disabled={isLoading}>
+      <button type="submit" loading={isLoading}>
         {isLoading ? 'Creating Order...' : 'Create Order'}
       </button>
       {isError && <div>Error: {error.message}</div>}

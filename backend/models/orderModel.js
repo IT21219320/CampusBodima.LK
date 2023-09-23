@@ -20,7 +20,7 @@ const orderSchema = mongoose.Schema({
     },
     orderNo:{
         type:Number,
-        required:true,
+        
     },
     foodImages:{
         type:[String],
