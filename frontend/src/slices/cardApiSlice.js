@@ -3,7 +3,7 @@ import { apiSlice } from "./apiSlice";
 
 const CARD_URL = '/api/cards';
 
-export const paymentApiSlice = apiSlice.injectEndpoints({
+export const cardApiSlice = apiSlice.injectEndpoints({
     endpoints:(builder) => ({
         addCard: builder.mutation({
             query:(data) => ({
@@ -12,14 +12,14 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
-        /*getPaymentByUser: builder.mutation({
+        getCardByUser: builder.mutation({
             query:(data) => ({
-                url: `${PAYMENT_URL}/getPayment`,
+                url: `${CARD_URL}/getCard`,
                 method: 'POST',
                 body: data,
             }),
-        }),*/
+        }),
     }),
 });
 
-export const { useAddCardMutation } = paymentApiSlice;
+export const { useAddCardMutation,useGetCardByUserMutation } = cardApiSlice;

@@ -28,11 +28,10 @@ const PaymentForm = () => {
     const navigate = useNavigate();
 
     const submitHandler = async (e) => {
-        console.log(isChecked)
+     
         e.preventDefault();
         const resPay = await makePayment({userInfo_id:userID, bId:bId})
 
-        console.log(resPay)
         if(isChecked){
             try {
                 const res = await addCard( { cardNumber: cardNumber, expireDate:exDate, cvv:cvv, userInfo_id: userID, bId:bId} ).unwrap();
@@ -51,11 +50,9 @@ const PaymentForm = () => {
                 navigate('/occupant/reservation/confirm/');
             }
         }
-        
-        
+  
     }
 
-    
     return (
         <>
             <div className={paymentFormStyle.formDiv}>
@@ -77,11 +74,8 @@ const PaymentForm = () => {
                         <FormControlLabel control={<Checkbox />} label="Save card" value={!isChecked} onChange={(e) => setIsChecked(e.target.value)} />
                     </Row>
                         <Button variant="contained" type="submit">Pay</Button>
-                    
 
                 </Form>
-
-
 
             </div>
         </>

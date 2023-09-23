@@ -6,12 +6,30 @@ import { Breadcrumbs, Typography, Button, Link, CircularProgress, Box, Collapse,
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Table } from 'react-bootstrap';
-import 'react-credit-cards-2/dist/es/styles-compiled.css';
+import { useGetCardByUserMutation } from "../slices/cardApiSlice";
 
 
 const OccupantPaymentDash = () => {
     const { userInfo } = useSelector((state) => state.auth);
 
+    const [cards, setCards] = useState([]);
+
+    const [getCard] = useGetCardByUserMutation();
+
+    const loadData = () => {
+        try {
+            const res =  getCard({ userInfo_id: userInfo._id }).unwrap();
+            setCards(res);
+        } catch (error) {
+            console.error('Error getting cards', error);
+        }
+
+    }
+
+    useEffect(() => {
+        loadData();
+    }, []);
+    console.log(cards)
     return (
         <>
             <Sidebar />
@@ -30,11 +48,17 @@ const OccupantPaymentDash = () => {
 
                     </Row>
                     <Row>
-                    <div  className="card">
-                        <h3>Card Holder: dewmina</h3>
-                        <p>Card Number: 973498632094623</p>
-                        <p>Expiration Date: 12/23</p>
-                    </div>
+                        {cards.length > 0 ? (
+                            cards.map((card) => (
+                                <div key={card.id} className="card">
+                                    <p>{card.cardNumber}</p>
+                                    <p>{card.cvv}</p>
+                                    <p>{card.exNumber}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No cards to display</p>
+                        )}
                     </Row>
                 </Container>
             </div>
