@@ -47,6 +47,8 @@ import MakeInitialPaymentPage from './pages/makeInitialPaymentPage.jsx';
 import ReserveBoardingPage from './pages/reserveBoardingPage.jsx';
 import ViewAllReservationsPage from './pages/viewAllReservationsPage.jsx';
 import ConfirmReservationPage from './pages/confirmReservationPage.jsx';
+import PendingReservarionPage from './pages/pendingReservationsPage.jsx';
+import MyReservationPage from './pages/myReservationPage.jsx';
 
 import OrderForm from './pages/orderForm.jsx'
 import OrderPage from './pages/OrderPage';
@@ -90,6 +92,7 @@ const router = createBrowserRouter(
           <Route path='/owner/boardings/:boardingId/:boardingName/rooms/add' element={ <AddBoardingRoomPage /> } />
 
           <Route path='/owner/reservations/ViewReservation:boardingId' element={<ViewAllReservationsPage />} />
+          <Route path='/owner/reservations/pending' element={<PendingReservarionPage />} />
 
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
@@ -114,9 +117,9 @@ const router = createBrowserRouter(
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
 
-          <Route path='/occupant/reservation/reserve' element={<ReserveBoardingPage />} />
-
-          <Route path='/occupant/reservation/confirm/' element={<ConfirmReservationPage />} />
+          <Route path='/occupant/reservations/reserve' element={<ReserveBoardingPage />} />
+          <Route path='/occupant/reservations/confirm/' element={<ConfirmReservationPage />} />
+          <Route path='/occupant/reservations/myReservation/' element={<MyReservationPage />} />
           
           <Route path='/occupant/feedback' element={<OccupantFeedback />} />
           <Route path='/occupant/feedback/create' element={<CreateFeedback />} />
