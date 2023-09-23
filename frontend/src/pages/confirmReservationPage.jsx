@@ -5,9 +5,8 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import paymentScreenStyles from "../Styles/paymentScreen.module.css";
-import { useMakePaymentMutation } from "../slices/paymentApiSlice";
-import { useParams } from "react-router-dom";
-import {setConfirmPaymentStatus} from '../slices/customizeSlice';
+
+
 
 function ConfirmReservationPage() {
 
