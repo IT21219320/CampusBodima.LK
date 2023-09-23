@@ -87,15 +87,15 @@ const createOrder = async (req, res) => {
 
 // Get a specific order by its ID
 const getOrder = asyncHandler(async (req, res) => {
-  const userId = req.body;
-  const all = req.query;
+  const userId = req.body.occupantId;
+   
   console.log(userId)
   try {
-      const order = await Order.findOne({occupant:userId.userId});
+      const order = await Order.find({occupant:userId});
 
       if (order) {
           res.status(200).json({
-              order,
+            order,
           });
       } else {
           res.status(404).json({

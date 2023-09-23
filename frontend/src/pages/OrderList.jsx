@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useGetOrderQuery } from "../slices/orderApiSlice";
+import { useGetOrderMutation } from "../slices/orderApiSlice";
 import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
@@ -18,16 +18,19 @@ import { FiEdit } from 'react-icons/fi';
 import {RiDeleteBinLine} from 'react-icons/ri'
 import { BrowserUpdated as BrowserUpdatedIcon } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useTheme } from "@emotion/react";
 
 const OrderList = () =>{
 
-    const [product, setFeedbacks] = useState([]);
+    const theme = useTheme();
+
+    const [product, setOrder] = useState([]);
     //const [page, setPage] = useState(0);
     //const [category, setCategory] = useState('all');
     //const [description, setDescription] = useState('');
     //const [rating, setRating] = useState(0);
 
-    const [search, setSearch] = useState('');
+    //const [search, setSearch] = useState('');
     
 
 
@@ -37,20 +40,20 @@ const OrderList = () =>{
 
     const navigate = useNavigate();
 
-    const [getOrder, { isLoading }] = useGetOrderQuery();
+    const [getOrder, { isLoading }] = useGetOrderMutation();
     //const [searchFeedbackt, { isLoading2 }] =  useSearchFeedbackMutation();
-    
+    const userID = userInfo._id
     const loadOrderData = async () => {
-        try {
-            console.log(userInfo._id)
-          // Make an API call to fetch feedback data
-        const res = await getOrder({userId: userInfo._id}).unwrap(); // Adjust the API call according to your API definition
-          console.log(res);
-          setFeedbacks(res.feedback);
-        } catch (error) {
-          console.error('Error getting feedbacks', error);
-        }
-      };
+      try {
+        const res = await getOrder({ occupantId: userID }).unwrap();
+         
+        setOrder(res.order);
+      } catch (error) {
+        console.error('Error getting orders', error);
+        // Handle the error here, e.g., show an error message using toast
+        toast.error('Failed to fetch orders. Please try again later.');
+      }
+    };
 
     
 
@@ -82,12 +85,12 @@ const OrderList = () =>{
                         <Col>
                             <Card variant="outlined" className={occupantFeedbackStyles.card}>
                                 <CardContent>
-                                    <h3>Feedbacks</h3>
+                                    <h3>My Orders</h3>
                                 </CardContent>
                             </Card>
                         </Col>
                     </Row>
-                    <Row>
+                    {/*<Row>
                         <Col>
                             <Row>
                                 <Col lg={6} xs={12}>
@@ -111,18 +114,19 @@ const OrderList = () =>{
                                 </Col>
                             </Row>
                         </Col>
-                    </Row>
+                    </Row>*/}
                    
                     <Row>
                         <Col>
                             <Table striped bordered hover className={occupantFeedbackStyles.table}>
                                 <thead>
                                         <tr style={{textAlign:'center'}}>
-                                            
-                                            <th>Category</th>
-                                            <th>Feedback Details</th>
-                                            <th>Star Rating</th>
-                                            <th>Options</th>
+                                            <th>Order Number</th>
+                                            <th>Product</th>
+                                            <th>Food Type</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Total</th>
                                             
                                         </tr>
                                 </thead>
@@ -132,11 +136,14 @@ const OrderList = () =>{
                                             <td colSpan={3}><CircularProgress /></td>
                                         </tr>
                                     ) : product && product.length > 0 ? (
-                                        product.map((feedback, index) => (
+                                        product.map((order, index) => (
                                             <tr key={index}>
-                                                <td>{feedback.category}</td>
-                                                <td>{feedback.description}</td>
-                                                <td>{feedback.rating}</td>
+                                                <td>{order.orderNo}</td>
+                                                <td>{order.product}</td>
+                                                <td>{order.foodType}</td>
+                                                <td>{order.quantity}</td>
+                                                <td>{order.price}</td>
+                                                <td>{order.total}</td>
                                                 {/* Render additional feedback data as needed */}
                                                 <td > 
                                                     
@@ -157,7 +164,7 @@ const OrderList = () =>{
                                         ))
                                     ) : (
                                         <tr style={{ height: '100%', width: '100%', textAlign: 'center', color: 'blue' }}>
-                                            <td colSpan={5}><h4>You don't have any Feedbacks!</h4></td>
+                                            <td colSpan={5}><h4>You don't have any Orders!</h4></td>
                                         </tr>
                                     )}
                                 </tbody>

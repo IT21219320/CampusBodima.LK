@@ -5,8 +5,8 @@ const router = express.Router();
 
 
 router.post('/create', createOrder);
-router.get('/get', getOrder);
-router.get('/update',updateOrder);
-router.get('/delete',deleteOrder);
+router.post('/get', getOrder);
+router.put('/update',updateOrder);
+router.delete('/delete',deleteOrder);
 
 export default router;
