@@ -10,6 +10,11 @@
     padding-right: 25px !important;
 }
 
+.card{
+    box-shadow: 5px 5px 10px #0000002b !important;
+    margin-top: 22px;  
+}
+
 .cardContent{
     display: flex;
     align-items: center;
