@@ -21,21 +21,22 @@ const UpdateFeedback = () => {
   const [occupantId, setOccupantId] = useState(userInfo._id);
   const [occupantName, setOccupantName] = useState(userInfo.firstName + ' ' + userInfo.lastName);
   const [occupantEmail, setOccupantEmail] = useState(userInfo.email);
-  const [boardingId, setBoardingId] = useState('');
+  
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState(0);
+
   const [updateFeedback, { isLoading }] = useUpdateFeedbackMutation();
   const { data: feedbackData, isLoading: isFeedbackLoading } = useGetFeedbackByIdQuery(feedbackId);
 
   useEffect(() => {
     if (feedbackData) {
       // Populate state variables with the fetched feedback data
-      const { senderId, category, description, rating, boardingId } = feedbackData;
+      const { senderId: occupantId, category, description, rating,  } = feedbackData;
       setCategory(category);
       setDescription(description);
       setRating(rating);
-      setBoardingId(boardingId);
+      
     }
   }, [feedbackData]);
 
@@ -49,7 +50,7 @@ const UpdateFeedback = () => {
         category,
         description,
         rating,
-        boardingId,
+        
       });
       toast.success('Feedback updated successfully');
       navigate('/occupant/feedback');
@@ -142,17 +143,6 @@ const UpdateFeedback = () => {
                               <MenuItem value={'anex'}>Anex</MenuItem>
                             </Select>
                           </FormControl>
-                        </Col>
-                      </Row>
-
-                      <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
-                        <Col lg={3} xs={6}>
-                          <label htmlFor="boardingId" className={CreateFeedbackStyles.lbl}>
-                            Boarding ID/Anex ID
-                          </label>
-                        </Col>
-                        <Col lg={9} xs={6} className="mt-3">
-                          <TextField id="outlined-read-only-input" size="small" value={boardingId} InputProps={{ readOnly: true }} />
                         </Col>
                       </Row>
 

@@ -14,9 +14,9 @@ import Boarding from '../models/boardingModel.js';
 
 
 const createFeedback = asyncHandler(async (req, res) => {
-    const { category, description, ratingStar } = req.body;
+    const {senderId,category, description, rating, } = req.body;
 
-    const reservation = await Reservation.findOne({occupantID: senderId});
+    /*const reservation = await Reservation.findOne({occupantID: senderId});
    
 
     if(!reservation){
@@ -27,7 +27,10 @@ const createFeedback = asyncHandler(async (req, res) => {
     const boarding = await Boarding.findOne({_id: reservation.boardingId});
 
     console.log(reservation.boardingId);
-    //const owner = await User.findById(boarding.owner);
+    const owner = await User.findById(boarding.owner);*/
+
+
+    
 
     const largestFeedbackNo = await Feedback.findOne({}, { feedbackId: 1}).sort({feedbackId: -1});
     
@@ -41,12 +44,15 @@ const createFeedback = asyncHandler(async (req, res) => {
 
     feedbackId = feedbackId.toString();
 
+    const sender = await User.findById(senderId);
+
       const feedback = await Feedback.create({
         feedbackId,
         senderId: sender,
         category,
         description,
-        ratingStar,
+        rating,
+        
       });
   
       if(feedback){
@@ -58,18 +64,90 @@ const createFeedback = asyncHandler(async (req, res) => {
     }
     
   });
+
+
   
+  // @desc Get feedback by userId
+ // @route GET /api/feedback/user/:userId
+ // @access Private
+/*const getFeedbackByUserId = asyncHandler(async (req, res) => {
+  try{
+    const userId = req.query; // Assuming userId is passed as a URL parameter
+    
+    const search = req.query.search;
+    const page = req.body.pageNo || 1;
+    const pageSize = 10;
+    
+
+
+    const skip = (page) * pageSize;
+    
+    var totalFeedback = await Feedback.countDocuments({
+      'senderId._id': userId,
+      description: { $regex: search, $options: 'i' },
+    });
+
+    const totalPages = Math.ceil(totalFeedback / pageSize);
+
+    const feedback = await Feedback.find({
+      'senderId._id': userId,
+      description: { $regex: search, $options: 'i' },
+    })
+      .skip(skipCount)
+      .limit(pageSize);
+
+    if (feedback) {
+      res.status(200).json({
+        feedback,
+        totalPages,
+      });
+    } else {
+      res.status(404).json({ message: 'No feedback found for the user.' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});*/
+
+
+
+
+const getFeedbackByUserId = asyncHandler(async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const feedback = await Feedback.find({ 'senderId._id': userId });
+
+    if (feedback) {
+      res.status(200).json({ feedback });
+    } else {
+      res.status(404).json({ error: 'No feedback found for the user.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch feedback.' });
+  }
+});
+
+
+
+
+
+
+
+ 
 
   // Getfeedback by feedbackId
   // @access Private
 
-  const getFeedbackById = asyncHandler(async (req, res) => {
 
-    const { feedbackId } = req.params;
+  const getAllFeedbacks = asyncHandler(async (req, res) => {
+
+    const { } = req.query;
     
   
     try {
-      const feedback = await Feedback.findById(feedbackId);
+      const feedback = await Feedback.find({});
   
       if (feedback) {
         res.status(200).json({ feedback });
@@ -133,7 +211,8 @@ const createFeedback = asyncHandler(async (req, res) => {
   
   export {
     createFeedback,
-    getFeedbackById,
+    getAllFeedbacks,
     updateFeedback,
     deleteFeedback,
-  };
+    getFeedbackByUserId,
+};

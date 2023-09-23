@@ -13,14 +13,27 @@ export const feedbackApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
-        getFeedbackById: builder.mutation({
+        getAllFeedbacks: builder.mutation({
             query: (data) => ({
-                url: `${FEEDBACKS_URL}/getfeedback`,
-                method: 'POST',
-                body: data,
+                url: `${FEEDBACKS_URL}/getfeedback/${data}`,
+                method: 'GET',
+                
                 
             }),
         }),
+
+        getFeedbackByUserId: builder.mutation({
+            query: (data) => ({
+                url: `${FEEDBACKS_URL}/getfeedbackByid`,
+                method: 'POST',
+                body:data,
+                
+                
+            }),
+        }),
+
+
+        
         updateFeedback: builder.mutation({
             query: (data) => ({
                 url: `${FEEDBACKS_URL}/update`,
@@ -46,7 +59,8 @@ export const feedbackApiSlice = apiSlice.injectEndpoints({
 });
 export const {
     useCreateFeedbackMutation, // Fix the capitalization here
-    useGetFeedbackByIdMutation, // Also fix the capitalization here
+    useGetAllFeedbacksMutation, // Also fix the capitalization here
+    useGetFeedbackByUserIdMutation,
     useUpdateFeedbackMutation, // Also fix the capitalization here
     useDeleteFeedbackMutation, // Also fix the capitalization here
     useSearchFeedbackMutation,
