@@ -24,6 +24,7 @@ import RegisterBoardingPage from './pages/registerBoardingPage.jsx';
 import EditBoardingPage from './pages/editBoardingPage.jsx';
 import OwnerBoardingRoomPage from './pages/ownerBoardingRoomPage.jsx';
 import AddBoardingRoomPage from './pages/addBoardingRoomPage.jsx';
+import AdminVerifyBoardingPage from './pages/adminVerifyBoardingPage.jsx';
 
 import OwnerIngredientPage from './pages/OwnerIngredientPage.jsx';
 import AddIngredientPage from './pages/addIngredientPage.jsx';
@@ -80,7 +81,7 @@ const router = createBrowserRouter(
 
         {/* Admin Routes */}
         <Route path='' element={ <AdminRoute /> }>
-          <Route path='/admin/boardings/verify' element={ <OwnerBoardingPage /> } />
+          <Route path='/admin/boardings/verify' element={ <AdminVerifyBoardingPage /> } />
         </Route>
 
         {/* Owner Routes */}
