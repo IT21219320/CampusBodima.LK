@@ -5,7 +5,7 @@ import { NavigateNext, AddHomeWork } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 
 import Sidebar from '../components/sideBar';
-import AdminBoardings from '../components/adminBoardingsComponent';
+import AdminAllBoardings from '../components/adminAllBoardingsComponent';
 
 import ownerStyles from '../styles/ownerStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
@@ -52,10 +52,10 @@ const AdminVerifyBoardingPage = () => {
                                     <Col>
                                         <Tabs defaultActiveKey="all boardings"  id="uncontrolled-tab-example" className="mb-3">
                                             <Tab eventKey="all boardings" title="All Boardings">
-                                                <AdminBoardings>All</AdminBoardings>
+                                                <AdminAllBoardings />
                                             </Tab>
                                             <Tab eventKey="Pending Approval" title="Pending Approval">
-                                                <AdminBoardings>PendingApproval</AdminBoardings>
+                                                
                                             </Tab>
                                         </Tabs>
                                     </Col>

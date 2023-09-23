@@ -1,5 +1,5 @@
-const updateMainTicketPage = () =>{
+const UpdateMainTicketPage = () =>{
     
 }
 
-export default updateMainTicketPage;
+export default UpdateMainTicketPage;

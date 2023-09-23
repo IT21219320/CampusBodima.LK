@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const AdminRoute = () => {
+const OccupantRoute = () => {
     const { userInfo } = useSelector((state) => state.auth);
     return (userInfo.userType === 'occupant') ? <Outlet /> : <Navigate to='/' replace />;
 };
 
-export default AdminRoute;
+export default OccupantRoute;

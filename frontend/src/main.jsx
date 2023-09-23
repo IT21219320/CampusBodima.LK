@@ -34,6 +34,7 @@ import OccupantTicketsPage from './pages/occupantTicketsPage.jsx';
 import OwnerTicketsPage from './pages/ownerTicketsPage.jsx';
 import OccupantTicketThreadPage from './pages/occupantTicketThreadPage.jsx'
 import CreateTicketPage from './pages/createTicketPage.jsx';
+import UpdateMainTicketPage from './pages/occupantUpdateMainTicketPage.jsx';
 
 import AddUtilitiesPage from './pages/addUtilityPage.jsx';
 import AllUtilitiesPage from './pages/allUtilitiesPage.jsx';
@@ -115,6 +116,7 @@ const router = createBrowserRouter(
           <Route path='/occupant/ticket' element={<OccupantTicketsPage />} />
           <Route path='/occupant/ticket/:ticketId' element={<OccupantTicketThreadPage />} />
           <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
+          <Route path='/occupant/ticket/update/:ticketId' element={<UpdateMainTicketPage />} />
 
           <Route path='/occupant/order/' element={<OrderForm />} />
           <Route path='/occupant/order/orderList' element={<OrderList />} />
@@ -129,9 +131,6 @@ const router = createBrowserRouter(
           <Route path='/occupant/feedback' element={<OccupantFeedback />} />
           <Route path='/occupant/feedback/create' element={<CreateFeedback />} />
           
-          
-          
-
         </Route>
       </Route>
 
