@@ -69,9 +69,9 @@ const OrderForm = () => {
                                     <p>{card.exNumber}</p>
                                 </div>
                             ))
-                        ) : (
+                        ) /*: (
                             <p>No cards to display</p>
-                        )}
+                        )*/}
       if(product==3||product==6||product==12){
       <Row className={reserveFormStyle.durationRaw}>
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
