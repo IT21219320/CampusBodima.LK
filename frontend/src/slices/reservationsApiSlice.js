@@ -11,7 +11,26 @@ export const reservationApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+
+        updateDuration: builder.mutation({
+            query:(data) => ({
+                url: `${RESERVATION_URL}/updateDuration`,
+                method: 'PUT',
+                body: data,
+            }),
+        }),
+
+        getMyReservation: builder.mutation({
+            query:(data) => ({
+                url: `${RESERVATION_URL}/MyRoom`,
+                method: 'GET',
+                body: data,
+            }),
+        }),
+
     }),
+
+    
     
 })
 
