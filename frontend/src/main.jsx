@@ -53,6 +53,7 @@ import MyReservationPage from './pages/myReservationPage.jsx';
 
 import OrderForm from './pages/orderForm.jsx'
 import OrderPage from './pages/OrderPage';
+import OrderList from './pages/OrderList.jsx'
 
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
@@ -81,7 +82,7 @@ const router = createBrowserRouter(
 
         {/* Admin Routes */}
         <Route path='' element={ <AdminRoute /> }>
-          <Route path='/admin/boardings/verify' element={ <AdminVerifyBoardingPage /> } />
+          <Route path='/admin/boardings' element={ <AdminVerifyBoardingPage /> } />
         </Route>
 
         {/* Owner Routes */}
@@ -114,6 +115,7 @@ const router = createBrowserRouter(
           <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
 
           <Route path='/occupant/order/' element={<OrderForm />} />
+          <Route path='/occupant/order/orderList' element={<OrderList />} />
 
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
