@@ -120,7 +120,7 @@ export default function Sidebar() {
             </ListItemButton>
           </ListItem></Link>
 
-          {userInfo.userType == 'owner' ? //Navigations for Admin
+          {userInfo.userType == 'admin' ? //Navigations for Admin
 
             <>
               <Link to='/admin/boardings/verify' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
