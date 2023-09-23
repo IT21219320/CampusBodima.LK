@@ -283,7 +283,7 @@ const RegisterBoardingPage = () => {
                     dispatch(setUserInfo({...res.data.owner}));
 
                     if(boardingType == 'Annex'){
-                        navigate('/owner/boardings/');
+                        navigate(`/owner/boardings/${boardingId}/rooms`);
                     }
                     else{
                         const boardingId = res.data.boarding._id;
