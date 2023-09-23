@@ -41,7 +41,6 @@ const OrderList = () =>{
     const navigate = useNavigate();
 
     const [getOrder, { isLoading }] = useGetOrderMutation();
-    //const [searchFeedbackt, { isLoading2 }] =  useSearchFeedbackMutation();
     const userID = userInfo._id
     const loadOrderData = async () => {
       try {
@@ -49,8 +48,7 @@ const OrderList = () =>{
          
         setOrder(res.order);
       } catch (error) {
-        console.error('Error getting orders', error);
-        // Handle the error here, e.g., show an error message using toast
+       
         toast.error('Failed to fetch orders. Please try again later.');
       }
     };
@@ -136,14 +134,14 @@ const OrderList = () =>{
                                             <td colSpan={3}><CircularProgress /></td>
                                         </tr>
                                     ) : product && product.length > 0 ? (
-                                        product.map((order, index) => (
+                                      product.map((product, index) => (
                                             <tr key={index}>
-                                                <td>{order.orderNo}</td>
-                                                <td>{order.product}</td>
-                                                <td>{order.foodType}</td>
-                                                <td>{order.quantity}</td>
-                                                <td>{order.price}</td>
-                                                <td>{order.total}</td>
+                                                <td>{product.orderNo}</td>
+                                                <td>{product.product}</td>
+                                                <td>{product.foodType}</td>
+                                                <td>{product.quantity}</td>
+                                                <td>{product.price}</td>
+                                                <td>{product.total}</td>
                                                 {/* Render additional feedback data as needed */}
                                                 <td > 
                                                     

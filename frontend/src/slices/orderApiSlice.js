@@ -1,6 +1,6 @@
 // ordersApiSlice.js
 import { apiSlice } from "./apiSlice";
-const ORDER_URL = "api/orders"; 
+const ORDER_URL = "/api/orders"; 
 
 export const ordersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
