@@ -80,7 +80,7 @@ const router = createBrowserRouter(
 
         {/* Admin Routes */}
         <Route path='' element={ <AdminRoute /> }>
-
+          <Route path='/admin/boardings/verify' element={ <OwnerBoardingPage /> } />
         </Route>
 
         {/* Owner Routes */}
