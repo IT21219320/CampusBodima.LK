@@ -13,41 +13,51 @@ import AllUtility from '../components/allUtilityComponent';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import Sidebar from '../components/sideBar';
 import { RiWaterFlashFill } from 'react-icons/ri';
-import sideBarStyles from '../styles/sideBarStyles.module.css'
+import sideBarStyles from '../styles/sideBarStyles.module.css';
+import billStyles from '../styles/billStyles.module.css';
+import  BillStyles from '../styles/billStyles.module.css';
 
   
 const AllUtilitiesPage = () =>{
 
   const { userInfo } = useSelector((state) => state.auth); 
   const [boardingId, setBoardingId] = useState('');
-  const [boardingNames, setBoardingNames] = useState([]);
+  const [boardingData, setBoardingData] = useState([]);
   const [utilityType,setUtilityType] = useState('Electricity');
+  const [selectedBoardingId, setSelectedBoardingId] = useState('');
 
 
   const [getUtilityBoarding, { isLoadings }] = useGetUtilityBoardingMutation();
      
-  const loadData = async () => {
+ 
+
+  useEffect(() => {
+    const loadData = async () => {
         try {
-             
-            const ownerId = userInfo._id;
-
-            const res = await getUtilityBoarding(ownerId).unwrap();  
-            setBoardingNames(res.boardings);  
-            
-            if (res.boardings.length > 0) {
-                // Set the default selected boarding ID to the first one in the list
-                setBoardingId(res.boardings[0]._id);
-            }
-
-        } catch (error) {
-            console.error('Error fetching boarding names:', error);
-             
+            const data = userInfo._id;
+            const res = await getUtilityBoarding( data ).unwrap();
+            console.log('res.boardings:', res.boardings);
+            if (Array.isArray(res.boardings)) {
+              const boardingData = res.boardings.map((boarding)=> ({
+                id: boarding._id,
+                name: boarding.boardingName,
+              }));
+              setBoardingData(boardingData);
+              } else {
+                console.error("boardings data is not an array:", res.boardings);
+              } 
+        } catch (err) {
+            toast.error(err.data?.message || err.error);
         }
     };
+    loadData();
+},[getUtilityBoarding, userInfo._id]);
 
-    useEffect(() => {
-        loadData(); // Fetch boarding names when the component mounts
-    }, []);
+useEffect(() => {
+  if (boardingData.length > 0) {
+    setSelectedBoardingId(boardingData[0].id);
+  }
+}, [boardingData]);
   
 
 const handleBoardingNameChange = (event) => {
@@ -85,24 +95,21 @@ const handleBoardingNameChange = (event) => {
                             </Row>
                             <Row className='mt-3'>
                                     <Col className="ml-5">
-                                    <Box sx={{ minWidth: 120 }}>
-                                        <FormControl style={{width:390} }>
-                                            <InputLabel id="demo-simple-select-label">Boarding Name</InputLabel>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                value={boardingId}
-                                                label="Boarding Name"
-                                                onChange={handleBoardingNameChange}
-                                            >
-                                                 {boardingNames.map((boarding) => (
-                                                    <MenuItem key={boarding._id} value={boarding._id}>
-                                                        {boarding.boardingName}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                   </Box>
+                                    <FormControl sx={{ m: 1, width: 300 }}>
+                             <InputLabel id="boarding-name-label"> Boarding Name </InputLabel>
+                                 <Select className={BillStyles.select}
+                                      labelId="demo-simple-select-label"
+                                      id="demo-simple-select"
+                                      value={selectedBoardingId}
+                                      label="Boarding Name"
+                                      onChange={handleBoardingNameChange} >
+                                                  {boardingData.map((boarding) => ( 
+                                                         <MenuItem key={boarding.id} value={boarding.id}>
+                                                              {boarding.name}
+                                                         </MenuItem>
+                                                          ))}
+                                 </Select>
+                             </FormControl>
                                    </Col> 
                                    <Col>
                                    <Row style={{textAlign:'right', marginBottom:'20px'}}>
@@ -127,16 +134,11 @@ const handleBoardingNameChange = (event) => {
                       <Tab >
                       </Tab>
                     </Tabs>
-                    {utilityType === 'Electricity' && <AllUtility boardingId ={boardingId} utilityType={utilityType}/>  }
-                    {utilityType === 'Water'&& <AllUtility boardingId ={boardingId} utilityType={utilityType}/> }
+                    {utilityType === 'Electricity' && <AllUtility boardingId ={selectedBoardingId} utilityType={utilityType}/>  }
+                    {utilityType === 'Water'&& <AllUtility boardingId ={selectedBoardingId} utilityType={utilityType}/> }
                     {utilityType === 'Other'  }
 
-                    <Link href=''>
-                    <button type="button" >
-                    <RiWaterFlashFill style={{fontSize:'1.5em'}}/> Add New Utilities
-                    </button >
-              </Link>
-                  </Box>
+                  </Box> 
                 
                 </Col>
                

@@ -113,7 +113,7 @@ const getOrder = asyncHandler(async (req, res) => {
 // Update a specific order by its ID
 const updateOrder = async (req, res) => {
   try {
-    const order = await Order.findByIdAndUpdate(req.params.id, req.body, {
+    const order = await Order.findByIdAndUpdate(req.params._id, req.body, {
       new: true,
     });
 

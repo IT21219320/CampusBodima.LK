@@ -121,7 +121,7 @@ const handleUtilityFormSubmit = async (event) => {
     const response = await addUtilities({...utilityData, utilityImage: validImageNames}).unwrap();
     console.log('Utility added:', response);
     toast.success('Utility added successfully');
-
+    navigate('/owner/utility'); 
 
   } catch (err) {
     toast.error(err.data?.message || err.error);

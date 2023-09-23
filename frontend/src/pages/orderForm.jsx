@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useCreateOrderMutation } from '../slices/orderApiSlice'; // Import the generated mutation function
-
+import styles from '../styles/orderForm.css';
 const OrderForm = () => {
   const [formData, setFormData] = useState({
     product: '',
@@ -26,7 +26,7 @@ const OrderForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={formStyle}>
       <input
         type="text"
         placeholder="Product"
@@ -58,5 +58,10 @@ const OrderForm = () => {
     </form>
   );
 };
-
+const formStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  maxWidth: '300px',
+  margin: '0 auto',
+};
 export default OrderForm;
