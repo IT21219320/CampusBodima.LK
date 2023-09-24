@@ -1,11 +1,11 @@
 import { apiSlice } from "./apiSlice";
 
-const RESERVATION_URL = 'api/reservations';
+const RESERVATION_URL = '/api/reservations';
 
 export const reservationApiSlice = apiSlice.injectEndpoints({
-    endpoints:(builder) => ({
+    endpoints: (builder) => ({
         reserveRoom: builder.mutation({
-            query:(data) => ({
+            query: (data) => ({
                 url: `${RESERVATION_URL}/bookRoom`,
                 method: 'POST',
                 body: data,
@@ -13,7 +13,7 @@ export const reservationApiSlice = apiSlice.injectEndpoints({
         }),
 
         updateDuration: builder.mutation({
-            query:(data) => ({
+            query: (data) => ({
                 url: `${RESERVATION_URL}/updateDuration`,
                 method: 'PUT',
                 body: data,
@@ -21,17 +21,62 @@ export const reservationApiSlice = apiSlice.injectEndpoints({
         }),
 
         getMyReservation: builder.mutation({
-            query:(data) => ({
+            query: (data) => ({
                 url: `${RESERVATION_URL}/MyRoom`,
-                method: 'GET',
+                method: 'POST',
                 body: data,
+            }),
+        }),
+
+        getBoardingReservations: builder.mutation({
+            query: (data) => ({
+                url: `${RESERVATION_URL}/veiwReservations/${data}`,
+                method: 'GET',
+            }),
+        }),
+
+        getPendingReservations: builder.mutation({
+            query: (data) => ({
+                url: `${RESERVATION_URL}/pending`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+
+        approvePendingStatus: builder.mutation({
+            query: (data) => ({
+                url: `${RESERVATION_URL}/aprovePending`,
+                method: 'PUT',
+                body:data
+            }),
+        }),
+
+        deletePendingStatus: builder.mutation({
+            query: (data) => ({
+                url: `${RESERVATION_URL}/deletePending`,
+                method: 'DELETE',
+                body: data
+            }),
+        }),
+
+        deleteReservation: builder.mutation({
+            query: (data) => ({
+                url: `${RESERVATION_URL}/deleteReservation/${data}`,
+                method: 'DELETE',
             }),
         }),
 
     }),
 
-    
-    
 })
 
-export const { useReserveRoomMutation } = reservationApiSlice;
+export const {
+    useReserveRoomMutation,
+    useUpdateDurationMutation,
+    useGetMyReservationMutation,
+    useGetBoardingReservationsMutation,
+    useGetPendingReservationsMutation,
+    useApprovePendingStatusMutation,
+    useDeletePendingStatusMutation,
+    useDeleteReservationMutation,
+} = reservationApiSlice;

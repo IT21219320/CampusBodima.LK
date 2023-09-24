@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Row, Col, Form } from "react-bootstrap";
 import Button from '@mui/material/Button';
 import paymentFormStyle from "../styles/paymentFormStyle.module.css"
+import { useNavigate, useParams } from "react-router-dom";
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import TextField from '@mui/material/TextField';
@@ -14,15 +15,38 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import reserveFormStyle from "../styles/reserveFormStyle.module.css";
+import { useReserveRoomMutation } from "../slices/reservationsApiSlice";
 
 const ReservationForm = () => {
 
-    const [age, setAge] = useState('');
     const [gender, setGender] = useState('');
-    const [paymentType, setPaymentType] = useState(''); 
-
+    const [duration, setDuration] = useState('');
+    const [paymentType, setPaymentType] = useState('');
+    const { bId, rId } = useParams();
+console.log()
+    const { userInfo } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
+    const [reserveRoom] = useReserveRoomMutation()
 
     const submitHandler = async (e) => {
+        e.preventDefault();
+
+        console.log(gender);
+        console.log(duration);
+        console.log(paymentType);
+        console.log(bId);
+        console.log(userInfo._id);
+        const userID = userInfo._id;
+        const res = await reserveRoom({ Gender: gender, Duration: duration, userInfo_id: userID, BoardingId: bId, RoomID: rId }).unwrap();
+        console.log(res)
+
+        if (res) {
+            if (paymentType === "Online") {
+                window.alert("online")
+                navigate(`/occupant/makePayment/${bId}`);
+            }
+
+        }
 
     }
 
@@ -31,19 +55,19 @@ const ReservationForm = () => {
         <>
             <div className={paymentFormStyle.formDiv}>
 
-                <Form className={reserveFormStyle.formDiv}>
+                <Form className={reserveFormStyle.formDiv} onSubmit={submitHandler}>
                     <Row>
                         <Col>
-                            <TextField id="standard-basic" label="First Name" value="dewmina" variant="standard" InputProps={{ readOnly: true, }} />
+                            <TextField id="standard-basic" label="First Name" value={userInfo.firstName} variant="standard" InputProps={{ readOnly: true, }} />
                         </Col>
 
                         <Col>
-                            <TextField id="standard-basic" label="Second Name" value="Basitha" variant="standard" InputProps={{ readOnly: true, }} />
+                            <TextField id="standard-basic" label="Second Name" value={userInfo.lastName} variant="standard" InputProps={{ readOnly: true, }} />
                         </Col>
                     </Row>
 
                     <Row className={reserveFormStyle.email}>
-                        <TextField id="standard-basic" label="Email" value="email" variant="standard" InputProps={{ readOnly: true, }} />
+                        <TextField id="standard-basic" label="Email" value={userInfo.email} variant="standard" InputProps={{ readOnly: true, }} />
                     </Row>
 
                     <Row className={reserveFormStyle.Gender}>
@@ -53,12 +77,12 @@ const ReservationForm = () => {
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
                                 name="row-radio-buttons-group"
-                                requiredvalue={gender}
+                                value={gender}
                                 onChange={(e) => setGender(e.target.value)}
                                 required
                             >
-                                <FormControlLabel value="female" control={<Radio />} label="Female" />
-                                <FormControlLabel value="male" control={<Radio />} label="Male" />
+                                <FormControlLabel value="Female" control={<Radio />} label="Female" />
+                                <FormControlLabel value="Male" control={<Radio />} label="Male" />
 
                             </RadioGroup>
                         </FormControl>
@@ -70,9 +94,9 @@ const ReservationForm = () => {
                             <Select
                                 labelId="demo-simple-select-standard-label"
                                 id="demo-simple-select-standard"
-                                value={age}
-                                onChange={(e) => setAge(e.target.value)}
-                                label="Age"
+                                value={duration}
+                                onChange={(e) => setDuration(e.target.value)}
+                                label="duration"
                                 required
                             >
                                 <MenuItem value="">

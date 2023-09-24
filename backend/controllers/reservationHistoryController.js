@@ -10,8 +10,8 @@ const getReservationHistory = asyncHandler(async(req, res) => {
     const boardingId = req.query.boardingId;
     
     const reservationHistory = await ReservationHistory.find({boardingId:boardingId});
-
-    if(reservationHistory.reservationHistory){
+   
+    if(reservationHistory){
         res.status(200).json({
             reservationHistory,
         })
