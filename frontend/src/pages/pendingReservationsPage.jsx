@@ -81,7 +81,7 @@ const PendingReservationsPage = () => {
 
         <div className="bla">
 
-          <Row>
+          <Row >
 
             <Col>
               <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
@@ -95,19 +95,19 @@ const PendingReservationsPage = () => {
           </Row>
 
         </div>
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} style={{marginTop: "30px"}}>
           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
 
-            <TableHead>
-              <TableRow>
+            <TableHead style={{backgroundColor: "#242745"}}>
+              <TableRow >
 
-                <TableCell >Reservation ID</TableCell>
-                <TableCell >First Name</TableCell>
-                <TableCell >Reserved Date</TableCell>
-                <TableCell >Duration</TableCell>
-                <TableCell >Room No</TableCell>
-                <TableCell >Approve</TableCell>
-                <TableCell align="left">Delete</TableCell>
+                <TableCell style={{color: "#ffffff"}}>Reservation ID</TableCell>
+                <TableCell style={{color: "#ffffff"}}>First Name</TableCell>
+                <TableCell style={{color: "#ffffff"}}>Reserved Date</TableCell>
+                <TableCell style={{color: "#ffffff"}}>Duration</TableCell>
+                <TableCell style={{color: "#ffffff"}}>Room No</TableCell>
+                <TableCell style={{color: "#ffffff"}}>Approve</TableCell>
+                <TableCell style={{color: "#ffffff"}}align="left">Delete</TableCell>
 
               </TableRow>
             </TableHead>

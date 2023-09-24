@@ -27,7 +27,7 @@ const ReservationForm = () => {
     const { userInfo } = useSelector((state) => state.auth);
     const navigate = useNavigate();
     const [reserveRoom] = useReserveRoomMutation()
-
+    const no = 1;
     const submitHandler = async (e) => {
         e.preventDefault();
 
@@ -44,6 +44,9 @@ const ReservationForm = () => {
             if (paymentType === "Online") {
                 window.alert("online")
                 navigate(`/occupant/makePayment/${bId}`);
+            }else{
+                window.alert("Cash")
+                navigate(`/occupant/reservations/confirm/${no}`);
             }
 
         }
