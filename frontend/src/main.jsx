@@ -46,6 +46,8 @@ import UpdateFeedbackpage from './pages/updateFeedbackPage.jsx';
 
 import OccupantPaymentDash from './pages/occupantPaymentsDashboard.jsx';
 import MakeInitialPaymentPage from './pages/makeInitialPaymentPage.jsx';
+import OwnerPaymentDash from './pages/ownerPaymentsDashboard.jsx';
+import MakeMonthlyPaymentPage from './pages/makeMonthlyPaymentPage.jsx'
 
 import ReserveBoardingPage from './pages/reserveBoardingPage.jsx';
 import ViewAllReservationsPage from './pages/viewAllReservationsPage.jsx';
@@ -98,6 +100,8 @@ const router = createBrowserRouter(
           <Route path='/owner/reservations/ViewReservation:boardingId' element={<ViewAllReservationsPage />} />
           <Route path='/owner/reservations/pending' element={<PendingReservarionPage />} />
 
+          <Route path='/owner/payment/' element={<OwnerPaymentDash />} />
+
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
@@ -123,6 +127,7 @@ const router = createBrowserRouter(
 
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
+          <Route path='/occupant/makeMonthlyPayment/:bId' element={<MakeMonthlyPaymentPage />} />
 
           <Route path='/occupant/reservations/reserve' element={<ReserveBoardingPage />} />
           <Route path='/occupant/reservations/confirm/' element={<ConfirmReservationPage />} />
