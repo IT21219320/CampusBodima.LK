@@ -106,8 +106,11 @@ const handleUtilityFormSubmit = async (event) => {
     date,
     description,
     utilityImage,
-    occupantID:selectedOccupant,
+    
   };
+  if (selectedOccupant) {
+    utilityData.occupantID = selectedOccupant;
+  }
 
   try {
     const uploadPromises = utilityImage.map(async (file) => {

@@ -106,8 +106,10 @@ const handleUtilityFormSubmit = async (event) => {
     date,
     description,
     utilityImage,
-    occupantID:selectedOccupant,
   };
+  if (selectedOccupant) {
+    utilityData.occupantID = selectedOccupant;
+  }
 
   try {
     const uploadPromises = utilityImage.map(async (file) => {
@@ -216,7 +218,7 @@ const removeImage = (imageToRemove) => {
                                                <Row>
                                                <FormControl
                                                           sx={{ m: 1, width: 300 }}
-                                                          disabled={!selectedBoardingId}
+                                                         
                                                         >
                                                           <InputLabel id="occupant-label">Select Occupant</InputLabel>
                                                           <Select
