@@ -14,9 +14,9 @@ const router = express.Router();
 
 router.post('/bookRoom', reserveRoom);
 router.put('/updateDuration', updateDuration)
-router.get('/MyRoom', getMyReservation);
+router.post('/MyRoom', getMyReservation);
 router.get('/veiwReservations',getBoardingReservations);
-router.get('/pending' ,getPendingReservations);
+router.post('/pending' ,getPendingReservations);
 router.put('/aprovePending', approvePendingStatus);
 router.delete('/deletePending', deletePendingStatus);
 router.delete('/deleteReservation' , deleteReservation);

@@ -10,7 +10,6 @@ import ReservationForm from "../components/reservationForm";
 const ReserveBoardingPage = () =>{
 
   const { userInfo } = useSelector((state) => state.auth);
-
   const [activeStep, setActiveStep] = useState(1);
   
 

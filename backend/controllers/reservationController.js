@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import Room from "../models/roomModel.js";
 import Boarding from "../models/boardingModel.js"
-import Reservation from  "../models/reservationModel.js";
+import Reservation from "../models/reservationModel.js";
 import ReservationHistory from "../models/reservationHistory.js";
 
 
@@ -11,13 +11,13 @@ import ReservationHistory from "../models/reservationHistory.js";
 // @access  Private - occupant
 
 const reserveRoom = asyncHandler(async (req, res) => {
-    const RoomID = req.query.roomID;
-    const BoardingId = req.query.boardingId;
-    const { userInfo_id, Gender, Duration } = req.body;
-
+    //const RoomID = req.query.roomID;
+    //const BoardingId = req.query.boardingId;
+    const { userInfo_id, Gender, Duration ,BoardingId, RoomID} = req.body;
+    console.log("Hi")
     const user = await User.findOne({ _id: userInfo_id });
     const room = await Room.findById(RoomID);
-    
+
     const boarding = await Boarding.findById(BoardingId);
     console.log(boarding)
     const boardingType = boarding.boardingType
@@ -174,14 +174,46 @@ const getMyReservation = asyncHandler(async (req, res) => {
 // @access  Private - Owner
 
 const getBoardingReservations = asyncHandler(async (req, res) => {
-    const boardingId = req.query.boardingId;
+    const boardingId = req.query;
+
+    const boarding = await Boarding.findById(boardingId);
 
     const reserve = await Reservation.find({ boardingId: boardingId, status: 'Paid' });
 
     if (reserve) {
-        res.status(200).json({
-            reserve,
-        })
+
+        const detailsArry = [];
+        for (const reserveI of reserve) {
+
+            const occName = await User.findById(reserveI.occupantID);
+
+            if (boarding.boardingType === "Annex") {
+
+                detailsArry.push({
+                    Id: reserveI._id,
+                    Name: occName.firstName,
+                    Date: reserveI.createdAt,
+                    Duration: reserveI.Duration,
+
+                });
+
+            } else if (boarding.boardingType === "Hostel") {
+
+                const room = await Room.findById(reserveI.roomID);
+                console.log(room)
+
+                detailsArry.push({
+                    Id: reserveI._id,
+                    Name: occName.firstName,
+                    Date: reserveI.createdAt,
+                    Duration: reserveI.Duration,
+                    RoomNo: room.roomNo,
+                });
+
+            }
+        }
+        res.status(200).json(detailsArry)
+
     }
     else {
         res.status(400);
@@ -195,18 +227,50 @@ const getBoardingReservations = asyncHandler(async (req, res) => {
 // @access  Private - owner
 
 const getPendingReservations = asyncHandler(async (req, res) => {
-    const boardingId = req.query.boardingId;
-    console.log(boardingId)
-    const pendingReservation = await Reservation.find({ boardingId: boardingId, status: 'Pending' });
-    console.log(pendingReservation)
-    if (pendingReservation) {
-        res.status(200).json({
-            pendingReservation,
-        })
+    const boardingId = req.body.boardingId;
+
+    const boarding = await Boarding.findById(boardingId);
+
+    const reserve = await Reservation.find({ boardingId: boardingId, status: 'Pending' });
+
+    if (reserve) {
+
+        const detailsArry = [];
+        for (const reserveI of reserve) {
+
+            const occName = await User.findById(reserveI.occupantID);
+
+            if (boarding.boardingType === "Annex") {
+
+                detailsArry.push({
+                    Id: reserveI._id,
+                    Name: occName.firstName,
+                    Date: reserveI.createdAt,
+                    Duration: reserveI.Duration,
+
+                });
+
+            } else if (boarding.boardingType === "Hostel") {
+
+                const room = await Room.findById(reserveI.roomID);
+                console.log(room)
+
+                detailsArry.push({
+                    Id: reserveI._id,
+                    Name: occName.firstName,
+                    Date: reserveI.createdAt,
+                    Duration: reserveI.Duration,
+                    RoomNo: room.roomNo,
+                });
+
+            }
+        }
+        res.status(200).json(detailsArry)
+
     }
     else {
         res.status(400);
-        throw new Error("No pending reservations for this boarding");
+        throw new Error("No pending reservations for boarding");
     }
 
 });
@@ -217,7 +281,7 @@ const getPendingReservations = asyncHandler(async (req, res) => {
 
 const approvePendingStatus = asyncHandler(async (req, res) => {
 
-    const ReservationId = req.query.reservationId;
+    const ReservationId = req.body.reservationId;
 
     const reservation = await Reservation.findById(ReservationId);
 
@@ -240,12 +304,12 @@ const approvePendingStatus = asyncHandler(async (req, res) => {
 // @access  Private - owner
 const deletePendingStatus = asyncHandler(async (req, res) => {
 
-    const ReservationId = req.query.reservationId;
+    const ReservationId = req.body.reservationId;
     console.log(ReservationId)
     const reservation = await Reservation.findById(ReservationId);
 
     if (reservation) {
-        await Reservation.findOneAndDelete(ReservationId)
+        await Reservation.findByIdAndDelete(ReservationId)
         res.status(200).json("Pending reservation Successfully Deleted")
     }
     else {
@@ -275,7 +339,7 @@ const deleteReservation = asyncHandler(async (req, res) => {
             console.log(deletedReservation.boardingId);
 
             const reservationHistory = new ReservationHistory({
-                
+
                 boardingId: deletedReservation.boardingId,
                 boardingType: deletedReservation.boardingType,
                 occupantID: user,
@@ -290,11 +354,12 @@ const deleteReservation = asyncHandler(async (req, res) => {
                 console.log("inserted to history")
             }
             console.log("after inserting in to table")
+            console.log(deletedReservation.occupantID)
             const updatedBoarding = await Boarding.findOneAndUpdate(
                 { _id: deletedReservation.BoardingId },
                 { $pull: { occupant: deletedReservation.occupantID } },
                 { new: true }
-              );
+            );
 
         } else if (deletedReservation.boardingType === "Hostel") {
             const reservationHistory = new ReservationHistory({
