@@ -31,10 +31,9 @@ const PaymentForm = () => {
      
         e.preventDefault();
         const resPay = await makePayment({userInfo_id:userID, bId:bId})
-
         if(isChecked){
             try {
-                const res = await addCard( { cardNumber: cardNumber, expireDate:exDate, cvv:cvv, userInfo_id: userID, bId:bId} ).unwrap();
+                const res = await addCard( { cardNumber: cardNumber, exDate:exDate, cvv:cvv, userInfo_id: userID, bId:bId} ).unwrap();
                 
                 if(res.message === "Card exist"){
                     window.alert('Card already saved');
@@ -71,7 +70,7 @@ const PaymentForm = () => {
                         </Col>
                     </Row>
                     <Row>
-                        <FormControlLabel control={<Checkbox />} label="Save card" value={!isChecked} required onChange={(e) => setIsChecked(e.target.value)} />
+                        <FormControlLabel control={<Checkbox />} label="Save card" value={!isChecked} onChange={(e) => setIsChecked(e.target.value)} />
                     </Row>
                         <Button variant="contained" type="submit">Pay</Button>
 

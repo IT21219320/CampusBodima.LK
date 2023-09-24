@@ -75,6 +75,7 @@ const getCardById = expressAsyncHandler(async (req, res) => {
     const decryptedCvv = decrypt(cvvObject.encryptedData);
 
     userCards.push({
+      id:user_card._id,
       cardNumber : decryptedCardNumber,
       exNumber : user_card.expireDate,
       cvv : decryptedCvv
@@ -106,15 +107,9 @@ const updateCard = expressAsyncHandler(async (req, res) => {
 });
 
 const deleteCard = expressAsyncHandler(async (req, res) => {
-  console.log('hi')
+ 
   const { cNo } = req.body;
   
-  const hashCardNumberFisrt = encrypt(cNo);
-
-  //const user = await User.findById(userInfo_id);
-
-  
-
   const cardExist = await cardDetails.findByIdAndDelete(cNo)
 
   if(cardExist){

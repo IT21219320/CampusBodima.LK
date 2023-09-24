@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { useSelector } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link as ReactLink } from 'react-router-dom';
 import Sidebar from '../components/sideBar';
-import { Breadcrumbs, Typography, Card, Button, CircularProgress, Box, Collapse, IconButton, Alert, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { Breadcrumbs, Typography, Card, Button, CircularProgress, Box, Collapse, IconButton, Alert, FormControl, InputLabel, MenuItem, Select, Link } from "@mui/material";
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col } from 'react-bootstrap';
-import { useGetCardByUserMutation } from "../slices/cardApiSlice";
+import { useGetCardByUserMutation, useDeleteCardMutation } from "../slices/cardApiSlice";
 import { useGetPaymentByUserMutation } from "../slices/paymentApiSlice";
 import { async } from "@firebase/util";
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css"
@@ -45,25 +45,62 @@ const OccupantPaymentDash = () => {
 
     const [cards, setCards] = useState([]);
     const [payments, setPayments] = useState([]);
+    const [isHovered, setIsHovered] = useState(false);
+    const [deleteC, setDeleteCard] = useState('');
+
     const [getCard] = useGetCardByUserMutation();
     const [getPayment] = useGetPaymentByUserMutation();
+    const [deleteCard] = useDeleteCardMutation();
 
     const loadData = async () => {
         try {
             const res = await getCard({ userInfo_id: userInfo._id }).unwrap();
-            const resGetPay = await getPayment({ _id: userInfo._id }).unwrap();
+            
             setCards(res);
-            setPayments(resGetPay.payments);
-            console.log(payments)
+            
+
         } catch (error) {
             console.error('Error getting cards', error);
         }
+        try {
+            
+            const resGetPay = await getPayment({ _id: userInfo._id }).unwrap();
+            
+            setPayments(resGetPay.payments);
+
+        } catch (error) {
+            console.error('Error getting payments', error);
+        }
+
 
     }
 
     useEffect(() => {
         loadData();
     }, []);
+
+    const handleMouseEnter = () => {
+        setIsHovered(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+    };
+
+    const handleUpdate = () => {
+        // Implement the update logic here
+        alert('Card number updated!');
+    };
+
+    const handleRemove = async(cardId) => {
+        try {
+            const resDelete = await deleteCard({ cNo: cardId  }).unwrap();
+            setDeleteCard(resDelete);
+
+        } catch (error) {
+            console.error('Error deleting cards', error);
+        }
+    };
 
     return (
         <>
@@ -76,39 +113,64 @@ const OccupantPaymentDash = () => {
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
                                 <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
-                                <Link underline="hover" key="3" color="inherit" href="/owner/ingredient">Payments</Link>,
+                                <Link underline="hover" key="3" color="inherit" href="/occupant/payment/">Payments</Link>,
                                 <Typography key="4" color="text.primary">View</Typography>
                             </Breadcrumbs>
                         </Col>
-
                     </Row>
                     <Row>
-                        <h4>Saved cards</h4>
-                        {cards.length > 0 ? (
-                            cards.map((card) => (
-                                <Box key={card.cardNumber} sx={{ minWidth: 275, maxWidth: 340 }}>
-                                    <Card variant="outlined" className={occupantDashboardPaymentStyles.cardStyles}>
-                                        <div key={card.cardNumber} >
-                                            <p>Card Number : {card.cardNumber}</p>
-                                            <p>Expire Date : {card.exNumber}</p>
-                                            <p>CVV : {card.cvv}</p>
-                                        </div>
-                                    </Card>
-                                </Box>
-                            ))
-                        ) : (
-                            <p>No cards to display</p>
-                        )}
+                        <Col>
+                            <Row style={{ marginTop: '20px' }}>
+                                <Col>
+                                    <h4>Saved cards</h4>
+                                </Col>
+                            </Row>
+                            {cards.length > 0 ? (
+                                <Row style={{ overflow: 'scroll', marginLeft: 0, marginRight: 0, flexWrap: 'nowrap', marginTop: '10px', paddingBottom: '15px' }}>
+                                    {cards.map((card) => (
+                                       
+                                       
+                                        <Col key={card.id}>
+                                            <Box key={card.id} sx={{ minWidth: 275, maxWidth: 340 }}>
+                                                <Card variant="outlined" className={occupantDashboardPaymentStyles.cardStyles}>
+                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{minHeight: '160px'}}>
+                                                    
+                                                                <p>Card Number : {card.cardNumber}</p>
+                                                                <p>Expire Date : {card.exNumber}</p>
+                                                                <p>CVV : {card.cvv}</p>
+                                                            
+                                                        {isHovered && (
+                                                            <div key={card.id}>
+                                                                <button onClick={handleUpdate}>Update</button>
+                                                                <button onClick={() => handleRemove(card.id)}>Remove</button>
+                                                            </div>
+                                                        )} 
+                                                    </div>
+                                                </Card>
+                                            </Box>
+                                        </Col>
+                                        
+                                    ))}
+                                </Row>
+                            ) : (
+                                <Row>
+                                    <Col>
+                                        <p>No cards to display</p>
+                                    </Col>
+                                </Row>
+                            )}
+                        </Col>
                     </Row>
 
-                    <TableContainer component={Paper}>
+                    <TableContainer component={Paper} style={{ marginTop: '20px' }}>
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
                             <TableHead>
                                 <TableRow>
-                                    <StyledTableCell>ID</StyledTableCell>
-                                    <StyledTableCell align="right">Name</StyledTableCell>
-                                    <StyledTableCell align="right">Student ID</StyledTableCell>
-
+                                    <StyledTableCell>Transaction ID</StyledTableCell>
+                                    <StyledTableCell align="right">Amount</StyledTableCell>
+                                    <StyledTableCell align="right">Description</StyledTableCell>
+                                    <StyledTableCell align="right">Transaction Date</StyledTableCell>
+                                    <StyledTableCell align="right">Method</StyledTableCell>
                                 </TableRow>
                             </TableHead>
 
@@ -120,7 +182,10 @@ const OccupantPaymentDash = () => {
                                                 {payment._id}
                                             </StyledTableCell>
                                             <StyledTableCell align="right" >{payment.amount}</StyledTableCell>
-                                            <StyledTableCell align="right">{payment.credited}</StyledTableCell>
+                                            <StyledTableCell align="right" >{payment.description}</StyledTableCell>
+                                            
+                                            <StyledTableCell align="right">{payment.date}</StyledTableCell>
+                                            <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
                                         </StyledTableRow>
                                     ))) : (
                                     <StyledTableRow >
