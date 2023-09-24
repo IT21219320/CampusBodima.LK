@@ -26,7 +26,14 @@ export const cardApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        updateCard: builder.mutation({
+            query:(data) => ({
+                url: `${CARD_URL}/updateCard`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
     }),
 });
 
-export const { useAddCardMutation,useGetCardByUserMutation, useDeleteCardMutation } = cardApiSlice;
+export const { useAddCardMutation,useGetCardByUserMutation, useDeleteCardMutation, useUpdateCardMutation } = cardApiSlice;

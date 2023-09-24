@@ -87,6 +87,7 @@ const getCardById = expressAsyncHandler(async (req, res) => {
 
 const updateCard = expressAsyncHandler(async (req, res) => {
   const { cardNumberF, expireDate, cvvF, cNo } = req.body;
+  
 
   const hashCardNumberFisrt = encrypt(cNo);
 
