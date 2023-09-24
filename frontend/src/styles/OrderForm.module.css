@@ -1,0 +1,31 @@
+/* OrderForm.module.css */
+
+.card {
+    box-shadow: 5px 5px 10px #0000002b !important;
+    margin-top: 22px;
+  }
+  
+  #newTicket {
+    color: rgb(41, 60, 210);
+  }
+  
+  .require {
+    color: red;
+    margin-left: 3px;
+  }
+  
+  .lbl {
+    margin-top: 16px;
+    margin-left: 80px;
+    font-size: larger;
+  }
+  
+  #subject {
+    width: 50%;
+    height: 45px;
+  }
+  
+  .col-lg-9 {
+    margin-top: 10px !important;
+  }
+  

@@ -2,20 +2,21 @@ import React, { useState } from 'react';
 import { useSelector } from "react-redux";
 import { toast } from 'react-toastify';
 import { Row, Col, Form } from "react-bootstrap";
-import reserveFormStyle from "../styles/reserveFormStyle.module.css";
+
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { useCreateOrderMutation } from '../slices/orderApiSlice'; // Import the generated mutation function
 import Sidebar from '../components/sideBar';
+import dashboardStyles from '../styles/dashboardStyles.module.css';
 
 const OrderForm = () => {
   const [product, setProduct]=useState('')
   const [foodType, setFoodType]=useState('')
   const [quantity, setQuantity]=useState('')
   const [price, setPrice]=useState('')
-  //const [orderNo, setOrderNo]=useState('')
+  const [orderNo, setOrderNo] = useState(1);
   const [total, setTotal] = useState(0); // State to store the total
   const { userInfo } = useSelector((state) => state.auth);
   const userID = userInfo._id;
@@ -85,22 +86,27 @@ const OrderForm = () => {
         price: calculatedPrice, // Use calculatedPrice here
         total: total,
         occupantId:userID,
+        orderNo:orderNo,
       });
-      console.log("value", response);
       if (response) {
+        // Increment the orderNo for the next order
+        setOrderNo((prevOrderNo) => prevOrderNo + 1);
+        console.log("value", response);
         toast.success('Order Submitted Successfully');
-        // Navigate('/occupant/profile'); // You might need to import and use a navigation function here
       }
     } catch (err) {
       toast.error(err.data?.message || err.error);
     }
+
+      
+      
   };
   
 
   const renderFoodTypeDropdown = () => {
     if (product === '3' || product === '6') {
       return (
-        <Row className={reserveFormStyle.durationRaw}>
+        <Row className={dashboardStyles.durationRaw}>
           <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="demo-simple-select-standard-label">Food Type</InputLabel>
             <Select
@@ -121,7 +127,7 @@ const OrderForm = () => {
       );
     } else if (product === '12') {
       return (
-        <Row className={reserveFormStyle.durationRaw}>
+        <Row className={dashboardStyles.durationRaw}>
           <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="demo-simple-select-standard-label">Food Type</InputLabel>
             <Select
@@ -141,7 +147,7 @@ const OrderForm = () => {
       );
     } else {
       return (
-        <Row className={reserveFormStyle.durationRaw}>
+        <Row className={dashboardStyles.durationRaw}>
           <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="demo-simple-select-standard-label">Food Type</InputLabel>
             <Select
@@ -171,8 +177,9 @@ const OrderForm = () => {
 
   return (<>
     <Sidebar />
+    <div className={dashboardStyles.mainDiv}>
     <form onSubmit={submitHandler} style={formStyle}>
-      <Row className={reserveFormStyle.durationRaw}>
+      <Row className={dashboardStyles.durationRaw}>
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <InputLabel id="demo-simple-select-standard-label">Product</InputLabel>
           <Select
@@ -206,12 +213,13 @@ const OrderForm = () => {
       
       {/* Display the total by multiplying quantity by price */}
       <div>Total: {total}</div>
-
+      <div>Order No: {orderNo}</div>
       <button type="submit" loading={isLoading}>
         {isLoading ? 'Creating Order...' : 'Create Order'}
       </button>
       {isError && <div>Error: {error.message}</div>}
     </form>
+    </div>
     </>
   );
 };

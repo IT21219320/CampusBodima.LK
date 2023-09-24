@@ -80,7 +80,7 @@ const createOrder = async (req, res) => {
       foodType:foodTypeNames[foodType],
       quantity:quantity,
       price:price,
-      orderNo:orderNo,
+      orderNo:orderNo+1,
       
       owner:owner,
       occupant: occupantId,
