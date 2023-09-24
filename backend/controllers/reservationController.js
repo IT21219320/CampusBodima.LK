@@ -174,7 +174,7 @@ const getMyReservation = asyncHandler(async (req, res) => {
 // @access  Private - Owner
 
 const getBoardingReservations = asyncHandler(async (req, res) => {
-    const boardingId = req.query;
+    const {boardingId} = req.body;
 
     const boarding = await Boarding.findById(boardingId);
 
