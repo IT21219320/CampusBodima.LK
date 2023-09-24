@@ -12,4 +12,5 @@ router.delete('/owner/:utilityId',deleteUtility);
 router.get(  '/owner/:ownerId',getUtilityBoarding);
 router.get('/boarding/:boardingId',getOccupant);
 router.get('/owner/:owneId/:facilities',getFacilitiesBoarding);
+router.get('/owner/utility/:ownerId',getBoarding);
 export default router;

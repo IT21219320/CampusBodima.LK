@@ -39,3 +39,9 @@
     background-color:lightslategrey;
     border-color:lightblue; /* Change border color on hover (orange in this example) */
   }
+  .sortinglabel {
+    font-size: 16px; /* Adjust the font size as needed */
+    font-weight: bold; /* You can make the label bold if desired */
+    margin-right: 10px; /* Add some spacing to the right of the label */
+    color:darkslategray; /* Customize the text color */
+}
