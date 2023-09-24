@@ -3,6 +3,8 @@ import User from '../models/userModel.js';
 import Boarding from '../models/boardingModel.js';
 import Room from '../models/roomModel.js';
 import storage from '../utils/firebaseConfig.js';
+import { sendMail } from '../utils/mailer.js'
+import { sendSMS } from '../utils/smsSender.js';
 import { ref, uploadBytesResumable, deleteObject  } from "firebase/storage";
 
 // @desc    Register a new Boarding
@@ -392,6 +394,24 @@ const getAllBoardings = asyncHandler(async (req, res) => {
     }
 });
 
+// @decs    Get Pending Approval Boardings
+// route    GET /api/boardings/pendingApproval
+const getPendingApprovalBoardings = asyncHandler(async (req, res) => {
+    const page = req.params.page || 0;
+    const pageSize = req.params.pageSize;
+
+    const skipCount = (page) * pageSize;
+
+    const boardings = await Boarding.find({status:'PendingApproval'}).populate('room').skip(skipCount).limit(pageSize);
+
+    const totalRows = await Boarding.countDocuments({status:'PendingApproval'}).populate('room').skip(skipCount).limit(pageSize);
+
+    res.status(200).json({
+        boardings,
+        totalRows
+    })
+})
+
 // @desc    Get all Boardings of particular owner
 // route    GET /api/boardings/occupant/:occupantId
 const getOccupantBoarding = asyncHandler(async (req, res) => {
@@ -449,6 +469,115 @@ const updateBoardingVisibility = asyncHandler(async (req, res) => {
     else{
         res.status(400);
         throw new Error("Oops Something went wrong :(")
+    }
+});
+
+// @desc    Update boarding status
+// route    PUT /api/boardings/approveBoarding/
+const approveBoarding = asyncHandler(async (req, res) => {
+      const boardingId = req.body.boardingId;
+
+      try {
+          let boarding = await Boarding.findById(boardingId).populate('owner');
+          boarding.status = "Approved";
+          boarding = await boarding.save();
+    
+          const rooms = await Room.updateMany({boardingId},{ $set: { status: 'Approved' } });
+          console.log(rooms);
+    
+          const message = `<p><b>Hello ${boarding.owner.firstName},</b></p>
+          <p>We are pleased to inform you that your registered boarding, ${boarding.boardingName}, has been approved.</p>
+          <p>Thank you for using CampusBodima!</p>
+          <p>Best wishes,<br>The CampusBodima Team</p>`
+        
+          sendMail(boarding.owner.email,message,"Your Registered Boarding Has Been Approved");
+
+          res.status(200).json('')
+      } catch (error) {
+            res.status(400)
+            throw new Error(error);
+      }
+
+
+})
+
+// @desc    Delete particular boarding
+// route    DELETE /api/boardings/rejectBoarding/
+const rejectBoarding = asyncHandler(async (req, res) => {
+    const boardingId = req.body.boardingId;
+
+    const boarding = await Boarding.findById(boardingId).populate(['room','owner']);
+    
+    if(boarding){
+
+        var occupantCount = 0;
+        for(let i = 0; i < boarding.room.length; i++){
+            occupantCount += boarding.room[i].occupant.length;
+        }
+
+        let message;
+        let email = boarding.owner.email;
+        if(occupantCount == 0 && !boarding.occupant){
+
+            if(boarding.boardingType == 'Hostel' && boarding.room.length > 0){
+                var fileRef;
+                for(let i = 0; i < boarding.room.length; i++){
+
+                    for (let j = 0; j < boarding.room[i].roomImages.length; j++) {
+                        fileRef = ref(storage,boarding.room[i].roomImages[j]);
+                    
+                        try {
+                            await deleteObject(fileRef); // deleteing images of the room
+                        } catch (err) {
+                            console.log(err);;
+                        }        
+                    }
+                    await Room.findByIdAndDelete(boarding.room[i]._id); // deleting the room
+
+                }
+            }
+
+            for (let i = 0; i < boarding.boardingImages.length; i++) {
+                fileRef = ref(storage,boarding.boardingImages[i]);
+            
+                try {
+                    await deleteObject(fileRef); // deleting images of boarding
+                } catch (err) {
+                    console.log(err);
+                }        
+            }
+            await Boarding.findByIdAndDelete(boardingId);
+
+            message = `Dear ${boarding.owner.firstName},<br><br>
+            We regret to inform you that your boarding, ${boarding.boardingName} does not meet our listing criteria at this time, and your registration has been declined.<br>
+            While we appreciate your interest, please review our guidelines and consider making necessary updates before reapplying.<br>
+            For any questions, contact us at info.campusbodima@gmail.com.<br><br>
+            Best regards,<br>
+            The CampusBodima Team`;
+        }
+        else{
+            let boarding = await Boarding.findById(boardingId).populate('owner');
+            boarding.status = "Incomplete";
+            boarding = await boarding.save();
+            const rooms = await Room.updateMany({boardingId},{ $set: { status: 'Incomplete' } });
+
+            message = `Dear ${boarding.owner.firstName},<br><br>
+            We regret to inform you that your boarding, ${boarding.boardingName} does not meet our listing criteria at this time, and your registration has been moved to the incomplete section.<br>
+            Please review our guidelines and consider making necessary updates to get your boarding approved.<br>
+            For any questions, contact us at info.campusbodima@gmail.com.<br><br>
+            Best regards,<br>
+            The CampusBodima Team`
+        }
+
+        sendMail(email,message,"Your Registered Boarding Has Been Declined");      
+
+        res.status(200).json({
+            message:'Boarding rejected successfully!'
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("Oops something went wrong :(");
     }
 });
 
@@ -610,7 +739,10 @@ export {
     getOwnerBoardings,
     getBoardingById,
     getOccupantBoarding,
+    getPendingApprovalBoardings,
     updateBoardingVisibility,
+    approveBoarding,
+    rejectBoarding,
     updateBoarding,
     deleteBoarding
 };

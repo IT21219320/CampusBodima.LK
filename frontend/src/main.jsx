@@ -18,6 +18,7 @@ import VerifyEmailPage from './pages/verifyEmailPage.jsx';
 import ProfilePage from './pages/profilePage.jsx';
 import GenerateOtpPage from './pages/generateOtpPage.jsx';
 import ResetPasswordPage from './pages/resetPasswordPage.jsx';
+import SearchPage from './pages/searchPage.jsx';
 
 import OwnerBoardingPage from './pages/ownerBoardingPage.jsx';
 import RegisterBoardingPage from './pages/registerBoardingPage.jsx';
@@ -80,6 +81,7 @@ const router = createBrowserRouter(
       <Route path='/register/:tokenHeader/:tokenPayload/:tokenSecret' element={ <VerifyEmailPage /> } />
       <Route path='/generateotp' element={ <GenerateOtpPage /> } />
       <Route path='/resetpassword' element={ <ResetPasswordPage /> } />
+      <Route path='/search' element={ <SearchPage /> } />
 
       {/* Private Routes */}
       <Route path='' element={ <PrivateRoute /> }>

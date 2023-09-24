@@ -13,6 +13,7 @@ import dashboardStyles from '../styles/dashboardStyles.module.css';
 const OwnerBoardingPage = () => {
 
     const [viewUserInfo, setViewUserInfo] = useState();
+    const [activeTab, setActiveTab] = useState('My Boardings');
 
     const { userInfo } = useSelector((state) => state.auth);
 
@@ -43,15 +44,15 @@ const OwnerBoardingPage = () => {
                                         <Row style={{textAlign:'right'}}>
                                             <Col><Link href='/owner/boardings/add'><Button className={`${ownerStyles.addBtn} mt-4`}><AddHomeWork /> Add New Boarding</Button></Link></Col>
                                         </Row>
-                                        <Tabs defaultActiveKey="My Boardings"  id="uncontrolled-tab-example" className="mb-3">
+                                        <Tabs defaultActiveKey="My Boardings"  id="uncontrolled-tab-example" className="mb-3" onSelect={(k) => setActiveTab(k)}>
                                             <Tab eventKey="My Boardings" title="My Boardings">
-                                                <ApprovedOwnerBoardings>Approved</ApprovedOwnerBoardings>
+                                                {activeTab=="My Boardings" ? <ApprovedOwnerBoardings>Approved</ApprovedOwnerBoardings> : ''}
                                             </Tab>
                                             <Tab eventKey="Incomplete" title="Incomplete">
-                                                <ApprovedOwnerBoardings>PendingRoom</ApprovedOwnerBoardings>
+                                                {activeTab=="Incomplete" ? <ApprovedOwnerBoardings>PendingRoom</ApprovedOwnerBoardings> : ''}
                                             </Tab>
                                             <Tab eventKey="Pending Approval" title="Pending Approval">
-                                                <ApprovedOwnerBoardings>PendingApproval</ApprovedOwnerBoardings>
+                                                {activeTab=="Pending Approval" ? <ApprovedOwnerBoardings>PendingApproval</ApprovedOwnerBoardings> : ''}
                                             </Tab>
                                         </Tabs>
                                     </Col>

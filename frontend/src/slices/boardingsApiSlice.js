@@ -31,6 +31,26 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 method: 'GET',
             }),
         }),
+        getPendingApprovalBoardings: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/pendingApproval/${data}`,
+                method: 'GET',
+            }),
+        }),
+        approveBoarding: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/approveBoarding/`,
+                method: 'PUT',
+                body:data
+            }),
+        }),
+        rejectBoarding: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/rejectBoarding/`,
+                method: 'PUT',
+                body:data
+            }),
+        }),
         getBoardingById: builder.mutation({
             query: (data) => ({
                 url: `${BOARDINGS_URL}/${data}`,
@@ -60,4 +80,4 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useRegisterBoardingMutation, useAddRoomMutation, useGetAllBoardingsMutation, useGetOwnerBoardingsMutation, useGetBoardingByIdMutation, useUpdateVisibilityMutation, useUpdateBoardingMutation, useDeleteBoardingMutation } = boardingsApiSlice;
+export const { useRegisterBoardingMutation, useAddRoomMutation, useGetAllBoardingsMutation, useGetOwnerBoardingsMutation, useGetPendingApprovalBoardingsMutation, useApproveBoardingMutation, useRejectBoardingMutation, useGetBoardingByIdMutation, useUpdateVisibilityMutation, useUpdateBoardingMutation, useDeleteBoardingMutation } = boardingsApiSlice;

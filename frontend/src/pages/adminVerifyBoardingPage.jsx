@@ -9,10 +9,12 @@ import AdminAllBoardings from '../components/adminAllBoardingsComponent';
 
 import ownerStyles from '../styles/ownerStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
+import AdminPendingBoardings from "../components/adminPendingBoardingsComponent";
 
 const AdminVerifyBoardingPage = () => {
 
     const [viewUserInfo, setViewUserInfo] = useState();
+    const [activeTab, setActiveTab] = useState('all boardings');
 
     const { userInfo } = useSelector((state) => state.auth);
 
@@ -50,12 +52,12 @@ const AdminVerifyBoardingPage = () => {
                             <Col className="mb-3 mt-4" xs={12} md={12}>
                                 <Row>
                                     <Col>
-                                        <Tabs defaultActiveKey="all boardings"  id="uncontrolled-tab-example" className="mb-3">
+                                        <Tabs defaultActiveKey="all boardings"  id="uncontrolled-tab-example" className="mb-3" onSelect={(k) => setActiveTab(k)}>
                                             <Tab eventKey="all boardings" title="All Boardings">
-                                                <AdminAllBoardings />
+                                                {activeTab=="all boardings" ? <AdminAllBoardings /> : ''}
                                             </Tab>
                                             <Tab eventKey="Pending Approval" title="Pending Approval">
-                                                
+                                                {activeTab=="Pending Approval" ?   <AdminPendingBoardings /> : ''}
                                             </Tab>
                                         </Tabs>
                                     </Col>
