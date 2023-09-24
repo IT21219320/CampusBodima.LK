@@ -61,8 +61,14 @@ export const utilitiesApiSlice = apiSlice.injectEndpoints({
                 url: `${UTILITIES_URL}/boarding/${data}`,
                 method: 'GET',
             }),
+        }),
+        getBoarding: builder.mutation({
+            query: (data) => ({
+                url: `${UTILITIES_URL}/owner/utility/${data}`,
+                method: 'GET',
+            }),
         })
     }),
 });
 
-export const { useAddUtilitiesMutation,useGetUtilitiesForBoardingMutation,useGetUtilitiesForOccupantMutation,useUpdateUtilityMutation,useDeleteUtilityMutation,useGetOccupantMutation,useGetUtilityBoardingMutation,useGetFacilitiesBoardingMutation,useGetUpdateUtilityMutation} = utilitiesApiSlice;
+export const { useAddUtilitiesMutation,useGetUtilitiesForBoardingMutation,useGetUtilitiesForOccupantMutation,useUpdateUtilityMutation,useDeleteUtilityMutation,useGetOccupantMutation,useGetUtilityBoardingMutation,useGetFacilitiesBoardingMutation,useGetUpdateUtilityMutation,useGetBoardingMutation} = utilitiesApiSlice;

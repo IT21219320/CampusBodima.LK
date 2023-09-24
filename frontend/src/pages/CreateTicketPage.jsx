@@ -60,9 +60,7 @@ const CreateTicket = () => {
                         const uploadTask = uploadBytesResumable(storageRef, attachment);
 
                         await uploadTask;
-                    }
-                    
-                    console.log(uniqueName);   
+                    }  
 
                     try {
                         const res = await createTicket({ senderId:occupantId, subject, category, subCategory ,description, attachment:uniqueName }).unwrap();
@@ -149,6 +147,7 @@ const CreateTicket = () => {
                                                             <Select value={subCategory} onChange={(e) => setSubCategory(e.target.value)} required  >
                                                                 <MenuItem value="utilities">Utilities</MenuItem>
                                                                 <MenuItem value="payments">Payment Issues</MenuItem>
+                                                                <MenuItem value="facilities">Facilities</MenuItem>
                                                                 <MenuItem value="other">Other</MenuItem>
                                                             </Select>
                                                         </FormControl>

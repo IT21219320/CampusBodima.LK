@@ -5,13 +5,15 @@ import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Tab, Tabs} from 'react-bootstrap';
 import { Breadcrumbs, Typography, Card, CardContent,Link, Button, Paper, InputBase, IconButton } from '@mui/material';
-import { NavigateNext, Search} from '@mui/icons-material';
+import { GetAppRounded, NavigateNext, Search} from '@mui/icons-material';
 import occupantAllTicketsStyles from '../styles/occupantAllTicketsStyles.module.css';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import OccupantAllTickets from "../components/occupantAllTicketsComponenet";
 import OccupantPendingTickets from "../components/occupantPendingTicketsComponenet";
 import OccupantResolvedTickets from "../components/occupantResolvedTicketsComponenet";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const OccupantTickets = () =>{
 

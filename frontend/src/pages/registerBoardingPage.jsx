@@ -281,8 +281,9 @@ const RegisterBoardingPage = () => {
                 else{
                     toast.success('Boarding Registered Successfully!')
                     dispatch(setUserInfo({...res.data.owner}));
-
+                    
                     if(boardingType == 'Annex'){
+                        const boardingId = res.data.boarding._id;
                         navigate(`/owner/boardings/${boardingId}/rooms`);
                     }
                     else{

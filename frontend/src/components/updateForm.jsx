@@ -40,7 +40,7 @@ const UpdateUtilitiesPage = ({}) =>{
     const [ newAmount, setAmount] = useState('');
     const [newDate, setDate] = useState('');
     const [newDescription, setDescription] = useState('');
-    const [newUtilityImage,setUtilityImage] = useState([]);
+    const [newUtilityImage,setNewUtilityImage] = useState([]);
     const [utilityPreviewImage, setUtilityPreviewImage] = useState([]);
     const [utilityImages, setUtilityImages] = useState([]);
     const [utilityImagesToDelete, setUtilityImagesToDelete] = useState([]);
@@ -69,7 +69,7 @@ const UpdateUtilitiesPage = ({}) =>{
             setAmount(res.utility.amount);
             setDate(res.utility.date);
             setDescription(res.utility.description);
-            setUtilityImage(res.utility.utilityImage);
+            setUtilityImages(res.utility.utilityImage);
             setBoardingNames(res.boarding.boardingName);
             setUtilityImagesToDelete([]);
           
@@ -112,7 +112,7 @@ const UpdateUtilitiesPage = ({}) =>{
     const previewImage = async(e) => {
       const data = await ImageToBase64(e.target.files[0]);
 
-      setUtilityImage([...newUtilityImage,e.target.files[0]]);
+      setNewUtilityImage([...newUtilityImage,e.target.files[0]]);
      setNewUtilityPreviewImages([...newUtilityPreviewImages,data]);
   }
   const removeOldImage = async(imageToRemove) => {
@@ -124,14 +124,14 @@ const UpdateUtilitiesPage = ({}) =>{
         const updatedPreviewImages = [...utilityPreviewImage];
         const updatedImages = [...utilityImages];
         const updatedImagesToDelete = [...utilityImagesToDelete];
-
+        
         updatedImagesToDelete.push(updatedImages[indexToRemove]);
         updatedPreviewImages.splice(indexToRemove, 1);
         updatedImages.splice(indexToRemove, 1);
 
         // Update the state with the updated arrays
         setUtilityPreviewImage(updatedPreviewImages);
-        setUtilityImage(updatedImages);
+        setUtilityImages(updatedImages);
         setUtilityImagesToDelete(updatedImagesToDelete);
 
     }
@@ -152,7 +152,7 @@ const removeImage = (imageToRemove) => {
 
       // Update the state with the updated arrays
       setNewUtilityPreviewImages(updatedPreviewImages);
-      setUtilityImage(updatedImages);
+      setUtilityImages(updatedImages);
   }
   
 };
@@ -165,7 +165,6 @@ const handleUtilityFormSubmit = async (event) => {
         
      
       var fileRef;
-
       try {
 
           for(let i = 0; i < utilityImagesToDelete.length; i++){

@@ -18,6 +18,13 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 body: data
             }),
         }),
+        getAllBoardings: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/all`,
+                method: 'POST',
+                body: data
+            }),
+        }),
         getOwnerBoardings: builder.mutation({
             query: (data) => ({
                 url: `${BOARDINGS_URL}/owner/${data}`,
@@ -53,4 +60,4 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useRegisterBoardingMutation, useAddRoomMutation, useGetOwnerBoardingsMutation, useGetBoardingByIdMutation, useUpdateVisibilityMutation, useUpdateBoardingMutation, useDeleteBoardingMutation } = boardingsApiSlice;
+export const { useRegisterBoardingMutation, useAddRoomMutation, useGetAllBoardingsMutation, useGetOwnerBoardingsMutation, useGetBoardingByIdMutation, useUpdateVisibilityMutation, useUpdateBoardingMutation, useDeleteBoardingMutation } = boardingsApiSlice;

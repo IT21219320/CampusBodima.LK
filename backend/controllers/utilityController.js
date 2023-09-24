@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import Utility from '../models/utilityModel.js';
 import Boarding from '../models/boardingModel.js';
 import Occupants from '../models/reservationModel.js';
+import Reservation from '../models/reservationModel.js';
 
 
 // @desc    Add utilities
@@ -49,24 +50,34 @@ const getUtilitiesForBoarding = asyncHandler(async (req, res) =>{
     const boardingId = req.body. boardingId;
     const utilityType = req.body.utilityType;
     const page = req.body.page || 1;
+    const searchQuery = req.body.searchQuery;
     const pageSize = 10
     
     const skipCount = (page - 1) * pageSize;
 
-    var totalPages = await Utility.countDocuments({boarding:boardingId});
-    totalPages = Math.ceil(parseInt(totalPages)/pageSize);
-
-    const utility = await Utility.find({boarding:boardingId, utilityType:utilityType});
-    
-    if(utility){
-        res.status(200).json({
-            utility,
-            totalPages,
+    try{
+        const utilities = await Utility.find({
+            boarding:boardingId,
+            utilityType:utilityType,
+            description: { $regex: searchQuery, $options: 'i' }
         })
-    }
-    else{
-        res.status(400);
-        throw new Error("No Utilities")
+        .skip(skipCount)
+        .limit(pageSize)
+
+
+        const totalDescription =await Utility.countDocuments({
+            boarding:boardingId,
+            descrotion: { $regex: searchQuery, $options: 'i' }
+        })
+
+        const  totalPages = Math.ceil(parseInt(totalDescription)/pageSize);
+            
+        res.status(200).json({
+            utility:utilities,
+            totalPages:totalPages,
+        });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 });
 
@@ -230,11 +241,11 @@ const getUtilityBoarding = asyncHandler(async (req, res) => {
 const getOccupant = asyncHandler(async (req, res) => {
     const boardingId = req.params.boardingId;
 
-    const occupants = await Occupants.find({boardingId:boardingId});
+    const occupant = await users.find({boardingId:boardingId,userType:"occupant"});
     
-    if(occupants){
+    if(occupant){
         res.status(200).json({
-           occupants,
+           occupant,
         })
     }
     else{
