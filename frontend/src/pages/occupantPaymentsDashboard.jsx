@@ -18,6 +18,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -48,25 +54,36 @@ const OccupantPaymentDash = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [deleteC, setDeleteCard] = useState('');
     const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
+    const [cardIdR, setCardIdR] = useState('');  
 
     const [getCard] = useGetCardByUserMutation();
     const [getPayment] = useGetPaymentByUserMutation();
     const [deleteCard] = useDeleteCardMutation();
 
+    const handleClickOpen = (id) => {
+        setOpen(true);
+        setCardIdR(id)
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     const loadData = async () => {
         try {
             const res = await getCard({ userInfo_id: userInfo._id }).unwrap();
-            
+
             setCards(res);
-            
+
 
         } catch (error) {
             console.error('Error getting cards', error);
         }
         try {
-            
+
             const resGetPay = await getPayment({ _id: userInfo._id }).unwrap();
-            
+
             setPayments(resGetPay.payments);
 
         } catch (error) {
@@ -93,13 +110,12 @@ const OccupantPaymentDash = () => {
         alert('Card number updated!');
     };
 
-    const handleRemove = async(cardId) => {
+    const handleRemove = async (cardId) => {
         try {
-            const resDelete = await deleteCard({ cNo: cardId  }).unwrap();
+            const resDelete = await deleteCard({ cNo: cardId }).unwrap();
             console.log(resDelete.message);
             setDeleteCard(resDelete.message);
             setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
-
         } catch (error) {
             console.error('Error deleting cards', error);
         }
@@ -117,7 +133,7 @@ const OccupantPaymentDash = () => {
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
                                 <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
                                 <Link underline="hover" key="3" color="inherit" href="/occupant/payment/">Payments</Link>,
-                                <Typography key="4" color="text.primary">View</Typography>
+                                <Link underline="hover" key="3" color="inherit" href="/occupant/payment/">View</Link>,
                             </Breadcrumbs>
                         </Col>
                     </Row>
@@ -135,23 +151,23 @@ const OccupantPaymentDash = () => {
                                         <Col key={card.id}>
                                             <Box key={card.id} sx={{ minWidth: 275, maxWidth: 340 }}>
                                                 <Card variant="outlined" className={occupantDashboardPaymentStyles.cardStyles}>
-                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{minHeight: '160px'}}>
-                                                    
-                                                                <p>Card Number : {card.cardNumber}</p>
-                                                                <p>Expire Date : {card.exNumber}</p>
-                                                                <p>CVV : {card.cvv}</p>
-                                                            
+                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ minHeight: '160px' }}>
+
+                                                        <p>Card Number : {card.cardNumber}</p>
+                                                        <p>Expire Date : {card.exNumber}</p>
+                                                        <p>CVV : {card.cvv}</p>
+
                                                         {isHovered && (
                                                             <div key={card.id}>
-                                                                <button onClick={handleUpdate}>Update</button>
+                                                                <button onClick={() => handleClickOpen(card.id)}>Update</button>
                                                                 <button onClick={() => handleRemove(card.id)}>Remove</button>
                                                             </div>
-                                                        )} 
+                                                        )}
                                                     </div>
                                                 </Card>
                                             </Box>
                                         </Col>
-                                        
+
                                     ))}
                                 </Row>
                             ) : (
@@ -163,7 +179,22 @@ const OccupantPaymentDash = () => {
                             )}
                         </Col>
                     </Row>
+                    <Dialog open={open} onClose={handleClose}>
+                        <center><DialogTitle> Update Your card </DialogTitle></center>
+                        <DialogContent>
+                                <Row>
+                            <TextField autoFocus margin="dense"id="name"label="card number"type="email" inputProps={{maxLength: 16, minLength:16 ,inputMode: 'numeric',title:'Card number should be 16 digit'}}/></Row>
+                            <Row>
+                            <TextField autoFocus margin="dense"id="name"label="Expire date"type="email" inputProps={{pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY'}}/></Row>
+                            <Row><TextField autoFocus margin="dense"id="name"label="CVV"type="email" inputProps={{maxLength: 3, minLength:3 ,inputMode: 'numeric',title:'Card number should be 16 digit'}}/></Row>
 
+
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancel</Button>
+                            <Button onClick={handleClose}>Update</Button>
+                        </DialogActions>
+                    </Dialog>
                     <TableContainer component={Paper} style={{ marginTop: '20px' }}>
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
                             <TableHead>
@@ -185,7 +216,7 @@ const OccupantPaymentDash = () => {
                                             </StyledTableCell>
                                             <StyledTableCell align="right" >{payment.amount}</StyledTableCell>
                                             <StyledTableCell align="right" >{payment.description}</StyledTableCell>
-                                            
+
                                             <StyledTableCell align="right">{payment.date}</StyledTableCell>
                                             <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
                                         </StyledTableRow>

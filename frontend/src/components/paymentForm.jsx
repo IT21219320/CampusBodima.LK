@@ -44,6 +44,7 @@ const PaymentForm = () => {
             }
         }
         if(resPay){
+            console.log(resPay)
             if(resPay.data.message === "payment inserted"){
                 window.alert('Payment successfull');
                 navigate('/occupant/reservations/confirm/');

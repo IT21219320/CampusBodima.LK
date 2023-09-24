@@ -56,17 +56,17 @@ const OwnerPaymentDash = () => {
     const loadData = async () => {
         try {
             const res = await getCard({ userInfo_id: userInfo._id }).unwrap();
-            
+
             setCards(res);
-            
+
 
         } catch (error) {
             console.error('Error getting cards', error);
         }
         try {
-            
+
             const resGetPay = await getPayment({ _id: userInfo._id }).unwrap();
-            
+
             setPayments(resGetPay.payments);
 
         } catch (error) {
@@ -79,7 +79,13 @@ const OwnerPaymentDash = () => {
     useEffect(() => {
         loadData();
     }, [deleteC]);
-
+    const handleClickOpen = () => {
+        setOpen(true);
+      };
+    
+      const handleClose = () => {
+        setOpen(false);
+      };
     const handleMouseEnter = () => {
         setIsHovered(true);
     };
@@ -88,14 +94,11 @@ const OwnerPaymentDash = () => {
         setIsHovered(false);
     };
 
-    const handleUpdate = () => {
-        // Implement the update logic here
-        alert('Card number updated!');
-    };
+    
 
-    const handleRemove = async(cardId) => {
+    const handleRemove = async (cardId) => {
         try {
-            const resDelete = await deleteCard({ cNo: cardId  }).unwrap();
+            const resDelete = await deleteCard({ cNo: cardId }).unwrap();
             console.log(resDelete.message);
             setDeleteCard(resDelete.message);
             setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
@@ -117,7 +120,8 @@ const OwnerPaymentDash = () => {
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
                                 <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
                                 <Link underline="hover" key="3" color="inherit" href="/occupant/payment/">Payments</Link>,
-                                <Typography key="4" color="text.primary">View</Typography>
+                                <Link underline="hover" key="3" color="inherit" href="/">View</Link>,
+
                             </Breadcrumbs>
                         </Col>
                     </Row>
@@ -135,23 +139,23 @@ const OwnerPaymentDash = () => {
                                         <Col key={card.id}>
                                             <Box key={card.id} sx={{ minWidth: 275, maxWidth: 340 }}>
                                                 <Card variant="outlined" className={occupantDashboardPaymentStyles.cardStyles}>
-                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{minHeight: '160px'}}>
-                                                    
-                                                                <p>Card Number : {card.cardNumber}</p>
-                                                                <p>Expire Date : {card.exNumber}</p>
-                                                                <p>CVV : {card.cvv}</p>
-                                                            
+                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ minHeight: '160px' }}>
+
+                                                        <p>Card Number : {card.cardNumber}</p>
+                                                        <p>Expire Date : {card.exNumber}</p>
+                                                        <p>CVV : {card.cvv}</p>
+
                                                         {isHovered && (
                                                             <div key={card.id}>
-                                                                <button onClick={handleUpdate}>Update</button>
+                                                                <button onClick={handleClickOpen}>Update</button>
                                                                 <button onClick={() => handleRemove(card.id)}>Remove</button>
                                                             </div>
-                                                        )} 
+                                                        )}
                                                     </div>
                                                 </Card>
                                             </Box>
                                         </Col>
-                                        
+
                                     ))}
                                 </Row>
                             ) : (
@@ -163,6 +167,28 @@ const OwnerPaymentDash = () => {
                             )}
                         </Col>
                     </Row>
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Subscribe</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                To subscribe to this website, please enter your email address here. We
+                                will send updates occasionally.
+                            </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="name"
+                                label="Email Address"
+                                type="email"
+                                fullWidth
+                                variant="standard"
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancel</Button>
+                            <Button onClick={handleClose}>Subscribe</Button>
+                        </DialogActions>
+                    </Dialog>
 
                     <TableContainer component={Paper} style={{ marginTop: '20px' }}>
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -185,7 +211,7 @@ const OwnerPaymentDash = () => {
                                             </StyledTableCell>
                                             <StyledTableCell align="right" >{payment.amount}</StyledTableCell>
                                             <StyledTableCell align="right" >{payment.description}</StyledTableCell>
-                                            
+
                                             <StyledTableCell align="right">{payment.date}</StyledTableCell>
                                             <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
                                         </StyledTableRow>
