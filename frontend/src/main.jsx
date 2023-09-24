@@ -49,14 +49,15 @@ import MakeInitialPaymentPage from './pages/makeInitialPaymentPage.jsx';
 import OwnerPaymentDash from './pages/ownerPaymentsDashboard.jsx';
 import MakeMonthlyPaymentPage from './pages/makeMonthlyPaymentPage.jsx'
 
-import ReserveBoardingPage from './pages/reserveBoardingPage.jsx';
+import ReserveHostelPage from './pages/reserveHostelPage.jsx';
+import ReserveAnnexPage from './pages/reserveAnnexPage.jsx';
 import ViewAllReservationsPage from './pages/viewAllReservationsPage.jsx';
 import ConfirmReservationPage from './pages/confirmReservationPage.jsx';
 import PendingReservarionPage from './pages/pendingReservationsPage.jsx';
 import MyReservationPage from './pages/myReservationPage.jsx';
 
 import OrderForm from './pages/orderForm.jsx'
-import OrderPage from './pages/OrderPage';
+import OrderPage from './pages/OrderPage.jsx';
 import OrderList from './pages/OrderList.jsx'
 
 import PrivateRoute from './components/privateRoute';
@@ -97,8 +98,8 @@ const router = createBrowserRouter(
           <Route path='/owner/boardings/:boardingId/edit' element={ <EditBoardingPage /> } />
           <Route path='/owner/boardings/:boardingId/:boardingName/rooms/add' element={ <AddBoardingRoomPage /> } />
 
-          <Route path='/owner/reservations/ViewReservation:boardingId' element={<ViewAllReservationsPage />} />
-          <Route path='/owner/reservations/pending' element={<PendingReservarionPage />} />
+          <Route path='/owner/reservations/ViewReservation/:bId' element={<ViewAllReservationsPage />} />
+          <Route path='/owner/reservations/pending/:bId' element={<PendingReservarionPage />} />
 
           <Route path='/owner/payment/' element={<OwnerPaymentDash />} />
 
@@ -129,7 +130,8 @@ const router = createBrowserRouter(
           <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
           <Route path='/occupant/makeMonthlyPayment/:bId' element={<MakeMonthlyPaymentPage />} />
 
-          <Route path='/occupant/reservations/reserve' element={<ReserveBoardingPage />} />
+          <Route path='/occupant/reservations/reserve/:bId/:rId' element={<ReserveHostelPage />} />
+          <Route path='/occupant/reservations/reserve/:bId/' element={<ReserveAnnexPage />} />
           <Route path='/occupant/reservations/confirm/' element={<ConfirmReservationPage />} />
           <Route path='/occupant/reservations/myReservation/' element={<MyReservationPage />} />
           
