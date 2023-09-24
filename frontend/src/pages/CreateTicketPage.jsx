@@ -169,7 +169,7 @@ const CreateTicket = () => {
                                                     </Col>
                                                 </Row>
                                                 <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
-                                                    <Col lg={3} xs={6}><label htmlFor="image" className={CreateTicketStyles.lbl}>Add Image</label></Col>
+                                                    <Col lg={3} xs={6}><label htmlFor="image" className={CreateTicketStyles.lbl}>Add Attachment</label></Col>
                                                     <Col lg={9} xs={6} className='mt-3'>
                                                         <Form.Group controlId="formFileMultiple" className="mb-3" style={{maxWidth:'35%'}}>
                                                             <Form.Control type="file" onChange={(e) => setAttachment(e.target.files[0])} />

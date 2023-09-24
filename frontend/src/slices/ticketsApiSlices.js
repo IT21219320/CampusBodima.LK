@@ -58,10 +58,19 @@ export const ticketsApiSlice = apiSlice.injectEndpoints({
 
         updateTicket:builder.mutation({
             query: (data) => ({
-                url: `${TICKETS_URL}/updateTicket`,
+                url: `${TICKETS_URL}/update`,
                 method:'PUT',
                 body: data,
             }), 
+        }),
+
+        //owner
+        getOwnerTickets: builder.mutation({
+            query: (data) => ({
+                url: `${TICKETS_URL}/getOwnerTickets`,
+                method: 'POST',
+                body: data,
+            }),
         }),
 
     }),
@@ -75,5 +84,6 @@ export const{
     useReplyTicketMutation,
     useDeleteTicketMutation,
     useUpdateTicketMutation,
+    useGetOwnerTicketsMutation,
     useSearchTicketMutation,
 } = ticketsApiSlice
