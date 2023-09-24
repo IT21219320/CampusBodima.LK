@@ -31,7 +31,7 @@ const utilitySchema = mongoose.Schema ({
         type: [String] , 
         required: true,
     },
-    occupantID:{
+    occupant:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Reservation',
         required: false,

@@ -19,21 +19,35 @@ import {RiDeleteBinLine} from 'react-icons/ri'
 import { BrowserUpdated as BrowserUpdatedIcon } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from "@emotion/react";
+import DeleteOrder from "../pages/DeleteOrder";
 
 const OrderList = () =>{
 
     const theme = useTheme();
 
     const [product, setOrder] = useState([]);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+  
     //const [page, setPage] = useState(0);
     //const [category, setCategory] = useState('all');
     //const [description, setDescription] = useState('');
     //const [rating, setRating] = useState(0);
 
     //const [search, setSearch] = useState('');
-    
-
-
+    const openDeleteModal = (order) => {
+        setSelectedOrder(order);
+        setShowDeleteModal(true);
+      };
+    const closeDeleteModal = () => {
+        setSelectedOrder(null);
+        setShowDeleteModal(false);
+      };
+    const handleDeleteSuccess = () => {
+        // Reload the order data or update the UI as needed
+       loadOrderData();
+       closeDeleteModal();
+      };
     const { userInfo } = useSelector((state) => state.auth);
 
     
@@ -88,37 +102,13 @@ const OrderList = () =>{
                             </Card>
                         </Col>
                     </Row>
-                    {/*<Row>
-                        <Col>
-                            <Row>
-                                <Col lg={6} xs={12}>
-                                    <Paper
-                                        component="form"
-                                        sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
-                                        style={{background:'#e3e7ea8f'}}
-                                    >
-                                        <InputBase
-                                            sx={{ ml: 1, flex: 1 }}
-                                            placeholder="Search Feedbacks" 
-                                            onChange={ (event) => setSearch(event.target.value)} 
-                                        />
-                                        <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-                                            <Search />
-                                        </IconButton>
-                                    </Paper>
-                                </Col>
-                                <Col lg={6} xs={12} style={{textAlign:'right'}}>
-                                    <Button variant="contained" onClick={() => navigate('/occupant/feedback/create')}>New Feedback</Button>
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>*/}
                    
                     <Row>
                         <Col>
                             <Table striped bordered hover className={occupantFeedbackStyles.table}>
                                 <thead>
                                         <tr style={{textAlign:'center'}}>
+                                            <th>Order id</th>
                                             <th>Order Number</th>
                                             <th>Product</th>
                                             <th>Food Type</th>
@@ -134,27 +124,23 @@ const OrderList = () =>{
                                             <td colSpan={3}><CircularProgress /></td>
                                         </tr>
                                     ) : product && product.length > 0 ? (
-                                      product.map((product, index) => (
+                                      product.map((order, index) => (
                                             <tr key={index}>
-                                                <td>{product.orderNo}</td>
-                                                <td>{product.product}</td>
-                                                <td>{product.foodType}</td>
-                                                <td>{product.quantity}</td>
-                                                <td>{product.price}</td>
-                                                <td>{product.total}</td>
+                                                <td>{order._id}</td>
+                                                <td>{order.orderNo}</td>
+                                                <td>{order.product}</td>
+                                                <td>{order.foodType}</td>
+                                                <td>{order.quantity}</td>
+                                                <td>{order.price}</td>
+                                                <td>{order.total}</td>
                                                 {/* Render additional feedback data as needed */}
                                                 <td > 
-                                                    
-                                                        <Button  style={{ background: ' blue', color: 'black', marginRight: '10px' }}>
-                                                        <BrowserUpdatedIcon /> Update
-                                                        </Button>
-                                                    
-                                                        <Button  
-                                                        style={{ background: 'red',color: 'black' }}
-                                                        
-                                                        >
-                                                        <DeleteIcon /> Delete
-                                                        </Button>
+                                                    <Button
+                                                    style={{ background: 'red', color: 'black' }}
+                                                    onClick={() => openDeleteModal(order)}
+                                                    >
+                                                    <DeleteIcon /> Delete
+                                                    </Button>
                                                  </td> 
                                 
                                             </tr>
@@ -166,6 +152,13 @@ const OrderList = () =>{
                                         </tr>
                                     )}
                                 </tbody>
+                                {selectedOrder && (
+                                    <DeleteOrder
+                                    order={selectedOrder}
+                                    onClose={closeDeleteModal}
+                                    onDeleteSuccess={handleDeleteSuccess}
+                                    />
+                                )}
                             </Table>
                         </Col>
                     </Row>

@@ -20,14 +20,14 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
     }),
     updateOrder: builder.mutation({
       query: (data) => ({
-        url: `${ORDER_URL}/update/${data.id}`, // Add order ID here
+        url: `${ORDER_URL}/update/${data.id}`,
         method: "PUT",
         body: data,
       }),
     }),
     deleteOrder: builder.mutation({
       query: (data) => ({
-        url: `${ORDER_URL}/delete/${data.id}`, // Add order ID here
+        url: `${ORDER_URL}/delete/${data._id}`, 
         method: "DELETE",
       }),
     }),

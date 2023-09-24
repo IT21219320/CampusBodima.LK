@@ -72,6 +72,8 @@ const getUserTickets = asyncHandler(async (req,res) => {
     const endDate = new Date(req.body.endDate);
     const date = req.body.date;
     const search = req.body.search;
+    const sortColumn = req.body.sortColumn;
+    const order = req.body.order;
 
     const skip = (page) * pageSize;
     
@@ -95,6 +97,7 @@ const getUserTickets = asyncHandler(async (req,res) => {
             ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
             subject: { $regex: search, $options: "i" } 
         })
+        .collation({locale: "en"}).sort({ [sortColumn]: order})
         .skip(skip)
         .limit(pageSize);
 
@@ -255,13 +258,11 @@ const updateStatus = asyncHandler(async (req, res) => {
 const updateTicket = asyncHandler(async (req,res) => {
     const {ticketId,subject,category,subCategory,description,status,attachment,replyTktId } = req.body;
 
-    let ticket = await Ticket.findById(ticketId).populate('reply'); 
-    let reply = JSON.parse(JSON.stringify(ticket)).reply;
-
+    let ticket = await Ticket.findById(ticketId); 
     if (ticket) {
         if(ticketId == replyTktId){
             ticket = await Ticket.findOne({_id:ticketId});
-
+            
             ticket.subject = subject || ticket.subject;
             ticket.category = category || ticket.category;
             ticket.subCategory = subCategory || ticket.subCategory;
@@ -271,20 +272,22 @@ const updateTicket = asyncHandler(async (req,res) => {
             ticket = await ticket.save();
         }
         else{
-            for(let i = 0; i < reply.length; i++){
-                if(reply[i]._id == replyTktId){
-                    reply.splice(i, 1);
+            for(let i = 0; i < ticket.reply.length; i++){
+                if(ticket.reply[i]._id == replyTktId){
+                    ticket.reply[i].subject = subject || ticket.reply[i].subject;
+                    ticket.reply[i].category = category || ticket.reply[i].category;
+                    ticket.reply[i].subCategory = subCategory || ticket.reply[i].subCategory;
+                    ticket.reply[i].description = description || ticket.reply[i].description;
+                    ticket.reply[i].status = status || ticket.reply[i].status;
+                    ticket.reply[i].attachment = attachment || ticket.reply[i].attachment;
+                    
+                    ticket = await ticket.save();
                 }
             }
-            ticket.reply = reply;
-
-            ticket.reply.subject = subject || ticket.reply.subject;
-            ticket.reply.category = category || ticket.reply.category;
-            ticket.reply.subCategory = subCategory || ticket.reply.subCategory;
-            ticket.reply.description = description || ticket.reply.description;
-            ticket.reply.status = status || ticket.reply.status;
-            ticket.reply.attachment = attachment || ticket.reply.attachment;
-            ticket = await ticket.reply.save();
+            console.log(ticketId);
+            console.log(description);
+            console.log(replyTktId);
+            
         }
         res.status(200).json({ticket});
     } else {
@@ -301,22 +304,20 @@ const deleteTicket = asyncHandler(async (req,res) => {
 
     const {ticketId, replyTktId } = req.params;
 
-    let ticket = await Ticket.findById(ticketId).populate('reply'); 
-    let reply = JSON.parse(JSON.stringify(ticket)).reply;
+    let ticket = await Ticket.findById(ticketId);
+    
 
     if (ticket) {
         if(ticketId == replyTktId){
             ticket = await Ticket.findOneAndDelete({_id:ticketId});
         }
         else{
-            for(let i = 0; i < reply.length; i++){
-                if(reply[i]._id == replyTktId){
-                    reply.splice(i, 1);
+            for(let i = 0; i < ticket.reply.length; i++){
+                if(ticket.reply[i]._id == replyTktId){
+                    ticket.reply.splice(i, 1);
                 }
             }
-            ticket.reply = reply;
 
-            console.log(ticket);
             ticket = await ticket.save();
         }
         res.status(200).json({ticket});
@@ -329,7 +330,7 @@ const deleteTicket = asyncHandler(async (req,res) => {
 
 //owner
 
-//getTicket by ownerId   oonwert ta adala tiket tika
+//getTicket by ownerId   ownert ta adala tiket tika
 
 const getOwnerTickets = asyncHandler(async (req,res) => {
     const id = req.body.id;
@@ -358,7 +359,7 @@ const getOwnerTickets = asyncHandler(async (req,res) => {
 
     try{
         const tickets = await Ticket.find({
-            'senderId._id': id,
+            'recieverId._id': id,
             ...(category !== 'all' ? { category } : {}),
             ...(subCategory !== 'all' ? { subCategory } : {}),
             ...(status !== 'all' ? { status } : {}),
@@ -388,7 +389,8 @@ export { createTicket,
         updateTicket,
         deleteTicket,
         updateStatus,
-        replyTicket,
+        replyTicket, //occupant controllers 
+        getOwnerTickets,
         search
         }
 

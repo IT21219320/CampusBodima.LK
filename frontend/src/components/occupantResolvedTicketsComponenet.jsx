@@ -25,6 +25,9 @@ const OccupantResolvedTickets = ({search, activeTab}) =>{
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [date, setDate] = useState('all');
+    const [sortBy, setSortBy] = useState('updatedAtAsc');  // value of drop down
+    const [sortColumn, setSortColumn] = useState('updatedAt'); // actual sort column
+    const [order, setOrder] = useState(1); 
     const [newSearch, setNewSearch] = useState('');
 
     const TimeAgo = ( date ) => {
@@ -42,7 +45,7 @@ const OccupantResolvedTickets = ({search, activeTab}) =>{
     
     const loadData = async () => {
         try{
-            const res = await getUserTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status:"Resolved", startDate, endDate, date, search, activeTab} ).unwrap();
+            const res = await getUserTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status:"Resolved", startDate, endDate, date, search, activeTab,sortColumn, order} ).unwrap();
             setTickets(res.tickets);
             setTotalRows(res.totalRows);
         } catch(err){
@@ -65,7 +68,7 @@ const OccupantResolvedTickets = ({search, activeTab}) =>{
             loadData();
         }*/
 
-    },[page,rowsPerPage,category, subCategory, status, startDate, endDate, date, search, activeTab]);  //when the values that are inside the box brackets change,each time loadData function runs
+    },[page,rowsPerPage,category, subCategory, status, startDate, endDate, date, search, activeTab,sortColumn, order]);  //when the values that are inside the box brackets change,each time loadData function runs
 
     const handleDateRangeSelect = (ranges) =>{
         console.log(ranges);
@@ -107,6 +110,28 @@ const OccupantResolvedTickets = ({search, activeTab}) =>{
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
    }
+
+   const handleSort = (e) => {
+    const column = e.target.value;
+    setSortBy(column)
+    
+    if(column == 'updatedAtAsc') {
+        setSortColumn('updatedAt');
+        setOrder(1);
+    }    
+    else if(column == 'updatedAtDesc') {
+        setSortColumn('updatedAt');
+        setOrder(-1);
+    }    
+    else if(column == 'subjectAsc') {
+        setSortColumn('subject');
+        setOrder(1);
+    }    
+    else if(column == 'subjectDesc') {
+        setSortColumn('subject');
+        setOrder(-1);
+    }     
+}
 
     return(
         <> 
@@ -189,6 +214,24 @@ const OccupantResolvedTickets = ({search, activeTab}) =>{
                         </FormControl>
                     </Box>                               
                 </Col>
+                <Col>
+                    <Box sx={{ minWidth: 120, minHeight:50 }}>
+                        <FormControl fullWidth>
+                            <InputLabel>Sort By</InputLabel>
+                            <Select
+                                label="Sort By"
+                                value={sortBy}
+                                onChange={handleSort}
+                            >
+                                
+                                <MenuItem value={'updatedAtAsc'} style={{marginBottom:'10px'}}>Date (Asc)</MenuItem>
+                                <MenuItem value={'updatedAtDesc'} style={{marginBottom:'10px'}}>Date (Desc)</MenuItem>
+                                <MenuItem value={'subjectAsc'} style={{marginBottom:'10px'}}>Subject (Asc)</MenuItem>
+                                <MenuItem value={'subjectDesc'} style={{marginBottom:'10px'}}>Subject (Desc)</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>                               
+                </Col>
             </Row>
 
             <Row>
@@ -214,9 +257,9 @@ const OccupantResolvedTickets = ({search, activeTab}) =>{
                                                     </Col>
                                                 </Row>
                                                 <Row style={{fontSize:'small', fontWeight:'200 !important', fontStyle:'normal', color:'dimgray', marginTop:'5px'}}>
-                                                    <Col lg={3}>{new Date(ticket.createdAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', /*hour: '2-digit', minute: '2-digit', second: '2-digit' */})}</Col>
+                                                    <Col lg={3}>{new Date(ticket.updatedAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', /*hour: '2-digit', minute: '2-digit', second: '2-digit' */})}</Col>
                                                     <Col lg={3}><GridViewRounded fontSize="small" />&nbsp;{ticket.category}</Col>
-                                                    <Col lg={3}>{TimeAgo(new Date(ticket.createdAt))}</Col>
+                                                    <Col lg={3}>{TimeAgo(new Date(ticket.updatedAt))}</Col>
                                                 </Row>
                                             </td>
                                             <td>    

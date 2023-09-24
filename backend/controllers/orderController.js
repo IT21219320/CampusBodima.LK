@@ -101,7 +101,7 @@ const createOrder = async (req, res) => {
 const getOrder = asyncHandler(async (req, res) => {
   const userId = req.body.occupantId;
    
-  console.log(userId)
+  
   try {
       const order = await Order.find({occupant:userId});
 
@@ -140,19 +140,28 @@ const updateOrder = async (req, res) => {
 };
 
 // Delete a specific order by its ID
-const deleteOrder = async (req, res) => {
+const deleteOrder = asyncHandler(async (req, res) => {
+  const orderId = req.params._id;
+  console.log(orderId);
   try {
-    const order = await Order.findByIdAndRemove(req.params.id);
+    const order = await Order.findById(orderId);
 
     if (!order) {
-      return res.status(404).json({ error: "Order not found" });
+      res.status(404);
+      throw new Error("Order not found");
     }
 
-    res.status(204).send(); // No content response
+    await Order.deleteOne({ _id:orderId });
+    res.status(200).json({
+      message: "Order deleted successfully"
+    });
   } catch (error) {
-    res.status(500).json({ error: "Could not delete the order" });
+    res.status(400).json({
+      message: "Failed to delete Order",
+      error: error.message
+    });
   }
-};
+});
 export{
   createOrder,
   getOrder,

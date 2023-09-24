@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Utility from '../models/utilityModel.js';
 import Boarding from '../models/boardingModel.js';
-import Occupants from '../models/reservationModel.js';
+import User from '../models/userModel.js';
 import Reservation from '../models/reservationModel.js';
 
 
@@ -17,9 +17,11 @@ const addUtilities = asyncHandler(async (req, res) => {
         date,
         description,
         utilityImage,
+        occupantID,
      } = req.body;
 
     const boarding = await Boarding.findById(boardingId);
+    const occupant = await User.findById(occupantID)
 
     const utility = await Utility.create({
        utilityType,
@@ -28,6 +30,7 @@ const addUtilities = asyncHandler(async (req, res) => {
        description,
        boarding,
        utilityImage,
+       occupant,
     });
 
     if(utility){
@@ -205,7 +208,7 @@ const deleteUtility = asyncHandler(async (req, res) => {
 const getBoarding = asyncHandler(async (req, res) => {
     const ownerId = req.params.ownerId;
 
-    const boardings = await Boarding.find({owner:ownerId});
+    const boardings = await Boarding.find({owner: ownerId});
     
     if(boardings){
         res.status(200).json({
@@ -241,18 +244,31 @@ const getUtilityBoarding = asyncHandler(async (req, res) => {
 const getOccupant = asyncHandler(async (req, res) => {
     const boardingId = req.params.boardingId;
 
-    const occupant = await users.find({boardingId:boardingId,userType:"occupant"});
-    
-    if(occupant){
-        res.status(200).json({
-           occupant,
-        })
+    // Step 1: Get occupantIDs from Reservation table
+    const reservations = await Reservation.find({ boardingId });
+
+    if (!reservations || reservations.length === 0) {
+        res.status(400).json({ message: 'No reservations found for this boardingId' });
+        return;
     }
-    else{
-        res.status(400);
-        throw new Error("No occupants")
+
+    // Extract occupantIDs from reservations
+    const occupantIDs = reservations.map((reservation) => reservation.occupantID);
+
+    // Step 2: Get occupants' names from User table
+    const occupants = await User.find({ _id: { $in: occupantIDs } }, 'firstName');
+
+    if (!occupants || occupants.length === 0) {
+        res.status(400).json({ message: 'No occupants found for the given occupantIDs' });
+        return;
     }
+
+    res.status(200).json({
+        occupants,
+    });
 });
+
+export default getOccupant;
 // @desc    Get all Boardings of a particular owner if they selected facilities
 // route    GET /api/utilities/owner/:ownerId/:facilities
 // @access  Private - Owner
