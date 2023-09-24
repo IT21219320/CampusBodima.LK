@@ -23,7 +23,7 @@ const ReservationForm = () => {
     const [duration, setDuration] = useState('');
     const [paymentType, setPaymentType] = useState('');
     const { bId, rId } = useParams();
-console.log()
+    console.log()
     const { userInfo } = useSelector((state) => state.auth);
     const navigate = useNavigate();
     const [reserveRoom] = useReserveRoomMutation()
