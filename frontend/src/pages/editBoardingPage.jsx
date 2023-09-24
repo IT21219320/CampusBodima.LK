@@ -351,7 +351,7 @@ const EditBoardingPage = () => {
                                                             </Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="Boarding Name" value={boardingName} onChange={ (e) => setBoardingName(e.target.value)} required style={{width:'95%'}}/>
+                                                            <Form.Control type="text" placeholder="Boarding Name" value={boardingName} onChange={ (e) => setBoardingName(e.target.value.toUpperCase())} required style={{width:'95%'}}/>
                                                         </Col>
                                                     </Row>
                                                     <Row style={{marginTop:'10px'}}>
@@ -641,7 +641,7 @@ const EditBoardingPage = () => {
                                                             </Col>
                                                             <Col style={{height:'100%'}} xs={12} md={8}>
                                                                 <InputGroup style={{width:'95%'}}>
-                                                                    <Form.Control type="number" min={0} value={keyMoney} onChange={(e) => setKeyMoney(e.target.value)} required />
+                                                                    <Form.Control type="number" min={0} mac={12} value={keyMoney} onChange={(e) => setKeyMoney(e.target.value)} required />
                                                                     <InputGroup.Text>Month{keyMoney>1 ? 's' : ''}</InputGroup.Text>
                                                                 </InputGroup>
                                                             </Col>

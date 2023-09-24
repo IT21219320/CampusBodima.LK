@@ -219,8 +219,7 @@ const getAllBoardings = asyncHandler(async (req, res) => {
     const noOfRooms = req.body.noOfRooms;
     const boardingType = req.body.boardingType;
     const gender = req.body.gender;
-    const startRent = req.body.startRent;
-    const endRent = req.body.endRent;
+    const rentRange = req.body.rentRange;
     const rent = req.body.rent;
     const startDate = new Date(req.body.startDate);
     const endDate = new Date(req.body.endDate);
@@ -229,6 +228,10 @@ const getAllBoardings = asyncHandler(async (req, res) => {
     const sortBy = req.body.sortBy;
     const order = req.body.order;
 
+    const startRent = rentRange[0];
+    const endRent = rentRange[1];
+    
+    endDate.setHours(23, 59, 59, 999);
 
     const skipCount = (page) * pageSize;
     
@@ -297,7 +300,7 @@ const getAllBoardings = asyncHandler(async (req, res) => {
             populate: {
                 path: 'occupant', 
             },
-        }).sort({ [sortBy]: order }).skip(skipCount).limit(pageSize);
+        }).collation({locale: "en"}).sort({ [sortBy]: order }).skip(skipCount).limit(pageSize);
 
     }
     else{
@@ -306,6 +309,9 @@ const getAllBoardings = asyncHandler(async (req, res) => {
             ...(status !== 'All' ? { status } : {}),
             ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), 
         });
+        const roomConditions = rooms.map(room => ({ 'room.rent': room.rent }));
+
+        console.log(roomConditions);
 
         totalRows = await Boarding.countDocuments({
             boardingType,
@@ -313,7 +319,7 @@ const getAllBoardings = asyncHandler(async (req, res) => {
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
-            ...(rent !== 'All' ? { room: rooms } : {}), //gte is greater than or eqal and lte is less than or equal
+            //...(rent !== 'All' ? (roomConditions.length>0 ? { $and: [{$or: roomConditions }]} : {}) : {}), //gte is greater than or eqal and lte is less than or equal
             ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(gender !== 'All' ? { 
                 $and: [{
@@ -336,13 +342,14 @@ const getAllBoardings = asyncHandler(async (req, res) => {
             }), 
         });
 
+
         boardings = await Boarding.find({
             boardingType,
             ...(status !== 'All' ? { status } : {}),
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
-            ...(rent !== 'All' ? { room: rooms } : {}), //gte is greater than or eqal and lte is less than or equal
+            //...(rent !== 'All' ? (roomConditions.length>0 ? { $or: roomConditions } : {}) : {}), //gte is greater than or eqal and lte is less than or equal
             ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(gender !== 'All' ? { 
                 $and: [{
@@ -368,7 +375,7 @@ const getAllBoardings = asyncHandler(async (req, res) => {
             populate: {
                 path: 'occupant', 
             },
-        }).sort({ [sortBy]: order }).skip(skipCount).limit(pageSize);
+        }).collation({locale: "en"}).sort({ [sortBy]: order }).skip(skipCount).limit(pageSize);
 
     }
     

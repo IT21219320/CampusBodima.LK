@@ -25,10 +25,10 @@ const roomSchema = mongoose.Schema({
         required: true
     },
     keyMoney: {
-        type: String
+        type: Number
     },
     rent: {
-        type: String
+        type: Number
     },
     description: {
         type: String

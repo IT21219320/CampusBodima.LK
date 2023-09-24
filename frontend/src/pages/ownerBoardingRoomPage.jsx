@@ -52,6 +52,10 @@ const OwnerBoardingRoomPage = () => {
             setImgLoading(true);
             const res = await getOwnerBoardingsById( boardingId ).unwrap();
 
+            if(res.boarding.boardingType == "Annex"){
+                navigate(`/owner/boardings/${boardingId}/occupants`)
+            }
+
             // Create an array of promises for image retrieval
                 const updatedImages = res.boarding.boardingImages.map(async (image, index) => {
                     try {

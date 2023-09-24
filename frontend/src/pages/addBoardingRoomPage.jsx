@@ -231,7 +231,7 @@ const AddBoardingRoomPage = () => {
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
                                                             <InputGroup style={{width:'95%'}}>
-                                                                <Form.Control type="number" min={0} value={keyMoney} onChange={(e) => setKeyMoney(e.target.value)} required />
+                                                                <Form.Control type="number" min={0} max={12} value={keyMoney} onChange={(e) => setKeyMoney(e.target.value)} required />
                                                                 <InputGroup.Text>Month{keyMoney>1 ? 's' : ''}</InputGroup.Text>
                                                             </InputGroup>
                                                         </Col>

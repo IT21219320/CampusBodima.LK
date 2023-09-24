@@ -52,10 +52,10 @@ const boardingSchema = mongoose.Schema({
         type: [String]
     },
     keyMoney: {
-        type: String
+        type: Number
     },
     rent: {
-        type: String
+        type: Number
     },
     description: {
         type: String
