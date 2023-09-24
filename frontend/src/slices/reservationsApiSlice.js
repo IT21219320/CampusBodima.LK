@@ -30,8 +30,9 @@ export const reservationApiSlice = apiSlice.injectEndpoints({
 
         getBoardingReservations: builder.mutation({
             query: (data) => ({
-                url: `${RESERVATION_URL}/veiwReservations/${data}`,
-                method: 'GET',
+                url: `${RESERVATION_URL}/veiwReservations`,
+                method: 'POST',
+                body: data,
             }),
         }),
 
