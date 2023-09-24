@@ -34,9 +34,12 @@ const makePayment = expressAsyncHandler(async(req,res) =>{
   const boarding = await Boarding.findById(bId);
   const oUser = await User.findById(boarding.owner);
   const reserve = await reservations.findOne({occupantID: userInfo_id });
-  const room = null
+  
+  let room;
   if(reserve){
-    room = await Room.findOne(reserve.roomID);
+    console.log(reserve.roomID._id)
+    room = await Room.findById(reserve.roomID);
+    console.log(room)
   }
   
   if(boarding.boardingType === "Annex"){
@@ -55,7 +58,7 @@ const makePayment = expressAsyncHandler(async(req,res) =>{
         });
     }
   }
-  else if(boarding.boardingType === "Hostel" && reserve){
+  else if(boarding.boardingType === "Hostel"){
     console.log(room)
     const response = await payment.create({
       occupant: user,
