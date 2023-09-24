@@ -40,7 +40,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-const OccupantPaymentDash = () => {
+const OwnerPaymentDash = () => {
     const { userInfo } = useSelector((state) => state.auth);
 
     const [cards, setCards] = useState([]);
@@ -204,4 +204,4 @@ const OccupantPaymentDash = () => {
     )
 }
 
-export default OccupantPaymentDash
+export default OwnerPaymentDash

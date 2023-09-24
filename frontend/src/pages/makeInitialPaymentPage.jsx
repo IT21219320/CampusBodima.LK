@@ -1,51 +1,16 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {Row, Col} from "react-bootstrap";
-import { Elements } from "@stripe/react-stripe-js";
-import CheckoutForm from "../components/checkoutForm";
-import paymentForm from "../components/paymentForm";
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import { loadStripe } from "@stripe/stripe-js";
 import paymentScreenStyles from "../Styles/paymentScreen.module.css";
 import PaymentForm from "../components/paymentForm.jsx";
 
 function MakeInitialPaymentPage() {
-  const [stripePromise, setStripePromise] = useState('');
-  const [clientSecret, setClientSecret] = useState("");
-
-  const { userInfo } = useSelector((state) => state.auth);
 
   const [activeStep, setActiveStep] = useState(2);
-  
-  useEffect(() => {
 
-    fetch("/api/payments/config")
-      .then(async (r) => {
-        const { publishableKey } = await r.json();
-        setStripePromise(loadStripe(publishableKey));
-      });
-
-
-    const id = userInfo._id
-    const reqData = {userID: id}
-    fetch("/api/payments/create-payment-intent", {
-      method:"POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(reqData),
-    })
-    .then((res) => res.json())
-    .then(({clientSecret}) =>setClientSecret(clientSecret));
-
-  }, []);
-  /*{clientSecret && stripePromise && (
-    <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <CheckoutForm clientSecret={clientSecret}/>
-    </Elements>
-  )}*/
   return (
     <>
       <div style={{width:'100%'}}>
