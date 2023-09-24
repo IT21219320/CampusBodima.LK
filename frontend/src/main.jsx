@@ -35,6 +35,7 @@ import OwnerTicketsPage from './pages/ownerTicketsPage.jsx';
 import OccupantTicketThreadPage from './pages/occupantTicketThreadPage.jsx'
 import CreateTicketPage from './pages/createTicketPage.jsx';
 import UpdateMainTicketPage from './pages/occupantUpdateMainTicketPage.jsx';
+import OwnerTicketThreadPage from './pages/ownerTicketThreadPage.jsx';
 
 import AddUtilitiesPage from './pages/addUtilityPage.jsx';
 import AllUtilitiesPage from './pages/allUtilitiesPage.jsx';
@@ -110,6 +111,7 @@ const router = createBrowserRouter(
           <Route path='/owner/order/' element={<OrderPage />} />
 
           <Route path='/owner/ticket' element={<OwnerTicketsPage />} />
+          <Route path='/owner/ticket/:ticketId' element={<OwnerTicketThreadPage />} />
 
           <Route path='/owner/utility/' element={<AllUtilitiesPage />} />
           <Route path='/owner/utility/update/:boardingId/:utilityType/:utilityId' element={<UpdateUtilitiesPage />} />
