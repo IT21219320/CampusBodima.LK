@@ -62,10 +62,22 @@ const createOrder = async (req, res) => {
 
       total,
     } = req.body;
-
+    const productNames = {
+      '3': 'Fried Rice',
+      '6': 'Rice & Curry',
+      '12': 'Noodles',
+      '24': 'Hoppers',
+    };
+    
+    const foodTypeNames = {
+      '1': 'Fish',
+      '2': 'Chicken',
+      '7': 'Egg',
+      '5': 'Normal',
+    };
     const order = new Order({
-      product:product,
-      foodType:foodType,
+      product:productNames[product],
+      foodType:foodTypeNames[foodType],
       quantity:quantity,
       price:price,
       orderNo:orderNo,

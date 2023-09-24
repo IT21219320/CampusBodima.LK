@@ -75,7 +75,7 @@ const OrderList = () =>{
                             <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
                             <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
                             
-                            <Typography key="3" color="text.primary">Feedbacks</Typography>
+                            <Typography key="3" color="text.primary">My Orders</Typography>
                         </Breadcrumbs>
                     </Col>
                 </Row>

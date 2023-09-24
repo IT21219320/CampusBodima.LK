@@ -24,25 +24,25 @@ const OrderForm = () => {
 
   const priceData = {
     '3': {
-      '3': 400, // Fried Rice - Chicken
-      '6': 350, // Fried Rice - Fish
-      '12': 300, // Fried Rice - Egg
+      '2': 400, // Fried Rice - Chicken
+      '1': 350, // Fried Rice - Fish
+      '7': 300, // Fried Rice - Egg
     },
     '6': {
-      '3': 350, // Rice & Curry - Chicken
-      '6': 300, // Rice & Curry - Fish
-      '12': 300, // Rice & Curry - Egg
+      '2': 350, // Rice & Curry - Chicken
+      '1': 300, // Rice & Curry - Fish
+      '7': 300, // Rice & Curry - Egg
     },
     '12': {
-      '3': 350, // Noodles - Chicken
-      '12': 300, // Noodles - Egg
+      '2': 350, // Noodles - Chicken
+      '7': 300, // Noodles - Egg
     },
     '24': {
-      '3': 25, // Hoppers - Normal
-      '12': 80, // Hoppers - Egg
+      '5': 25, // Hoppers - Normal
+      '7': 80, // Hoppers - Egg
     },
   };
-
+  
   // Function to calculate price based on product and foodType
   const calculatePrice = () => {
     const selectedProduct = product;
@@ -73,28 +73,29 @@ const OrderForm = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const res= await createOrder({userInfo_id:userID,product:product,foodType:foodType,quantity:quantity,price:price,orderNo:orderNo,total:total})
-      console.log("value",res);
-      if(res){
-        toast.success('Order Submitted Successfully');
-        Navigate('occupant/profile');
-      }
-    } catch (err) {
-      toast.error(err.data?.message||err.error);
-    }
-
-    try {
       // Calculate the price
       const calculatedPrice = calculatePrice();
-
+  
       // Create the order with calculated price
-      const response = await createOrder(calculatedPrice ).unwrap();
-      console.log('Order created:', response);
-      // You can update your UI or perform other actions here
-    } catch (error) {
-      console.error('Error creating order:', error);
+      const response = await createOrder({
+        userInfo_id: userID,
+        product: product,
+        foodType: foodType,
+        quantity: quantity,
+        price: calculatedPrice, // Use calculatedPrice here
+        total: total,
+        occupantId:userID,
+      });
+      console.log("value", response);
+      if (response) {
+        toast.success('Order Submitted Successfully');
+        // Navigate('/occupant/profile'); // You might need to import and use a navigation function here
+      }
+    } catch (err) {
+      toast.error(err.data?.message || err.error);
     }
   };
+  
 
   const renderFoodTypeDropdown = () => {
     if (product === '3' || product === '6') {
@@ -111,9 +112,9 @@ const OrderForm = () => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value="3">Chicken</MenuItem>
-              <MenuItem value="6">Fish</MenuItem>
-              <MenuItem value="12">Egg</MenuItem>
+              <MenuItem value="2">Chicken</MenuItem>
+              <MenuItem value="1">Fish</MenuItem>
+              <MenuItem value="7">Egg</MenuItem>
             </Select>
           </FormControl>
         </Row>
@@ -132,8 +133,8 @@ const OrderForm = () => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value="3">Chicken</MenuItem>
-              <MenuItem value="12">Egg</MenuItem>
+              <MenuItem value="2">Chicken</MenuItem>
+              <MenuItem value="7">Egg</MenuItem>
             </Select>
           </FormControl>
         </Row>
@@ -152,8 +153,8 @@ const OrderForm = () => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value="3">Normal</MenuItem>
-              <MenuItem value="12">Egg</MenuItem>
+              <MenuItem value="5">Normal</MenuItem>
+              <MenuItem value="7">Egg</MenuItem>
             </Select>
           </FormControl>
         </Row>
