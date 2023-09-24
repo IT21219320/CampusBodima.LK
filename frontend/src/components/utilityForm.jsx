@@ -39,16 +39,19 @@ const AddUtilitiesPage = () =>{
     const [description, setDescription] = useState('');
     const [utilityImage,setUtilityImage] = useState([]);
     const [utilityPreviewImage, setUtilityPreviewImage] = useState([]);
+    const [occupantID,setOccupantId]= useState([]);
     const [selectedBoardingId, setSelectedBoardingId] = useState('');
     const [backDropOpen, setBackDropOpen] = useState(false);
-    const [occupantData, setOccupantData] = useState([]);
     const [selectedOccupant, setSelectedOccupant] = useState('');
+     
+    const [occupantData, setOccupantData] = useState([]);
+
 
     const navigate = useNavigate();
      
     const [addUtilities, {isLoading}] = useAddUtilitiesMutation(); 
     const [getUtilityBording, { isLoadings }] =useGetUtilityBoardingMutation();
-    const [getOccupant,{isLoadings2}]=useGetOccupantMutation();
+    const[getOccupant,{isLoading2}]=useGetOccupantMutation();
     const navigateTo = () => {
       
       navigate('/owner/utility/');
@@ -61,9 +64,6 @@ const AddUtilitiesPage = () =>{
             const data = userInfo._id;
             const res = await getUtilityBording( data ).unwrap();
             console.log('res.boardings:', res.boardings);
-            
-            
-            
             if (Array.isArray(res.boardings)) {
               const boardingData = res.boardings.map((boarding)=> ({
                 id: boarding._id,
@@ -79,20 +79,21 @@ const AddUtilitiesPage = () =>{
     };
     loadData();
 },[getUtilityBording, userInfo._id]);
+  
+   
 
-
-const handleBoardingNameChange =async (event) => {
+const handleBoardingNameChange = async (event) => {
+console.log(event.target.value);
+try {
+  const response = await getOccupant( event.target.value ).unwrap();
+  const occupantsData = response.occupants;
+  console.log(occupantsData);
+  setOccupantData(occupantsData);
   setSelectedBoardingId(event.target.value);
-
-  try {
-    // Make a request to fetch occupants based on the selected boarding ID
-    const response = await getOccupant(event.target.value).unwrap();
-    setOccupantData(response); // Set the fetched occupant data in state
-  } catch (error) {
-    console.error('Error fetching occupants:', error);
-    // Handle the error as needed
+  } catch (err) {
+    toast.error(err.data?.message || err.error);
   }
-};
+}
 
 
 const handleUtilityFormSubmit = async (event) => {
@@ -105,6 +106,7 @@ const handleUtilityFormSubmit = async (event) => {
     date,
     description,
     utilityImage,
+    occupantID:selectedOccupant,
   };
 
   try {
@@ -205,23 +207,34 @@ const removeImage = (imageToRemove) => {
                                                       </FormControl>
                                                </Col>
                                                <Col>
-                                                <FormControl sx={{ m: 1, width: 300 }}disabled={!selectedBoardingId} // Disable the dropdown if no boarding is selected
+                                               <Row>
+                                               <Typography variant="body2" color="textSecondary">
+                                                            {/* Comment: If adding a bill for only one occupant */}
+                                                            If adding a bill occupant:
+                                                          </Typography>
+                                               </Row>
+                                               <Row>
+                                               <FormControl
+                                                          sx={{ m: 1, width: 300 }}
+                                                          disabled={!selectedBoardingId}
                                                         >
-                                                  <InputLabel id="occupant-label">Select Occupant</InputLabel>
-                                                  <Select className={BillStyles.select}
-                                                    labelId="demo-simple-select-label"
-                                                    id="demo-simple-select"
-                                                    value={selectedOccupant}
-                                                    label="Occupant Name"
-                                                    onChange={(e) => setSelectedOccupant(e.target.value)}
-                                                  >
-                                                    {occupantData.map((occupant) => (
-                                                      <MenuItem key={occupant.id} value={occupant.id}>
-                                                        {occupant.name}
-                                                      </MenuItem>
-                                                    ))}
-                                                  </Select>
-                                                </FormControl>
+                                                          <InputLabel id="occupant-label">Select Occupant</InputLabel>
+                                                          <Select
+                                                            className={BillStyles.select}
+                                                            labelId="demo-simple-select-label"
+                                                            id="demo-simple-select"
+                                                            value={selectedOccupant}
+                                                            label="Occupant Name"
+                                                            onChange={(e) => setSelectedOccupant(e.target.value)}
+                                                          >
+                                                            {occupantData.map((occupant) => (
+                                                              <MenuItem key={occupant._id} value={occupant._id}>
+                                                                {occupant.firstName}
+                                                              </MenuItem>
+                                                            ))}
+                                                          </Select>
+                                                        </FormControl>
+                                                        </Row>
                                               </Col>
                                            </Row>
                           <Row className="mt-3" >

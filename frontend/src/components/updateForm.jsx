@@ -71,7 +71,7 @@ const UpdateUtilitiesPage = ({}) =>{
             setDescription(res.utility.description);
             setUtilityImages(res.utility.utilityImage);
             setBoardingNames(res.boarding.boardingName);
-            setUtilityImagesToDelete([]);
+           
           
              // Create an array of promises for image retrieval
                 const updatedImages = await Promise.all(res.utility.utilityImage.map(async (image, index) => {
@@ -152,7 +152,7 @@ const removeImage = (imageToRemove) => {
 
       // Update the state with the updated arrays
       setNewUtilityPreviewImages(updatedPreviewImages);
-      setUtilityImages(updatedImages);
+      setNewUtilityImage(updatedImages);
   }
   
 };
@@ -179,6 +179,7 @@ const handleUtilityFormSubmit = async (event) => {
           }
 
           let finalUtlityImages = utilityImages;
+
           if(newUtilityImage.length > 0){
               const uploadPromises = newUtilityImage.map(async (utilityImage) => {
                   const file =utilityImage;
@@ -206,7 +207,7 @@ const handleUtilityFormSubmit = async (event) => {
               // Filter out any null values from failed uploads
               const validImageNames = uploadedImageNames.filter((name) => name !== null);
 
-              finalUtlityImages = boardingNames.concat(validImageNames)
+              finalUtlityImages = utilityImages.concat(validImageNames)
           }
     
      const data = {
@@ -318,9 +319,9 @@ const handleUtilityFormSubmit = async (event) => {
                                                                         </Form.Group>
                                                                     :<></>}
                                                                     {utilityPreviewImage.length > 0 ?
-                                                                       utilityPreviewImage.map((utilityPreviewImage, index) => (
-                                                                            <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeOldImage(utilityPreviewImage)}>
-                                                                                <Image src={utilityPreviewImage} width={100} height={100} style={{cursor:'auto'}}/>
+                                                                       utilityPreviewImage.map((utilityPreviewImages, index) => (
+                                                                            <Badge key={index} color="error" badgeContent={<Close style={{fontSize:'xx-small'}}/>} style={{cursor: 'pointer', marginRight:'10px', marginBottom:'10px'}} onClick={() => removeOldImage(utilityPreviewImages)}>
+                                                                                <Image src={utilityPreviewImages} width={100} height={100} style={{cursor:'auto'}}/>
                                                                             </Badge>
                                                                         ))
                                                                     :<></>}
