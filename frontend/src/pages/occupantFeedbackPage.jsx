@@ -230,9 +230,9 @@ const OccupantFeedback = () => {
                       <tr key={index}>
                         <td>{feedback.category}</td>
                         <td>{feedback.description}</td>
-                        <td><Rating name="read-only" value={feedback.rating} readOnly /></td>
+                        <td><Rating name="read-only" value={parseInt(feedback.rating)} readOnly /></td>
                         <td>
-                        <Button type="button" loading={isLoading} onClick={() => navigate(`/occupant/feedback/update/${feedback._id}`)} className="mt-4 mb-4 me-3" style={{ float: 'right' }} variant="contained">
+                        <Button type="button" onClick={() => navigate(`/occupant/feedback/update/${feedback._id}`)} className="mt-4 mb-4 me-3" style={{ float: 'right' }} variant="contained">
                           <BrowserUpdatedIcon/>Update
                         </Button>
                         
