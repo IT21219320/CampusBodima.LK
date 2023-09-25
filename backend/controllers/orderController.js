@@ -123,25 +123,41 @@ const getOrder = asyncHandler(async (req, res) => {
 
 
 // Update a specific order by its ID
-const updateOrder = async (req, res) => {
-  try {
-    const order = await Order.findByIdAndUpdate(req.params._id, req.body, {
-      new: true,
+const updateOrder = asyncHandler(async (req, res) => {
+  const order = await Order.findOne({_id:req.body._id});    
+    if (order) {
+      //return res.status(404).json({ error: "Order not found" });
+      order.product = req.body.product||order.product;
+      order.foodType = req.body.foodType||order.foodType;
+      order.quantity = req.body.quantity||order.quantity;
+      order.price = req.body.price||order.price;
+      order.orderNo = req.body.orderNo||order.orderNo;
+      order.status = req.body.status||order.status;
+      order.date = req.body.date||order.date;
+      order.total = req.body.total||order.total;
+    
+      const updateOrder = await order.save();
+
+    res.status(200).json({
+      _id:updateOrder._id,
+      product:updateOrder.product,
+      foodType:updateOrder.foodType,
+      quantity:updateOrder.quantity,
+      price:updateOrder.price,
+      orderNo:updateOrder.orderNo,
+      status:updateOrder.status,
+      date:updateOrder.date,
+      total:updateOrder.total
     });
-
-    if (!order) {
-      return res.status(404).json({ error: "Order not found" });
-    }
-
-    res.status(200).json(order);
-  } catch (error) {
-    res.status(500).json({ error: "Could not update the order" });
-  }
-};
+    }else{
+      res.status(404);
+      throw new Error('Order not found');
+     }
+});
 
 // Delete a specific order by its ID
 const deleteOrder = asyncHandler(async (req, res) => {
-  const orderId = req.params._id;
+  const orderId = req.body._id;
   console.log(orderId);
   try {
     const order = await Order.findById(orderId);

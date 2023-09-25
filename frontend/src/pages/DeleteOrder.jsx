@@ -15,12 +15,13 @@ const DeleteOrder = ({ order, onClose, onDeleteSuccess }) => {
 
   const handleDelete = async () => {
     try {
-      await deleteOrder({ orderId: order._id }).unwrap();
+      await deleteOrder({ _id: order._id }).unwrap();
       console.log(_id)
+      toast.error("Failed to delete order. Please try again later.");
+    } catch (error) {
+      
       toast.success("Order deleted successfully.");
       onDeleteSuccess();
-    } catch (error) {
-      toast.error("Failed to delete order. Please try again later.");
     }
   };
 
