@@ -107,7 +107,7 @@ const SearchPage = () => {
                         <Col>
                             <Paper
                                 component="form"
-                                sx={{ p: '2px 4px', mb:'10px', display: 'flex', alignItems: 'center', width: 400 }}
+                                sx={{ p: '2px 4px', mb:'10px', mt:'20px', display: 'flex', alignItems: 'center', width: 400 }}
                             >
                                 <InputBase
                                     sx={{ ml: 1, pl:'10px', flex: 1 }}
