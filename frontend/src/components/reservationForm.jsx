@@ -39,8 +39,19 @@ const ReservationForm = () => {
         const userID = userInfo._id;
         const res = await reserveRoom({ Gender: gender, Duration: duration, userInfo_id: userID, BoardingId: bId, RoomID: rId }).unwrap();
         console.log(res)
+        if(res.message === "you have already reserved"){
+            window.alert("you have already reserved");
+            navigate(`/`);
+        }
+        else if(res.message === "genders are not matching"){
+            window.alert("you have already reserved");
+            navigate(`/`);
+        }else if(res.message === "problem in inserting"){
+            window.alert("you have already reserved");
+            navigate(`/`);
+        }
 
-        if (res) {
+        else {
             if (paymentType === "Online") {
                 navigate(`/occupant/makePayment/${bId}`);
             }else{

@@ -61,23 +61,20 @@ const reserveRoom = asyncHandler(async (req, res) => {
                             message: "inserted"
                         });
                     } else {
-                        res.status(400).json({
+                        res.status(200).json({
                             message : "problem in inserting",
                         });
-                        throw new Error('problem in inserting');
 
                     }
                 } else {
-                    res.status(404).json({
+                    res.status(200).json({
                         message : "genders are not matching",
                     });
-                    throw new Error('genders are not matching');
                 }
             } else {
-                res.status(404).json({
+                res.status(200).json({
                     message : "no beds are available",
                 });
-                throw new Error('no beds are available');
             }
 
 
@@ -102,36 +99,36 @@ const reserveRoom = asyncHandler(async (req, res) => {
                         await boarding.save();
 
                     } else {
-                        res.status(404).json({
+                        res.status(200).json({
                             message: "Boarding not found",
                         });
-                        throw new Error('Boarding not found');
+                        
                     }
 
 
-                    res.status(201).json({
+                    res.status(200).json({
                         message: "inserted to the reservations and inserted occupant to the annex"
                     });
 
                 } else {
-                    res.status(400).json({
+                    res.status(200).json({
                         message: "problem in inserting",
                     });
-                    throw new Error('problem in inserting');
+                    
                 }
             } else {
-                res.status(404).json({
+                res.status(200).json({
                     message: "genders are not matching",
                 });
-                throw new Error('genders are not matching');
+                
             }
         }
 
     } else {
-        res.status(404).json({
+        res.status(200).json({
             message : "you have already reserved",
         });
-        throw new Error('you have already reserved');
+        
     }
 
 
