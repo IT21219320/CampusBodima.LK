@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useSelector } from 'react-redux';
 import { useNavigate, Link as ReactLink } from 'react-router-dom';
 import Sidebar from '../components/sideBar';
-import { Breadcrumbs, Typography, Card, Button, CircularProgress, Box, Collapse, IconButton, Alert, FormControl, InputLabel, MenuItem, Select, Link } from "@mui/material";
+import { Breadcrumbs, Typography, Card, CircularProgress, Box, Collapse, IconButton, Alert, FormControl, InputLabel, MenuItem, Select, Link } from "@mui/material";
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Form } from 'react-bootstrap';
@@ -11,6 +11,7 @@ import { useGetPaymentByUserMutation } from "../slices/paymentApiSlice";
 import { async } from "@firebase/util";
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css"
 import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
@@ -46,6 +47,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
+const cardLabelsStyle = {
+    fontFamily: "Lucida Console"
+}
+
 const OccupantPaymentDash = () => {
     const { userInfo } = useSelector((state) => state.auth);
 
@@ -70,14 +75,6 @@ const OccupantPaymentDash = () => {
 
 
     const [openDAlert, setOpenDAlert] = useState(false);
-
-  const handleClickOpenDAlert = () => {
-    setOpen(true);
-  };
-
-  const handleCloseDAlert = () => {
-    setOpen(false);
-  };
 
 
     const handleClickOpen = (id) => {
@@ -170,7 +167,7 @@ const OccupantPaymentDash = () => {
                         <Col>
                             <Row style={{ marginTop: '20px' }}>
                                 <Col>
-                                    <h4>Saved cards</h4>
+                                    <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius:" 10px", color: "white", textAlign:"center"}}>Saved cards</h4>
                                 </Col>
                             </Row>
                             {cards.length > 0 ? (
@@ -178,18 +175,18 @@ const OccupantPaymentDash = () => {
                                     {cards.map((card) => (
 
                                         <Col key={card.id}>
-                                            <Box key={card.id} sx={{ minWidth: 275, maxWidth: 340 }}>
+                                            <Box key={card.id} sx={{ minWidth: 275, maxWidth: 340 }} className={occupantDashboardPaymentStyles.cardStyles2}>
                                                 <Card variant="outlined" className={occupantDashboardPaymentStyles.cardStyles}>
-                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ minHeight: '160px' }}>
+                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ minHeight: '160px', marginTop:"20px"}}>
 
-                                                        <p>Card Number : {card.cardNumber}</p>
-                                                        <p>Expire Date : {card.exNumber}</p>
-                                                        <p>CVV : {card.cvv}</p>
+                                                        <p><span style={cardLabelsStyle}>Card Number : </span>{card.cardNumber}</p>
+                                                        <p><span style={cardLabelsStyle}>Expire Date : </span>{card.exNumber}</p>
+                                                        <p><span style={cardLabelsStyle}>CVV : </span>{card.cvv}</p>
 
                                                         {isHovered && (
-                                                            <div key={card.id}>
-                                                                <button onClick={() => handleClickOpen(card.cardNumber)}>Update</button>
-                                                                <button onClick={() => handleRemove(card.id)}>Remove</button>
+                                                            <div key={card.id} style={{float: "right"}}>
+                                                                <Button variant="text" onClick={() => handleClickOpen(card.cardNumber)}>Update</Button>
+                                                                <Button variant="text" color="error" onClick={() => handleRemove(card.id)}>Remove</Button>
                                                             </div>
                                                         )}
                                                     </div>
