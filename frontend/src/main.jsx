@@ -59,9 +59,10 @@ import ConfirmReservationPage from './pages/confirmReservationPage.jsx';
 import PendingReservarionPage from './pages/pendingReservationsPage.jsx';
 import MyReservationPage from './pages/myReservationPage.jsx';
 
-import OrderForm from './pages/orderForm.jsx'
+import OrderForm from './pages/orderForm.jsx';
 import OrderPage from './pages/OrderPage.jsx';
-import OrderList from './pages/OrderList.jsx'
+import OrderList from './pages/OrderList.jsx';
+import UpdateOrder from './pages/UpdateOrder.jsx';
 
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
@@ -131,6 +132,7 @@ const router = createBrowserRouter(
 
           <Route path='/occupant/order/' element={<OrderForm />} />
           <Route path='/occupant/order/orderList' element={<OrderList />} />
+          <Route path='/occupant/order/orderList/updateOrder' element={<UpdateOrder />} />
 
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
