@@ -191,7 +191,7 @@ const getOwnerBoardings = asyncHandler(async (req, res) => {
 // route    GET /api/boardings/:boardingId
 const getBoardingById = asyncHandler(async (req, res) => {
     const boardingId = req.params.boardingId;
-    
+    console.log(boardingId)
     const boarding = await Boarding.findById(boardingId).populate({
         path:'room',
         populate: {

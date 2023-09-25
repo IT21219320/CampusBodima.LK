@@ -83,7 +83,7 @@ const OccupantPaymentDash = () => {
     };
 
     const handleClose = () => {
-        
+
         setOpen(false);
     };
 
@@ -112,7 +112,7 @@ const OccupantPaymentDash = () => {
 
     useEffect(() => {
         loadData();
-    }, [deleteC,updateC]);
+    }, [deleteC, updateC]);
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -141,7 +141,7 @@ const OccupantPaymentDash = () => {
         try {
             const resUp = await updateCard({ cNo: cardIdR, cardNumberF: cardNumberF, cvvF: cvvF, expireDate: expireDate }).unwrap();
             setUpdateCard(resUp);
-            
+
         } catch (error) {
             console.log(error)
         }
@@ -167,7 +167,7 @@ const OccupantPaymentDash = () => {
                         <Col>
                             <Row style={{ marginTop: '20px' }}>
                                 <Col>
-                                    <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius:" 10px", color: "white", textAlign:"center"}}>Saved cards</h4>
+                                    <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
                                 </Col>
                             </Row>
                             {cards.length > 0 ? (
@@ -177,14 +177,14 @@ const OccupantPaymentDash = () => {
                                         <Col key={card.id}>
                                             <Box key={card.id} sx={{ minWidth: 275, maxWidth: 340 }} className={occupantDashboardPaymentStyles.cardStyles2}>
                                                 <Card variant="outlined" className={occupantDashboardPaymentStyles.cardStyles}>
-                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ minHeight: '160px', marginTop:"20px"}}>
+                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ minHeight: '160px', marginTop: "20px" }}>
 
                                                         <p><span style={cardLabelsStyle}>Card Number : </span>{card.cardNumber}</p>
                                                         <p><span style={cardLabelsStyle}>Expire Date : </span>{card.exNumber}</p>
                                                         <p><span style={cardLabelsStyle}>CVV : </span>{card.cvv}</p>
 
                                                         {isHovered && (
-                                                            <div key={card.id} style={{float: "right"}}>
+                                                            <div key={card.id} style={{ float: "right" }}>
                                                                 <Button variant="text" onClick={() => handleClickOpen(card.cardNumber)}>Update</Button>
                                                                 <Button variant="text" color="error" onClick={() => handleRemove(card.id)}>Remove</Button>
                                                             </div>
@@ -199,7 +199,7 @@ const OccupantPaymentDash = () => {
                             ) : (
                                 <Row>
                                     <Col>
-                                        <p>No cards to display</p>
+                                        <center><p>No cards to display</p></center>
                                     </Col>
                                 </Row>
                             )}
@@ -211,13 +211,13 @@ const OccupantPaymentDash = () => {
                             <DialogContent>
 
                                 <Row>
-                                    <TextField autoFocus margin="dense" id="name" label="card number" value={cardNumberF} onChange={(e) => setcardNumberF(e.target.value)} inputProps={{ maxLength: 16, minLength: 16, inputMode: 'numeric', title: 'Card number should be 16 digit' }} />
+                                    <TextField autoFocus margin="dense" id="name" label="card number" required value={cardNumberF} onChange={(e) => setcardNumberF(e.target.value)} inputProps={{ maxLength: 16, minLength: 16, inputMode: 'numeric', title: 'Card number should be 16 digit' }} />
                                 </Row>
                                 <Row>
-                                    <TextField autoFocus margin="dense" id="name" label="Expire date" value={expireDate} onChange={(e) => setexpireDate(e.target.value)} inputProps={{ pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY' }} />
+                                    <TextField autoFocus margin="dense" id="name" label="Expire date" required value={expireDate} onChange={(e) => setexpireDate(e.target.value)} inputProps={{ pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY' }} />
                                 </Row>
                                 <Row>
-                                    <TextField autoFocus margin="dense" id="name" label="CVV" value={cvvF} onChange={(e) => setcvvF(e.target.value)} inputProps={{ maxLength: 3, minLength: 3, inputMode: 'numeric', title: 'Card number should be 16 digit' }} />
+                                    <TextField autoFocus margin="dense" id="name" label="CVV" required value={cvvF} onChange={(e) => setcvvF(e.target.value)} inputProps={{ maxLength: 3, minLength: 3, inputMode: 'numeric', title: 'Card number should be 16 digit' }} />
                                 </Row>
 
                             </DialogContent>
@@ -227,6 +227,22 @@ const OccupantPaymentDash = () => {
                             </DialogActions>
                         </Form>
                     </Dialog>
+                    <Col>
+                        <Row style={{ marginTop: '20px' }}>
+                            <Col>
+                                <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
+                            </Col>
+
+                        </Row>
+                        <Row>
+                            <Col style={{ backgroundColor: "#b8a2ff", padding: "5%", borderRadius: "20px" }}>
+                                Your Monthly payment :
+                            </Col>
+                            <Col>
+                                <Button variant="contained">Contained</Button>
+                            </Col>
+                        </Row>
+                    </Col>
                     <TableContainer component={Paper} style={{ marginTop: '20px' }}>
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
                             <TableHead>
