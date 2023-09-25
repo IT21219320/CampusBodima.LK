@@ -394,6 +394,194 @@ const getAllBoardings = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Get all visible Boardings
+// route    POST /api/boardings/all
+const getAllPublicBoardings = asyncHandler(async (req, res) => {
+    const page = req.body.page || 0;
+    const pageSize = req.body.pageSize;
+    const status = req.body.status;
+    const food = req.body.food;
+    const utilityBills = req.body.utilityBills;
+    const noOfRooms = req.body.noOfRooms;
+    const boardingType = req.body.boardingType;
+    const gender = req.body.gender;
+    const rentRange = req.body.rentRange;
+    const rent = req.body.rent;
+    const startDate = new Date(req.body.startDate);
+    const endDate = new Date(req.body.endDate);
+    const date = req.body.date;
+    const search = req.body.search;
+    const sortBy = req.body.sortBy;
+    const order = req.body.order;
+
+    const startRent = rentRange[0];
+    const endRent = rentRange[1];
+    
+    endDate.setHours(23, 59, 59, 999);
+
+    const skipCount = (page) * pageSize;
+    
+    let totalRows;
+    let boardings;
+    if(boardingType == 'Annex'){
+
+        totalRows = await Boarding.countDocuments({
+            boardingType,
+            visibility: 'true',
+            status: 'Approved',
+            ...(food !== 'All' ? { food } : {}),
+            ...(utilityBills !== 'All' ? { utilityBills } : {}),
+            ...(noOfRooms > 0 ? (noOfRooms > 10 ? {noOfRooms: "10+"} : { noOfRooms })  : {}),
+            ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(gender !== 'All' ? { 
+                $and: [{
+                    $or: [
+                        { gender }, 
+                        { gender: 'Any' }
+                    ]},{
+                    $or: [
+                        { boardingName: { $regex: search, $options: "i" } },
+                        { address: { $regex: search, $options: "i" } },
+                        { city: { $regex: search, $options: "i" } },
+                    ]
+                }]
+            } : {
+                $or: [
+                    { boardingName: { $regex: search, $options: "i" } },
+                    { address: { $regex: search, $options: "i" } },
+                    { city: { $regex: search, $options: "i" } },
+                ]
+            }),
+        });
+
+        boardings = await Boarding.find({
+            boardingType,
+            visibility: 'true',
+            status: 'Approved',
+            ...(food !== 'All' ? { food } : {}),
+            ...(utilityBills !== 'All' ? { utilityBills } : {}),
+            ...(noOfRooms > 0 ? (noOfRooms > 10 ? {noOfRooms: "10+"} : { noOfRooms })  : {}),
+            ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), 
+            ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+            ...(gender !== 'All' ? { 
+                $and: [{
+                    $or: [
+                        { gender }, 
+                        { gender: 'Any' }
+                    ]},{
+                    $or: [
+                        { boardingName: { $regex: search, $options: "i" } },
+                        { address: { $regex: search, $options: "i" } },
+                        { city: { $regex: search, $options: "i" } },
+                    ]
+                }]
+            } : {
+                $or: [
+                    { boardingName: { $regex: search, $options: "i" } },
+                    { address: { $regex: search, $options: "i" } },
+                    { city: { $regex: search, $options: "i" } },
+                ]
+            }),
+        }).populate({
+            path:'room',
+            populate: {
+                path: 'occupant', 
+            },
+        }).collation({locale: "en"}).sort({ [sortBy]: order }).skip(skipCount).limit(pageSize);
+
+    }
+    else{
+
+        const rooms = await Room.find({
+            ...(status !== 'All' ? { status } : {}),
+            ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), 
+        });
+        const roomConditions = rooms.map(room => ({ 'room.rent': room.rent }));
+
+        console.log(roomConditions);
+
+        totalRows = await Boarding.countDocuments({
+            boardingType,
+            visibility: 'true',
+            status: 'Approved',
+            ...(food !== 'All' ? { food } : {}),
+            ...(utilityBills !== 'All' ? { utilityBills } : {}),
+            ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
+            //...(rent !== 'All' ? (roomConditions.length>0 ? { $and: [{$or: roomConditions }]} : {}) : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(gender !== 'All' ? { 
+                $and: [{
+                    $or: [
+                        { gender }, 
+                        { gender: 'Any' }
+                    ]},{
+                    $or: [
+                        { boardingName: { $regex: search, $options: "i" } },
+                        { address: { $regex: search, $options: "i" } },
+                        { city: { $regex: search, $options: "i" } },
+                    ]
+                }]
+            } : {
+                $or: [
+                    { boardingName: { $regex: search, $options: "i" } },
+                    { address: { $regex: search, $options: "i" } },
+                    { city: { $regex: search, $options: "i" } },
+                ]
+            }), 
+        });
+
+
+        boardings = await Boarding.find({
+            boardingType,
+            visibility: 'true',
+            status: 'Approved',
+            ...(food !== 'All' ? { food } : {}),
+            ...(utilityBills !== 'All' ? { utilityBills } : {}),
+            ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
+            //...(rent !== 'All' ? (roomConditions.length>0 ? { $or: roomConditions } : {}) : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(gender !== 'All' ? { 
+                $and: [{
+                    $or: [
+                        { gender }, 
+                        { gender: 'Any' }
+                    ]},{
+                    $or: [
+                        { boardingName: { $regex: search, $options: "i" } },
+                        { address: { $regex: search, $options: "i" } },
+                        { city: { $regex: search, $options: "i" } },
+                    ]
+                }]
+            } : {
+                $or: [
+                    { boardingName: { $regex: search, $options: "i" } },
+                    { address: { $regex: search, $options: "i" } },
+                    { city: { $regex: search, $options: "i" } },
+                ]
+            }), 
+        }).populate({
+            path:'room',
+            populate: {
+                path: 'occupant', 
+            },
+        }).collation({locale: "en"}).sort({ [sortBy]: order }).skip(skipCount).limit(pageSize);
+
+    }
+    
+    
+    if(boardings){
+        res.status(200).json({
+            boardings,
+            totalRows
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("No Boardings Available")
+    }
+});
+
 // @decs    Get Pending Approval Boardings
 // route    GET /api/boardings/pendingApproval
 const getPendingApprovalBoardings = asyncHandler(async (req, res) => {
@@ -443,11 +631,15 @@ const updateBoardingVisibility = asyncHandler(async (req, res) => {
         var boardingOccupantCount = 0;
 
         for(let i = 0; i < boarding.room.length; i++){
-            boardingCapacity += parseInt(boarding.room[i].noOfBeds);
+            if(boarding.room[i].status == 'Approved'){
+                boardingCapacity += parseInt(boarding.room[i].noOfBeds);
+            }
         }
 
         for(let i = 0; i < boarding.room.length; i++){
-            boardingOccupantCount += boarding.room[i].occupant.length;
+            if(boarding.room[i].status == 'Approved'){
+                boardingOccupantCount += boarding.room[i].occupant.length;
+            }
         }
 
         if(boarding.occupant && boarding.boardingType == 'Annex'){
@@ -736,6 +928,7 @@ export {
     registerBoarding,
     addRoom,
     getAllBoardings,
+    getAllPublicBoardings,
     getOwnerBoardings,
     getBoardingById,
     getOccupantBoarding,

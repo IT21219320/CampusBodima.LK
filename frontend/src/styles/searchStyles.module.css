@@ -1,0 +1,123 @@
+.mainDiv{
+    width: 100%;
+    margin: 0;
+    position: relative;
+}
+
+.container{
+    position: relative;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+
+.card{
+    background: linear-gradient(45deg, rgba(181, 174, 255, 0.25) 0%, rgba(91, 84, 189, 0.25) 100%);
+    box-shadow: 1px 2px 10px 0px rgb(0 0 0 / 13%) !important;
+    width: 100% !important;
+    height: 315px;
+    cursor: pointer;
+}
+
+.card:hover{
+    box-shadow: 1px 2px 10px 0px rgb(0 0 0 / 25%) !important;
+}
+
+/*.card:active{
+    box-shadow: 1px 2px 10px 0px rgb(0 0 0 / 15%) !important;
+    transform: scale(.997);
+}*/
+
+.cardContent{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    padding: 30px 30px 30px 30px !important;
+}
+
+.images{
+    width: 100%;   
+    object-fit: cover;
+    background: #00000065;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px 0px #0000001f;
+}
+
+.addBtn{
+    background: #685DD8 !important;
+}
+
+.addBtn:hover{
+    box-shadow: 1px 2px 10px 0px rgb(0 0 0 / 13%) !important;
+}
+
+.addBtn:active{
+    transform: scale(.98);
+}
+
+.pendingApproval {
+    position: relative;
+    filter: grayscale(1); /* Grayscale effect */
+    opacity: 0.8; /* Reduced opacity */
+  }
+  
+  /* Style for the watermark text */
+.pendingApproval::before {
+    content: "Pending Approval"; /* Text content */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the text */
+    font-size: 24px; /* Adjust font size */
+    color: rgba(255, 0, 0, 0.7); /* Text color and opacity */
+    z-index: 1; /* Place text above the content */
+}
+
+.ctrls{
+    height: fit-content;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: 2px 2px 9px 0px rgba(0, 0, 0, 0.25);
+    margin-left: 10px;
+}
+
+.ctrls:hover{
+    box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.25);
+}
+  
+.ctrls:active{
+    transform: scale(.98);
+}
+
+.edtBtn{
+    color: #3366ff;
+    padding: 0 5px 4px 6px;
+}
+
+.deleteBtn{
+    color: #f73b54;
+    padding: 0 5px 4px 5px;
+}
+
+.paras{
+    font-size: large;
+    color: dimgray;
+    margin-bottom: 0.5em;
+}
+  
+.facilities::before{
+    content: '\2713';
+    margin-right: 5px;
+}
+
+.confirmIcon{
+    padding-bottom: 0 !important;
+    color: orange;
+    text-align: center;
+}
+
+.carousel{
+    box-shadow: 0 0 10px #757575;
+    border-radius: 10px;
+}
+  

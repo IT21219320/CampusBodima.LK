@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerBoarding, addRoom, getAllBoardings, getOwnerBoardings, getBoardingById, getOccupantBoarding, getPendingApprovalBoardings, approveBoarding, rejectBoarding, updateBoardingVisibility, updateBoarding, deleteBoarding } from '../controllers/boardingController.js';
+import { registerBoarding, addRoom, getAllBoardings, getAllPublicBoardings, getOwnerBoardings, getBoardingById, getOccupantBoarding, getPendingApprovalBoardings, approveBoarding, rejectBoarding, updateBoardingVisibility, updateBoarding, deleteBoarding } from '../controllers/boardingController.js';
 
 const router = express.Router();
 
@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/register', registerBoarding);
 router.post('/addroom', addRoom);
 router.post('/all', getAllBoardings);
+router.post('/search', getAllPublicBoardings);
 router.get('/owner/:ownerId/:page/:status', getOwnerBoardings);
 router.get('/:boardingId', getBoardingById);
 router.get('/occupant/:occupantId', getOccupantBoarding);
