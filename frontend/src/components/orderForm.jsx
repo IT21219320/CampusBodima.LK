@@ -8,7 +8,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { useCreateOrderMutation } from '../slices/orderApiSlice'; // Import the generated mutation function
-import Sidebar from '../components/sideBar';
+import Sidebar from './sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import formStyle from '../styles/formStyle.module.css';
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
@@ -201,18 +201,7 @@ const OrderForm = () => {
   
 
   return (<>
-    <Sidebar />
-    <Container className={formStyle.containerStyles}>
-    <Row>
-                    <Col>
-                        <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
-                            <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
-                            <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
-                            
-                            <Typography key="3" color="text.primary">Create Order</Typography>
-                        </Breadcrumbs>
-                    </Col>
-                </Row>
+    
                 <Row>
                         <Col>
                             <Card variant="outlined" className={occupantFeedbackStyles.card}>
@@ -320,7 +309,6 @@ const OrderForm = () => {
     </form>
     </div>
     </div>
-    </Container>
     </>
   );
   

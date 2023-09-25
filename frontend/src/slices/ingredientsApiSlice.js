@@ -18,9 +18,30 @@ export const ingredientsApiSlice = apiSlice.injectEndpoints({
                 body: data
             }),
         }),
+        getIngredientHistoy: builder.mutation({
+            query: (data) => ({
+                url: `${Ingredient_URL}/owner/history`,
+                method: 'POST',
+                body: data
+            }),
+        }),
         getBoardingIngredientNames: builder.mutation({
             query: (data) => ({
                 url: `${Ingredient_URL}/owner/ingredients/names`,
+                method: 'POST',
+                body: data
+            }),
+        }),
+        increaseIngredientQuantity: builder.mutation({
+            query: (data) => ({
+                url: `${Ingredient_URL}/owner/ingredients/increase`,
+                method: 'POST',
+                body: data
+            }),
+        }),
+        reduceIngredientQuantity: builder.mutation({
+            query: (data) => ({
+                url: `${Ingredient_URL}/owner/ingredients/reduce`,
                 method: 'POST',
                 body: data
             }),
@@ -53,4 +74,4 @@ export const ingredientsApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useAddIngredientMutation, useGetBoardingIngredientsMutation,useGetBoardingIngredientNamesMutation, useGetOwnerBoardingMutation, useUpdateIngredientsMutation,useGetUpdateIngredientsMutation, useDeleteIngredientsMutation} = ingredientsApiSlice;
+export const { useAddIngredientMutation, useGetBoardingIngredientsMutation,useGetIngredientHistoyMutation,useIncreaseIngredientQuantityMutation,useReduceIngredientQuantityMutation,useGetBoardingIngredientNamesMutation, useGetOwnerBoardingMutation, useUpdateIngredientsMutation,useGetUpdateIngredientsMutation, useDeleteIngredientsMutation} = ingredientsApiSlice;

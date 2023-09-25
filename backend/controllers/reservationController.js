@@ -61,16 +61,22 @@ const reserveRoom = asyncHandler(async (req, res) => {
                             message: "inserted"
                         });
                     } else {
-                        res.status(400);
+                        res.status(400).json({
+                            message : "problem in inserting",
+                        });
                         throw new Error('problem in inserting');
 
                     }
                 } else {
-                    res.status(404);
+                    res.status(404).json({
+                        message : "genders are not matching",
+                    });
                     throw new Error('genders are not matching');
                 }
             } else {
-                res.status(404);
+                res.status(404).json({
+                    message : "no beds are available",
+                });
                 throw new Error('no beds are available');
             }
 
@@ -96,7 +102,9 @@ const reserveRoom = asyncHandler(async (req, res) => {
                         await boarding.save();
 
                     } else {
-                        res.status(404);
+                        res.status(404).json({
+                            message: "Boarding not found",
+                        });
                         throw new Error('Boarding not found');
                     }
 
@@ -106,17 +114,23 @@ const reserveRoom = asyncHandler(async (req, res) => {
                     });
 
                 } else {
-                    res.status(400);
+                    res.status(400).json({
+                        message: "problem in inserting",
+                    });
                     throw new Error('problem in inserting');
                 }
             } else {
-                res.status(404);
+                res.status(404).json({
+                    message: "genders are not matching",
+                });
                 throw new Error('genders are not matching');
             }
         }
 
     } else {
-        res.status(404);
+        res.status(404).json({
+            message : "you have already reserved",
+        });
         throw new Error('you have already reserved');
     }
 
@@ -156,11 +170,26 @@ const getMyReservation = asyncHandler(async (req, res) => {
     const userInfo_id = req.body;
     const ViewMyReservation = await Reservation.findOne({ occupantID: userInfo_id });
 
+    const user = await User.findById(userInfo_id);
+    const boarding = await Boarding.findById(ViewMyReservation.boardingId);
+    const room = await Room.findById(ViewMyReservation.roomID);
+    
+
     if (ViewMyReservation) {
+
+        const myDetails={
+            Id: ViewMyReservation._id,
+            name: user.firstName,
+            bType:ViewMyReservation.boardingType,
+            bName:boarding.boardingName,
+            rNo:room.roomNo,
+            Duration:ViewMyReservation.Duration,
+            reservedDt:ViewMyReservation.createdAt
+        }
+
         res.status(200).json({
-            ViewMyReservation,
+            myDetails,
         })
-        userInfo_id
     }
     else {
         res.status(400);
@@ -327,9 +356,10 @@ const deletePendingStatus = asyncHandler(async (req, res) => {
 const deleteReservation = asyncHandler(async (req, res) => {
 
 
-    const ReservationId = req.query.reservationId;
+    const ReservationId = req.body;
+    console.log(ReservationId.reservationId)
 
-    const deletedReservation = await Reservation.findByIdAndDelete(ReservationId);
+    const deletedReservation = await Reservation.findByIdAndDelete(ReservationId.reservationId);
     console.log(deletedReservation)
     if (deletedReservation) {
 

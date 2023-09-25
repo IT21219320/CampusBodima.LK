@@ -1,13 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-//import { Container, Form, Button, Row, Col, TextField } from 'react-bootstrap';
-import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, FormControl, Select, MenuItem } from '@mui/material';
+import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, FormControl, Select, MenuItem,TextField,Button } from '@mui/material';
+import { Form, Container, Row, Col, InputGroup } from 'react-bootstrap';
 import { NavigateNext } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { toast } from 'react-toastify';
-import { useUpdateFeedbackMutation } from '../slices/feedbackApiSlice';
+import { useUpdateFeedbackMutation,useGetUpdateFeedbackMutation} from '../slices/feedbackApiSlice';
 import StarRating from '../pages/StarRating.jsx';
 import CreateFeedbackStyles from '../styles/createFeedbackStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
@@ -21,37 +20,41 @@ const UpdateFeedback = () => {
   const [occupantId, setOccupantId] = useState(userInfo._id);
   const [occupantName, setOccupantName] = useState(userInfo.firstName + ' ' + userInfo.lastName);
   const [occupantEmail, setOccupantEmail] = useState(userInfo.email);
-  
-  const [category, setCategory] = useState('');
-  const [description, setDescription] = useState('');
-  const [rating, setRating] = useState(0);
+
+  const [newcategory, setCategory] = useState('');
+  const [newdescription, setDescription] = useState('');
+  const [newrating, setRating] = useState(0);
 
   const [updateFeedback, { isLoading }] = useUpdateFeedbackMutation();
-  const { data: feedbackData, isLoading: isFeedbackLoading } = useGetFeedbackByIdQuery(feedbackId);
+  const [getUpdateFeedback,{isLoading2}] = useGetUpdateFeedbackMutation();
+
+  const loadData = async() => {
+    try {
+      const res = await getUpdateFeedback(feedbackId).unwrap()
+      console.log(res);
+      setCategory(res.feedback.category)
+      setDescription(res.feedback.description)
+      setRating(res.feedback.rating)
+    } catch (error) {
+      toast.error(error)
+    }
+  }
 
   useEffect(() => {
-    if (feedbackData) {
-      // Populate state variables with the fetched feedback data
-      const { senderId: occupantId, category, description, rating,  } = feedbackData;
-      setCategory(category);
-      setDescription(description);
-      setRating(rating);
-      
-    }
-  }, [feedbackData]);
-
+    loadData()
+  },[])
+ 
   const submitHandler = async (e) => {
     e.preventDefault();
 
     try {
-      await updateFeedback({
+      const res = await updateFeedback({
         feedbackId,
-        senderId: occupantId,
-        category,
-        description,
-        rating,
-        
+        newcategory,
+        newdescription,
+        newrating,
       });
+      console.log(res);
       toast.success('Feedback updated successfully');
       navigate('/occupant/feedback');
     } catch (err) {
@@ -88,7 +91,7 @@ const UpdateFeedback = () => {
           </Row>
 
           <Fade in={viewUserInfo}>
-            <Form onSubmit={submitHandler}>
+            <Form onSubmit={submitHandler} className={CreateFeedbackStyles.form}>
               <Row>
                 <Col>
                   <Card variant="outlined" className={CreateFeedbackStyles.card}>
@@ -138,7 +141,7 @@ const UpdateFeedback = () => {
                         </Col>
                         <Col lg={9} xs={6} className="mt-3">
                           <FormControl sx={{ m: 0, minWidth: 120 }} size="small">
-                            <Select value={category} onChange={(e) => setCategory(e.target.value)} required>
+                            <Select value={newcategory} onChange={(e) => setCategory(e.target.value)} required>
                               <MenuItem value={'boarding'}>Boarding</MenuItem>
                               <MenuItem value={'anex'}>Anex</MenuItem>
                             </Select>
@@ -153,7 +156,7 @@ const UpdateFeedback = () => {
                           </label>
                         </Col>
                         <Col>
-                          <StarRating rating={rating} onChange={setRating} />
+                          <StarRating rating={newrating} onChange={setRating} />
                         </Col>
                       </Row>
 
@@ -169,7 +172,7 @@ const UpdateFeedback = () => {
                             label="Edit Feedback"
                             multiline
                             rows={8}
-                            value={description}
+                            value={newdescription}
                             onChange={(e) => setDescription(e.target.value)}
                             required
                             variant="outlined"
@@ -200,9 +203,4 @@ const UpdateFeedback = () => {
 };
 
 export default UpdateFeedback;
-
-
-
-
-
 

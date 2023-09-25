@@ -36,15 +36,25 @@ export const feedbackApiSlice = apiSlice.injectEndpoints({
         
         updateFeedback: builder.mutation({
             query: (data) => ({
-                url: `${FEEDBACKS_URL}/update`,
+                url: `${FEEDBACKS_URL}/occupant/feedback/update`,
                 method: 'PUT',
                 body: data,
             }),
         }),
+
+        getUpdateFeedback: builder.mutation({
+            query:(data) =>({
+                url: `${FEEDBACKS_URL}/occupant/feedback/update/${data}`,
+                method: 'Get',
+               
+            })
+,        }),
         deleteFeedback: builder.mutation({
             query: (data) => ({
-                url: `${FEEDBACKS_URL}/delete/${data}`,
+                url: `${FEEDBACKS_URL}/delete`,
                 method: 'DELETE',
+                body :data,
+               
            }),
         }),
 
@@ -64,5 +74,6 @@ export const {
     useUpdateFeedbackMutation, // Also fix the capitalization here
     useDeleteFeedbackMutation, // Also fix the capitalization here
     useSearchFeedbackMutation,
+    useGetUpdateFeedbackMutation,
   } = feedbackApiSlice;
 

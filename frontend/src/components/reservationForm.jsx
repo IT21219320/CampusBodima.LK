@@ -42,11 +42,10 @@ const ReservationForm = () => {
 
         if (res) {
             if (paymentType === "Online") {
-                window.alert("online")
                 navigate(`/occupant/makePayment/${bId}`);
             }else{
-                window.alert("Cash")
-                navigate(`/occupant/reservations/confirm/${no}`);
+                window.alert("Wait until the owner approve")
+                navigate(`/occupant/reservations`);
             }
 
         }

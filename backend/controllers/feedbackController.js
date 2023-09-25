@@ -114,9 +114,12 @@ const createFeedback = asyncHandler(async (req, res) => {
 
 const getFeedbackByUserId = asyncHandler(async (req, res) => {
   const { userId } = req.body;
+  const searchQuery = req.body.searchQuery;
 
   try {
-    const feedback = await Feedback.find({ 'senderId._id': userId });
+    const feedback = await Feedback.find({ 'senderId._id': userId,description: { $regex: searchQuery, $options: 'i' } });
+    
+   
 
     if (feedback) {
       res.status(200).json({ feedback });
@@ -159,60 +162,148 @@ const getFeedbackByUserId = asyncHandler(async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch feedback.' });
     }
   });
+
+ 
   
   // Update feedback by feedbackId
   // @access Private
 
   const updateFeedback = asyncHandler(async (req, res) => {
-    const { feedbackId } = req.params;
-    const { category, description, ratingStar } = req.body;
+    //const { _id } = req.qu;
+    const { feedbackId,newcategory, newdescription, newrating } = req.body;
   
     try {
       const feedback = await Feedback.findById(feedbackId);
+
+      if (!feedback) {
+        res.status(404);
+        throw new Error("Feedback not found");
+       }
   
-      if (feedback) {
-        feedback.category = category || feedback.category;
-        feedback.description = description || feedback.description;
-        feedback.ratingStar = ratingStar || feedback.ratingStar;
+      
+        feedback.category = newcategory || feedback.category;
+        feedback.description = newdescription || feedback.description;
+        feedback.rating = newrating || feedback.rating;
   
         const updatedFeedback = await feedback.save();
+
+
+
+        res.status(200).json({
+          updatedFeedback
+         }) 
   
-        res.status(200).json({ updatedFeedback });
-      } else {
-        res.status(404).json({ error: 'Feedback not found' });
-      }
+        
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Failed to update feedback.' });
+      throw new Error(error);
     }
   });
+
+
+  // @desc    Get Ingredients for Update
+// route    GET /api/ingredient/owner/update/:boardingId/:ingredientId
+// @access  Private - Owner
+const getUpdateFeedback = asyncHandler(async (req, res) => {
+  const {feedbackId} = req.params;
+  
+  
+  
+  try {
+    const feedback = await Feedback.findById(feedbackId);
+    
+    console.log(feedback);
+    
+
+    if (feedback) {
+      res.status(200).json({ feedback });
+    } else {
+      res.status(404).json({ error: 'No feedback found for the user.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch feedback.' });
+  }
+});
   
   // Delete feedback by feedbackId
-  // @access Private
-  const deleteFeedback = asyncHandler(async (req, res) => {
-    const { feedbackId } = req.params;
-  
-    try {
-      const feedback = await Feedback.findById(feedbackId);
-  
-      if (feedback) {
-        await Feedback.findByIdAndDelete(feedbackId);
-        res.status(200).json('Successfully deleted feedback');
-      
-       } else {
-        res.status(404).json({ error: 'Feedback not found' });
-      }
-    
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Failed to delete feedback.' });
+// @access Private
+
+const deleteFeedback = asyncHandler(async (req, res) => {
+  const{feedbackId} = req.body;
+   
+  try {
+    const feedback = await Feedback.findByIdAndDelete(feedbackId );
+
+    console.log({feedbackId});
+
+    if (!feedback) {
+      res.status(404);
+      throw new Error("Feedback not found");
+    } else {
+      res.status(200).json({
+        message: 'Successfully deleted feedback'
+      });
     }
+  } catch (error) {
+    res.status(400).json({
+      error:'Failed to Delete Feedbacks'});
+  }
+});
+
+
+
+
+//search
+
+/*const search = asyncHandler(async (req,res) => {
+  const id = req.body.id;
+  const search = req.body.search;
+
+
+  var totalRows = await Ticket.countDocuments({
+      'senderId._id': id,
+      $or: [
+          { subject: { $regex: search, $options: "i" } },
+          { category: { $regex: search, $options: "i" } },
+          { subCategory: { $regex: search, $options: "i" } },
+          {status: {$regex: search, $options: "i"}},
+          
+        ],  
   });
+
+  try{
+      const tickets = await Ticket.find({
+          'senderId._id': id,
+          $or: [
+              { subject: { $regex: search, $options: "i" } },
+              { category: { $regex: search, $options: "i" } },
+              { subCategory: { $regex: search, $options: "i" } },
+              {status: {$regex: search, $options: "i"}},
+              {description: {$regex: search, $options: "i"}}
+            ],  
+      })
+      .skip(skip)
+      .limit(pageSize);
+
+      if(tickets){
+          res.status(201).json({tickets,totalRows});
+      }
+       else{
+          res.status(400);
+          throw new Error('No tickets');
+      } 
+  }catch(err){
+      res.status(500).json({err});
+  }
+});*/
+
   
   export {
     createFeedback,
     getAllFeedbacks,
     updateFeedback,
+    getUpdateFeedback,
     deleteFeedback,
     getFeedbackByUserId,
 };

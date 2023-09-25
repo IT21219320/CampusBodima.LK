@@ -20,6 +20,7 @@ import ingredientStyles from '../styles/ingredientStyles.module.css';
 import AllIngredients from "../components/allIngredientsComponent";
 import ReduceinventoryPage from "../components/reduceinventoryComponent";
 import CentralinventoryPage from "../components/centralinventoryComponent";
+import IngredientReport from "../components/ingredientReportComponent";
 
 import defaultImage from '/images/defaultImage.png'
 
@@ -30,6 +31,7 @@ const OwnerIngredientPage = () => {
     const { userInfo } = useSelector((state) => state.auth); 
     const [boardingId, setBoardingId] = useState('');
     const [boardingNames, setBoardingNames] = useState([]);
+    const [activeTab, setActiveTab] = useState("Ingredients");
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -85,7 +87,7 @@ const OwnerIngredientPage = () => {
                             <Col className="mb-3" xs={12} md={12}>
                                 <Row>
                                     <Col>
-                                    <h1 style={{ fontSize: '50px', color: 'blue', }}>Inventory</h1>
+                                    <h1 style={{ fontSize: '50px', color: '#685DD8', }}>Inventory</h1>
                                     </Col>
                                     <Col className="ml-5">
                                     <Box sx={{ minWidth: 120}}>
@@ -110,15 +112,18 @@ const OwnerIngredientPage = () => {
                                 </Row>
                                 <Row>
                                    <Col> 
-                                        <Tabs defaultActiveKey="Ingredients"  id="uncontrolled-tab-example" className="mb-3">
+                                        <Tabs defaultActiveKey="Ingredients"  id="uncontrolled-tab-example" className="mb-3" onSelect={(k) => setActiveTab(k)}>
                                             <Tab eventKey="Ingredients" title="Ingredients">
-                                                <AllIngredients boardingId={boardingId} />
+                                                {activeTab=="Ingredients" ? <AllIngredients boardingId={boardingId} /> :''}
                                             </Tab>
                                             <Tab eventKey="Central Inventory" title="Central Inventory">
-                                                <CentralinventoryPage boardingId={boardingId} />
+                                                {activeTab=="Central Inventory" ? <CentralinventoryPage boardingId={boardingId} /> :''}
                                             </Tab>
                                             <Tab eventKey="Reduce Inventory" title="Reduce Inventory">
-                                                <ReduceinventoryPage boardingId={boardingId} />
+                                                {activeTab=="Reduce Inventory" ? <ReduceinventoryPage boardingId={boardingId} /> :''}
+                                            </Tab>
+                                            <Tab eventKey="Report" title="Inventory Report">
+                                                {activeTab=="Report" ? <IngredientReport boardingId={boardingId} /> :''}
                                             </Tab>
                                         </Tabs>
                                     </Col>
