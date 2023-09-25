@@ -95,6 +95,18 @@ const getPaymentsByUserID = expressAsyncHandler(async(req, res) =>{
 
 })
 
+const getPaymentsByOwnerID = expressAsyncHandler(async(req, res) =>{
+  const userInfo_id = req.body;
+  const user = await User.findById(userInfo_id);
+  const payments = await payment.find({"owner._id":userInfo_id});
+  if(payments){
+      res.status(200).json({
+          payments
+      })
+  }
+
+})
+
 cron.schedule('0 0 10 * *', async () => {
     try {
       // Calculate the monthly fee for each subscribed user
@@ -179,4 +191,4 @@ res.sendStatus(200);
 })
 
 
-export {getIntent, getPath, getPublichkey, getWebHook, makePayment,getPaymentsByUserID};
+export {getIntent, getPath, getPublichkey, getWebHook, makePayment,getPaymentsByUserID,getPaymentsByOwnerID};

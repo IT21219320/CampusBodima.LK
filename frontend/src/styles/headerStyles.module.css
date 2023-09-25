@@ -1,0 +1,17 @@
+.header {
+    transition: transform 0.3s ease-in, background-color 0.3s linear;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: transparent;
+    z-index: 900;
+  
+    &.scroll-down {
+      transform: translateY(-100%);
+    }
+  
+    &.scroll-up {
+      transform: translateY(0);
+    }
+}

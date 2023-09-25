@@ -368,7 +368,6 @@ const AdminAllBoardings = () => {
                     </Table>
                 </Col>
             </Row>
-            {totalRows <= 1 ? <></> : 
             <Row>
                 <Col className="mt-3">
                     <TablePagination
@@ -384,7 +383,6 @@ const AdminAllBoardings = () => {
                     />
                 </Col>
             </Row>
-            }
             <Dialog
                 fullScreen={fullScreen}
                 open={confirmDialog}

@@ -4,7 +4,7 @@ const HomePage = () => {
         <>
             <div style={{width:'100%'}}>
                 <Header />
-                <div>Home</div>
+                <div style={{height:'100vh'}}>Home</div>
             </div>
         </>
     );
