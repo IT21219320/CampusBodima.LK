@@ -16,7 +16,7 @@ import Boarding from '../models/boardingModel.js';
 const createFeedback = asyncHandler(async (req, res) => {
     const {senderId,category, description, rating, } = req.body;
 
-    /*const reservation = await Reservation.findOne({occupantID: senderId});
+    const reservation = await Reservation.findOne({occupantID: senderId});
    
 
     if(!reservation){
@@ -27,7 +27,7 @@ const createFeedback = asyncHandler(async (req, res) => {
     const boarding = await Boarding.findOne({_id: reservation.boardingId});
 
     console.log(reservation.boardingId);
-    const owner = await User.findById(boarding.owner);*/
+    const owner = await User.findById(boarding.owner);
 
 
     
