@@ -84,6 +84,15 @@ const AddIngredientPage = () => {
        
     }
 
+    // Get the current date in the format YYYY-MM-DD
+  const getCurrentDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
 
 
   return (
@@ -179,6 +188,7 @@ const AddIngredientPage = () => {
                                     value={measurement}
                                     label="Measurement"
                                     onChange={(e) => setMeasurement(e.target.value)}
+                                    required
                                   >
                                     <MenuItem value={'ml'}>ml</MenuItem>
                                     <MenuItem value={'g'}>g</MenuItem>
@@ -188,13 +198,16 @@ const AddIngredientPage = () => {
                             </Box>
 
                             
-                            <Form.Group className='my-2' controlId='confirmPassword'>
+                            <Form.Group className='my-2' controlId='purchaseDate'>
                               <Form.Label>Purchase Date</Form.Label>
                               <Form.Control
                                 type='date'
                                 placeholder='Enter Date'
                                 value={purchaseDate}
                                 onChange={(e) => setPurchaseDate(e.target.value)}
+                                min={getCurrentDate()} // Set the minimum date to today
+                                max={getCurrentDate()} // Set the maximum date to today
+                                required
                               ></Form.Control>
                             </Form.Group>
 
