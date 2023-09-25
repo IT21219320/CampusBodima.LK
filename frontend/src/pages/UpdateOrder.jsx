@@ -466,7 +466,7 @@ const UpdateOrder = ({ orderId }) => {
   const submitHandler = async (e) => {
     e.preventDefault();
     const currentTime = new Date();
-    
+
     const cutoffTime = new Date();
     cutoffTime.setHours(12, 0, 0, 0);
     
@@ -595,7 +595,7 @@ const UpdateOrder = ({ orderId }) => {
               </Col>
         </Row>
         <div className={dashboardStyles.mainDiv}>
-          <form onSubmit={submitHandler}>
+          <form onSubmit={submitHandler} className={formStyle.form}>
             <Row className={dashboardStyles.durationRaw}>
               <InputLabel id="demo-simple-select-standard-label">Product</InputLabel>
               <Select
