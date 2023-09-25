@@ -26,7 +26,7 @@ const PaymentForm = () => {
     const [addCard] = useAddCardMutation();
 
     const navigate = useNavigate();
-
+    
     const submitHandler = async (e) => {
      
         e.preventDefault();

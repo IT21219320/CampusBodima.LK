@@ -6,9 +6,7 @@ import { Breadcrumbs, Typography, Card, Button, CircularProgress, Box, Collapse,
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col } from 'react-bootstrap';
-import { useGetCardByUserMutation, useDeleteCardMutation } from "../slices/cardApiSlice";
-import { useGetPaymentByUserMutation } from "../slices/paymentApiSlice";
-import { async } from "@firebase/util";
+import { useGetPaymentByOwnerMutation } from "../slices/paymentApiSlice";
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css"
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -39,74 +37,68 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
         border: 0,
     },
 }));
+const stylesAccount = {
+
+    width: "100%",
+    margin: "32px auto",
+    borderRadius: "10px",
+    background: "rgb(137 146 186)",
+}
+
+const stylesBalances = {
+
+    borderRadius: "10px",
+    height: "120px",
+    margin: "3%",
+    backgroundColor: "#ccddff",
+    padding: "20px 20px",
+}
+
+const styleTopics = {
+    fontFamily: "monospace",
+    fontSize: "larger",
+}
 
 const OwnerPaymentDash = () => {
     const { userInfo } = useSelector((state) => state.auth);
 
-    const [cards, setCards] = useState([]);
+
     const [payments, setPayments] = useState([]);
-    const [isHovered, setIsHovered] = useState(false);
-    const [deleteC, setDeleteCard] = useState('');
+    const [credited, setCredited] = useState();
+    const [debited, setDebited] = useState();
     const navigate = useNavigate();
 
-    const [getCard] = useGetCardByUserMutation();
-    const [getPayment] = useGetPaymentByUserMutation();
-    const [deleteCard] = useDeleteCardMutation();
-
+    const [getPayment] = useGetPaymentByOwnerMutation();
     const loadData = async () => {
-        try {
-            const res = await getCard({ userInfo_id: userInfo._id }).unwrap();
-
-            setCards(res);
-
-
-        } catch (error) {
-            console.error('Error getting cards', error);
-        }
         try {
 
             const resGetPay = await getPayment({ _id: userInfo._id }).unwrap();
-
             setPayments(resGetPay.payments);
+            let totalCredit = 0;
+            let totalDebited = 0;
+            for (const pay of resGetPay.payments) {
+                const creditedInt = parseInt(pay.credited)
+                totalCredit += creditedInt
+                if (pay.debited) {
+                    const debitedInt = parseInt(pay.debited)
+                    totalDebited += debitedInt
+                    setDebited(totalDebited)
+                }
+
+
+            }
+            setCredited(totalCredit)
+
 
         } catch (error) {
             console.error('Error getting payments', error);
         }
-
-
     }
 
     useEffect(() => {
         loadData();
-    }, [deleteC]);
-    const handleClickOpen = () => {
-        setOpen(true);
-      };
-    
-      const handleClose = () => {
-        setOpen(false);
-      };
-    const handleMouseEnter = () => {
-        setIsHovered(true);
-    };
+    }, []);
 
-    const handleMouseLeave = () => {
-        setIsHovered(false);
-    };
-
-    
-
-    const handleRemove = async (cardId) => {
-        try {
-            const resDelete = await deleteCard({ cNo: cardId }).unwrap();
-            console.log(resDelete.message);
-            setDeleteCard(resDelete.message);
-            setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
-
-        } catch (error) {
-            console.error('Error deleting cards', error);
-        }
-    };
 
     return (
         <>
@@ -125,70 +117,69 @@ const OwnerPaymentDash = () => {
                             </Breadcrumbs>
                         </Col>
                     </Row>
+                    <Row style={stylesAccount}>
+                        <Col>
+                            <Row style={{ marginTop: '20px' }}>
+                                <Col>
+                                    <center><h4 style={{ fontFamily: "fantasy", fontSize: "xx-large", }}>My Account</h4></center>
+                                </Col>
+                                <Row >
+                                    <Col style={stylesBalances}>
+                                        {credited ? (
+                                            <>
+                                                <p style={styleTopics}>Credited Balance</p>
+                                                <p> LKR {credited} </p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p style={styleTopics}>Total Balance</p>
+                                                <p>  LKR 0</p>
+                                            </>
+                                        )}
+
+                                    </Col>
+                                    <Col style={stylesBalances}>
+                                        {debited ? (
+                                            <>
+                                                <p style={styleTopics}>Debited Balance</p>
+                                                <p>  LKR {debited} </p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p style={styleTopics}>Debited Balance</p>
+                                                <p>  LKR 0 </p>
+                                            </>)}
+
+                                    </Col >
+                                    <Col style={stylesBalances}>
+                                        {debited ? (
+                                            <>
+                                                <p style={styleTopics}>Total Balance</p>
+                                                <p>  LKR {credited - debited} </p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p style={styleTopics}>Total Balance</p>
+                                                <p> LKR {credited}</p>
+                                            </>)}
+
+                                    </Col>
+                                </Row>
+                            </Row>
+
+                        </Col>
+                    </Row>
                     <Row>
                         <Col>
                             <Row style={{ marginTop: '20px' }}>
                                 <Col>
-                                    <h4>Saved cards</h4>
+                                    <center><h4>Transactions</h4></center>
                                 </Col>
                             </Row>
-                            {cards.length > 0 ? (
-                                <Row style={{ overflow: 'scroll', marginLeft: 0, marginRight: 0, flexWrap: 'nowrap', marginTop: '10px', paddingBottom: '15px' }}>
-                                    {cards.map((card) => (
 
-                                        <Col key={card.id}>
-                                            <Box key={card.id} sx={{ minWidth: 275, maxWidth: 340 }}>
-                                                <Card variant="outlined" className={occupantDashboardPaymentStyles.cardStyles}>
-                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ minHeight: '160px' }}>
-
-                                                        <p>Card Number : {card.cardNumber}</p>
-                                                        <p>Expire Date : {card.exNumber}</p>
-                                                        <p>CVV : {card.cvv}</p>
-
-                                                        {isHovered && (
-                                                            <div key={card.id}>
-                                                                <button onClick={handleClickOpen}>Update</button>
-                                                                <button onClick={() => handleRemove(card.id)}>Remove</button>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </Card>
-                                            </Box>
-                                        </Col>
-
-                                    ))}
-                                </Row>
-                            ) : (
-                                <Row>
-                                    <Col>
-                                        <p>No cards to display</p>
-                                    </Col>
-                                </Row>
-                            )}
                         </Col>
                     </Row>
-                    <Dialog open={open} onClose={handleClose}>
-                        <DialogTitle>Subscribe</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                To subscribe to this website, please enter your email address here. We
-                                will send updates occasionally.
-                            </DialogContentText>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                id="name"
-                                label="Email Address"
-                                type="email"
-                                fullWidth
-                                variant="standard"
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleClose}>Cancel</Button>
-                            <Button onClick={handleClose}>Subscribe</Button>
-                        </DialogActions>
-                    </Dialog>
+
 
                     <TableContainer component={Paper} style={{ marginTop: '20px' }}>
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -199,21 +190,25 @@ const OwnerPaymentDash = () => {
                                     <StyledTableCell align="right">Description</StyledTableCell>
                                     <StyledTableCell align="right">Transaction Date</StyledTableCell>
                                     <StyledTableCell align="right">Method</StyledTableCell>
+                                    <StyledTableCell align="right">Credited</StyledTableCell>
+                                    <StyledTableCell align="right">Debited</StyledTableCell>
                                 </TableRow>
                             </TableHead>
 
                             <TableBody>
                                 {payments.length > 0 ? (
                                     payments.map((payment) => (
+
                                         <StyledTableRow key={payment._id}>
                                             <StyledTableCell component="th" scope="row">
                                                 {payment._id}
                                             </StyledTableCell>
                                             <StyledTableCell align="right" >{payment.amount}</StyledTableCell>
                                             <StyledTableCell align="right" >{payment.description}</StyledTableCell>
-
                                             <StyledTableCell align="right">{payment.date}</StyledTableCell>
                                             <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
+                                            <StyledTableCell align="right">{payment.credited}</StyledTableCell>
+                                            <StyledTableCell align="right">{payment.debited}</StyledTableCell>
                                         </StyledTableRow>
                                     ))) : (
                                     <StyledTableRow >

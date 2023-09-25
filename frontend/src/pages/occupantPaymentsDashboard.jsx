@@ -5,8 +5,8 @@ import Sidebar from '../components/sideBar';
 import { Breadcrumbs, Typography, Card, Button, CircularProgress, Box, Collapse, IconButton, Alert, FormControl, InputLabel, MenuItem, Select, Link } from "@mui/material";
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { Container, Row, Col } from 'react-bootstrap';
-import { useGetCardByUserMutation, useDeleteCardMutation } from "../slices/cardApiSlice";
+import { Container, Row, Col, Form } from 'react-bootstrap';
+import { useGetCardByUserMutation, useDeleteCardMutation, useUpdateCardMutation } from "../slices/cardApiSlice";
 import { useGetPaymentByUserMutation } from "../slices/paymentApiSlice";
 import { async } from "@firebase/util";
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css"
@@ -53,13 +53,32 @@ const OccupantPaymentDash = () => {
     const [payments, setPayments] = useState([]);
     const [isHovered, setIsHovered] = useState(false);
     const [deleteC, setDeleteCard] = useState('');
+    const [updateC, setUpdateCard] = useState('');
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
-    const [cardIdR, setCardIdR] = useState('');  
+    const [cardIdR, setCardIdR] = useState('');
+
+    const [cardNumberF, setcardNumberF] = useState('');
+    const [expireDate, setexpireDate] = useState('');
+    const [cvvF, setcvvF] = useState('');
 
     const [getCard] = useGetCardByUserMutation();
     const [getPayment] = useGetPaymentByUserMutation();
     const [deleteCard] = useDeleteCardMutation();
+    const [updateCard] = useUpdateCardMutation();
+
+
+
+    const [openDAlert, setOpenDAlert] = useState(false);
+
+  const handleClickOpenDAlert = () => {
+    setOpen(true);
+  };
+
+  const handleCloseDAlert = () => {
+    setOpen(false);
+  };
+
 
     const handleClickOpen = (id) => {
         setOpen(true);
@@ -67,6 +86,7 @@ const OccupantPaymentDash = () => {
     };
 
     const handleClose = () => {
+        
         setOpen(false);
     };
 
@@ -95,7 +115,7 @@ const OccupantPaymentDash = () => {
 
     useEffect(() => {
         loadData();
-    }, [deleteC]);
+    }, [deleteC,updateC]);
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -105,10 +125,7 @@ const OccupantPaymentDash = () => {
         setIsHovered(false);
     };
 
-    const handleUpdate = () => {
-        // Implement the update logic here
-        alert('Card number updated!');
-    };
+
 
     const handleRemove = async (cardId) => {
         try {
@@ -120,6 +137,18 @@ const OccupantPaymentDash = () => {
             console.error('Error deleting cards', error);
         }
     };
+
+    const updateCardDetails = async (e) => {
+        e.preventDefault();
+
+        try {
+            const resUp = await updateCard({ cNo: cardIdR, cardNumberF: cardNumberF, cvvF: cvvF, expireDate: expireDate }).unwrap();
+            setUpdateCard(resUp);
+            
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <>
@@ -159,7 +188,7 @@ const OccupantPaymentDash = () => {
 
                                                         {isHovered && (
                                                             <div key={card.id}>
-                                                                <button onClick={() => handleClickOpen(card.id)}>Update</button>
+                                                                <button onClick={() => handleClickOpen(card.cardNumber)}>Update</button>
                                                                 <button onClick={() => handleRemove(card.id)}>Remove</button>
                                                             </div>
                                                         )}
@@ -181,19 +210,25 @@ const OccupantPaymentDash = () => {
                     </Row>
                     <Dialog open={open} onClose={handleClose}>
                         <center><DialogTitle> Update Your card </DialogTitle></center>
-                        <DialogContent>
+                        <Form onSubmit={updateCardDetails}>
+                            <DialogContent>
+
                                 <Row>
-                            <TextField autoFocus margin="dense"id="name"label="card number"type="email" inputProps={{maxLength: 16, minLength:16 ,inputMode: 'numeric',title:'Card number should be 16 digit'}}/></Row>
-                            <Row>
-                            <TextField autoFocus margin="dense"id="name"label="Expire date"type="email" inputProps={{pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY'}}/></Row>
-                            <Row><TextField autoFocus margin="dense"id="name"label="CVV"type="email" inputProps={{maxLength: 3, minLength:3 ,inputMode: 'numeric',title:'Card number should be 16 digit'}}/></Row>
+                                    <TextField autoFocus margin="dense" id="name" label="card number" value={cardNumberF} onChange={(e) => setcardNumberF(e.target.value)} inputProps={{ maxLength: 16, minLength: 16, inputMode: 'numeric', title: 'Card number should be 16 digit' }} />
+                                </Row>
+                                <Row>
+                                    <TextField autoFocus margin="dense" id="name" label="Expire date" value={expireDate} onChange={(e) => setexpireDate(e.target.value)} inputProps={{ pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY' }} />
+                                </Row>
+                                <Row>
+                                    <TextField autoFocus margin="dense" id="name" label="CVV" value={cvvF} onChange={(e) => setcvvF(e.target.value)} inputProps={{ maxLength: 3, minLength: 3, inputMode: 'numeric', title: 'Card number should be 16 digit' }} />
+                                </Row>
 
-
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleClose}>Cancel</Button>
-                            <Button onClick={handleClose}>Update</Button>
-                        </DialogActions>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose}>Cancel</Button>
+                                <Button type="submit" onClick={handleClose}>Update</Button>
+                            </DialogActions>
+                        </Form>
                     </Dialog>
                     <TableContainer component={Paper} style={{ marginTop: '20px' }}>
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
