@@ -137,7 +137,7 @@ const OrderList = () =>{
                                                 <td > 
                                                    
                                                     <Button  style={{ background: ' blue', color: 'black', marginRight: '10px' }}
-                                                    onClick={() => navigate('/path-to-update-order')}>
+                                                    onClick={() => navigate('../occupant/create')}>
                                                         <BrowserUpdatedIcon /> Update
                                                     </Button>
                                                     <Button
