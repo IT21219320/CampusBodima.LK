@@ -174,19 +174,39 @@ const getMyReservation = asyncHandler(async (req, res) => {
 
     if (ViewMyReservation) {
 
-        const myDetails={
-            Id: ViewMyReservation._id,
-            name: user.firstName,
-            bType:ViewMyReservation.boardingType,
-            bName:boarding.boardingName,
-            rNo:room.roomNo,
-            Duration:ViewMyReservation.Duration,
-            reservedDt:ViewMyReservation.createdAt
+        if(ViewMyReservation.boardingType === "Annex"){
+            const myDetails={
+                Id: ViewMyReservation._id,
+                name: user.firstName,
+                bType:ViewMyReservation.boardingType,
+                bName:boarding.boardingName,
+                Duration:ViewMyReservation.Duration,
+                reservedDt:ViewMyReservation.createdAt
+            }
+            res.status(200).json({
+                myDetails,
+            })
+
+        }else {
+
+            const myDetails={
+                Id: ViewMyReservation._id,
+                name: user.firstName,
+                bType:ViewMyReservation.boardingType,
+                bName:boarding.boardingName,
+                rNo:room.roomNo,
+                Duration:ViewMyReservation.Duration,
+                reservedDt:ViewMyReservation.createdAt
+            }
+            res.status(200).json({
+                myDetails,
+            })
+
         }
 
-        res.status(200).json({
-            myDetails,
-        })
+        
+
+        
     }
     else {
         res.status(400);
