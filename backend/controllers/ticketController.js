@@ -284,9 +284,7 @@ const updateTicket = asyncHandler(async (req,res) => {
                     ticket = await ticket.save();
                 }
             }
-            console.log(ticketId);
-            console.log(description);
-            console.log(replyTktId);
+            
             
         }
         res.status(200).json({ticket});
