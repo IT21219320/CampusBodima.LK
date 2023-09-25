@@ -113,7 +113,7 @@ const updateIngredientPage = () => {
                             sx={{ mt: 2, bgcolor:'rgb(177 232 255)' }}
                             severity="info"
                         >
-                            <strong>Info</strong> -  You need to add Necessary Measurements for Quantity and Alert Quantity Field.
+                            <strong>Info</strong> -  If You Want to Change Quantity please Use Central or Reduce Inventory.
                         </Alert>
                     </Collapse>
 
@@ -160,6 +160,7 @@ const updateIngredientPage = () => {
                                 value={newQuantity}
                                 onChange={(e) => setQuantity(e.target.value)}
                                 required
+                                readOnly={true}
                               ></Form.Control>
                             </Form.Group>
 
@@ -181,6 +182,7 @@ const updateIngredientPage = () => {
                                 placeholder='Enter Date'
                                 value={newPurchaseDate}
                                 onChange={(e) => setPurchaseDate(e.target.value)}
+                                readOnly={true}
                               ></Form.Control>
                             </Form.Group>
 
