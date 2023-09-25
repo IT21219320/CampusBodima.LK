@@ -376,7 +376,7 @@ const OccupantTicketThreadPage = () => {
                                                                             </Typography>
                                                                         }
                                                                         <h5 style={{color:"dimgrey", marginBottom:"0px"}}>
-                                                                            &nbsp;You ({tkt.senderId.firstName})
+                                                                            &nbsp; {userInfo._id == tkt.senderId._id ?<>You ({tkt.senderId.firstName})</> : tkt.senderId.firstName}
                                                                         </h5>
                                                                     </Col>
                                                                     <Col lg={6}style={{textAlign:"right"}}>
