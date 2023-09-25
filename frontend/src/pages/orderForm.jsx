@@ -225,7 +225,7 @@ const OrderForm = () => {
     <div className="order-box">
       <div className="order-form-container">
       
-    <form onSubmit={submitHandler} >
+    <form onSubmit={submitHandler} className={formStyle.form} >
       <Row className={dashboardStyles.durationRaw}>
         
       <InputLabel

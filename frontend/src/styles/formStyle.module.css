@@ -1,7 +1,7 @@
 /* Add this CSS to your stylesheet */
 
 /* Style for the form container */
-form {
+.form {
   display: flex;
   flex-direction: column;
   max-width: 750px;
