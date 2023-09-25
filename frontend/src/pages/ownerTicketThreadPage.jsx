@@ -20,7 +20,7 @@ import storage from '../utils/firebaseConfig';
 import {ref, uploadBytesResumable, getDownloadURL} from 'firebase/storage'
 
 const OwnerTicketThreadPage = () => {
-/*
+
     const {ticketId} = useParams();
     const[ticket, setTicket] = useState("");
     const [description, setDescription] = useState('');
@@ -89,13 +89,12 @@ const OwnerTicketThreadPage = () => {
 
                 ticket = { ...ticket, reply: updatedReplies }; // Update the ticket object with the updated replies
             }
-
             setTicket(ticket);
 
             
         } catch(err){
             toast.error(err.data?.message || err.error);
-            navigate('/occupant/ticket');
+            navigate('/owner/ticket');
         }
     }
 
@@ -136,7 +135,7 @@ const OwnerTicketThreadPage = () => {
                 }
     
                 try{
-                    const res = await replyTicket( {_id:ticketId, description, attachment:uniqueName, senderId:ticket.senderId,  recieverId:ticket.recieverId} ).unwrap();
+                    const res = await replyTicket( {_id:ticketId, description, attachment:uniqueName, senderId:ticket.recieverId,  recieverId:ticket.senderId} ).unwrap();
                     //setTicket(res.updatedTicket);  updated ticket came from ticket controller response
                     loadData();
                     toast.success('Successfully sent the reply');
@@ -161,6 +160,60 @@ const OwnerTicketThreadPage = () => {
         
        
    }
+
+   const handleReplyResolvedBtn = async()=>{
+        setIsLoading3(true);
+
+        if (description != "") {
+            try {
+                var uniqueName;
+                if(attachment != ''){
+                    const timestamp = new Date().getTime();
+                    const random = Math.floor(Math.random() * 1000) + 1;
+                    uniqueName = `${timestamp}_${random}.${attachment.name.split('.').pop()}`;
+                
+                    const storageRef = ref(storage, `${uniqueName}`);
+                    const uploadTask = uploadBytesResumable(storageRef, attachment);
+    
+                    await uploadTask;
+                }
+    
+                try{
+                    const res = await replyTicket( {_id:ticketId, description, attachment:uniqueName, senderId:ticket.recieverId,  recieverId:ticket.senderId} ).unwrap();
+                    //setTicket(res.updatedTicket);  updated ticket came from ticket controller response
+                    
+                    setDescription('');
+                    toast.success('Successfully sent the reply');
+
+                    try{
+                        await updateTicketStatus( {_id:ticketId} ).unwrap();
+                        toast.success('Marked as resolved');
+                        loadData();
+                        setIsLoading3(false);
+                    } catch(err){
+                        toast.error(err.data?.message || err.error);
+                    }
+
+                    
+                } catch(err){
+                    toast.error(err.data?.message || err.error);
+                    setIsLoading3(false);
+                }
+    
+            } catch (error) {
+                console.log('Error uploading and retrieving image:', error);
+                setIsLoading3(false);
+            }
+        }
+        else{
+            toast.error("Enter a description");
+            setIsLoading3(false);
+        }
+
+        
+       
+   }
+
     //delete last ticket
     const handleDialogOpen = (e, id) => {
         e.preventDefault();
@@ -236,7 +289,7 @@ const OwnerTicketThreadPage = () => {
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
                                 <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
-                                <Link underline="hover" key="3" color="inherit" href="/occupant/ticket">My Tickets</Link>,
+                                <Link underline="hover" key="3" color="inherit" href="/owner/ticket">My Tickets</Link>,
 
                                 <Typography key="4" color="text.primary">{ticket.subject}</Typography>
                             </Breadcrumbs>
@@ -258,7 +311,7 @@ const OwnerTicketThreadPage = () => {
                         <>
                             <Row style={{marginTop:"10px"}}>
                                 <Col>
-                                    <Card variant="outlined" style={userInfo._id==ticket.senderId._id ? {borderLeft:'4px solid #5fa7f8'} : ''} >
+                                    <Card variant="outlined" style={userInfo._id==ticket.senderId._id ? {borderLeft:'4px solid #5fa7f8'} : {borderLeft:'initial'}} >
                                         <CardContent >
                                             <Row>
                                                 <Col style={{display:"flex", alignItems:"center"}}>
@@ -270,19 +323,19 @@ const OwnerTicketThreadPage = () => {
                                                         </Typography>
                                                     }
                                                     <h5 style={{color:"dimgrey", marginBottom:"0px"}}>
-                                                        &nbsp;You ({ticket.senderId.firstName})
+                                                        &nbsp; {userInfo._id==ticket.senderId._id ? <>You ({ticket.senderId.firstName})</> : ticket.senderId.firstName}
                                                     </h5>
                                                 </Col>
                                                 <Col style={{textAlign:"right"}}>
                                                     <BiTimeFive style={{marginBottom:"2px"}} /> {TimeAgo(new Date(ticket.createdAt))}
                                                 </Col>
-                                                {ticket.reply.length == 0 && (new Date(ticket.createdAt) > fifteenMinutesAgo) && userInfo._id==ticket.senderId._id ?
+                                                {ticket.reply.length == 0 && (new Date(ticket.createdAt) > fifteenMinutesAgo) && userInfo._id==ticket.senderId._id  ?
                                                 <>
                                                     <Col>
                                                         <Button style={{float:"right"}} onClick={(e) => handleDialogOpen(e,ticket._id)}><RiDeleteBinLine style={{color:"#f73b54"}}/></Button>
                                                     </Col>
                                                     <Col>
-                                                        <Button onClick={() => navigate(`/occupant/ticket/update/${ticket._id}`)}><FiEdit style={{color:"#3366ff" }} /></Button>
+                                                        <Button onClick={() => navigate(`/owner/ticket/update/${ticket._id}`)}><FiEdit style={{color:"#3366ff" }} /></Button>
                                                     </Col>
                                                 </>              
 
@@ -299,24 +352,24 @@ const OwnerTicketThreadPage = () => {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col> {/*we check update? (update part also here) }
+                                <Col> {/*we check update? (update part also here)*/ }
                                     {ticket.reply.length>0 ?
                                         ticket.reply.map((tkt, index) => (
-                                            (ticket.reply.length-1) == index && (new Date(tkt.createdAt) > fifteenMinutesAgo) && tkt.senderId._id == userInfo._id && update? 
+                                            (ticket.reply.length-1) == index && (new Date(tkt.createdAt) > fifteenMinutesAgo) && tkt.senderId._id == userInfo._id && update && ticket.status == "Pending"? 
                                                 <Card variant="outlined" key={index} style={userInfo._id==ticket.senderId._id ? {borderLeft:'4px solid #5fa7f8',marginTop:'20px'} : {marginTop:'20px'}}>
                                                     <CardContent >
                                                             <>
                                                                 <Row>
                                                                     <Col style={{display:"flex", alignItems:"center"}}>
                                                                         {tkt.senderId.image ? 
-                                                                            <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} src={ticket.senderId.image} style={{ width: 40, height: 40 }} referrerPolicy="no-referrer" /> 
+                                                                            <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} src={tkt.senderId.image} style={{ width: 40, height: 40 }} referrerPolicy="no-referrer" /> 
                                                                         : 
                                                                             <Typography component="div">
-                                                                                <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} {...StringToAvatar(ticket.senderId.firstName+" "+ticket.senderId.lastName)} style={{ width: 40, height: 40, fontSize: 20 }} />
+                                                                                <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} {...StringToAvatar(tkt.senderId.firstName+" "+tkt.senderId.lastName)} style={{ width: 40, height: 40, fontSize: 20 }} />
                                                                             </Typography>
                                                                         }
                                                                         <h5 style={{color:"dimgrey", marginBottom:"0px"}}>
-                                                                            &nbsp;You ({tkt.senderId.firstName})
+                                                                            &nbsp;{userInfo._id==tkt.senderId._id ? <>You ({tkt.senderId.firstName})</> : tkt.senderId.firstName}
                                                                         </h5>
                                                                     </Col>
                                                                     <Col lg={6}style={{textAlign:"right"}}>
@@ -363,32 +416,32 @@ const OwnerTicketThreadPage = () => {
                                                     </CardContent>
                                                 </Card>
                                             :
-                                                <Card variant="outlined" key={index} style={userInfo._id==ticket.senderId._id ? {borderLeft:'4px solid #5fa7f8',marginTop:'20px'} : {marginTop:'20px'}}>
+                                                <Card variant="outlined" key={index} style={userInfo._id==tkt.senderId._id ? {borderLeft:'4px solid #5fa7f8',marginTop:'20px'} : {marginTop:'20px'}}>
                                                     <CardContent >
                                                             <>
                                                                 <Row>
                                                                     <Col style={{display:"flex", alignItems:"center"}}>
                                                                         {tkt.senderId.image ? 
-                                                                            <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} src={ticket.senderId.image} style={{ width: 40, height: 40 }} referrerPolicy="no-referrer" /> 
+                                                                            <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} src={tkt.senderId.image} style={{ width: 40, height: 40 }} referrerPolicy="no-referrer" /> 
                                                                         : 
                                                                             <Typography component="div">
-                                                                                <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} {...StringToAvatar(ticket.senderId.firstName+" "+ticket.senderId.lastName)} style={{ width: 40, height: 40, fontSize: 20 }} />
+                                                                                <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} {...StringToAvatar(tkt.senderId.firstName+" "+tkt.senderId.lastName)} style={{ width: 40, height: 40, fontSize: 20 }} />
                                                                             </Typography>
                                                                         }
                                                                         <h5 style={{color:"dimgrey", marginBottom:"0px"}}>
-                                                                            &nbsp;You ({tkt.senderId.firstName})
+                                                                            &nbsp;{userInfo._id==tkt.senderId._id ? <>You ({tkt.senderId.firstName})</> : tkt.senderId.firstName}
                                                                         </h5>
                                                                     </Col>
-                                                                    <Col lg={6}style={{textAlign:"right"}}>
+                                                                    <Col style={{textAlign:"right"}}>
                                                                         <BiTimeFive style={{marginBottom:"2px"}} /> {TimeAgo(new Date(tkt.createdAt))}
                                                                     </Col>
-                                                                    {(ticket.reply.length-1) == index && (new Date(tkt.createdAt) > fifteenMinutesAgo) && tkt.senderId._id == userInfo._id ? 
+                                                                    {(ticket.reply.length-1) == index && (new Date(tkt.createdAt) > fifteenMinutesAgo) && tkt.senderId._id == userInfo._id && ticket.status == "Pending" ? 
                                                                     <>
                                                                         <Col lg={1}>
-                                                                            <Button style={{float:"right"}} onClick={(e) => handleDialogOpen(e,tkt._id)}><RiDeleteBinLine style={{color:"#f73b54",fontSize:"20px"}}/></Button>
-                                                                        </Col>
-                                                                        <Col lg={1}>
-                                                                            <Button onClick={() => handleEditBtn(tkt)}><FiEdit style={{color:"#3366ff", fontSize:"20px" }} /></Button>
+                                                                            <div style={{display:'flex'}}>
+                                                                                <Button style={{minWidth:'0', padding:'3px'}} onClick={(e) => handleDialogOpen(e,tkt._id)}><RiDeleteBinLine style={{color:"#f73b54",fontSize:"20px"}}/></Button>
+                                                                                <Button style={{minWidth:'0', padding:'3px'}} onClick={() => handleEditBtn(tkt)}><FiEdit style={{color:"#3366ff", fontSize:"20px" }} /></Button>
+                                                                            </div>  
                                                                         </Col>
                                                                     </>              
                                                                     :""}
@@ -406,7 +459,7 @@ const OwnerTicketThreadPage = () => {
                                         ))
                                     : ''}
                                 </Col>
-                            </Row>
+                            </Row> 
                             {ticket.status == "Pending" ?
                             <Row style={{marginTop:"50px"}}>
                                 <Col>
@@ -416,15 +469,15 @@ const OwnerTicketThreadPage = () => {
                                             <CardContent>
                                                 <Row>
                                                     <Col style={{display:"flex", alignItems:"center"}}>
-                                                        {ticket.senderId.image ? 
-                                                            <Avatar alt={ticket.senderId.firstName+" "+ticket.senderId.lastName} src={ticket.senderId.image} style={{ width: 40, height: 40 }} referrerPolicy="no-referrer" /> 
+                                                        {ticket.recieverId.image ? 
+                                                            <Avatar alt={ticket.recieverId.firstName+" "+ticket.recieverId.lastName} src={ticket.recieverId.image} style={{ width: 40, height: 40 }} referrerPolicy="no-referrer" /> 
                                                         : 
                                                             <Typography component="div">
-                                                                <Avatar alt={ticket.senderId.firstName+" "+ticket.senderId.lastName} {...StringToAvatar(ticket.senderId.firstName+" "+ticket.senderId.lastName)} style={{ width: 40, height: 40, fontSize: 20 }} />
+                                                                <Avatar alt={ticket.recieverId.firstName+" "+ticket.recieverId.lastName} {...StringToAvatar(ticket.recieverId.firstName+" "+ticket.recieverId.lastName)} style={{ width: 40, height: 40, fontSize: 20 }} />
                                                             </Typography>
                                                         }
                                                         <h5 style={{color:"dimgrey", marginBottom:"0px"}}>
-                                                            &nbsp;You ({ticket.senderId.firstName})
+                                                            &nbsp;You ({ticket.recieverId.firstName})
                                                         </h5>
                                                     </Col>
                                                 </Row>
@@ -456,6 +509,7 @@ const OwnerTicketThreadPage = () => {
                                                 <Row>
                                                     <Col>
                                                         <Button variant="contained" style={{marginLeft:"40px"}} onClick={handleReplyBtn}>Reply</Button>
+                                                        <Button variant="contained" color="success" style={{marginLeft:"40px"}} onClick={handleReplyResolvedBtn}>Mark as Resolved</Button>
                                                     </Col>
                                                 </Row>
 
@@ -493,8 +547,9 @@ const OwnerTicketThreadPage = () => {
                 </DialogActions>
             </Dialog>
         </>
-    ) */
+    )
 
-} 
+
+}
 
 export default OwnerTicketThreadPage;

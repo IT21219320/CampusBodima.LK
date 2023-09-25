@@ -1,0 +1,50 @@
+.card{
+    margin-top: 10px;
+    box-shadow: 2px 1px 10px -5px black;
+    height: 60px;
+    margin-bottom: 16px;
+}
+
+.table{
+    margin-top: 10px !important;
+}
+
+.ticketSubject{
+    cursor: pointer;
+}
+
+.ticketSubject:hover{
+    text-decoration: underline;
+}
+
+.cardStatus{
+    width: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 8px;
+    text-align: center;
+    color: aliceblue;
+
+}
+   
+.yellowBG{
+    background-color:#fdd835 !important;
+    color: aliceblue !important;
+    font-weight: 600;
+    box-shadow: 0px 0px 5px 0px #0000003d;
+    border: 0 !important;
+}
+
+.greenBG{
+    background-color:#3adc1f !important;
+    color: aliceblue !important;
+    font-weight: 600;
+    box-shadow: 0px 0px 5px 0px #0000003d;
+    border: 0 !important;
+}
+
+.actionBtns{
+    padding: 0;
+    display: inline-block;
+    min-width: 0 !important;
+}
