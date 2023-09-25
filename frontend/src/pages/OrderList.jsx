@@ -93,6 +93,12 @@ const OrderList = () =>{
                         </Breadcrumbs>
                     </Col>
                 </Row>
+                <p></p>
+                
+            <Col style={{ textAlign: 'right' }}>
+              <Button variant="contained" onClick={() => navigate('/occupant/order')}>New Order</Button>
+            </Col>
+                
                 <Row>
                         <Col>
                             <Card variant="outlined" className={occupantFeedbackStyles.card}>
@@ -108,13 +114,15 @@ const OrderList = () =>{
                             <Table striped bordered hover className={occupantFeedbackStyles.table}>
                                 <thead>
                                         <tr style={{textAlign:'center'}}>
-                                            <th>Order id</th>
+                                            {/*<th>Order id</th>*/}
+                                            <th>Date & Time</th>
                                             <th>Order Number</th>
                                             <th>Product</th>
                                             <th>Food Type</th>
                                             <th>Quantity</th>
                                             <th>Price</th>
                                             <th>Total</th>
+                                            <th>Update Or Delete</th>
                                             
                                         </tr>
                                 </thead>
@@ -126,7 +134,8 @@ const OrderList = () =>{
                                     ) : product && product.length > 0 ? (
                                       product.map((order, index) => (
                                             <tr key={index}>
-                                                <td>{order._id}</td>
+                                                {/*<td>{order._id}</td>*/}
+                                                <td>{order.date}</td>
                                                 <td>{order.orderNo}</td>
                                                 <td>{order.product}</td>
                                                 <td>{order.foodType}</td>
@@ -137,7 +146,7 @@ const OrderList = () =>{
                                                 <td > 
                                                    
                                                     <Button  style={{ background: ' blue', color: 'black', marginRight: '10px' }}
-                                                    onClick={() => navigate('../occupant/create')}>
+                                                    onClick={() => navigate('/occupant/order/orderList/updateOrder')}>
                                                         <BrowserUpdatedIcon /> Update
                                                     </Button>
                                                     <Button

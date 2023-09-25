@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { useSelector } from "react-redux";
 import { toast } from 'react-toastify';
 import { Row, Col, Form } from "react-bootstrap";
-
-import FormControl from '@mui/material/FormControl';
+import { Breadcrumbs,Container, Button,Link,Typography,Card, CardContent, TextField, CircularProgress } from '@mui/material';
+import { NavigateNext } from '@mui/icons-material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { useCreateOrderMutation } from '../slices/orderApiSlice'; // Import the generated mutation function
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-
+import formStyle from '../styles/formStyle.module.css';
+import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
 
 const OrderForm = () => {
   const [product, setProduct]=useState('')
@@ -75,7 +76,11 @@ const OrderForm = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      // Calculate the price
+      // Validate if quantity is a positive value
+      if (quantity <= 0) {
+        toast.error('Quantity must be a positive value.');
+        return;
+      }
       const calculatedPrice = calculatePrice();
   
       // Create the order with calculated price
@@ -107,14 +112,22 @@ const OrderForm = () => {
   const renderFoodTypeDropdown = () => {
     if (product === '3' || product === '6') {
       return (
-        <Row className={dashboardStyles.durationRaw}>
-          <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+        <Row className={dashboardStyles.mainDiv}>
+          
             <InputLabel id="demo-simple-select-standard-label">Food Type</InputLabel>
             <Select
               labelId="demo-simple-select-standard-label"
               value={foodType}
+              
               onChange={(e) => setFoodType(e.target.value )}
               required
+              style={{
+                width: '100%',
+                padding: '10px',
+                border: '1px solid #ccc',
+                borderRadius: '5px',
+                marginTop: '10px',
+              }}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -123,19 +136,27 @@ const OrderForm = () => {
               <MenuItem value="1">Fish</MenuItem>
               <MenuItem value="7">Egg</MenuItem>
             </Select>
-          </FormControl>
+          
         </Row>
       );
     } else if (product === '12') {
       return (
-        <Row className={dashboardStyles.durationRaw}>
-          <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+        <Row className={dashboardStyles.mainDiv}>
+         
             <InputLabel id="demo-simple-select-standard-label">Food Type</InputLabel>
             <Select
               labelId="demo-simple-select-standard-label"
               value={foodType}
+            
               onChange={(e) => setFoodType(e.target.value )}
               required
+              style={{
+                width: '100%',
+                padding: '10px',
+                border: '1px solid #ccc',
+                borderRadius: '5px',
+                marginTop: '10px',
+              }}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -143,19 +164,27 @@ const OrderForm = () => {
               <MenuItem value="2">Chicken</MenuItem>
               <MenuItem value="7">Egg</MenuItem>
             </Select>
-          </FormControl>
+          
         </Row>
       );
     } else {
       return (
-        <Row className={dashboardStyles.durationRaw}>
-          <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+        <Row className={dashboardStyles.mainDiv}>
+          
             <InputLabel id="demo-simple-select-standard-label">Food Type</InputLabel>
             <Select
               labelId="demo-simple-select-standard-label"
               value={foodType}
+              
               onChange={(e) => setFoodType(e.target.value )}
               required
+              style={{
+                width: '97%',
+                padding: '10px',
+                border: '1px solid #ccc',
+                borderRadius: '5px',
+                marginTop: '10px',
+              }}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -163,66 +192,138 @@ const OrderForm = () => {
               <MenuItem value="5">Normal</MenuItem>
               <MenuItem value="7">Egg</MenuItem>
             </Select>
-          </FormControl>
+          
         </Row>
       );
     }
   };
 
-  const formStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    maxWidth: '300px',
-    margin: '0 auto',
-  };
+  
 
   return (<>
     <Sidebar />
-    <div className={dashboardStyles.mainDiv}>
-    <form onSubmit={submitHandler} style={formStyle}>
+    <Container className={formStyle.containerStyles}>
+    <Row>
+                    <Col>
+                        <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
+                            <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
+                            <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
+                            
+                            <Typography key="3" color="text.primary">Create Order</Typography>
+                        </Breadcrumbs>
+                    </Col>
+                </Row>
+                <Row>
+                        <Col>
+                            <Card variant="outlined" className={occupantFeedbackStyles.card}>
+                                <CardContent>
+                                    <h3>Create New Order</h3>
+                                </CardContent>
+                            </Card>
+                        </Col>
+                    </Row>
+    <div className="order-box">
+      <div className="order-form-container">
+      
+    <form onSubmit={submitHandler} >
       <Row className={dashboardStyles.durationRaw}>
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel id="demo-simple-select-standard-label">Product</InputLabel>
-          <Select
-            labelId="demo-simple-select-standard-label"
-            value={product}
-            onChange={(e) => setProduct( e.target.value )}
-            required
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value="3">Fried Rice</MenuItem>
-            <MenuItem value="6">Rice & Curry</MenuItem>
-            <MenuItem value="12">Noodles</MenuItem>
-            <MenuItem value="24">Hoppers</MenuItem>
-          </Select>
-        </FormControl>
+        
+      <InputLabel
+  id="demo-simple-select-standard-label"
+  style={{
+    // Your inline CSS styles for InputLabel here
+    // For example:
+    fontSize: '16px',
+    fontWeight: 'bold',
+  }}
+>
+  Product
+</InputLabel>
+<Select
+  labelId="demo-simple-select-standard-label"
+  value={product}
+  onChange={(e) => setProduct(e.target.value)}
+  required
+  style={{
+    // Your inline CSS styles for Select here
+    // For example:
+    width: '94%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    marginTop: '10px',
+  }}
+>
+  <MenuItem value="">
+    <em>None</em>
+  </MenuItem>
+  <MenuItem value="3">Fried Rice</MenuItem>
+  <MenuItem value="6">Rice & Curry</MenuItem>
+  <MenuItem value="12">Noodles</MenuItem>
+  <MenuItem value="24">Hoppers</MenuItem>
+</Select>
+
+        
       </Row>
+      <Row>
 
       {renderFoodTypeDropdown()}
-
+      </Row>
+      <p></p>
       <input
         type="number"
         placeholder="Quantity"
         value={quantity}
+        style={{
+          padding: '5px',
+          width: '15%',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+          margin: '10px auto',
+        }}
         onChange={handleQuantityChange}
         required
       />
       {/* Display the calculated price */}
-      <div>Price: {calculatePrice()}</div>
+      <div style={{
+          padding: '5px',
+          width: '15%',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+          margin: '10px auto',
+        }}>Price: {calculatePrice()}</div>
       
       {/* Display the total by multiplying quantity by price */}
-      <div>Total: {total}</div>
-      <div>Order No: {orderNo}</div>
-      <button type="submit" loading={isLoading}>
+      <div style={{
+          padding: '5px',
+          width: '15%',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+          margin: '10px auto',
+        }}>Total: {total}</div>
+      <div style={{
+          padding: '5px',
+          width: '15%',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+          margin: '10px auto',
+        }}>Order No: {orderNo}</div>
+      <Button 
+      type="submit" 
+      loading={isLoading} 
+      variant="contained"
+      color="primary"
+      >
         {isLoading ? 'Creating Order...' : 'Create Order'}
-      </button>
+      </Button>
       {isError && <div>Error: {error.message}</div>}
     </form>
     </div>
+    </div>
+    </Container>
     </>
   );
+  
 };
 
 export default OrderForm; 

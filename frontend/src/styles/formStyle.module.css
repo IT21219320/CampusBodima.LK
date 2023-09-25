@@ -4,7 +4,7 @@
 form {
   display: flex;
   flex-direction: column;
-  max-width: 300px;
+  max-width: 750px;
   margin: 0 auto;
   padding: 20px;
   background-color: #f9f9f9;
@@ -24,7 +24,7 @@ form {
 
 /* Style for the input/select elements */
 .form-input {
-  width: 100%;
+  width: 50%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -61,3 +61,11 @@ form {
 }
 
 
+/* styles.css */
+.containerStyles {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
