@@ -141,7 +141,7 @@ const router = createBrowserRouter(
           <Route path='/occupant/reservations/reserve/:bId/:rId' element={<ReserveHostelPage />} />
           <Route path='/occupant/reservations/reserve/:bId/' element={<ReserveAnnexPage />} />
           <Route path='/occupant/reservations/confirm/' element={<ConfirmReservationPage />} />
-          <Route path='/occupant/reservations/myReservation/' element={<MyReservationPage />} />
+          <Route path='/occupant/boarding' element={<MyReservationPage />} />
           
           <Route path='/occupant/feedback' element={<OccupantFeedback />} />
           <Route path='/occupant/feedback/create' element={<CreateFeedback />} />

@@ -258,7 +258,7 @@ const OccupantTicketThreadPage = () => {
                         <>
                             <Row style={{marginTop:"10px"}}>
                                 <Col>
-                                    <Card variant="outlined" style={userInfo._id==ticket.senderId._id ? {borderLeft:'4px solid #5fa7f8'} : ''} >
+                                    <Card variant="outlined" style={userInfo._id==ticket.senderId._id ? {borderLeft:'4px solid #5fa7f8'} : {borderLeft:'initial'}} >
                                         <CardContent >
                                             <Row>
                                                 <Col style={{display:"flex", alignItems:"center"}}>
@@ -302,17 +302,17 @@ const OccupantTicketThreadPage = () => {
                                 <Col> {/*we check update? (update part also here)*/ }
                                     {ticket.reply.length>0 ?
                                         ticket.reply.map((tkt, index) => (
-                                            (ticket.reply.length-1) == index && (new Date(tkt.createdAt) > fifteenMinutesAgo) && tkt.senderId._id == userInfo._id && update? 
+                                            (ticket.reply.length-1) == index && (new Date(tkt.createdAt) > fifteenMinutesAgo) && tkt.senderId._id == userInfo._id && update && ticket.status == "Pending"? 
                                                 <Card variant="outlined" key={index} style={userInfo._id==ticket.senderId._id ? {borderLeft:'4px solid #5fa7f8',marginTop:'20px'} : {marginTop:'20px'}}>
                                                     <CardContent >
                                                             <>
                                                                 <Row>
                                                                     <Col style={{display:"flex", alignItems:"center"}}>
                                                                         {tkt.senderId.image ? 
-                                                                            <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} src={ticket.senderId.image} style={{ width: 40, height: 40 }} referrerPolicy="no-referrer" /> 
+                                                                            <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} src={tkt.senderId.image} style={{ width: 40, height: 40 }} referrerPolicy="no-referrer" /> 
                                                                         : 
                                                                             <Typography component="div">
-                                                                                <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} {...StringToAvatar(ticket.senderId.firstName+" "+ticket.senderId.lastName)} style={{ width: 40, height: 40, fontSize: 20 }} />
+                                                                                <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} {...StringToAvatar(tkt.senderId.firstName+" "+tkt.senderId.lastName)} style={{ width: 40, height: 40, fontSize: 20 }} />
                                                                             </Typography>
                                                                         }
                                                                         <h5 style={{color:"dimgrey", marginBottom:"0px"}}>
@@ -363,16 +363,16 @@ const OccupantTicketThreadPage = () => {
                                                     </CardContent>
                                                 </Card>
                                             :
-                                                <Card variant="outlined" key={index} style={userInfo._id==ticket.senderId._id ? {borderLeft:'4px solid #5fa7f8',marginTop:'20px'} : {marginTop:'20px'}}>
+                                                <Card variant="outlined" key={index} style={userInfo._id==tkt.senderId._id ? {borderLeft:'4px solid #5fa7f8',marginTop:'20px'} : {marginTop:'20px'}}>
                                                     <CardContent >
                                                             <>
                                                                 <Row>
                                                                     <Col style={{display:"flex", alignItems:"center"}}>
                                                                         {tkt.senderId.image ? 
-                                                                            <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} src={ticket.senderId.image} style={{ width: 40, height: 40 }} referrerPolicy="no-referrer" /> 
+                                                                            <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} src={tkt.senderId.image} style={{ width: 40, height: 40 }} referrerPolicy="no-referrer" /> 
                                                                         : 
                                                                             <Typography component="div">
-                                                                                <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} {...StringToAvatar(ticket.senderId.firstName+" "+ticket.senderId.lastName)} style={{ width: 40, height: 40, fontSize: 20 }} />
+                                                                                <Avatar alt={tkt.senderId.firstName+" "+tkt.senderId.lastName} {...StringToAvatar(tkt.senderId.firstName+" "+tkt.senderId.lastName)} style={{ width: 40, height: 40, fontSize: 20 }} />
                                                                             </Typography>
                                                                         }
                                                                         <h5 style={{color:"dimgrey", marginBottom:"0px"}}>
@@ -382,13 +382,13 @@ const OccupantTicketThreadPage = () => {
                                                                     <Col lg={6}style={{textAlign:"right"}}>
                                                                         <BiTimeFive style={{marginBottom:"2px"}} /> {TimeAgo(new Date(tkt.createdAt))}
                                                                     </Col>
-                                                                    {(ticket.reply.length-1) == index && (new Date(tkt.createdAt) > fifteenMinutesAgo) && tkt.senderId._id == userInfo._id ? 
+                                                                    {(ticket.reply.length-1) == index && (new Date(tkt.createdAt) > fifteenMinutesAgo) && tkt.senderId._id == userInfo._id && ticket.status == "Pending" ? 
                                                                     <>
                                                                         <Col lg={1}>
-                                                                            <Button style={{float:"right"}} onClick={(e) => handleDialogOpen(e,tkt._id)}><RiDeleteBinLine style={{color:"#f73b54",fontSize:"20px"}}/></Button>
-                                                                        </Col>
-                                                                        <Col lg={1}>
-                                                                            <Button onClick={() => handleEditBtn(tkt)}><FiEdit style={{color:"#3366ff", fontSize:"20px" }} /></Button>
+                                                                            <div style={{display:'flex'}}>
+                                                                                <Button style={{minWidth:'0', padding:'3px'}} onClick={(e) => handleDialogOpen(e,tkt._id)}><RiDeleteBinLine style={{color:"#f73b54",fontSize:"20px"}}/></Button>
+                                                                                <Button style={{minWidth:'0', padding:'3px'}} onClick={() => handleEditBtn(tkt)}><FiEdit style={{color:"#3366ff", fontSize:"20px" }} /></Button>
+                                                                            </div>  
                                                                         </Col>
                                                                     </>              
                                                                     :""}

@@ -11,6 +11,7 @@ import { ref, getDownloadURL } from "firebase/storage";
 import storage from "../utils/firebaseConfig";
 
 import Sidebar from '../components/sideBar';
+import Header from '../components/header'
 
 import ownerStyles from '../styles/ownerStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
@@ -118,6 +119,7 @@ const ViewBoarding = () => {
     return (
         <>
             <div className={dashboardStyles.mainDiv}>
+                <Header />
                 <Container className={dashboardStyles.container}>
                             
                     <Fade in={viewUserInfo} >
@@ -225,18 +227,6 @@ const ViewBoarding = () => {
                                                                                         <p className={ownerStyles.paras}><b>Beds:</b> {room.noOfBeds}</p>
                                                                                         <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(room.noOfAttachBaths)+parseInt(room.noOfCommonBaths)}</p>
                                                                                     </Col>
-                                                                                    {room.occupant.length > 0 ?
-                                                                                    <Col>
-                                                                                        <>
-                                                                                            <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Occupants</b></p>
-                                                                                            <ul style={{paddingLeft:'1.5em'}}>
-                                                                                                {room.occupant.map((occupant,index) => (
-                                                                                                <li key={index} style={{color:'dimgray'}}>{occupant.firstName}</li>
-                                                                                                ))}
-                                                                                            </ul>
-                                                                                        </>
-                                                                                    </Col>
-                                                                                    :''}
                                                                                     <Col>
                                                                                     {boarding.boardingType == 'Hostel' ? 
                                                                                         <>
