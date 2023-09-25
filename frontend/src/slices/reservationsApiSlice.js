@@ -62,8 +62,9 @@ export const reservationApiSlice = apiSlice.injectEndpoints({
 
         deleteReservation: builder.mutation({
             query: (data) => ({
-                url: `${RESERVATION_URL}/deleteReservation/${data}`,
+                url: `${RESERVATION_URL}/deleteReservation`,
                 method: 'DELETE',
+                body: data,
             }),
         }),
 

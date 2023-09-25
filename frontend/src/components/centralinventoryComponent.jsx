@@ -5,7 +5,7 @@ import { Breadcrumbs, Typography, Button, Link, CircularProgress, Box, Collapse,
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from "../slices/authSlice";
-import { useAddIngredientMutation,useGetBoardingIngredientNamesMutation } from '../slices/ingredientsApiSlice';
+import { useIncreaseIngredientQuantityMutation,useGetBoardingIngredientNamesMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
 import LoadingButton from '@mui/lab/LoadingButton';
 import FormContainer from "../components/formContainer";
@@ -28,7 +28,7 @@ const centralinventoryPage = ({ boardingId }) => {
   const [measurement, setMeasurement] = useState('');
   const [purchaseDate, setPurchaseDate] = useState('');
    
-  const [addIngredient, {isLoading}] = useAddIngredientMutation();
+  const [increaseIngredientQuantity, {isLoading}] = useIncreaseIngredientQuantityMutation();
   const [getIngredientNames,{isLoading2}] = useGetBoardingIngredientNamesMutation();
 
   const navigate = useNavigate();
@@ -63,13 +63,17 @@ const centralinventoryPage = ({ boardingId }) => {
           purchaseDate,
         };
 
-        const res = await addIngredient(data).unwrap();
+        const res = await increaseIngredientQuantity(data).unwrap();
 
         if (res && res.ingredient) {
 
           toast.success('Data added successfully');
-          navigate('/owner/ingredient');  
-
+            setIngredientId('');
+            setQuantity('');
+            setMeasurement('');
+            setPurchaseDate('');
+            
+             
         } else {
           toast.error('Failed to add Data');
         }
@@ -80,6 +84,15 @@ const centralinventoryPage = ({ boardingId }) => {
        
     }
 
+    // Get the current date in the format YYYY-MM-DD
+  const getCurrentDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
 
 
   return (
@@ -87,23 +100,14 @@ const centralinventoryPage = ({ boardingId }) => {
        
       <div className={dashboardStyles.mainDiv}>
         <Container>
-          	<Row>
-                <Col>
-                    <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
-                        <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
-                        <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
-                        <Link underline="hover" key="3" color="inherit" href="/owner/ingredient">Ingredients</Link>,
-                        <Typography key="4" color="text.primary">Central</Typography>
-                    </Breadcrumbs>
-                </Col>
-            </Row>
+          	 
                     <Collapse in={noticeStatus}>
                         <Alert
                             action={ <IconButton aria-label="close" color="inherit" size="small" onClick={() => { setNoticeStatus(false); }} > <Close fontSize="inherit" /> </IconButton> }
                             sx={{ mt: 2, bgcolor:'rgb(177 232 255)' }}
                             severity="info"
                         >
-                            <strong>Info</strong> -  You need to add Necessary Measurements for Quantity and Alert Quantity Field.
+                            <strong>Info</strong> -  You need to add Necessary Measurements for Quantity Field.
                         </Alert>
                     </Collapse>
 
@@ -151,6 +155,7 @@ const centralinventoryPage = ({ boardingId }) => {
                                     value={measurement}
                                     label="Measurement"
                                     onChange={(e) => setMeasurement(e.target.value)}
+                                    required
                                   >
                                     <MenuItem value={'ml'}>ml</MenuItem>
                                     <MenuItem value={'g'}>g</MenuItem>
@@ -160,13 +165,16 @@ const centralinventoryPage = ({ boardingId }) => {
                             </Box>
 
                             
-                            <Form.Group className='my-2' controlId='confirmPassword'>
+                            <Form.Group className='my-2' controlId='purchaseDate'>
                               <Form.Label>Increase Date</Form.Label>
                               <Form.Control
                                 type='date'
                                 placeholder='Enter Date'
                                 value={purchaseDate}
                                 onChange={(e) => setPurchaseDate(e.target.value)}
+                                min={getCurrentDate()} // Set the minimum date to today
+                                max={getCurrentDate()} // Set the maximum date to today
+                                required
                               ></Form.Control>
                             </Form.Group>
 

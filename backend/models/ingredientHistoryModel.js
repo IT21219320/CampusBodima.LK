@@ -22,6 +22,8 @@ const ingredientHistorySchema = mongoose.Schema({
         ref: 'Boarding',
         required: true
     },
+}, {
+    timestamps: true
 });
 
 const IngredientHistory = mongoose.model('IngredientHistory', ingredientHistorySchema);
