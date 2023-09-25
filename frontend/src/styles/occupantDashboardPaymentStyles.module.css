@@ -1,6 +1,10 @@
 .cardStyles{
     padding: 9px 26px;
+    background-color: #d5ceeb !important;
+    border-radius: 25px !important;
+    border: 1px solid #d5ceeb !important;
 }
+
 a{
     text-decoration: none;
     
