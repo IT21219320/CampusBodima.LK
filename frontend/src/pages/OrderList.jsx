@@ -135,6 +135,11 @@ const OrderList = () =>{
                                                 <td>{order.total}</td>
                                                 {/* Render additional feedback data as needed */}
                                                 <td > 
+                                                   
+                                                    <Button  style={{ background: ' blue', color: 'black', marginRight: '10px' }}
+                                                    onClick={() => navigate('/path-to-update-order')}>
+                                                        <BrowserUpdatedIcon /> Update
+                                                    </Button>
                                                     <Button
                                                     style={{ background: 'red', color: 'black' }}
                                                     onClick={() => openDeleteModal(order)}
