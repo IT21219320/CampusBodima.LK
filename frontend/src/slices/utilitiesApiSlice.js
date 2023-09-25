@@ -19,10 +19,18 @@ export const utilitiesApiSlice = apiSlice.injectEndpoints({
                 body:data,
             }),
         }),
+        getUtilityReport : builder.mutation({
+            query: (data) => ({
+                url: `${UTILITIES_URL}/owner/report`,
+                method: 'POST',
+                body:data,
+            }),
+        }),
         getUtilitiesForOccupant: builder.mutation({
             query: ( data) => ({
-                url: `${UTILITIES_URL}/occupants/${data}`,
-                method: 'GET',
+                url: `${UTILITIES_URL}/occupants`,
+                method: 'POST',
+                body:data,
             }),
         }),
         updateUtility: builder.mutation({
@@ -67,8 +75,15 @@ export const utilitiesApiSlice = apiSlice.injectEndpoints({
                 url: `${UTILITIES_URL}/utility/${data}`,
                 method: 'GET',
             }),
-        })
+        }),
+        getOccupantName: builder.mutation({
+            query: (data) => ({
+                url: `${UTILITIES_URL}/occupant/${data}`,
+                method: 'GET',
+            }),
+        }),
     }),
-});
+        
+    });
 
-export const { useAddUtilitiesMutation,useGetUtilitiesForBoardingMutation,useGetUtilitiesForOccupantMutation,useUpdateUtilityMutation,useDeleteUtilityMutation,useGetOccupantMutation,useGetUtilityBoardingMutation,useGetFacilitiesBoardingMutation,useGetUpdateUtilityMutation,useGetBoardingMutation} = utilitiesApiSlice;
+export const { useAddUtilitiesMutation,useGetUtilitiesForBoardingMutation,useGetUtilityReportMutation,useGetUtilitiesForOccupantMutation,useUpdateUtilityMutation,useDeleteUtilityMutation,useGetOccupantMutation,useGetUtilityBoardingMutation,useGetFacilitiesBoardingMutation,useGetUpdateUtilityMutation,useGetBoardingMutation,useGetOccupantNameMutation} = utilitiesApiSlice;

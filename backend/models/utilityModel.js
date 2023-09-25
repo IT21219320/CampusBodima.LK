@@ -33,11 +33,13 @@ const utilitySchema = mongoose.Schema ({
     },
     occupant:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Reservation',
+        ref: 'User',
         required: false,
     }
 
 
+},{
+    timestamps: true
 });
 const Utility = mongoose.model('Utility', utilitySchema );
 

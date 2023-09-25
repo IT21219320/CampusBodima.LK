@@ -66,7 +66,7 @@ const {utilityType} =useParams();
 
                     {utilityType === 'Electricity' && <UpdateForm/> }
                     {utilityType === 'Water' && <UpdateForm/> }
-                    {utilityType === 'Other' }
+                    {utilityType === 'Other'&& <UpdateForm/> }
                   </Box>
                 
                 </Col>

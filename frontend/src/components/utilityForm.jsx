@@ -177,7 +177,27 @@ const removeImage = (imageToRemove) => {
   
 };
    
+ // Get the current date in the format YYYY-MM-DD
+ const getCurrentDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
+const handleAmountChange = (e) => {
+  const enteredAmount = e.target.value;
+
+  // Use a regular expression to check if the entered value is a valid number
+  if (/^\d*\.?\d*$/.test(enteredAmount)) {
+    // If it's a valid number, update the state
+    setAmount(enteredAmount);
+  } else {
+    // If it's not a valid number, show a toast message
+    toast.error("Please enter a valid number");
+  }
+};
  return(
     <>
             <div className={dashboardStyles.mainDiv}>
@@ -251,7 +271,7 @@ const removeImage = (imageToRemove) => {
                             <Col   xs={6} md={14}>
                                      <InputGroup style={{width:'60%'}}>
                                       <InputGroup.Text>Rs.</InputGroup.Text>
-                                      <Form.Control type="Number" placeholder="Amount" value={amount} onChange={ (e) => setAmount(e.target.value)} required style={{width:'40%'}}/>
+                                      <Form.Control type="Number" placeholder="Amount" value={amount} onChange={handleAmountChange} required style={{width:'40%'}}/>
                                       <InputGroup.Text>.00</InputGroup.Text>
                                       </InputGroup>
                             </Col> 
@@ -262,7 +282,7 @@ const removeImage = (imageToRemove) => {
                                               </Form.Label>
                                               </Col>
                                         <Col   xs={6} md={10}>
-                                               <Form.Control type="Date" placeholder="Date" value={date} onChange={ (e) => setDate(e.target.value)} required style={{width:'30%'}}/>
+                                               <Form.Control type="Date" placeholder="Date" value={date} onChange={ (e) => setDate(e.target.value)} required style={{width:'30%'}} min={getCurrentDate()} max={getCurrentDate()} ></Form.Control>
                                         </Col> 
                                         </Row>
                            <Row className="mt-3" >
@@ -272,7 +292,7 @@ const removeImage = (imageToRemove) => {
                                      </Form.Label>
                               </Col>
                               <Col   xs={6} md={10}>
-                                      <Form.Control as="textarea" type="text" rows={3} placeholder="Description" value={description} onChange={ (e) => setDescription(e.target.value)} required style={{width:'50%'}}/>
+                                      <Form.Control as="textarea" type="text" label="Enter Description" rows={3} placeholder="Description" value={description} onChange={ (e) => setDescription(e.target.value)} required style={{width:'50%'}}/>
                               </Col>  
                            </Row>   
                                                    <Row style={{marginTop:'20px'}}>

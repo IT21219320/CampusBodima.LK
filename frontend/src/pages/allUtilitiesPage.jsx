@@ -7,7 +7,7 @@ import CreateBoardingStyles from '../styles/createBoardingStyles.module.css';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { useGetUtilityBoardingMutation } from '../slices/utilitiesApiSlice'; 
+import { useGetUtilityBoardingMutation,useGetOccupantMutation,useGetBoardingMutation } from '../slices/utilitiesApiSlice'; 
 import { useDispatch, useSelector } from 'react-redux';
 import AllUtility from '../components/allUtilityComponent';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
@@ -16,7 +16,8 @@ import { RiWaterFlashFill } from 'react-icons/ri';
 import sideBarStyles from '../styles/sideBarStyles.module.css';
 import billStyles from '../styles/billStyles.module.css';
 import  BillStyles from '../styles/billStyles.module.css';
-
+import { toast } from 'react-toastify';
+import UtilityReport from '../components/utilityReportComponent';
   
 const AllUtilitiesPage = () =>{
 
@@ -25,17 +26,18 @@ const AllUtilitiesPage = () =>{
   const [boardingData, setBoardingData] = useState([]);
   const [utilityType,setUtilityType] = useState('Electricity');
   const [selectedBoardingId, setSelectedBoardingId] = useState('');
+  const [selectedOccupant, setSelectedOccupant] = useState('');
+  const [occupantData, setOccupantData] = useState([]);
 
-
-  const [getUtilityBoarding, { isLoadings }] = useGetUtilityBoardingMutation();
-     
+  const [getBoarding, { isLoadings }] =useGetBoardingMutation();
+  const[getOccupant,{isLoading2}]=useGetOccupantMutation();
  
 
   useEffect(() => {
     const loadData = async () => {
         try {
             const data = userInfo._id;
-            const res = await getUtilityBoarding( data ).unwrap();
+            const res = await getBoarding( data ).unwrap();
             console.log('res.boardings:', res.boardings);
             if (Array.isArray(res.boardings)) {
               const boardingData = res.boardings.map((boarding)=> ({
@@ -51,19 +53,39 @@ const AllUtilitiesPage = () =>{
         }
     };
     loadData();
-},[getUtilityBoarding, userInfo._id]);
-
+},[getBoarding, userInfo._id]);
 useEffect(() => {
   if (boardingData.length > 0) {
     setSelectedBoardingId(boardingData[0].id);
+    
+    // Load occupants for the default selected boarding here
+    loadOccupants(boardingData[0].id);
   }
 }, [boardingData]);
-  
+
+const loadOccupants = async (selectedBoardingId) => {
+  try {
+    const response = await getOccupant(selectedBoardingId).unwrap();
+    const occupantsData = response.occupants;
+    setOccupantData(occupantsData);
+  } catch (err) {
+    toast.error(err.data?.message || err.error);
+  }
+};
 
 const handleBoardingNameChange = (event) => {
-  setSelectedBoardingId(event.target.value);
-}; 
-    
+  const selectedValue = event.target.value;
+  setSelectedBoardingId(selectedValue);
+
+  // Load occupants only if a boarding is selected (not empty)
+  if (selectedValue) {
+    loadOccupants(selectedValue);
+  } else {
+    // Handle the case when the user selects the empty option (clear selection)
+    setOccupantData([]); // Clear the occupants data
+  }
+};
+
     const handleChange = (event, newUtilityType) => {
       setUtilityType( newUtilityType);
     };
@@ -103,6 +125,9 @@ const handleBoardingNameChange = (event) => {
                                       value={selectedBoardingId}
                                       label="Boarding Name"
                                       onChange={handleBoardingNameChange} >
+                                                  <MenuItem value="">
+                                                            <em>None</em>
+                                                          </MenuItem>
                                                   {boardingData.map((boarding) => ( 
                                                          <MenuItem key={boarding.id} value={boarding.id}>
                                                               {boarding.name}
@@ -110,7 +135,7 @@ const handleBoardingNameChange = (event) => {
                                                           ))}
                                  </Select>
                              </FormControl>
-                                   </Col> 
+                                   </Col>
                                    <Col>
                                    <Row style={{textAlign:'right', marginBottom:'20px'}}>
                                     <Col><Link href='/owner/utility/add'><Button className="mt-4" style={{background: '#685DD8'}}><RiWaterFlashFill style={{fontSize:'1.5em'}}/> Add New Utility Bill</Button></Link></Col>
@@ -131,17 +156,18 @@ const handleBoardingNameChange = (event) => {
                       <Tab label="Electricity" value="Electricity" />
                       <Tab label="Water" value="Water" />
                       <Tab label="Other"value="Other" />
+                      <Tab label="Utility Report"value="UtilityReport"/>
                       <Tab >
                       </Tab>
                     </Tabs>
                     {utilityType === 'Electricity' && <AllUtility boardingId ={selectedBoardingId} utilityType={utilityType}/>  }
                     {utilityType === 'Water'&& <AllUtility boardingId ={selectedBoardingId} utilityType={utilityType}/> }
-                    {utilityType === 'Other'  }
-
+                    {utilityType === 'Other' &&<AllUtility boardingId ={selectedBoardingId} utilityType={utilityType}/>  }
+                    {utilityType ==='UtilityReport' && <UtilityReport boardingId={selectedBoardingId}/>}
                   </Box> 
                 
                 </Col>
-               
+                
               </Row>
               
                             

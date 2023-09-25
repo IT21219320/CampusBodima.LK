@@ -4,7 +4,7 @@ import { Card, CardContent, Pagination, CircularProgress,IconButton } from "@mui
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetUtilitiesForBoardingMutation, useDeleteUtilityMutation } from "../slices/utilitiesApiSlice";
+import { useGetUtilitiesForBoardingMutation, useDeleteUtilityMutation ,useGetUtilitiesForOccupantMutation,useGetOccupantNameMutation } from "../slices/utilitiesApiSlice";
 import { toast } from 'react-toastify';
 import SearchIcon from '@mui/icons-material/Search';
 import storage from "../utils/firebaseConfig";
@@ -15,10 +15,12 @@ import ownerStyles from '../styles/ownerStyles.module.css';
 import BillStyles from '../styles/billStyles.module.css';
 
 
+
 const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [utilities, setUtilities] = useState([]);
+    const [OccupantName, setOccupant] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -28,6 +30,21 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
     const [deleteUtility,{isLoadings}] = useDeleteUtilityMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
+    const [getOccupantName,{isLoadings3}] = useGetOccupantNameMutation();
+
+    const fetchOccupantNameById = async (occupantID) => {
+        try {
+            if (!occupantID) {
+                return 'N/A'; // Handle null or undefined occupantID
+            }
+            const response = await getOccupantName(occupantID).unwrap();
+            setOccupant(response.occupantName);
+        } catch (error) {
+            console.error('Error fetching occupant:', error);
+            return 'N/A'; // Handle errors gracefully
+        }
+    }
+    
 
     const loadData = async (pageNo) => {
         try {
@@ -36,7 +53,8 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
                 console.log(res);
                 setUtilities(res.utility);
                 setTotalPages(res.totalPages);
-
+                
+                   
                 // Load utility images
                 const updatedUtilities = await Promise.all(res.utility.map(async (utility) => {
                     const updatedImages = await Promise.all(utility.utilityImage.map(async (image, index) => {
@@ -48,7 +66,13 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
                             return null;
                         }
                     }));
+                    const occupants=utility.occupant;
+                    const occupantName = await fetchOccupantNameById(occupants);
+                    console.log('Occupant Name:', occupantName); // Add this line for debugging
+        
                     return { ...utility, utilityImage: updatedImages };
+
+
                 }));
 
                 setUtilities(updatedUtilities);
@@ -155,6 +179,13 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
                                                         <p><b>Date:</b> {new Date(utility.date).toLocaleDateString()}</p>
                                                     ) : null}
                                                 </Row>
+                                                {utility.occupant ? 
+                                                <Row>
+                                                        {/* Display the occupant's name */}
+                                                        <p><b>Occupant:</b> {utility.occupant.firstName}</p>
+
+                                                </Row>
+                                                : ''}
                                                 <Row>
                                                     <Col>
                                                         <p><b>Description:</b> {utility.description}</p>
@@ -184,7 +215,9 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
                                     </CardContent>
                                 </Card>
                             ))
-                        ) : null)}
+                        ) : <div style={{height:'100%', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
+                        <h2>You don't have any Bills!</h2>
+                    </div>)}
                     </Col>
                 </Row>
                 {totalPages > 1 && (

@@ -64,6 +64,7 @@ const getUtilitiesForBoarding = asyncHandler(async (req, res) =>{
             utilityType:utilityType,
             description: { $regex: searchQuery, $options: 'i' }
         })
+        .populate('occupant')
         .skip(skipCount)
         .limit(pageSize)
 
@@ -89,23 +90,39 @@ const getUtilitiesForBoarding = asyncHandler(async (req, res) =>{
 // route    GET /api/utilities/occupants/:occupantId/:boardingId/:utilityType'
 // @access  Private - Occupant
 const getUtilitiesForOccupant = asyncHandler (async(req, res) => {
-    const occupantId = req.body.occupantId;
-    const boardingId = req.params.boardingId;
+    const occupantId = req.body.occupantID;
     const utilityType = req.params.utilityType;
-    
-    const utilities = await Utility.find( {
-        boarding:boardingId ,
-        occupantID: occupantId , 
-        utilityType:utilityType});
+    const page = req.body.page || 1;
+    const searchQuery = req.body.searchQuery;
+    const pageSize = 10
+    const boardingId= req.body.boardingId;
 
-    if(utilities){
-        res.status(200).json({
-            utilities,
+    const skipCount = (page - 1) * pageSize;
+
+    try{
+        const utilities = await Utility.find({
+            occupant: occupantId, 
+            utilityType:utilityType,
+            boarding:boardingId,
+            description: { $regex: searchQuery, $options: 'i' }
         })
-    }
-    else{
-        res.status(400);
-        throw new Error("No Utilities")
+        .skip(skipCount)
+        .limit(pageSize)
+
+
+        const totalDescription =await Utility.countDocuments({
+            boarding:boardingId,
+            description: { $regex: searchQuery, $options: 'i' }
+        })
+
+        const  totalPages = Math.ceil(parseInt(totalDescription)/pageSize);
+            
+        res.status(200).json({
+            utility:utilities,
+            totalPages:totalPages,
+        });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 });
 // @desc    Update utilities for a owner
@@ -304,6 +321,128 @@ const getFacilitiesBoarding = asyncHandler(async (req, res) => {
         });
     }
 });
+    // @desc    Get occupant name by occupantID
+// route    GET /api/utilities/occupant/:occupantID
+// @access  Private - Owner
+const getOccupantName = asyncHandler(async (req, res) => {
+    const occupantID = req.params.occupantID;
+
+    try {
+        // Step 1: Get occupant's name from User table using occupantID
+        const occupant = await User.findById(occupantID);
+
+        if (!occupant) {
+            res.status(404).json({ message: 'Occupant not found' });
+            return;
+        }
+
+        // Extract the occupant's name
+        const occupantName = occupant.firstName;
+
+        res.status(200).json({
+            occupantName,
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: error.message,
+        });
+    }
+});
+
+// @desc    Get all Utilities  
+// route    POST /api/utilities/owner/report
+const getUtilityReport = asyncHandler(async (req, res) => {
+    const boardingId = req.body.boardingId;
+    const page = req.body.page || 0;
+    const pageSize = req.body.pageSize;
+    const utilityType = req.body.UtilityType;
+    const startDate = new Date(req.body.startDate);
+    const endDate = new Date(req.body.endDate);
+    const date = req.body.date;
+    const search = req.body.search;
+    const sortBy = req.body.sortBy;
+    const order = req.body.order;
+  
+    endDate.setHours(23, 59, 59, 999);
+  
+    const skipCount = page * pageSize;
+  
+    let totalRows;
+    let utility;
+  
+
+  
+    if (utilityType == 'Electricity') {
+        totalRows = await Utility.countDocuments({
+            boarding:boardingId,
+            utilityType,
+            ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+            ...(search ? { description: { $regex: search, $options: "i" }  } : {}),
+        });
+  
+        utility = await Utility.find({
+            boarding:boardingId,
+            utilityType,
+            ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+            ...(search ? { description: { $regex: search, $options: "i" } } : {}),
+        })
+            .collation({ locale: "en" })
+            .sort({ [sortBy]: order })
+            .skip(skipCount)
+            .limit(pageSize);
+    } 
+    
+    if (utilityType == 'Water') {
+        totalRows = await Utility.countDocuments({
+            boarding:boardingId,
+            utilityType,
+            ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+            ...(search ? { description: { $regex: search, $options: "i" }  } : {}),
+        });
+  
+        utility = await Utility.find({
+            boarding:boardingId,
+            utilityType,
+            ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+            ...(search ? { description: { $regex: search, $options: "i" } } : {}),
+        })
+            .collation({ locale: "en" })
+            .sort({ [sortBy]: order })
+            .skip(skipCount)
+            .limit(pageSize);
+    } else {
+        totalRows = await Utility.countDocuments({
+          boarding:boardingId,
+          utilityType,
+            ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+            ...(search ? { description: { $regex: search, $options: "i" } } : {}),
+        });
+  
+        utility = await Utility.find({
+            boarding:boardingId,
+            utilityType,
+            ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+            ...(search ? { description: { $regex: search, $options: "i" } } : {}),
+        })
+            .collation({ locale: "en" })
+            .sort({ [sortBy]: order })
+            .skip(skipCount)
+            .limit(pageSize);
+    }
+  
+    if (utility) {
+        res.status(200).json({
+            utility,
+            totalRows,
+        });
+    } else {
+        res.status(400);
+        throw new Error("No Utilities Available");
+    }
+  });
+  
+
+
 export{
     addUtilities,
     getUtilitiesForBoarding,
@@ -315,4 +454,6 @@ export{
     getUtilityBoarding,
     getOccupant,
     getFacilitiesBoarding,
+    getOccupantName,
+    getUtilityReport,
 };
