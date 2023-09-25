@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation  } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
-import { Box, List, CssBaseline, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery } from '@mui/material';
+import { Box, List, CssBaseline, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery, Tooltip } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import { HomeRounded, Person, HomeWorkRounded, MenuRounded, MenuOpenRounded, ContactSupportRounded, Kitchen,RateReviewRounded, MonetizationOn, HowToReg  } from '@mui/icons-material';
 import { Button, Image } from 'react-bootstrap';
@@ -12,6 +12,7 @@ import sideBarStyles from '../styles/sideBarStyles.module.css'
 import LogoBig from '/logoBig2.png';
 import Logo from '/logo.png';
 import { RiWaterFlashFill } from 'react-icons/ri';
+import { GiMeal } from 'react-icons/gi';
 
 const drawerWidth = 240;
 
@@ -103,33 +104,39 @@ export default function Sidebar() {
         <Divider />
         <List>
           <Link to='/dashboard' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/dashboard' ? sideBarStyles.active : ''}`}>
-              <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white',  }}>
-                <HomeRounded />
-              </ListItemIcon>
-              <ListItemText primary={"Dashboard"} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
+            <Tooltip title={!open ? "Dashboard" : ''} placement="right" arrow>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/dashboard' ? sideBarStyles.active : ''}`}>
+                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white',  }}>
+                  <HomeRounded />
+                </ListItemIcon>
+                <ListItemText primary={"Dashboard"} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </Tooltip>
           </ListItem></Link>
           
           <Link to='/profile' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/profile' ? sideBarStyles.active : ''}`}>
-              <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                <Person />
-              </ListItemIcon>
-              <ListItemText primary={"Profile"} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
+            <Tooltip title={!open ? "Profile" : ''} placement="right" arrow>  
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/profile' ? sideBarStyles.active : ''}`}>
+                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                  <Person />
+                </ListItemIcon>
+                <ListItemText primary={"Profile"} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </Tooltip>
           </ListItem></Link>
 
           {userInfo.userType == 'admin' ? //Navigations for Admin
 
             <>
               <Link to='/admin/boardings/' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute.startsWith('/admin/boardings')) ? sideBarStyles.active : ''}`}>
-                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                    <HomeWorkRounded />
-                  </ListItemIcon>
-                  <ListItemText primary={"Boardings"} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
+                <Tooltip title={!open ? "Boardings" : ''} placement="right" arrow>
+                  <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute.startsWith('/admin/boardings')) ? sideBarStyles.active : ''}`}>
+                    <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                      <HomeWorkRounded />
+                    </ListItemIcon>
+                    <ListItemText primary={"Boardings"} sx={{ opacity: open ? 1 : 0 }} />
+                  </ListItemButton>
+                </Tooltip>
               </ListItem></Link>
 
             </>
@@ -140,48 +147,58 @@ export default function Sidebar() {
 
           <>
             <Link to='/owner/boardings' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute.startsWith('/owner/boardings')) ? sideBarStyles.active : ''}`}>
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                  <HomeWorkRounded />
-                </ListItemIcon>
-                <ListItemText primary={"My Boardings"} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
+              <Tooltip title={!open ? "My Boardings" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${(activeRoute.startsWith('/owner/boardings')) ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <HomeWorkRounded />
+                  </ListItemIcon>
+                  <ListItemText primary={"My Boardings"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem></Link>
 
             <Link to='/owner/reservations/' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/reservations/') ? sideBarStyles.active : ''}`}>
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                  <HowToReg/>
-                </ListItemIcon>
-                <ListItemText primary={"Reservations"} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
+              <Tooltip title={!open ? "Reservations" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/reservations/') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <HowToReg/>
+                  </ListItemIcon>
+                  <ListItemText primary={"Reservations"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem></Link>
 
             <Link to='/owner/utility' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/utility') ? sideBarStyles.active : ''}`}>
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                  <RiWaterFlashFill style={{fontSize:'1.5em'}}/>
-                </ListItemIcon>
-                <ListItemText primary={"Utilities"} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
+              <Tooltip title={!open ? "Utilities" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/utility') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <RiWaterFlashFill style={{fontSize:'1.5em'}}/>
+                  </ListItemIcon>
+                  <ListItemText primary={"Utilities"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem></Link>
 
             <Link to='/owner/ingredient' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/ingredient') ? sideBarStyles.active : ''}`}>
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                  <Kitchen/>
-                </ListItemIcon>
-                <ListItemText primary={"Kitchen"} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
+              <Tooltip title={!open ? "Kitchen" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/ingredient') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <Kitchen/>
+                  </ListItemIcon>
+                  <ListItemText primary={"Kitchen"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem></Link>
 
             <Link to='/owner/ticket' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/ticket') ? sideBarStyles.active : ''}`}>
-              <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                <ContactSupportRounded />
-              </ListItemIcon>
-              <ListItemText primary={"My Tickets"} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
+              <Tooltip title={!open ? "Tickets" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/ticket') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <ContactSupportRounded />
+                  </ListItemIcon>
+                  <ListItemText primary={"Tickets"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem></Link>
           </>
 
@@ -191,39 +208,58 @@ export default function Sidebar() {
 
           <>
             <Link to='/occupant/boarding' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/boarding') ? sideBarStyles.active : ''}`}>
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                  <HomeWorkRounded />
-                </ListItemIcon>
-                <ListItemText primary={"My Boarding"} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
+              <Tooltip title={!open ? "My Boarding" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/boarding') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <HomeWorkRounded />
+                  </ListItemIcon>
+                  <ListItemText primary={"My Boarding"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
+            </ListItem></Link>
+            
+            <Link to='/occupant/order/OrderList' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+              <Tooltip title={!open ? "Payments" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/order/') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <GiMeal  style={{fontSize:'1.5em'}}/>
+                  </ListItemIcon>
+                  <ListItemText primary={"My Orders"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem></Link>
 
             <Link to='/occupant/payment/' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/payment/') ? sideBarStyles.active : ''}`}>
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                <MonetizationOn />
-                </ListItemIcon>
-                <ListItemText primary={"Payments"} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
+              <Tooltip title={!open ? "Payments" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/payment/') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                  <MonetizationOn />
+                  </ListItemIcon>
+                  <ListItemText primary={"Payments"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem></Link>
 
             <Link to='/occupant/ticket' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/ticket') ? sideBarStyles.active : ''}`}>
-              <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-                <ContactSupportRounded />
-              </ListItemIcon>
-              <ListItemText primary={"My Tickets"} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
+              <Tooltip title={!open ? "My Tickets" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/ticket') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <ContactSupportRounded />
+                  </ListItemIcon>
+                  <ListItemText primary={"My Tickets"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem></Link>
 
             <Link to='/occupant/feedback' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/feedback') ? sideBarStyles.active : ''}`}>
-              <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
-              <RateReviewRounded />
-              </ListItemIcon>
-              <ListItemText primary={"My Feedbacks"} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
+              <Tooltip title={!open ? "My Feedbacks" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/feedback') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                  <RateReviewRounded />
+                  </ListItemIcon>
+                  <ListItemText primary={"My Feedbacks"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem></Link>
           </>
 
