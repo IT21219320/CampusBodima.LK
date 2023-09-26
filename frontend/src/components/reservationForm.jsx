@@ -56,7 +56,7 @@ const ReservationForm = () => {
                 navigate(`/occupant/makePayment/${bId}`);
             }else{
                 window.alert("Wait until the owner approve")
-                navigate(`/occupant/reservations`);
+                navigate(`/occupant/reservations/confirm/`);
             }
 
         }
