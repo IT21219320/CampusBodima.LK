@@ -121,12 +121,28 @@ const getOrder = asyncHandler(async (req, res) => {
   }
 });
 
+const getOrderById = asyncHandler(async (req, res) => {
+  
+  const _id = req.params;
+
+  const order = await Order.findById(_id);
+
+  if(order){
+    res.status(200).json({order});
+  }
+  else{
+    throw new Error('Order Not Found');
+  }
+
+});
 
 // Update a specific order by its ID
 const updateOrder = asyncHandler(async (req, res) => {
   const order = await Order.findOne({_id:req.body._id});    
     if (order) {
+      
       //return res.status(404).json({ error: "Order not found" });
+      
       order.product = req.body.product||order.product;
       order.foodType = req.body.foodType||order.foodType;
       order.quantity = req.body.quantity||order.quantity;
@@ -181,6 +197,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
 export{
   createOrder,
   getOrder,
+  getOrderById,
   updateOrder,
   deleteOrder,
 };

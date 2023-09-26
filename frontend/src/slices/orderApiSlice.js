@@ -20,11 +20,17 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
     }),
     updateOrder: builder.mutation({
       query: (data) => ({
-        url: `${ORDER_URL}/update/${data.id}`,
+        url: `${ORDER_URL}/update`,
         method: "PUT",
         body: data,
       }),
     }),
+    getUpdateOrders: builder.mutation({
+      query: (data) => ({
+          url: `${ORDER_URL}/getOrderById/${data}`,
+          method: 'GET',
+      }),
+  }),
     deleteOrder: builder.mutation({
       query: (data) => ({
         url: `${ORDER_URL}/delete`, 
@@ -35,4 +41,4 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useCreateOrderMutation, useGetOrderMutation, useUpdateOrderMutation, useDeleteOrderMutation } = ordersApiSlice;
+export const { useCreateOrderMutation, useGetOrderMutation, useUpdateOrderMutation, useGetUpdateOrdersMutation, useDeleteOrderMutation } = ordersApiSlice;

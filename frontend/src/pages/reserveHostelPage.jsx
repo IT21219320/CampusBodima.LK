@@ -6,6 +6,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import paymentScreenStyles from "../Styles/paymentScreen.module.css";
 import ReservationForm from "../components/reservationForm";
+import Header from "../components/header.jsx";
 
 const ReserveBoardingPage = () =>{
 
@@ -16,6 +17,8 @@ const ReserveBoardingPage = () =>{
     
   return (
     <>
+    <div style={{width:'100%'}}>
+    <Header />
       <div style={{width:'100%'}}>
         <div className={paymentScreenStyles.stepperDiv}>
           <Stepper activeStep={activeStep}>
@@ -53,6 +56,7 @@ const ReserveBoardingPage = () =>{
             </Col>
         </Row>
         </div>
+      </div>
       </div>
     </>
   );
