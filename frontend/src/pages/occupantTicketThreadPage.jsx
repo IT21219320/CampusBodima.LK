@@ -278,11 +278,12 @@ const OccupantTicketThreadPage = () => {
                                                 </Col>
                                                 {ticket.reply.length == 0 && (new Date(ticket.createdAt) > fifteenMinutesAgo) && userInfo._id==ticket.senderId._id ?
                                                 <>
-                                                    <Col>
-                                                        <Button style={{float:"right"}} onClick={(e) => handleDialogOpen(e,ticket._id)}><RiDeleteBinLine style={{color:"#f73b54"}}/></Button>
-                                                    </Col>
-                                                    <Col>
-                                                        <Button onClick={() => navigate(`/occupant/ticket/update/${ticket._id}`)}><FiEdit style={{color:"#3366ff" }} /></Button>
+                                                    <Col lg={1}>
+                                                        <div style={{display:'flex'}}>
+                                                            <Button style={{minWidth:'0', padding:'5px'}} onClick={(e) => handleDialogOpen(e,ticket._id)}><RiDeleteBinLine style={{color:"#f73b54", fontSize:"20px"}}/></Button>
+                                                        
+                                                            <Button style={{minWidth:'0', padding:'5px'}} onClick={() => navigate(`/occupant/ticket/update/${ticket._id}`)}><FiEdit style={{color:"#3366ff", fontSize:"20px" }} /></Button>
+                                                        </div>
                                                     </Col>
                                                 </>              
 
