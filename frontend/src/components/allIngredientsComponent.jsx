@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetBoardingIngredientsMutation, useDeleteIngredientsMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
 import ingredientStyles from '../styles/ingredientStyles.module.css'; 
+import CreateBoardingStyles from '../styles/createBoardingStyles.module.css';
 import { Link as CustomLink } from "react-router-dom";
 
  
@@ -127,12 +128,12 @@ const AllIngredients = ({ boardingId }) => {
                                 <td>{ingredient.purchaseDate}</td>
                                 <td className={ingredientStyles.nohover}> 
                                     <CustomLink to={`/owner/ingredient/update/${boardingId}/${ingredient._id}`}>
-                                        <Button  style={{ background: '#4DA6FF', color: 'white', marginRight: '10px',border: '2px solid #00000040' }}>
+                                        <Button  className={CreateBoardingStyles.submitBtn} style={{ marginRight: '10px' }}>
                                         <BrowserUpdatedIcon /> Update
                                         </Button>
                                     </CustomLink>
                                         <Button  
-                                        style={{ background: '#4DA6FF',color: 'white',border: '2px solid #00000040' }}
+                                        className={ingredientStyles.deleteBtn}
                                         onClick={() => handleDeleteIngredient(boardingId, ingredient._id)}
                                         >
                                         <DeleteIcon /> Delete
