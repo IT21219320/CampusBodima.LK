@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Table, Tabs, Tab} from 'react-bootstrap';
-import { Breadcrumbs, Typography, Fade, Card, CardContent,Link, Button, Paper, InputBase, IconButton, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress} from '@mui/material';
+import { Breadcrumbs, Typography, Fade, Card, CardContent,Link, Button, TextField ,CircularProgress} from '@mui/material';
 import { NavigateNext, Search, GridViewRounded } from '@mui/icons-material';
 import { DateRange } from 'react-date-range';
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
@@ -21,6 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from "@emotion/react";
 import DeleteOrder from "./DeleteOrder";
 import OrderForm from "../components/orderForm";
+import formStyle from '../styles/formStyle.module.css';
 
 const OrderList = () =>{
 
@@ -30,13 +31,10 @@ const OrderList = () =>{
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [activeTab, setActiveTab] = useState('Place Order');
-  
-    //const [page, setPage] = useState(0);
-    //const [category, setCategory] = useState('all');
-    //const [description, setDescription] = useState('');
-    //const [rating, setRating] = useState(0);
+    const [searchQuery, setSearchQuery] = useState(''); 
+    
 
-    //const [search, setSearch] = useState('');
+    
     const openDeleteModal = (order) => {
         setSelectedOrder(order);
         setShowDeleteModal(true);
@@ -68,7 +66,7 @@ const OrderList = () =>{
         toast.error('Failed to fetch orders. Please try again later.');
       }
     };
-
+    
     
 
     useEffect(() => {
@@ -76,7 +74,12 @@ const OrderList = () =>{
         loadOrderData();
       }, []); // Empty dependency array to trigger the effect on component mount
 
-
+      const filteredOrders = product.filter((order) => {
+        return (
+          order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          order.foodType.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      });
 
 
     return(
@@ -114,7 +117,14 @@ const OrderList = () =>{
                                         </Card>
                                     </Col>
                                 </Row>
-                            
+                                <TextField
+                                    id="search"
+                                    label="Search Product"
+                                    variant="outlined"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className={formStyle.searchField}
+                                />
                                 <Row>
                                     <Col>
                                         <Table striped bordered hover className={occupantFeedbackStyles.table}>
@@ -128,6 +138,7 @@ const OrderList = () =>{
                                                         <th>Quantity</th>
                                                         <th>Price</th>
                                                         <th>Total</th>
+                                                        <th>Status</th>
                                                         <th>Update Or Delete</th>
                                                         
                                                     </tr>
@@ -137,8 +148,8 @@ const OrderList = () =>{
                                                     <tr style={{ width: '100%', height: '100%', textAlign: 'center' }}>
                                                         <td colSpan={3}><CircularProgress /></td>
                                                     </tr>
-                                                ) : product && product.length > 0 ? (
-                                                product.map((order, index) => (
+                                                ) : filteredOrders.length > 0 ? ( // Step 4: Display filtered orders
+                                                filteredOrders.map((order, index) => (
                                                         <tr key={index}>
                                                             {/*<td>{order._id}</td>*/}
                                                             <td>{order.date}</td>
@@ -148,11 +159,12 @@ const OrderList = () =>{
                                                             <td>{order.quantity}</td>
                                                             <td>{order.price}</td>
                                                             <td>{order.total}</td>
+                                                            <td>{order.status}</td>
                                                             {/* Render additional feedback data as needed */}
                                                             <td > 
                                                             
                                                                 <Button  style={{ background: ' blue', color: 'black', marginRight: '10px' }}
-                                                                onClick={() => navigate('/occupant/order/orderList/updateOrder')}>
+                                                                onClick={() => navigate(`/occupant/order/orderList/updateOrder/${order._id}`)}>
                                                                     <BrowserUpdatedIcon /> Update
                                                                 </Button>
                                                                 <Button
@@ -168,8 +180,10 @@ const OrderList = () =>{
                                                     ))
                                                 ) : (
                                                     <tr style={{ height: '100%', width: '100%', textAlign: 'center', color: 'blue' }}>
-                                                        <td colSpan={5}><h4>You don't have any Orders!</h4></td>
-                                                    </tr>
+                                                    <td colSpan={5}>
+                                                      <h4>No matching orders found!</h4>
+                                                    </td>
+                                                  </tr>
                                                 )}
                                             </tbody>
                                             {selectedOrder && (

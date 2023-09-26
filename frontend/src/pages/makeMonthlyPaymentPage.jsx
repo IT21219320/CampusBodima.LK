@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Row, Col } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
 import paymentScreenStyles from "../Styles/paymentScreen.module.css";
 import PaymentForm from "../components/paymentForm.jsx";
 
 function MakeMonthlyPaymentPage() {
 
   const { userInfo } = useSelector((state) => state.auth);
-
+  const {bId} = useParams();
+console.log(bId)
   return (
     <>
       <div className={paymentScreenStyles.card}>

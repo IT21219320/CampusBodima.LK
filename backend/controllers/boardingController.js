@@ -426,8 +426,8 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
     if(boardingType == 'Annex'){
 
         totalRows = await Boarding.countDocuments({
-            boardingType,
-            visibility: 'true',
+            //boardingType,
+            visibility: true,
             status: 'Approved',
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
@@ -456,8 +456,8 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
         });
 
         boardings = await Boarding.find({
-            boardingType,
-            visibility: 'true',
+            //boardingType,
+            visibility: true,
             status: 'Approved',
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
@@ -502,7 +502,7 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
         console.log(roomConditions);
 
         totalRows = await Boarding.countDocuments({
-            boardingType,
+            //boardingType,
             visibility: 'true',
             status: 'Approved',
             ...(food !== 'All' ? { food } : {}),
@@ -533,7 +533,7 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
 
 
         boardings = await Boarding.find({
-            boardingType,
+            //boardingType,
             visibility: 'true',
             status: 'Approved',
             ...(food !== 'All' ? { food } : {}),
@@ -672,6 +672,7 @@ const approveBoarding = asyncHandler(async (req, res) => {
       try {
           let boarding = await Boarding.findById(boardingId).populate('owner');
           boarding.status = "Approved";
+          boarding.visibility = true;
           boarding = await boarding.save();
     
           const rooms = await Room.updateMany({boardingId},{ $set: { status: 'Approved' } });

@@ -31,25 +31,24 @@ const getPublichkey = expressAsyncHandler(async (req, res) => {
 const makePayment = expressAsyncHandler(async (req, res) => {
 
   const { userInfo_id, bId } = req.body;
+  
   const user = await User.findById(userInfo_id);
 
   const boarding = await Boarding.findById(bId);
   const oUser = await User.findById(boarding.owner);
   const reserve = await reservations.findOne({ occupantID: userInfo_id });
 
-  let room;
-  if (reserve) {
-    console.log(reserve.roomID._id)
-    room = await Room.findById(reserve.roomID);
-    console.log(room)
-  }
+
 
   if (boarding.boardingType === "Annex") {
+
+    const amount = parseInt(boarding.keyMoney)*parseInt(boarding.rent);
+    
     const response = await payment.create({
       occupant: user,
       owner: oUser,
       paymentType: "Card",
-      amount: boarding.keyMoney,
+      amount: amount,
       description: "Initial Payment to reserve",
       boarding: boarding,
       credited: boarding.keyMoney,
@@ -61,7 +60,13 @@ const makePayment = expressAsyncHandler(async (req, res) => {
     }
   }
   else if (boarding.boardingType === "Hostel") {
-    console.log(room)
+    let room;
+    if (reserve) {
+      console.log(reserve.roomID._id)
+      room = await Room.findById(reserve.roomID);
+
+    }
+
     const response = await payment.create({
       occupant: user,
       owner: oUser,
@@ -110,6 +115,8 @@ const getPaymentsByOwnerID = expressAsyncHandler(async (req, res) => {
 
 })
 
+
+
 cron.schedule('0 0 10 * *', async () => {
   try {
     // Calculate the monthly fee for each subscribed user
@@ -128,15 +135,15 @@ cron.schedule('0 0 10 * *', async () => {
             let totalUtility
             for (const oneU of utility) {
               totalUtility += oneU.amount;
-            } 
+            }
 
-            oneUserUtitlity = totalUtility/userCount;
+            oneUserUtitlity = totalUtility / userCount;
           }
 
         }
         const res = await toDoPayment.create({
-          amount:oneUserUtitlity,
-          occupant:userReservation.occupantID,
+          amount: oneUserUtitlity,
+          occupant: userReservation.occupantID,
 
         })
       }

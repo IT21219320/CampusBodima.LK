@@ -7,7 +7,8 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import paymentScreenStyles from "../Styles/paymentScreen.module.css";
 import PaymentForm from "../components/paymentForm.jsx";
-import { useGetBoardingByIdMutation } from "../slices/boardingsApiSlice"
+import { useGetBoardingByIdMutation } from "../slices/boardingsApiSlice";
+import Header from "../components/header.jsx";
 
 function MakeInitialPaymentPage() {
 
@@ -33,6 +34,8 @@ function MakeInitialPaymentPage() {
 
   return (
     <>
+    <div style={{width:'100%'}}>
+    <Header />
       <div style={{ width: '100%' }}>
         <div className={paymentScreenStyles.stepperDiv}>
           <Stepper activeStep={activeStep}>
@@ -75,7 +78,7 @@ function MakeInitialPaymentPage() {
               <h5 className={paymentScreenStyles.h5Text}>
                 {boardingDetails ? (
                   boardingDetails.boardingType == "Hostel" ? (
-                    <>Initial Payment <p style={{ float: "right" }}>{boardingDetails.room[0].keyMoney}</p>
+                    <>Initial Payment <p style={{ float: "right" }}>LKR {(boardingDetails.room[0].keyMoney)*(boardingDetails.room[0].rent)}</p>
                     </>) : (
                     <></>)) : (<></>)}</h5>
 
@@ -88,6 +91,7 @@ function MakeInitialPaymentPage() {
             </Col>
           </Row>
         </div>
+      </div>
       </div>
     </>
   );

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {Row, Col} from "react-bootstrap";
+import {Container, Row, Col} from "react-bootstrap";
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import paymentScreenStyles from "../Styles/paymentScreen.module.css";
+import Header from "../components/header.jsx";
 
 
 
@@ -15,6 +16,9 @@ function ConfirmReservationPage() {
 
   return (
     <>
+    <div style={{width:'100%'}}>
+    <Header />
+    <Container>
       <div style={{width:'100%'}}>
         <div className={paymentScreenStyles.stepperDiv}>
           <Stepper activeStep={activeStep}>
@@ -42,6 +46,8 @@ function ConfirmReservationPage() {
             </Col>
         </Row>
         </div>
+      </div>
+      </Container>
       </div>
     </>
   );

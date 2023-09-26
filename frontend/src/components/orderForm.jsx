@@ -220,8 +220,6 @@ const OrderForm = () => {
       <InputLabel
   id="demo-simple-select-standard-label"
   style={{
-    // Your inline CSS styles for InputLabel here
-    // For example:
     fontSize: '16px',
     fontWeight: 'bold',
   }}
@@ -234,8 +232,6 @@ const OrderForm = () => {
   onChange={(e) => setProduct(e.target.value)}
   required
   style={{
-    // Your inline CSS styles for Select here
-    // For example:
     width: '94%',
     padding: '10px',
     border: '1px solid #ccc',

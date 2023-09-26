@@ -44,10 +44,10 @@ const ReservationForm = () => {
             navigate(`/`);
         }
         else if(res.message === "genders are not matching"){
-            window.alert("you have already reserved");
+            window.alert("genders are not matching");
             navigate(`/`);
         }else if(res.message === "problem in inserting"){
-            window.alert("you have already reserved");
+            window.alert("problem in inserting");
             navigate(`/`);
         }
 
@@ -56,7 +56,7 @@ const ReservationForm = () => {
                 navigate(`/occupant/makePayment/${bId}`);
             }else{
                 window.alert("Wait until the owner approve")
-                navigate(`/occupant/reservations`);
+                navigate(`/occupant/reservations/confirm/`);
             }
 
         }

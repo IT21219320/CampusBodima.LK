@@ -20,6 +20,15 @@
   .customtable tbody tr:hover {
     background-color: #e2e2e2;
   }
+
+  .deleteBtn {
+    background: #f95555 !important; /* Low-intensity red */
+}
+
+.deleteBtn:hover {
+    background: #fa2121 !important; /* Lighter red on hover */
+}
+
    
   
   

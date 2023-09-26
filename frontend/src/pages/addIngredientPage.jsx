@@ -152,7 +152,14 @@ const AddIngredientPage = () => {
                                 type='text'
                                 placeholder='Enter Ingredient Name'
                                 value={ingredientName}
-                                onChange={(e) => setIngredientName(e.target.value)}
+                                onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  // Use a regular expression to allow only letters and spaces
+                                  const onlyLetters = /^[A-Za-z\s]+$/;
+                                  if (onlyLetters.test(inputValue)) {
+                                    setIngredientName(inputValue);
+                                  }
+                                }}
                                 required
                               ></Form.Control>
                             </Form.Group>
@@ -163,7 +170,12 @@ const AddIngredientPage = () => {
                                 type='number'
                                 placeholder='Enter Quantity'
                                 value={quantity}
-                                onChange={(e) => setQuantity(e.target.value)}
+                                onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  if (/^\d+$/.test(inputValue) && parseInt(inputValue) > 0) {
+                                    setQuantity(inputValue);
+                                  }
+                                }}
                                 required
                               ></Form.Control>
                             </Form.Group>

@@ -88,7 +88,7 @@ import InputLabel from '@mui/material/InputLabel';*/
           <Select
             labelId="demo-simple-select-standard-label"
             value={product}
-            fullWidth
+            
             onChange={(e) => setFoodType(e.target.value )}
             required
           >
@@ -104,7 +104,7 @@ import InputLabel from '@mui/material/InputLabel';*/
               name="product"
               label="Product"
               variant="outlined"
-              fullWidth
+              
               margin="normal"
               value={updateFormData.product || orderData.product}
               onChange={handleInputChange}
@@ -113,7 +113,7 @@ import InputLabel from '@mui/material/InputLabel';*/
             name="foodType"
             label="Food Type"
             variant="outlined"
-            fullWidth
+            
             margin="normal"
             value={updateFormData.foodType || orderData.product}
             onChange={handleInputChange}
@@ -239,7 +239,7 @@ const UpdateOrder = () => {
             <Select
               labelId="demo-simple-select-standard-label"
               value={foodType}
-              fullWidth
+              
               onChange={(e) => setFoodType(e.target.value )}
               required
             >
@@ -261,7 +261,7 @@ const UpdateOrder = () => {
             <Select
               labelId="demo-simple-select-standard-label"
               value={foodType}
-              fullWidth
+              
               onChange={(e) => setFoodType(e.target.value )}
               required
             >
@@ -282,7 +282,7 @@ const UpdateOrder = () => {
             <Select
               labelId="demo-simple-select-standard-label"
               value={foodType}
-              fullWidth
+              
               onChange={(e) => setFoodType(e.target.value )}
               required
             >
@@ -326,7 +326,7 @@ const UpdateOrder = () => {
           <Select
             labelId="demo-simple-select-standard-label"
             value={product}
-            fullWidth
+            
             onChange={(e) => setProduct( e.target.value )}
             required
           >
@@ -347,13 +347,13 @@ const UpdateOrder = () => {
         type="number"
         placeholder="Quantity"
         value={quantity}
-        fullWidth
+        
         margin="normal"
         onChange={handleQuantityChange}
         required
       />
       {/* Display the calculated price *//*}
-      <div fullWidth>Price: {calculatePrice()}</div>
+      <div >Price: {calculatePrice()}</div>
       
       {/* Display the total by multiplying quantity by price *//*}
       <div>Total: {total}</div>
@@ -384,11 +384,12 @@ import { NavigateNext } from '@mui/icons-material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { useUpdateOrderMutation, useGetOrderMutation } from '../slices/orderApiSlice'; // Import the generated mutation and query functions
+import { useUpdateOrderMutation, useGetOrderMutation, useGetUpdateOrdersMutation } from '../slices/orderApiSlice'; // Import the generated mutation and query functions
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import formStyle from '../styles/formStyle.module.css';
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const UpdateOrder = ({ orderId }) => {
   const [product, setProduct] = useState('');
@@ -399,6 +400,8 @@ const UpdateOrder = ({ orderId }) => {
   const [total, setTotal] = useState(0); // State to store the total
   const { userInfo } = useSelector((state) => state.auth);
   const userID = userInfo._id;
+
+  const {oId} = useParams();
 
   const priceData = {
     '3': {
@@ -420,21 +423,41 @@ const UpdateOrder = ({ orderId }) => {
       '7': 80, // Hoppers - Egg
     },
   };
+  const productNames = {
+    '3': 'Fried Rice',
+    '6': 'Rice & Curry',
+    '12': 'Noodles',
+    '24': 'Hoppers',
+  };
+  const foodTypeNames = {
+    '1': 'Fish',
+    '2': 'Chicken',
+    '7': 'Egg',
+    '5': 'Normal',
+  };
+
 
   
-  const { data: orderData, isLoading: isOrderLoading } = useGetOrderMutation(orderId);
+    const [updateOrder, { isLoading, isError, error }] = useUpdateOrderMutation();
+    const [getUpdateOrder] = useGetUpdateOrdersMutation();
 
+    const navigate = useNavigate();
+
+    const loadData = async() => {
+      const res = await getUpdateOrder(oId).unwrap()
+      console.log(res);
+      setProduct(res.order.product)
+      setFoodType(res.order.foodType)
+      setQuantity(res.order.quantity)
+      setPrice(res.order.price)
+      setOrderNo(res.order.orderNo)
+      setTotal(res.order.total)
+    }
+   
   useEffect(() => {
     // Update form fields with order data when it's available
-    if (orderData) {
-      const { product, foodType, quantity, price, total } = orderData;
-      setProduct(product);
-      setFoodType(foodType);
-      setQuantity(quantity);
-      setPrice(price);
-      setTotal(total);
-    }
-  }, [orderData]);
+    loadData()
+  }, []);
 
   // Function to calculate price based on product and foodType
   const calculatePrice = () => {
@@ -461,11 +484,9 @@ const UpdateOrder = ({ orderId }) => {
     setQuantity(newQuantity);
   };
 
-  const [updateOrder, { isLoading, isError, error }] = useUpdateOrderMutation();
-
   const submitHandler = async (e) => {
     e.preventDefault();
-    const currentTime = new Date();
+    {/*const currentTime = new Date();
 
     const cutoffTime = new Date();
     cutoffTime.setHours(12, 0, 0, 0);
@@ -474,7 +495,7 @@ const UpdateOrder = ({ orderId }) => {
     if (currentTime > cutoffTime) {
       toast.error('Orders can no longer be updated after 12 PM.');
       return;
-    }
+    }*/}
     try {
       // Validate if quantity is a positive value
       if (quantity <= 0) {
@@ -485,10 +506,10 @@ const UpdateOrder = ({ orderId }) => {
 
       // Update the order with calculated price using useUpdateOrderMutation
       const response = await updateOrder({
-        id: orderId,
+        _id: oId,
         userInfo_id: userID,
-        product: product,
-        foodType: foodType,
+        product: productNames[product],
+        foodType: foodTypeNames[foodType],
         quantity: quantity,
         price: calculatedPrice,
         total: total,
@@ -498,6 +519,7 @@ const UpdateOrder = ({ orderId }) => {
       if (response) {
         console.log("value", response);
         toast.success('Order Updated Successfully');
+        navigate('/occupant/order/')
       }
     } catch (err) {
       toast.error(err.data?.message || err.error);
@@ -513,13 +535,16 @@ const UpdateOrder = ({ orderId }) => {
             <Select
               labelId="demo-simple-select-standard-label"
               value={foodType}
-              fullWidth
               onChange={(e) => setFoodType(e.target.value )}
               required
+              style={{
+                width: '94%',
+                padding: '10px',
+                border: '1px solid #ccc',
+                borderRadius: '5px',
+                marginTop: '10px',
+              }}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
               <MenuItem value="2">Chicken</MenuItem>
               <MenuItem value="1">Fish</MenuItem>
               <MenuItem value="7">Egg</MenuItem>
@@ -535,9 +560,16 @@ const UpdateOrder = ({ orderId }) => {
             <Select
               labelId="demo-simple-select-standard-label"
               value={foodType}
-              fullWidth
+              
               onChange={(e) => setFoodType(e.target.value )}
               required
+              style={{
+                width: '94%',
+                padding: '10px',
+                border: '1px solid #ccc',
+                borderRadius: '5px',
+                marginTop: '10px',
+              }}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -556,9 +588,16 @@ const UpdateOrder = ({ orderId }) => {
             <Select
               labelId="demo-simple-select-standard-label"
               value={foodType}
-              fullWidth
+              
               onChange={(e) => setFoodType(e.target.value )}
               required
+              style={{
+                width: '94%',
+                padding: '10px',
+                border: '1px solid #ccc',
+                borderRadius: '5px',
+                marginTop: '10px',
+              }}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -601,40 +640,70 @@ const UpdateOrder = ({ orderId }) => {
               <Select
                 labelId="demo-simple-select-standard-label"
                 value={product}
-                fullWidth
+                
                 onChange={(e) => setProduct(e.target.value)}
                 required
+                style={{
+                  width: '94%',
+                  padding: '10px',
+                  border: '1px solid #ccc',
+                  borderRadius: '5px',
+                  marginTop: '10px',
+                }}
               >
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value="3">Fried Rice</MenuItem>
-                <MenuItem value="6">Rice & Curry</MenuItem>
-                <MenuItem value="12">Noodles</MenuItem>
-                <MenuItem value="24">Hoppers</MenuItem>
+                {Object.keys(productNames).map((productCode) => (
+                  <MenuItem key={productCode} value={productCode}>
+                    {productNames[productCode]}
+                  </MenuItem>
+                ))}
               </Select>
             </Row>
 
             {renderFoodTypeDropdown()}
             <p></p>
             <input
-              type="number"
-              placeholder="Quantity"
-              value={quantity}
-              fullWidth
-              margin="normal"
+               type="number"
+               placeholder="Quantity"
+               value={quantity}
+               style={{
+                 padding: '5px',
+                 width: '15%',
+                 border: '1px solid #ccc',
+                 borderRadius: '5px',
+                 margin: '10px auto',
+               }}
               onChange={handleQuantityChange}
               required
             />
             {/* Display the calculated price */}
-            <div fullWidth>Price: {calculatePrice()}</div>
+            <div style={{
+          padding: '5px',
+          width: '15%',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+          margin: '10px auto',
+        }}>Price: {calculatePrice()}</div>
 
             {/* Display the total by multiplying quantity by price */}
-            <div>Total: {total}</div>
-            <div>Order No: {orderNo}</div>
+            <div style={{
+          padding: '5px',
+          width: '15%',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+          margin: '10px auto',
+        }}>Total: {total}</div>
+            <div style={{
+          padding: '5px',
+          width: '15%',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+          margin: '10px auto',
+        }}>Order No: {orderNo}</div>
             <Button
               type="submit"
-              loading={isLoading}
               variant="contained"
               color="primary"
             >
