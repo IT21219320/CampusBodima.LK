@@ -26,7 +26,14 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        searchPay: builder.mutation({
+            query:(data) => ({
+                url: `${PAYMENT_URL}/searchPay`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
     }),
 });
 
-export const { useGetPaymentByUserMutation, useMakePaymentMutation, useGetPaymentByOwnerMutation } = paymentApiSlice;
+export const { useGetPaymentByUserMutation, useMakePaymentMutation, useGetPaymentByOwnerMutation,useSearchPayMutation } = paymentApiSlice;

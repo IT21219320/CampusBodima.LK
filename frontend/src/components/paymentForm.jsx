@@ -10,7 +10,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { useMakePaymentMutation } from "../slices/paymentApiSlice";
 import { useAddCardMutation } from "../slices/cardApiSlice";
-import {useApprovePendingStatusMutation, useGetPendingReservationsMutation} from "../slices/reservationsApiSlice"
+import Header from "./header.jsx";
+import { Container } from "@mui/material";
+
 
 
 const PaymentForm = () => {
@@ -25,8 +27,7 @@ const PaymentForm = () => {
 
     const [makePayment] = useMakePaymentMutation();
     const [addCard] = useAddCardMutation();
-    const [aprove] = useApprovePendingStatusMutation();
-    const [getAprove] = useGetPendingReservationsMutation();
+    
 
     const navigate = useNavigate();
     
@@ -49,8 +50,8 @@ const PaymentForm = () => {
         if(resPay){
             console.log(resPay)
             if(resPay.data.message === "payment inserted"){
-                const toAprove = getAprove()
-                const resA = await aprove({}).unwrap();
+                
+                
                 window.alert('Payment successfull');
                 navigate('/occupant/reservations/confirm/');
             }
@@ -60,6 +61,7 @@ const PaymentForm = () => {
 
     return (
         <>
+        
             <div className={paymentFormStyle.formDiv}>
 
                 <Form onSubmit={submitHandler}>

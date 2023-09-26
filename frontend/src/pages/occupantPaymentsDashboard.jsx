@@ -62,7 +62,7 @@ const OccupantPaymentDash = () => {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [cardIdR, setCardIdR] = useState('');
-
+    const [cardid, setCardid] = useState();
     const [cardNumberF, setcardNumberF] = useState('');
     const [expireDate, setexpireDate] = useState('');
     const [cvvF, setcvvF] = useState('');
@@ -76,6 +76,14 @@ const OccupantPaymentDash = () => {
 
     const [openDAlert, setOpenDAlert] = useState(false);
 
+    const handleClickOpenAlert = (id) => {
+        setCardid(id)
+        setOpenDAlert(true);
+    };
+  
+    const handleCloseAlert = () => {
+        setOpenDAlert(false);
+    };
 
     const handleClickOpen = (id) => {
         setOpen(true);
@@ -127,6 +135,7 @@ const OccupantPaymentDash = () => {
     const handleRemove = async (cardId) => {
         try {
             const resDelete = await deleteCard({ cNo: cardId }).unwrap();
+            setOpenDAlert(false);
             console.log(resDelete.message);
             setDeleteCard(resDelete.message);
             setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
@@ -186,7 +195,7 @@ const OccupantPaymentDash = () => {
                                                         {isHovered && (
                                                             <div key={card.id} style={{ float: "right" }}>
                                                                 <Button variant="text" onClick={() => handleClickOpen(card.cardNumber)}>Update</Button>
-                                                                <Button variant="text" color="error" onClick={() => handleRemove(card.id)}>Remove</Button>
+                                                                <Button variant="text" color="error" onClick={() => handleClickOpenAlert(card.id)}>Remove</Button>
                                                             </div>
                                                         )}
                                                     </div>
@@ -227,6 +236,25 @@ const OccupantPaymentDash = () => {
                             </DialogActions>
                         </Form>
                     </Dialog>
+                    <Dialog
+                        open={openDAlert}
+                        onClose={handleCloseAlert}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                    >
+                        
+                        <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                                You Sure to delete the card
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleCloseAlert}>Cancel</Button>
+                            <Button onClick={() =>handleRemove(cardid)} autoFocus>
+                                Confirm
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                     <Col>
                         <Row style={{ marginTop: '20px' }}>
                             <Col>
@@ -239,10 +267,11 @@ const OccupantPaymentDash = () => {
                                 Your Monthly payment :
                             </Col>
                             <Col>
-                                <Button variant="contained">Contained</Button>
+                                <Button variant="contained" style={{ margin: "9% 30%" }} >Pay your Fee</Button>
                             </Col>
                         </Row>
                     </Col>
+                    
                     <TableContainer component={Paper} style={{ marginTop: '20px' }}>
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
                             <TableHead>
