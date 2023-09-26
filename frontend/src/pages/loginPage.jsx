@@ -137,7 +137,7 @@ const LoginPage = () => {
             dispatch(setUserInfo({...res}));    
             console.log(res)        
             toast.success('Login Successful');
-            navigate('/search');
+            navigate('/');
         } catch (err) {
             toast.error(err.data?.message || err.error);
         }
