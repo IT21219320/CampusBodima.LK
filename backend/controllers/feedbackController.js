@@ -14,9 +14,9 @@ import Boarding from '../models/boardingModel.js';
 
 
 const createFeedback = asyncHandler(async (req, res) => {
-    /*const {senderId,category, description, rating, } = req.body;
+    const {senderId,category, description, rating, } = req.body;
 
-    const reservation = await Reservation.findOne({occupantID: senderId});
+    /*const reservation = await Reservation.findOne({occupantID: senderId});
    
 
     if(!reservation){
