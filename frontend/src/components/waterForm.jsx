@@ -232,7 +232,7 @@ const handleAmountChange = (e) => {
                                                <Row>
                                                <Typography variant="body2" color="textSecondary">
                                                             {/* Comment: If adding a bill for only one occupant */}
-                                                            If adding a bill occupant:
+                                                            Add to occupant:
                                                           </Typography>
                                                </Row>
                                                <Row>
