@@ -705,7 +705,7 @@ const RegisterBoardingPage = () => {
                                                             <Form.Label style={{margin:0}}>Bank Account No.<span style={{color:'red'}}>*</span></Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="string" minLength={6} maxLength={16} pattern="^[0-9]$" placeholder="01234565345" value={bankAccNo} onChange={ (e) => setBankAccNo(e.target.value)} required readOnly={userInfo.bankAccNo ? true : false} style={{width:'95%'}} />
+                                                            <Form.Control type="string" minLength={6} maxLength={16} pattern="^[0-9]*$" placeholder="01234565345" value={bankAccNo} onChange={ (e) => setBankAccNo(e.target.value)} required readOnly={userInfo.bankAccNo ? true : false} style={{width:'95%'}} />
                                                         </Col>
                                                     </Row>
                                                     <Row style={{marginTop:'10px'}}>
