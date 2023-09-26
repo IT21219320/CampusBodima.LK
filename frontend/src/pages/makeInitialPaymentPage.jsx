@@ -78,7 +78,7 @@ function MakeInitialPaymentPage() {
               <h5 className={paymentScreenStyles.h5Text}>
                 {boardingDetails ? (
                   boardingDetails.boardingType == "Hostel" ? (
-                    <>Initial Payment <p style={{ float: "right" }}>{boardingDetails.room[0].keyMoney}</p>
+                    <>Initial Payment <p style={{ float: "right" }}>LKR {(boardingDetails.room[0].keyMoney)*(boardingDetails.room[0].rent)}</p>
                     </>) : (
                     <></>)) : (<></>)}</h5>
 
