@@ -168,6 +168,17 @@ export default function Sidebar() {
               </Tooltip>
             </ListItem></Link>
 
+            <Link to='/owner/payment/' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+              <Tooltip title={!open ? "Payments" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/payment/') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <MonetizationOn/>
+                  </ListItemIcon>
+                  <ListItemText primary={"Payments"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
+            </ListItem></Link>
+
             <Link to='/owner/utility' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
               <Tooltip title={!open ? "Utilities" : ''} placement="right" arrow>
                 <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/owner/utility') ? sideBarStyles.active : ''}`}>
