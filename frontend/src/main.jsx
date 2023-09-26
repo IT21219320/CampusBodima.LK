@@ -130,7 +130,7 @@ const router = createBrowserRouter(
           <Route path='/occupant/ticket/update/:ticketId' element={<UpdateMainTicketPage />} />
 
           <Route path='/occupant/order/' element={<Orders />} />
-          <Route path='/occupant/order/orderList/updateOrder' element={<UpdateOrder />} />
+          <Route path='/occupant/order/orderList/updateOrder/:oId' element={<UpdateOrder />} />
 
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
