@@ -8,7 +8,6 @@ import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Form } from 'react-bootstrap';
 import { useGetCardByUserMutation, useDeleteCardMutation, useUpdateCardMutation } from "../slices/cardApiSlice";
 import { useGetPaymentByUserMutation } from "../slices/paymentApiSlice";
-import { async } from "@firebase/util";
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css"
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -25,6 +24,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -51,6 +54,17 @@ const cardLabelsStyle = {
     fontFamily: "Lucida Console"
 }
 
+const searchBar = {
+    padding: "1%",
+    borderRadius: "20px",
+    margin: "4% 2% 0px 2%",
+    width: "50%",
+    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'currentColor\' class=\'bi bi-search\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.854 3.853a1 1 0 0 0 1.415-1.414l-3.853-3.854z\'/%3E%3Cpath d=\'M10.5 6.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0z\'/%3E%3C/svg%3E")',
+    backgroundPosition: '96% center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '20px 20px',
+}
+
 const OccupantPaymentDash = () => {
     const { userInfo } = useSelector((state) => state.auth);
 
@@ -66,7 +80,13 @@ const OccupantPaymentDash = () => {
     const [cardNumberF, setcardNumberF] = useState('');
     const [expireDate, setexpireDate] = useState('');
     const [cvvF, setcvvF] = useState('');
+    //tabViews
+    const [value, setValue] = useState('1');
 
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+    //Mutations
     const [getCard] = useGetCardByUserMutation();
     const [getPayment] = useGetPaymentByUserMutation();
     const [deleteCard] = useDeleteCardMutation();
@@ -80,7 +100,7 @@ const OccupantPaymentDash = () => {
         setCardid(id)
         setOpenDAlert(true);
     };
-  
+
     const handleCloseAlert = () => {
         setOpenDAlert(false);
     };
@@ -162,6 +182,7 @@ const OccupantPaymentDash = () => {
             <div className={dashboardStyles.mainDiv}>
 
                 <Container>
+
                     <Row>
                         <Col>
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
@@ -172,140 +193,176 @@ const OccupantPaymentDash = () => {
                             </Breadcrumbs>
                         </Col>
                     </Row>
-                    <Row>
-                        <Col>
-                            <Row style={{ marginTop: '20px' }}>
+                    <Box sx={{ width: '100%', typography: 'body1', marginTop:'10px' }}>
+                        <TabContext value={value}>
+                            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                <TabList onChange={handleChange} aria-label="lab API tabs example">
+                                    <Tab label="Monthly payment Summary" value="1" />
+                                    <Tab label="Cards" value="2" />
+                                    <Tab label="Transactions" value="3" />
+                                </TabList>
+                            </Box>
+                            <TabPanel value="1"><Row>
                                 <Col>
-                                    <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
-                                </Col>
-                            </Row>
-                            {cards.length > 0 ? (
-                                <Row style={{ overflow: 'scroll', marginLeft: 0, marginRight: 0, flexWrap: 'nowrap', marginTop: '10px', paddingBottom: '15px' }}>
-                                    {cards.map((card) => (
-
-                                        <Col key={card.id}>
-                                            <Box key={card.id} sx={{ minWidth: 275, maxWidth: 340 }} className={occupantDashboardPaymentStyles.cardStyles2}>
-                                                <Card variant="outlined" className={occupantDashboardPaymentStyles.cardStyles}>
-                                                    <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ minHeight: '160px', marginTop: "20px" }}>
-
-                                                        <p><span style={cardLabelsStyle}>Card Number : </span>{card.cardNumber}</p>
-                                                        <p><span style={cardLabelsStyle}>Expire Date : </span>{card.exNumber}</p>
-                                                        <p><span style={cardLabelsStyle}>CVV : </span>{card.cvv}</p>
-
-                                                        {isHovered && (
-                                                            <div key={card.id} style={{ float: "right" }}>
-                                                                <Button variant="text" onClick={() => handleClickOpen(card.cardNumber)}>Update</Button>
-                                                                <Button variant="text" color="error" onClick={() => handleClickOpenAlert(card.id)}>Remove</Button>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </Card>
-                                            </Box>
+                                    <Row style={{ marginTop: '20px' }}>
+                                        <Col>
+                                            <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
                                         </Col>
 
-                                    ))}
-                                </Row>
-                            ) : (
-                                <Row>
-                                    <Col>
-                                        <center><p>No cards to display</p></center>
+                                    </Row>
+                                </Col>
+                            </Row>
+                                <Row style={{ paddingLeft: "2%", paddingRight: "2%" }}>
+                                    <Col style={{ backgroundColor: "#b8a2ff", padding: "5%", borderRadius: "20px" }}>
+                                        Your Monthly payment :
                                     </Col>
-                                </Row>
-                            )}
-                        </Col>
-                    </Row>
-                    <Dialog open={open} onClose={handleClose}>
-                        <center><DialogTitle> Update Your card </DialogTitle></center>
-                        <Form onSubmit={updateCardDetails}>
-                            <DialogContent>
+                                    <Col>
+                                        <Button variant="contained" style={{ margin: "9% 30%" }} >Pay your Fee</Button>
+                                    </Col>
+                                </Row></TabPanel>
+                            <TabPanel value="2"><Row>
+                                <Col>
+                                    <Row style={{ marginTop: '20px' }}>
+                                        <Col>
+                                            <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
+                                        </Col>
+                                    </Row>
+                                    {cards.length > 0 ? (
+                                        <Row style={{ overflow: 'scroll', marginLeft: 0, marginRight: 0, flexWrap: 'nowrap', marginTop: '10px', paddingBottom: '15px' }}>
+                                            {cards.map((card) => (
+
+                                                <Col key={card.id}>
+                                                    <Box key={card.id} sx={{ minWidth: 275, maxWidth: 340 }} className={occupantDashboardPaymentStyles.cardStyles2}>
+                                                        <Card variant="outlined" className={occupantDashboardPaymentStyles.cardStyles}>
+                                                            <div key={card.id} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ minHeight: '160px', marginTop: "20px" }}>
+
+                                                                <p><span style={cardLabelsStyle}>Card Number : </span>{card.cardNumber}</p>
+                                                                <p><span style={cardLabelsStyle}>Expire Date : </span>{card.exNumber}</p>
+                                                                <p><span style={cardLabelsStyle}>CVV : </span>{card.cvv}</p>
+
+                                                                {isHovered && (
+                                                                    <div key={card.id} style={{ float: "right" }}>
+                                                                        <Button variant="text" onClick={() => handleClickOpen(card.cardNumber)}>Update</Button>
+                                                                        <Button variant="text" color="error" onClick={() => handleClickOpenAlert(card.id)}>Remove</Button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </Card>
+                                                    </Box>
+                                                </Col>
+
+                                            ))}
+                                        </Row>
+                                    ) : (
+                                        <Row>
+                                            <Col>
+                                                <center><p>No cards to display</p></center>
+                                            </Col>
+                                        </Row>
+                                    )}
+                                </Col>
+                            </Row><Dialog open={open} onClose={handleClose}>
+                                    <center><DialogTitle> Update Your card </DialogTitle></center>
+                                    <Form onSubmit={updateCardDetails}>
+                                        <DialogContent>
+
+                                            <Row>
+                                                <TextField autoFocus margin="dense" id="name" label="card number" required value={cardNumberF} onChange={(e) => setcardNumberF(e.target.value)} inputProps={{ maxLength: 16, minLength: 16, inputMode: 'numeric', title: 'Card number should be 16 digit' }} />
+                                            </Row>
+                                            <Row>
+                                                <TextField autoFocus margin="dense" id="name" label="Expire date" required value={expireDate} onChange={(e) => setexpireDate(e.target.value)} inputProps={{ pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY' }} />
+                                            </Row>
+                                            <Row>
+                                                <TextField autoFocus margin="dense" id="name" label="CVV" required value={cvvF} onChange={(e) => setcvvF(e.target.value)} inputProps={{ maxLength: 3, minLength: 3, inputMode: 'numeric', title: 'Card number should be 16 digit' }} />
+                                            </Row>
+
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={handleClose}>Cancel</Button>
+                                            <Button type="submit" onClick={handleClose}>Update</Button>
+                                        </DialogActions>
+                                    </Form>
+                                </Dialog>
+                                <Dialog
+                                    open={openDAlert}
+                                    onClose={handleCloseAlert}
+                                    aria-labelledby="alert-dialog-title"
+                                    aria-describedby="alert-dialog-description"
+                                >
+
+                                    <DialogContent>
+                                        <DialogContentText id="alert-dialog-description">
+                                            You Sure to delete the card
+                                        </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={handleCloseAlert}>Cancel</Button>
+                                        <Button onClick={() => handleRemove(cardid)} autoFocus>
+                                            Confirm
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog></TabPanel>
+                            <TabPanel value="3"><Row>
+                                <Col>
+                                    <Row style={{ marginTop: '20px' }}>
+                                        <Col>
+                                            <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Transactions</h4>
+                                        </Col>
+
+                                    </Row>
+                                </Col>
+                            </Row>
+
 
                                 <Row>
-                                    <TextField autoFocus margin="dense" id="name" label="card number" required value={cardNumberF} onChange={(e) => setcardNumberF(e.target.value)} inputProps={{ maxLength: 16, minLength: 16, inputMode: 'numeric', title: 'Card number should be 16 digit' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="Search..." style={searchBar}
+                                    />
                                 </Row>
                                 <Row>
-                                    <TextField autoFocus margin="dense" id="name" label="Expire date" required value={expireDate} onChange={(e) => setexpireDate(e.target.value)} inputProps={{ pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY' }} />
-                                </Row>
-                                <Row>
-                                    <TextField autoFocus margin="dense" id="name" label="CVV" required value={cvvF} onChange={(e) => setcvvF(e.target.value)} inputProps={{ maxLength: 3, minLength: 3, inputMode: 'numeric', title: 'Card number should be 16 digit' }} />
-                                </Row>
+                                    <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+                                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <StyledTableCell>Transaction ID</StyledTableCell>
+                                                    <StyledTableCell align="right">Amount</StyledTableCell>
+                                                    <StyledTableCell align="right">Description</StyledTableCell>
+                                                    <StyledTableCell align="right">Transaction Date</StyledTableCell>
+                                                    <StyledTableCell align="right">Method</StyledTableCell>
+                                                </TableRow>
+                                            </TableHead>
 
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleClose}>Cancel</Button>
-                                <Button type="submit" onClick={handleClose}>Update</Button>
-                            </DialogActions>
-                        </Form>
-                    </Dialog>
-                    <Dialog
-                        open={openDAlert}
-                        onClose={handleCloseAlert}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                    >
-                        
-                        <DialogContent>
-                            <DialogContentText id="alert-dialog-description">
-                                You Sure to delete the card
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseAlert}>Cancel</Button>
-                            <Button onClick={() =>handleRemove(cardid)} autoFocus>
-                                Confirm
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
-                    <Col>
-                        <Row style={{ marginTop: '20px' }}>
-                            <Col>
-                                <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
-                            </Col>
+                                            <TableBody>
+                                                {payments.length > 0 ? (
+                                                    payments.map((payment) => (
+                                                        <StyledTableRow key={payment._id}>
+                                                            <StyledTableCell component="th" scope="row">
+                                                                {payment._id}
+                                                            </StyledTableCell>
+                                                            <StyledTableCell align="right" >{payment.amount}</StyledTableCell>
+                                                            <StyledTableCell align="right" >{payment.description}</StyledTableCell>
 
-                        </Row>
-                        <Row>
-                            <Col style={{ backgroundColor: "#b8a2ff", padding: "5%", borderRadius: "20px" }}>
-                                Your Monthly payment :
-                            </Col>
-                            <Col>
-                                <Button variant="contained" style={{ margin: "9% 30%" }} >Pay your Fee</Button>
-                            </Col>
-                        </Row>
-                    </Col>
-                    
-                    <TableContainer component={Paper} style={{ marginTop: '20px' }}>
-                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                            <TableHead>
-                                <TableRow>
-                                    <StyledTableCell>Transaction ID</StyledTableCell>
-                                    <StyledTableCell align="right">Amount</StyledTableCell>
-                                    <StyledTableCell align="right">Description</StyledTableCell>
-                                    <StyledTableCell align="right">Transaction Date</StyledTableCell>
-                                    <StyledTableCell align="right">Method</StyledTableCell>
-                                </TableRow>
-                            </TableHead>
+                                                            <StyledTableCell align="right">{payment.date}</StyledTableCell>
+                                                            <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
+                                                        </StyledTableRow>
+                                                    ))) : (
+                                                    <StyledTableRow >
+                                                        <StyledTableCell component="th" scope="row">
+                                                            No data
+                                                        </StyledTableCell>
+                                                    </StyledTableRow>)}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Row></TabPanel>
+                        </TabContext>
+                    </Box>
 
-                            <TableBody>
-                                {payments.length > 0 ? (
-                                    payments.map((payment) => (
-                                        <StyledTableRow key={payment._id}>
-                                            <StyledTableCell component="th" scope="row">
-                                                {payment._id}
-                                            </StyledTableCell>
-                                            <StyledTableCell align="right" >{payment.amount}</StyledTableCell>
-                                            <StyledTableCell align="right" >{payment.description}</StyledTableCell>
 
-                                            <StyledTableCell align="right">{payment.date}</StyledTableCell>
-                                            <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
-                                        </StyledTableRow>
-                                    ))) : (
-                                    <StyledTableRow >
-                                        <StyledTableCell component="th" scope="row">
-                                            No data
-                                        </StyledTableCell>
-                                    </StyledTableRow>)}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+
+
+
                 </Container>
             </div>
         </>

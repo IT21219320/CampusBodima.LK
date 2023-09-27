@@ -51,7 +51,7 @@ const makePayment = expressAsyncHandler(async (req, res) => {
       amount: amount,
       description: "Initial Payment to reserve",
       boarding: boarding,
-      credited: boarding.keyMoney,
+      credited: amount,
     })
     if (response) {
       res.status(200).json({
