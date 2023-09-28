@@ -6,6 +6,10 @@ const cardDetailsSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    cardName : {
+        type : String,
+        require:true,
+    },
     cardNumber : {
         type : Object,
         require: true

@@ -27,7 +27,7 @@ function decrypt(encryptedData) {
 }
 
 const addCard = expressAsyncHandler(async (req, res) => {
-  const { userInfo_id, cardNumber, exDate, cvv } = req.body;
+  const { userInfo_id, cardName, cardNumber, exDate, cvv } = req.body;
 
   const hashCardNumberFisrt = encrypt(cardNumber);
 
@@ -47,6 +47,7 @@ const addCard = expressAsyncHandler(async (req, res) => {
 
     const response = await cardDetails.create({
       occupant: user,
+      cardName: cardName,
       cardNumber: cardNumberString,
       expireDate: exDate,
       cvv: cvvString,

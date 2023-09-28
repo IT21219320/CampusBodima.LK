@@ -12,75 +12,111 @@ import { useMakePaymentMutation } from "../slices/paymentApiSlice";
 import { useAddCardMutation } from "../slices/cardApiSlice";
 import Header from "./header.jsx";
 import { Container } from "@mui/material";
+import { toast } from 'react-toastify';
 
 
 
-const PaymentForm = () => {
+const PaymentForm = ({ des }) => {
 
+    const [cardName, setCardName] = useState('')
     const [cardNumber, setCardNUmber] = useState('')
     const [exDate, setExDate] = useState('')
     const [cvv, setcvv] = useState('')
     const [isChecked, setIsChecked] = useState(false);
-    const {bId} = useParams();
+    const { bId } = useParams();
     const { userInfo } = useSelector((state) => state.auth);
     const userID = userInfo._id;
 
     const [makePayment] = useMakePaymentMutation();
     const [addCard] = useAddCardMutation();
-    
+
+
 
     const navigate = useNavigate();
+
+    const handleExDateChange = (e) => {
+        let input = e.target.value;
     
+        // Remove non-numeric characters
+        input = input.replace(/\D/g, '');
+    
+        // Add a "/" after the first two characters
+        if (input.length > 2) {
+          input = `${input.slice(0, 2)}/${input.slice(2)}`;
+        }
+    
+        // Update the state
+        setExDate(input);
+      };
+
+      const handleCardNumberChange = (e) => {
+        let input = e.target.value;
+    
+        // Remove non-numeric characters
+        input = input.replace(/\D/g, '');
+    
+       
+    
+        // Update the state
+        setCardNUmber(input);
+      };
+
     const submitHandler = async (e) => {
-     
+
         e.preventDefault();
-        const resPay = await makePayment({userInfo_id:userID, bId:bId})
-        if(isChecked){
+        const resPay = await makePayment({ userInfo_id: userID, bId: bId, des: des })
+        if (isChecked) {
             try {
-                const res = await addCard( { cardNumber: cardNumber, exDate:exDate, cvv:cvv, userInfo_id: userID, bId:bId} ).unwrap();
-                
-                if(res.message === "Card exist"){
-                    window.alert('Card already saved');
+                console.log({ des });
+                const res = await addCard({ cardName:cardName, cardNumber: cardNumber, exDate: exDate, cvv: cvv, userInfo_id: userID, bId: bId }).unwrap();
+
+                if (res.message === "Card exist") {
+                    toast.warning('Card already saved', { position: toast.POSITION.TOP_RIGHT });
                 }
-   
+
             } catch (err) {
                 console.log(err);
             }
         }
-        if(resPay){
+        if (resPay) {
             console.log(resPay)
-            if(resPay.data.message === "payment inserted"){
-                
-                
-                window.alert('Payment successfull');
+            if (resPay.data.message === "payment inserted") {
+
+                toast.success('Payment successfull!', { position: toast.POSITION.TOP_RIGHT });
                 navigate('/occupant/reservations/confirm/');
             }
         }
-  
+
     }
 
     return (
         <>
-        
+
             <div className={paymentFormStyle.formDiv}>
 
                 <Form onSubmit={submitHandler}>
-                    <Row>
-                        <TextField id="outlined-basic" label="Card Number" variant="outlined" size="small" value={cardNumber} required onChange={(e) => setCardNUmber(e.target.value)} inputProps={{maxLength: 16, minLength:16 ,inputMode: 'numeric', pattern: '^[0-9]{16}$', title:'Card number should be 16 digit'}}/>
+
+                    <Row className={paymentFormStyle.colPadding}>
+                        <TextField id="outlined-basic" label="Name on card" variant="outlined" size="small" value={cardName} required onChange={(e) => setCardName(e.target.value)}  />
+                    </Row>
+
+                    <Row className={paymentFormStyle.colPadding}>
+                        <TextField id="outlined-basic" label="Card Number" variant="outlined" size="small" value={cardNumber} required onChange={handleCardNumberChange} inputProps={{ maxLength: 16, minLength: 16, inputMode: 'numeric', pattern: '^[0-9]{16}$', title: 'Card number should be 16 digit' }} />
                     </Row>
 
                     <Row>
+
                         <Col className={paymentFormStyle.colPadding}>
-                            <TextField id="outlined-basic" label="12/30" variant="outlined" size="small" value={exDate} required onChange={(e) => setExDate(e.target.value)} inputProps={{pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY'}} />
+                            <TextField id="outlined-basic" label="12/30" variant="outlined" size="small" value={exDate} required onChange={handleExDateChange} inputProps={{ maxLength: 5, pattern: '^(0[1-9]|1[0-2])\/[0-9]{2}$', title: 'Please enter a valid date in the format MM/YY' }} />
                         </Col>
                         <Col className={paymentFormStyle.colPadding}>
-                            <TextField id="outlined-basic" label="CVV" variant="outlined" size="small" value={cvv} required onChange={(e) => setcvv(e.target.value)} inputProps={{maxLength: 3, minLength:3 ,inputMode: 'numeric', pattern: '^[0-9]{3}$', title:'Card number should be 16 digit'}}/>
+                            <TextField id="outlined-basic" label="CVV" variant="outlined" size="small" value={cvv} required onChange={(e) => setcvv(e.target.value)} inputProps={{ maxLength: 3, minLength: 3, inputMode: 'numeric', pattern: '^[0-9]{3}$', title: 'Card number should be 16 digit' }} />
                         </Col>
                     </Row>
                     <Row>
                         <FormControlLabel control={<Checkbox />} label="Save card" value={!isChecked} onChange={(e) => setIsChecked(e.target.value)} />
                     </Row>
-                        <Button variant="contained" type="submit">Pay</Button>
+                    <Button variant="contained" type="submit">Pay</Button>
 
                 </Form>
 

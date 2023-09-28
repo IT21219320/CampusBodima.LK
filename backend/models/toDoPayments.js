@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 const toDoPaymentSchema = mongoose.Schema({
     
     amount : {
-        type : String
+        type : String,
+        required : true
     },
     
     room: [{

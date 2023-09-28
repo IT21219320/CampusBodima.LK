@@ -30,7 +30,7 @@ const getPublichkey = expressAsyncHandler(async (req, res) => {
 
 const makePayment = expressAsyncHandler(async (req, res) => {
 
-  const { userInfo_id, bId } = req.body;
+  const { userInfo_id, bId, des, amount } = req.body;
   
   const user = await User.findById(userInfo_id);
 
@@ -41,15 +41,13 @@ const makePayment = expressAsyncHandler(async (req, res) => {
 
 
   if (boarding.boardingType === "Annex") {
-
-    const amount = parseInt(boarding.keyMoney)*parseInt(boarding.rent);
     
     const response = await payment.create({
       occupant: user,
       owner: oUser,
       paymentType: "Card",
       amount: amount,
-      description: "Initial Payment to reserve",
+      description: des,
       boarding: boarding,
       credited: amount,
     })
@@ -60,10 +58,10 @@ const makePayment = expressAsyncHandler(async (req, res) => {
     }
   }
   else if (boarding.boardingType === "Hostel") {
-    let room;
+    let roomT;
     if (reserve) {
       console.log(reserve.roomID._id)
-      room = await Room.findById(reserve.roomID);
+      roomT = await Room.findById(reserve.roomID);
 
     }
 
@@ -71,11 +69,11 @@ const makePayment = expressAsyncHandler(async (req, res) => {
       occupant: user,
       owner: oUser,
       paymentType: "Card",
-      amount: room.keyMoney,
-      description: "Initial Payment to reserve",
-
+      amount: amount,
+      description: des,
       boarding: boarding,
-      credited: room.keyMoney,
+      room:roomT,
+      credited: amount,
     })
     if (response) {
       res.status(200).json({
@@ -126,7 +124,7 @@ cron.schedule('0 0 10 * *', async () => {
       if (userReservation) {
 
         const boardingT = await Boarding.findById(userReservation.occupantID)
-        let oneUserUtitlity;
+        let oneUserUtitlity = 0;
         if (boardingT) {
           const utility = await Utility.find({ boarding: boardingT._id })
           if (utility) {
@@ -142,18 +140,68 @@ cron.schedule('0 0 10 * *', async () => {
 
         }
         const res = await toDoPayment.create({
+
           amount: oneUserUtitlity,
           occupant: userReservation.occupantID,
 
         })
       }
     }
-
+    
     console.log('Monthly fees calculated and updated.');
   } catch (error) {
     console.error('Error calculating monthly fees:', error);
   }
 });
+
+const calcMonthlyPayment = expressAsyncHandler(async(req,res) => {
+  try {
+    // Calculate the monthly fee for each subscribed user
+    const reservedUsers = await reservations.find();
+
+    for (const userReservation of reservedUsers) {
+      if (userReservation) {
+
+        const boardingT = await Boarding.findById(userReservation.boardingId)
+        
+        
+        let oneUserUtitlity = 0;
+        if (boardingT) {
+          
+          const utility = await Utility.find({ boarding: boardingT._id })
+          
+          if (utility) {
+            const usersB = await reservations.find({ boardingId: boardingT._id })
+            const userCount = usersB.length;
+            
+            let totalUtility = 0;
+            for (const oneU of utility) {
+              
+              totalUtility += parseInt(oneU.amount);
+              
+            }
+            console.log(" total utility ",totalUtility, "   ", userCount)
+            oneUserUtitlity = totalUtility / parseInt(userCount);
+          }
+          console.log("one user utility",oneUserUtitlity)
+
+        }
+        const res = await toDoPayment.create({
+          amount: oneUserUtitlity,
+          occupant: userReservation.occupantID,
+
+        })
+      }
+    }
+    res.status(200).json({
+      message : "Calculation done"
+    })
+
+    console.log('Monthly fees calculated and updated.');
+  } catch (error) {
+    console.error('Error calculating monthly fees:', error);
+  }
+})
 
 const getIntent = expressAsyncHandler(async (req, res) => {
 
@@ -220,4 +268,4 @@ const getWebHook = expressAsyncHandler(async (req, res) => {
 })
 
 
-export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID };
+export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment };

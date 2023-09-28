@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 import Boarding from './boardingModel.js';
 import User from './userModel.js';
+import Room from './roomModel.js';
 
 const paymentSchema = mongoose.Schema({
+    
     paymentType : {
         type : String
     },
@@ -15,10 +17,9 @@ const paymentSchema = mongoose.Schema({
     boarding : {
         type : Boarding.schema,
     },
-    room: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Room'
-    }],
+    room: {
+        type: Room.schema,
+    },
     owner: {
         type: User.schema,
     },

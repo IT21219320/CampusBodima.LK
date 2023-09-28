@@ -66,6 +66,7 @@ const searchBar = {
 }
 
 const OccupantPaymentDash = () => {
+
     const { userInfo } = useSelector((state) => state.auth);
 
     const [cards, setCards] = useState([]);
@@ -73,7 +74,7 @@ const OccupantPaymentDash = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [deleteC, setDeleteCard] = useState('');
     const [updateC, setUpdateCard] = useState('');
-    const navigate = useNavigate();
+    
     const [open, setOpen] = useState(false);
     const [cardIdR, setCardIdR] = useState('');
     const [cardid, setCardid] = useState();
@@ -82,6 +83,15 @@ const OccupantPaymentDash = () => {
     const [cvvF, setcvvF] = useState('');
     //tabViews
     const [value, setValue] = useState('1');
+    let bId;
+    if(payments.length > 0){
+        console.log(payments[0].boarding._id);
+        bId = payments[0].boarding._id;
+    }
+
+    
+
+    const navigate = useNavigate();
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -176,6 +186,10 @@ const OccupantPaymentDash = () => {
         }
     }
 
+    const navigateToPay = ()=>{
+        navigate(`/occupant/makeMonthlyPayment/${bId}`)
+    }
+
     return (
         <>
             <Sidebar />
@@ -217,7 +231,7 @@ const OccupantPaymentDash = () => {
                                         Your Monthly payment :
                                     </Col>
                                     <Col>
-                                        <Button variant="contained" style={{ margin: "9% 30%" }} >Pay your Fee</Button>
+                                        <Button variant="contained" style={{ margin: "9% 30%" }} onClick={()=>navigateToPay()}>Pay your Fee</Button>
                                     </Col>
                                 </Row></TabPanel>
                             <TabPanel value="2"><Row>
