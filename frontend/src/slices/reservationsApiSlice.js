@@ -68,7 +68,7 @@ export const reservationApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
-    }),
+    }),    
 
 })
 

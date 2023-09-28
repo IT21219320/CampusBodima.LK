@@ -13,7 +13,7 @@ import ReservationHistory from "../models/reservationHistory.js";
 const reserveRoom = asyncHandler(async (req, res) => {
     //const RoomID = req.query.roomID;
     //const BoardingId = req.query.boardingId;
-    const { userInfo_id, Gender, Duration ,BoardingId, RoomID} = req.body;
+    const { userInfo_id, Gender, Duration, BoardingId, RoomID, PaymentType } = req.body;
     console.log("Hi")
     const user = await User.findOne({ _id: userInfo_id });
     const room = await Room.findById(RoomID);
@@ -22,6 +22,7 @@ const reserveRoom = asyncHandler(async (req, res) => {
     console.log(boarding)
     const boardingType = boarding.boardingType
     const occupantID = user._id;
+    const paymentType = PaymentType;
 
     var reservationExist = await Reservation.findOne({ occupantID: occupantID });
 
@@ -46,6 +47,8 @@ const reserveRoom = asyncHandler(async (req, res) => {
                         roomID,
                         occupantID,
                         Duration,
+                        paymentType,
+
                     });
                     if (Reserve) {
 
@@ -62,18 +65,18 @@ const reserveRoom = asyncHandler(async (req, res) => {
                         });
                     } else {
                         res.status(200).json({
-                            message : "problem in inserting",
+                            message: "problem in inserting",
                         });
 
                     }
                 } else {
                     res.status(200).json({
-                        message : "genders are not matching",
+                        message: "genders are not matching",
                     });
                 }
             } else {
                 res.status(200).json({
-                    message : "no beds are available",
+                    message: "no beds are available",
                 });
             }
 
@@ -102,7 +105,7 @@ const reserveRoom = asyncHandler(async (req, res) => {
                         res.status(200).json({
                             message: "Boarding not found",
                         });
-                        
+
                     }
 
 
@@ -114,21 +117,21 @@ const reserveRoom = asyncHandler(async (req, res) => {
                     res.status(200).json({
                         message: "problem in inserting",
                     });
-                    
+
                 }
             } else {
                 res.status(200).json({
                     message: "genders are not matching",
                 });
-                
+
             }
         }
 
     } else {
         res.status(200).json({
-            message : "you have already reserved",
+            message: "you have already reserved",
         });
-        
+
     }
 
 
@@ -170,33 +173,33 @@ const getMyReservation = asyncHandler(async (req, res) => {
     const user = await User.findById(userInfo_id);
     const boarding = await Boarding.findById(ViewMyReservation.boardingId);
     const room = await Room.findById(ViewMyReservation.roomID);
-    
+
 
     if (ViewMyReservation) {
 
-        if(ViewMyReservation.boardingType === "Annex"){
-            const myDetails={
+        if (ViewMyReservation.boardingType === "Annex" && ViewMyReservation.status === "Paid") {
+            const myDetails = {
                 Id: ViewMyReservation._id,
                 name: user.firstName,
-                bType:ViewMyReservation.boardingType,
-                bName:boarding.boardingName,
-                Duration:ViewMyReservation.Duration,
-                reservedDt:ViewMyReservation.createdAt
+                bType: ViewMyReservation.boardingType,
+                bName: boarding.boardingName,
+                Duration: ViewMyReservation.Duration,
+                reservedDt: ViewMyReservation.createdAt
             }
             res.status(200).json({
                 myDetails,
             })
 
-        }else {
+        } else if (ViewMyReservation.boardingType === "Hostel" && ViewMyReservation.status === "Paid") {
 
-            const myDetails={
+            const myDetails = {
                 Id: ViewMyReservation._id,
                 name: user.firstName,
-                bType:ViewMyReservation.boardingType,
-                bName:boarding.boardingName,
-                rNo:room.roomNo,
-                Duration:ViewMyReservation.Duration,
-                reservedDt:ViewMyReservation.createdAt
+                bType: ViewMyReservation.boardingType,
+                bName: boarding.boardingName,
+                rNo: room.roomNo,
+                Duration: ViewMyReservation.Duration,
+                reservedDt: ViewMyReservation.createdAt
             }
             res.status(200).json({
                 myDetails,
@@ -204,9 +207,9 @@ const getMyReservation = asyncHandler(async (req, res) => {
 
         }
 
-        
 
-        
+
+
     }
     else {
         res.status(400);
@@ -220,11 +223,11 @@ const getMyReservation = asyncHandler(async (req, res) => {
 // @access  Private - Owner
 
 const getBoardingReservations = asyncHandler(async (req, res) => {
-    const {boardingId} = req.body;
+    const { boardingId } = req.body;
 
     const boarding = await Boarding.findById(boardingId);
 
-    const reserve = await Reservation.find({ boardingId: boardingId, status: 'Paid' });
+    const reserve = await Reservation.find({ boardingId: boardingId, status: 'Approvedupdates' });
 
     if (reserve) {
 
@@ -332,7 +335,75 @@ const approvePendingStatus = asyncHandler(async (req, res) => {
     const reservation = await Reservation.findById(ReservationId);
 
     if (reservation) {
-        reservation.status = 'Paid';
+
+        if (reservation.PaymentType === "Cash") {
+            if (reservation.boardingType === "Annex") {
+
+                reservation.status = 'Approved';
+                reservation.paymentStatus = 'Paid';
+
+                const updatedVisibility = await Boarding.findByIdAndUpdate(
+                    { _id: reservation.BoardingId },
+                    { $set: { visibility: 'false' } },
+                    { new: true },
+                )
+            }
+            else if (reservation.boardingType === "Hostel") {
+                reservation.status = 'Approved';
+                reservation.paymentStatus = 'Paid';
+
+                const room = await Room.findById(reservation.roomID);
+
+                const noOfBeds = parseInt(room.noOfBeds);
+
+                const occupants = room.occupant.length;
+
+                if (noOfBeds === occupants){
+                    const updatedVisibility = await Room.findByIdAndUpdate(
+                        { _id: reservation.roomID },
+                        { $set: { visibility: 'false' } },
+                        { new: true },
+                    )
+
+                }
+
+            }
+
+
+
+        } else {
+            if (reservation.boardingType === "Annex") {
+
+                reservation.status = 'Approved';
+
+                const updatedVisibility = await Boarding.findByIdAndUpdate(
+                    { _id: reservation.BoardingId },
+                    { $set: { visibility: 'false' } },
+                    { new: true },
+                )
+            }
+            else if (reservation.boardingType === "Hostel") {
+                reservation.status = 'Approved';
+
+                const room = await Room.findById(reservation.roomID);
+
+                const noOfBeds = parseInt(room.noOfBeds);
+
+                const occupants = room.occupant.length;
+
+                if (noOfBeds === occupants){
+                    const updatedVisibility = await Room.findByIdAndUpdate(
+                        { _id: reservation.roomID },
+                        { $set: { visibility: 'false' } },
+                        { new: true },
+                    )
+
+                }
+
+            }
+
+        }
+
 
         const paidReservation = await reservation.save();
 
@@ -404,7 +475,7 @@ const deleteReservation = asyncHandler(async (req, res) => {
             console.log(deletedReservation.occupantID)
             const updatedBoarding = await Boarding.findOneAndUpdate(
                 { _id: deletedReservation.BoardingId },
-                { $pull: { occupant: deletedReservation.occupantID } },
+                { $unset: { occupant: deletedReservation.occupantID } },
                 { new: true }
             );
 
@@ -419,10 +490,24 @@ const deleteReservation = asyncHandler(async (req, res) => {
 
             });
 
-            await reservationHistory.save();
+            const res = await reservationHistory.save();
+
+            if (res) {
+                console.log("inserted to history")
+            }
+
+            const updatedRoom = await Room.findOneAndUpdate(
+                { _id: deletedReservation.roomID },
+                { $pull: { occupant: deletedReservation.occupantID } },
+                { new: true }
+            );
+
+
 
         }
-        res.status(200).json("Reservation Successfully Deleted");
+        res.status(200).json({
+            message: "Reservation Successfully Deleted",
+        });
 
     }
     else {

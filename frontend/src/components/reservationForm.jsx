@@ -37,7 +37,7 @@ const ReservationForm = () => {
         console.log(bId);
         console.log(userInfo._id);
         const userID = userInfo._id;
-        const res = await reserveRoom({ Gender: gender, Duration: duration, userInfo_id: userID, BoardingId: bId, RoomID: rId }).unwrap();
+        const res = await reserveRoom({ Gender: gender, Duration: duration, userInfo_id: userID, BoardingId: bId, RoomID: rId, PaymentType:paymentType }).unwrap();
         console.log(res)
         if(res.message === "you have already reserved"){
             window.alert("you have already reserved");

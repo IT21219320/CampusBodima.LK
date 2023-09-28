@@ -28,6 +28,17 @@ const reservationSchema = mongoose.Schema({
         required:true
     },
 
+    paymentType:{
+        type: String,
+        required:true
+    },
+
+    paymentStatus:{
+        type: String,
+        required: true,
+        default: 'Pending'
+    },
+
     status:{
         type: String,
         required: true,
