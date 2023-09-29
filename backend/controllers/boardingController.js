@@ -213,7 +213,11 @@ const getBoardingById = asyncHandler(async (req, res) => {
         path:'room',
         populate: {
             path: 'occupant', 
+            select: '-password',
         },
+    }).populate({
+        path: 'occupant', 
+        select: '-password',
     });
 
     boarding.room.sort((a, b) => a.roomNo - b.roomNo);
@@ -745,13 +749,49 @@ const approveBoarding = asyncHandler(async (req, res) => {
       const boardingId = req.body.boardingId;
 
       try {
-          let boarding = await Boarding.findById(boardingId).populate('owner');
+          let boarding = await Boarding.findById(boardingId).populate('owner').populate('room');
+
+          var boardingCapacity = 0;
+          var boardingOccupantCount = 0;
+
+          for(let i = 0; i < boarding.room.length; i++){
+              boardingCapacity += parseInt(boarding.room[i].noOfBeds);
+          }
+
+          for(let i = 0; i < boarding.room.length; i++){
+              boardingOccupantCount += boarding.room[i].occupant.length;
+          }
+
+          let visibility = true;
+          if(boarding.boardingType == 'Annex' && boarding.occupant){
+            visibility = false;
+          }
+
+          if(boarding.boardingType == 'Hostel' && boardingCapacity==boardingOccupantCount){
+            visibility = false;
+          }
+
           boarding.status = "Approved";
-          boarding.visibility = true;
+          boarding.visibility = visibility;
           boarding = await boarding.save();
     
-          const rooms = await Room.updateMany({boardingId},{ $set: { status: 'Approved', visibility:true } });
-          console.log(rooms);
+
+          const rooms = await Room.find({boardingId});
+          let room;
+          let roomVisibility = true;
+          for(let i = 0; i < rooms.length; i++){
+            room = await Room.findById(rooms[i]._id);
+
+            if(room.noOfBeds == room.occupant.length){
+                roomVisibility = false;
+            }
+
+            room.status = 'Approved'
+            room.visibility = roomVisibility
+
+            await room.save();
+          }
+
     
           const message = `<p><b>Hello ${boarding.owner.firstName},</b></p>
           <p>We are pleased to inform you that your registered boarding, ${boarding.boardingName}, has been approved.</p>

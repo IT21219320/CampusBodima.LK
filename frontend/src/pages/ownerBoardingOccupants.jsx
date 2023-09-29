@@ -20,7 +20,7 @@ import defaultImage from '/images/defaultImage.png';
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBinLine } from "react-icons/ri";
 
-const OwnerBoardingRoomPage = () => {
+const OwnerBoardingOccupants = () => {
     const theme = useTheme();
 
     const [noticeStatus, setNoticeStatus] = useState(true);
@@ -45,9 +45,7 @@ const OwnerBoardingRoomPage = () => {
 
     const [getOwnerBoardingsById, {isLoading}] = useGetBoardingByIdMutation();
     const [updateVisibility] = useUpdateVisibilityMutation();
-    const [updateRoomVisibility] = useUpdateRoomVisibilityMutation();
     const [deleteOwnerBoarding] = useDeleteBoardingMutation();
-    const [deleteOwnerBoardingRoom] = useDeleteRoomMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
 
@@ -56,8 +54,8 @@ const OwnerBoardingRoomPage = () => {
             setImgLoading(true);
             const res = await getOwnerBoardingsById( boardingId ).unwrap();
 
-            if(res.boarding.boardingType == "Annex"){
-                navigate(`/owner/boardings/${boardingId}/occupants`)
+            if(res.boarding.boardingType == "Hostel"){
+                navigate(`/owner/boardings/${boardingId}/rooms`)
             }
 
             // Create an array of promises for image retrieval
@@ -79,9 +77,13 @@ const OwnerBoardingRoomPage = () => {
             // Wait for all image retrieval promises to complete
             Promise.all(updatedImages)
                 .then((imageUrl) => {
+                    
                     const updatedBoarding = { ...res.boarding, boardingImages: imageUrl };
+                        
+                    setBoarding(updatedBoarding);
+                    setImgLoading(false);
 
-                    const roomImagePromises = updatedBoarding.room.map(async (room, index) => {
+                    /*const roomImagePromises = updatedBoarding.room.map(async (room, index) => {
                         const updatedRoomImages = await Promise.all(room.roomImages.map(async (image, index) => {
                             try {
                                 const roomImageUrl = await getDownloadURL(ref(storage, room.roomImages[0]));
@@ -99,11 +101,10 @@ const OwnerBoardingRoomPage = () => {
                     Promise.all(roomImagePromises)
                         .then((updatedRoom) => {
                             const updatedRoomNBoarding = { ...updatedBoarding, room: updatedRoom };
-                            console.log({...updatedRoomNBoarding});
+                            
                             setBoarding(updatedRoomNBoarding);
                             setImgLoading(false);
-                        })
-
+                        })*/
                 })
                 .catch((error) => {
                     console.log('Error updating image URLs:', error); 
@@ -613,4 +614,4 @@ const OwnerBoardingRoomPage = () => {
     )
 };
 
-export default OwnerBoardingRoomPage;
+export default OwnerBoardingOccupants

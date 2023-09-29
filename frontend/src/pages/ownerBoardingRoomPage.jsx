@@ -239,7 +239,7 @@ const OwnerBoardingRoomPage = () => {
             }
 
             setLoading(false);
-            navigate(`/owner/boardings/${boardingId}/rooms`)
+            loadData();
         } catch (err) {
             toast.error(err.data?.message || err.error);
             setLoading(false);

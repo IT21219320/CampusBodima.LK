@@ -27,6 +27,7 @@ import EditBoardingPage from './pages/editBoardingPage.jsx';
 import OwnerBoardingRoomPage from './pages/ownerBoardingRoomPage.jsx';
 import AddBoardingRoomPage from './pages/addBoardingRoomPage.jsx';
 import EditBoardingRoomPage from './pages/editBoardingRoomPage.jsx';
+import OwnerBoardingOccupants from './pages/ownerBoardingOccupants.jsx';
 import AdminVerifyBoardingPage from './pages/adminVerifyBoardingPage.jsx';
 
 import OwnerIngredientPage from './pages/OwnerIngredientPage.jsx';
@@ -100,7 +101,7 @@ const router = createBrowserRouter(
         <Route path='' element={ <OwnerRoute /> }>
           <Route path='/owner/boardings' element={ <OwnerBoardingPage /> } />
           <Route path='/owner/boardings/add' element={ <RegisterBoardingPage /> } />
-          <Route path='/owner/boardings/:boardingId/occupants' element={ <OwnerBoardingRoomPage /> } />
+          <Route path='/owner/boardings/:boardingId/occupants' element={ <OwnerBoardingOccupants /> } />
           <Route path='/owner/boardings/:boardingId/rooms' element={ <OwnerBoardingRoomPage /> } />
           <Route path='/owner/boardings/:boardingId/edit' element={ <EditBoardingPage /> } />
           <Route path='/owner/boardings/:boardingId/:boardingName/rooms/:roomNo/add' element={ <AddBoardingRoomPage /> } />
