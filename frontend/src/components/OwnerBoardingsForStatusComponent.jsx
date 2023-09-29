@@ -183,7 +183,7 @@ const OwnerBoardingsForStatus = ({children}) => {
                     {loading ? <div style={{width:'100%',height:'100%',display: 'flex',alignItems: 'center',justifyContent: 'center'}}><CircularProgress /></div> : 
                         boardings.length > 0 ? 
                             boardings.map((boarding, index) => (
-                                <Link key={index} to={boarding.boardingType=='Hostel' ? `/owner/boardings/${boarding._id}/rooms` : ``} style={{textDecoration:'none'}}>  {/*/owner/boardings/${boarding._id}/occupants*/}
+                                <Link key={index} to={boarding.boardingType=='Hostel' ? `/owner/boardings/${boarding._id}/rooms` : `/owner/boardings/${boarding._id}/occupants`} style={{textDecoration:'none'}}>  
                                     <Card className={`${ownerStyles.card} mt-4`}>
                                         <CardContent className={ownerStyles.cardContent}>
                                             <Row style={{height:'100%', width:'100%'}}>

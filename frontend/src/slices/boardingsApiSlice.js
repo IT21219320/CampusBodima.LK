@@ -64,9 +64,22 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 method: 'GET',
             }),
         }),
+        getRoomById: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/room/${data}`,
+                method: 'GET',
+            }),
+        }),
         updateVisibility: builder.mutation({
             query: (data) => ({
                 url: `${BOARDINGS_URL}/updateBoardingVisibility`,
+                method: 'PUT',
+                body: data
+            }),
+        }),
+        updateRoomVisibility: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/updateRoomVisibility`,
                 method: 'PUT',
                 body: data
             }),
@@ -78,13 +91,26 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 body: data
             }),
         }),
+        updateRoom:builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/updateRoom`,
+                method: 'PUT',
+                body: data
+            }),
+        }),
         deleteBoarding:builder.mutation({
             query: (data) => ({
                 url: `${BOARDINGS_URL}/deleteBoarding/${data}`,
                 method: 'DELETE',
             }),
         }),
+        deleteRoom:builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/deleteRoom/${data}`,
+                method: 'DELETE',
+            }),
+        }),
     }),
 });
 
-export const { useRegisterBoardingMutation, useAddRoomMutation, useGetAllBoardingsMutation, useGetAllPublicBoardingsMutation, useGetOwnerBoardingsMutation, useGetPendingApprovalBoardingsMutation, useApproveBoardingMutation, useRejectBoardingMutation, useGetBoardingByIdMutation, useUpdateVisibilityMutation, useUpdateBoardingMutation, useDeleteBoardingMutation } = boardingsApiSlice;
+export const { useRegisterBoardingMutation, useAddRoomMutation, useGetAllBoardingsMutation, useGetAllPublicBoardingsMutation, useGetOwnerBoardingsMutation, useGetPendingApprovalBoardingsMutation, useApproveBoardingMutation, useRejectBoardingMutation, useGetBoardingByIdMutation, useGetRoomByIdMutation, useUpdateVisibilityMutation, useUpdateRoomVisibilityMutation, useUpdateBoardingMutation, useUpdateRoomMutation, useDeleteBoardingMutation, useDeleteRoomMutation } = boardingsApiSlice;

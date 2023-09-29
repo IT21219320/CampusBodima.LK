@@ -139,11 +139,28 @@ const addRoom = asyncHandler(async (req, res) => {
         description
     });
 
+    const boarding = await Boarding.findById(boardingId);
+
+    //Mark boarding as PendingApproval if it was already PendingApproval or PendingRoom, before the new room was added
+    //If it was already approved, keep it as approved
+    let status = "Approved";
+    if(boarding.status == "PendingRoom" || boarding.status == "PendingApproval"){
+        status = "PendingApproval"
+    }
+
+    const approvedRooms = await Room.find({boardingId, status:"Approved"})
+
+    //If there aren't any approved rooms for the boarding after creating the new room, mark the boarding as PendingApproval
+    if(approvedRooms.length == 0){
+        status = "PendingApproval"
+}
+    
+
     const updatedBoarding = await Boarding.findOneAndUpdate(
         { _id: boardingId },
         { 
             $push: { room: room._id },
-            $set: { status: 'PendingApproval' }
+            $set: { status }
         },
         { new: true }
     ).populate('room').populate('owner');
@@ -198,6 +215,8 @@ const getBoardingById = asyncHandler(async (req, res) => {
             path: 'occupant', 
         },
     });
+
+    boarding.room.sort((a, b) => a.roomNo - b.roomNo);
     
     if(boarding){
         res.status(200).json({
@@ -207,6 +226,24 @@ const getBoardingById = asyncHandler(async (req, res) => {
     else{
         res.status(400);
         throw new Error("Boarding Not Found!")
+    }
+});
+
+// @desc    Get Room by ID
+// route    GET /api/rooms/:roomId
+const getRoomById = asyncHandler(async (req, res) => {
+    const roomId = req.params.roomId;
+   
+    const room = await Room.findById(roomId);
+    
+    if(room){
+        res.status(200).json({
+            room
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("Room Not Found!")
     }
 });
 
@@ -494,17 +531,17 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
     else{
 
         const rooms = await Room.find({
-            ...(status !== 'All' ? { status } : {}),
+            status: 'Approved',
+            visibility: true,
             ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), 
         });
-        const roomConditions = rooms.map(room => ({ 'room.rent': room.rent }));
 
-        console.log(roomConditions);
 
         totalRows = await Boarding.countDocuments({
             //boardingType,
             visibility: 'true',
             status: 'Approved',
+            room: { $in: rooms},
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
@@ -536,6 +573,7 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
             //boardingType,
             visibility: 'true',
             status: 'Approved',
+            room: { $in: rooms},
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
@@ -643,10 +681,14 @@ const updateBoardingVisibility = asyncHandler(async (req, res) => {
         }
 
         if(boarding.occupant && boarding.boardingType == 'Annex'){
+            boarding.visibility = false;
+            const updatedBoarding = await boarding.save();
             res.status(400);
             throw new Error(`The annex is already rented out!`)
         }
         else if(boardingCapacity == boardingOccupantCount && boarding.boardingType == 'Hostel'){
+            boarding.visibility = false;
+            const updatedBoarding = await boarding.save();
             res.status(400);
             throw new Error("There arent any free rooms available")
         }
@@ -655,6 +697,39 @@ const updateBoardingVisibility = asyncHandler(async (req, res) => {
             const updatedBoarding = await boarding.save();
             res.status(200).json({
                 message:'Boarding updated Successfully'
+            })
+        }
+    }
+    else{
+        res.status(400);
+        throw new Error("Oops Something went wrong :(")
+    }
+});
+
+// @desc    Update Visibility of particular boarding
+// route    PUT /api/boardings/updateBoardingVisibility/
+const updateRoomVisibility = asyncHandler(async (req, res) => {
+    const roomId = req.body.id;
+
+    const room = await Room.findById(roomId);
+    
+    if(room){
+
+        var roomCapacity = room.noOfBeds;
+        var roomOccupantCount = room.occupant.length;
+
+        if(roomCapacity == roomOccupantCount){
+            room.visibility = false;
+            const updatedRoom = await room.save();
+            
+            res.status(400);
+            throw new Error("There arent any free beds available")
+        }
+        else{
+            room.visibility = !room.visibility;
+            const updatedRoom = await room.save();
+            res.status(200).json({
+                message:'Room updated Successfully'
             })
         }
     }
@@ -675,7 +750,7 @@ const approveBoarding = asyncHandler(async (req, res) => {
           boarding.visibility = true;
           boarding = await boarding.save();
     
-          const rooms = await Room.updateMany({boardingId},{ $set: { status: 'Approved' } });
+          const rooms = await Room.updateMany({boardingId},{ $set: { status: 'Approved', visibility:true } });
           console.log(rooms);
     
           const message = `<p><b>Hello ${boarding.owner.firstName},</b></p>
@@ -750,7 +825,7 @@ const rejectBoarding = asyncHandler(async (req, res) => {
         }
         else{
             let boarding = await Boarding.findById(boardingId).populate('owner');
-            boarding.status = "Incomplete";
+            boarding.status = "PendingRoom";
             boarding = await boarding.save();
             const rooms = await Room.updateMany({boardingId},{ $set: { status: 'Incomplete' } });
 
@@ -861,6 +936,68 @@ const updateBoarding = asyncHandler(async (req, res) => {
 
 });
 
+// @desc    Update Room
+// route    POST /api/boardings/updateRoom
+const updateRoom = asyncHandler(async (req, res) => {
+
+    const {
+        roomId,
+        roomNo, 
+        roomImages, 
+        noOfBeds,
+        noOfCommonBaths,
+        noOfAttachBaths, 
+        keyMoney,
+        rent,
+        description
+    } = req.body;
+
+    
+    var room = await Room.findById(roomId);
+
+    var roomNoExists = await Room.findOne({_id:roomId,roomNo});
+
+    var roomOccupantCount = room.occupant.length;
+    
+    if(!room){
+        res.status(400);
+        throw new Error('Room Not Found!');
+    }
+    else if(roomOccupantCount > 0){
+        res.status(400);
+        throw new Error('Cannot update room while it is occupied!');
+    }
+    else if(room.roomNo!=roomNo && roomNoExists){
+        res.status(400);
+        throw new Error('Room No already Exist!');
+    }
+    else{
+    
+        room.roomNo = roomNo || room.roomNo;
+        room.roomImages = roomImages || room.roomImages;
+        room.status = 'PendingApproval';
+        room.description = description || room.description;
+        room.noOfBeds = noOfBeds || room.noOfBeds;
+        room.noOfCommonBaths = noOfCommonBaths || room.noOfCommonBaths;
+        room.noOfAttachBaths = noOfAttachBaths || room.noOfAttachBaths;
+        room.keyMoney = keyMoney || room.keyMoney;
+        room.rent = rent || room.rent;
+
+        room = await room.save();
+
+        if(room){
+            res.status(201).json({
+                message: 'successfully updated',
+            });
+        }else{
+            res.status(400);
+            throw new Error('Invalid Room Data');
+        }
+    }
+
+
+});
+
 // @desc    Delete particular boarding
 // route    DELETE /api/boardings/deleteBoarding/:boardingId
 const deleteBoarding = asyncHandler(async (req, res) => {
@@ -925,6 +1062,56 @@ const deleteBoarding = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Delete particular room
+// route    DELETE /api/boardings/deleteRoom/:roomId
+const deleteRoom = asyncHandler(async (req, res) => {
+    const roomId = req.params.roomId;
+
+    const room = await Room.findById(roomId);
+    
+    if(room){
+
+        var occupantCount = room.occupant.length;
+
+        if(occupantCount == 0){
+            var fileRef;
+            for (let i = 0; i < room.roomImages.length; i++) {
+                fileRef = ref(storage,room.roomImages[i]);
+            
+                try {
+                    await deleteObject(fileRef); // deleting images of room
+                } catch (err) {
+                    console.log(err);
+                }        
+            }
+            await Room.findByIdAndDelete(roomId);
+
+            let boarding = await Boarding.findById(room.boardingId);
+
+            boarding.room.pull(roomId);
+
+            if(boarding.room.length == 0){
+                boarding.status = "PendingRoom";
+            }
+            
+            boarding = await boarding.save();
+            
+            res.status(200).json({
+                message:'Room deleted successfully!',
+                roomCount: boarding.room.length
+            })
+        }
+        else{
+            res.status(400);
+            throw new Error("Can't delete Room when there are occupants!")
+        }
+    }
+    else{
+        res.status(400);
+        throw new Error("Oops something went wrong :(");
+    }
+});
+
 export { 
     registerBoarding,
     addRoom,
@@ -932,11 +1119,15 @@ export {
     getAllPublicBoardings,
     getOwnerBoardings,
     getBoardingById,
+    getRoomById,
     getOccupantBoarding,
     getPendingApprovalBoardings,
     updateBoardingVisibility,
+    updateRoomVisibility,
     approveBoarding,
     rejectBoarding,
     updateBoarding,
-    deleteBoarding
+    updateRoom,
+    deleteBoarding,
+    deleteRoom
 };

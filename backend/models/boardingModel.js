@@ -82,6 +82,10 @@ const boardingSchema = mongoose.Schema({
         type: Boolean,
         required: true,
         default: false
+    },
+    inventoryManager:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 }, {
     timestamps: true

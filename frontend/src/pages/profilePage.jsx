@@ -341,7 +341,7 @@ const ProfilePage = () => {
                                                                 placeholder="Enter Email" 
                                                                 value={email} 
                                                                 required
-                                                                readOnly
+                                                                disabled
                                                             ></Form.Control>
                                                         </Col>
                                                     </Row>

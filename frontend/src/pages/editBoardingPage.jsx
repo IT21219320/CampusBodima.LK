@@ -117,6 +117,7 @@ const EditBoardingPage = () => {
         } catch (err) {
             setBackDropOpen(false);
             toast.error(err.data?.message || err.error);
+            navigate(`/owner/boardings`);
         }
     }
 
@@ -219,7 +220,7 @@ const EditBoardingPage = () => {
         else if(boardingType == ''){
             toast.error('Please Select a boarding type');
         }
-        else if(boardingImages.length < 1){
+        else if((boardingImages.length+newBoardingImages.length) < 1){
             toast.error('Please add atleast 1 image to proceed');
         }
         else if(boardingType == 'Annex' && noOfAttachBaths == '0' && noOfCommonBaths == '0'){
@@ -279,23 +280,15 @@ const EditBoardingPage = () => {
                 }
                 
                 if(boardingType == 'Annex'){
-                    res = await updateBoarding({ boardingId, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, noOfRooms, noOfCommonBaths, noOfAttachBaths, rent, keyMoney, description, boardingImages:finalBoardingImages });
+                    res = await updateBoarding({ boardingId, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, noOfRooms, noOfCommonBaths, noOfAttachBaths, rent, keyMoney, description, boardingImages:finalBoardingImages }).unwrap();
                 }
                 else{
-                    res = await updateBoarding({ boardingId, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, boardingImages:finalBoardingImages });
+                    res = await updateBoarding({ boardingId, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, boardingImages:finalBoardingImages }).unwrap();
                     console.log(res);
                 }
 
-                if(res.error){
-                    toast.error(res.error.data.message);
-                    setBackDropOpen(false);
-                }
-                else{
-                    toast.success('Boarding Registered Successfully!')
-
-                    navigate(`/owner/boardings/${boardingId}/rooms`);
-
-                }
+                toast.success('Boarding Updated Successfully!')
+                navigate(`/owner/boardings/${boardingId}/rooms`);
 
             } catch (err) {
                 setBackDropOpen(false);
@@ -337,7 +330,7 @@ const EditBoardingPage = () => {
                                     <Card className={CreateBoardingStyles.card}>
                                         <CardContent style={{padding:'25px'}}>
                                             <Row>
-                                                <Col><p><b>New Boarding</b></p></Col>
+                                                <Col><p><b>Edit Boarding</b></p></Col>
                                             </Row>
                                             <Row style={{marginBottom:'10px'}}>
                                                 <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>

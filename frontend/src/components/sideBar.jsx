@@ -71,7 +71,7 @@ export default function Sidebar() {
   const { sideBar } = useSelector((state) => state.customize);
   const { userInfo } = useSelector((state) => state.auth);
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(sideBar ? sideBar.status : false);
   
   const location = useLocation();
   const dispatch = useDispatch();

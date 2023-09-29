@@ -268,29 +268,23 @@ const RegisterBoardingPage = () => {
                 console.log(validImageNames)
 
                 if(boardingType == 'Annex'){
-                    res = await registerBoarding({ ownerId:userInfo._id, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, noOfRooms, noOfCommonBaths, noOfAttachBaths, rent, keyMoney, description, boardingImages:validImageNames, phoneNo, bankAccNo, bankAccName, bankName, bankBranch });
+                    res = await registerBoarding({ ownerId:userInfo._id, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, noOfRooms, noOfCommonBaths, noOfAttachBaths, rent, keyMoney, description, boardingImages:validImageNames, phoneNo, bankAccNo, bankAccName, bankName, bankBranch }).unwrap();
                 }
                 else{
-                    res = await registerBoarding({ ownerId:userInfo._id, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, boardingImages:validImageNames, phoneNo, bankAccNo, bankAccName, bankName, bankBranch });
+                    res = await registerBoarding({ ownerId:userInfo._id, boardingName, address, city, location, facilities, utilityBills: utilityBills=='Yes', food:food=='Yes', gender, boardingType, boardingImages:validImageNames, phoneNo, bankAccNo, bankAccName, bankName, bankBranch }).unwrap();
                 }
 
-                if(res.error){
-                    toast.error(res.error.data.message);
-                    setBackDropOpen(false);
+                
+                toast.success('Boarding Registered Successfully!')
+                dispatch(setUserInfo({...res.owner}));
+                
+                if(boardingType == 'Annex'){
+                    const boardingId = res.boarding._id;
+                    navigate(`owner/boardings/${boardingId}/occupants`);
                 }
                 else{
-                    toast.success('Boarding Registered Successfully!')
-                    dispatch(setUserInfo({...res.data.owner}));
-                    
-                    if(boardingType == 'Annex'){
-                        const boardingId = res.data.boarding._id;
-                        navigate(`/owner/boardings/`); ///owner/boardings/${boardingId}/rooms
-                    }
-                    else{
-                        const boardingId = res.data.boarding._id;
-                        navigate(`/owner/boardings/${boardingId}/${boardingName}/rooms/add`);
-                    }
-
+                    const boardingId = res.boarding._id;
+                    navigate(`/owner/boardings/${boardingId}/${boardingName}/rooms/1/add`);
                 }
 
             } catch (err) {
@@ -705,7 +699,7 @@ const RegisterBoardingPage = () => {
                                                             <Form.Label style={{margin:0}}>Bank Account No.<span style={{color:'red'}}>*</span></Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="string" minLength={6} maxLength={16} pattern="^[0-9]*$" placeholder="01234565345" value={bankAccNo} onChange={ (e) => setBankAccNo(e.target.value)} required readOnly={userInfo.bankAccNo ? true : false} style={{width:'95%'}} />
+                                                            <Form.Control type="string" minLength={6} maxLength={16} pattern="^[0-9]*$" placeholder="01234565345" value={bankAccNo} onChange={ (e) => setBankAccNo(e.target.value)} required disabled={userInfo.bankAccNo ? true : false} style={{width:'95%'}} />
                                                         </Col>
                                                     </Row>
                                                     <Row style={{marginTop:'10px'}}>
@@ -715,7 +709,7 @@ const RegisterBoardingPage = () => {
                                                             </Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="James Bond" value={bankAccName} onChange={ (e) => setBankAccName(e.target.value)} required readOnly={userInfo.bankAccName ? true : false} style={{width:'95%'}} />
+                                                            <Form.Control type="text" placeholder="James Bond" value={bankAccName} onChange={ (e) => setBankAccName(e.target.value)} required disabled={userInfo.bankAccName ? true : false} style={{width:'95%'}} />
                                                         </Col>
                                                     </Row>
                                                 </Col>
@@ -725,7 +719,7 @@ const RegisterBoardingPage = () => {
                                                             <Form.Label style={{margin:0}}>Bank Name<span style={{color:'red'}}>*</span></Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="BOC" value={bankName} onChange={ (e) => setBankName(e.target.value)} required readOnly={userInfo.bankName ? true : false} style={{width:'95%'}} />
+                                                            <Form.Control type="text" placeholder="BOC" value={bankName} onChange={ (e) => setBankName(e.target.value)} required disabled={userInfo.bankName ? true : false} style={{width:'95%'}} />
                                                         </Col>
                                                     </Row>
                                                     <Row style={{marginTop:'10px'}}>
@@ -735,7 +729,7 @@ const RegisterBoardingPage = () => {
                                                             </Form.Label>
                                                         </Col>
                                                         <Col style={{height:'100%'}} xs={12} md={8}>
-                                                            <Form.Control type="text" placeholder="Gampaha Branch" value={bankBranch} onChange={ (e) => setBankBranch(e.target.value)} required readOnly={userInfo.bankBranch ? true : false} style={{width:'95%'}} />
+                                                            <Form.Control type="text" placeholder="Gampaha Branch" value={bankBranch} onChange={ (e) => setBankBranch(e.target.value)} required disabled={userInfo.bankBranch ? true : false} style={{width:'95%'}} />
                                                         </Col>
                                                     </Row>
                                                 </Col>
