@@ -56,10 +56,9 @@ import MakeMonthlyPaymentPage from './pages/makeMonthlyPaymentPage.jsx'
 
 import ReserveHostelPage from './pages/reserveHostelPage.jsx';
 import ReserveAnnexPage from './pages/reserveAnnexPage.jsx';
-import ViewAllReservationsPage from './pages/viewAllReservationsPage.jsx';
 import ConfirmReservationPage from './pages/confirmReservationPage.jsx';
-import PendingReservarionPage from './pages/pendingReservationsPage.jsx';
 import MyReservationPage from './pages/myReservationPage.jsx';
+import OwnerAllReservarions from './pages/ownerAllReservationsPage.jsx';
 
 import Orders from './pages/Orders.jsx';
 import OrderPage from './pages/OrderPage.jsx';
@@ -108,8 +107,7 @@ const router = createBrowserRouter(
           <Route path='/owner/boardings/:boardingId/:boardingName/rooms/:roomId/edit' element={ <EditBoardingRoomPage /> } />
           <Route path='/owner/boardings/:boardingId/:boardingName/rooms/:roomId/occupants' element={ <EditBoardingRoomPage /> } />
 
-          <Route path='/owner/reservations/ViewReservation/:bId' element={<ViewAllReservationsPage />} />
-          <Route path='/owner/reservations/pending/:bId' element={<PendingReservarionPage />} />
+          <Route path='/owner/reservations/' element={<OwnerAllReservarions />} />
 
           <Route path='/owner/payment/' element={<OwnerPaymentDash />} />
 
