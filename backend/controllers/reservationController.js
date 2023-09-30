@@ -503,6 +503,27 @@ const deleteReservation = asyncHandler(async (req, res) => {
 
 });
 
+//@desc get boardings by owner ID
+//route GET/api/reservations/deleteReservation
+// @access  Private - owner
+
+const getBoardingByOwnerID = asyncHandler (async(req, res) => {
+    const ownerID =  req.body.ownerId;
+
+    const ownerBoardings = await Boarding.find({owner:ownerID});
+
+    if(ownerBoardings){
+        res.status(200).json({
+            ownerBoardings,
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("No Boardings Available")
+    }
+
+});
+
 
 export {
     reserveRoom,
@@ -513,4 +534,5 @@ export {
     approvePendingStatus,
     deletePendingStatus,
     deleteReservation,
+    getBoardingByOwnerID,
 }

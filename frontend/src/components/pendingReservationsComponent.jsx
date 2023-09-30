@@ -8,7 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import Sidebar from '../components/sideBar';
+import Sidebar from './sideBar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from "react"
@@ -18,7 +18,7 @@ import { Breadcrumbs, Typography, Link, CircularProgress, Box, Collapse, IconBut
 import { useGetPendingReservationsMutation, useApprovePendingStatusMutation, useDeletePendingStatusMutation } from '../slices/reservationsApiSlice';
 
 
-const PendingReservationsPage = () => {
+const PendingReservations = ({bId}) => {
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -30,7 +30,7 @@ const PendingReservationsPage = () => {
   const [delPending, setDelPending] = useState('');
   const [ApprPending, setApprPending] = useState('');
 
-  const { bId } = useParams();
+  //const { bId } = useParams();
 
   const loadData = async () => {
     try {
@@ -75,24 +75,9 @@ const PendingReservationsPage = () => {
 
   return (
     <>
-      <Sidebar />
-
       <Container>
 
         <div className="bla">
-
-          <Row >
-
-            <Col>
-              <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
-                <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
-                <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
-                <Link underline="hover" key="3" color="inherit" href="/owner/reservations">Reservations</Link>,
-                <Typography key="4" color="text.primary">Pending Reservations</Typography>
-              </Breadcrumbs>
-            </Col>
-
-          </Row>
 
         </div>
         <TableContainer component={Paper} style={{marginTop: "30px"}}>
@@ -159,4 +144,4 @@ const PendingReservationsPage = () => {
   );
 };
 
-export default PendingReservationsPage;
+export default PendingReservations;
