@@ -16,18 +16,22 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import reserveFormStyle from "../styles/reserveFormStyle.module.css";
 import { useReserveRoomMutation } from "../slices/reservationsApiSlice";
+import { toast } from 'react-toastify';
 
 const ReservationForm = () => {
+
+    const [reserveRoom] = useReserveRoomMutation()
 
     const [gender, setGender] = useState('');
     const [duration, setDuration] = useState('');
     const [paymentType, setPaymentType] = useState('');
+
     const { bId, rId } = useParams();
-    console.log()
+    
     const { userInfo } = useSelector((state) => state.auth);
+
     const navigate = useNavigate();
-    const [reserveRoom] = useReserveRoomMutation()
-    const no = 1;
+    
     const submitHandler = async (e) => {
         e.preventDefault();
 
@@ -37,24 +41,24 @@ const ReservationForm = () => {
         console.log(bId);
         console.log(userInfo._id);
         const userID = userInfo._id;
-        const res = await reserveRoom({ Gender: gender, Duration: duration, userInfo_id: userID, BoardingId: bId, RoomID: rId, PaymentType:paymentType }).unwrap();
+        const res = await reserveRoom({ Gender: gender, Duration: duration, userInfo_id: userID, BoardingId: bId, RoomID: rId, PaymentType: paymentType }).unwrap();
         console.log(res)
-        if(res.message === "you have already reserved"){
-            window.alert("you have already reserved");
-            navigate(`/`);
+        if (res.message === "you have already reserved") {
+            toast.error("you have already reserved");
+            navigate(`/occupant/boarding`);
         }
-        else if(res.message === "genders are not matching"){
-            window.alert("genders are not matching");
-            navigate(`/`);
-        }else if(res.message === "problem in inserting"){
-            window.alert("problem in inserting");
+        else if (res.message === "genders are not matching") {
+            toast.error("genders are not matching");
+            navigate(`/search`);
+        } else if (res.message === "problem in inserting") {
+            toast.error("problem in inserting");
             navigate(`/`);
         }
 
         else {
             if (paymentType === "Online") {
                 navigate(`/occupant/makePayment/${bId}`);
-            }else{
+            } else {
                 window.alert("Wait until the owner approve")
                 navigate(`/occupant/reservations/confirm/`);
             }

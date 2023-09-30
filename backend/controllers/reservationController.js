@@ -11,15 +11,15 @@ import ReservationHistory from "../models/reservationHistory.js";
 // @access  Private - occupant
 
 const reserveRoom = asyncHandler(async (req, res) => {
-    //const RoomID = req.query.roomID;
-    //const BoardingId = req.query.boardingId;
+
     const { userInfo_id, Gender, Duration, BoardingId, RoomID, PaymentType } = req.body;
     console.log("Hi")
+
     const user = await User.findOne({ _id: userInfo_id });
     const room = await Room.findById(RoomID);
-
     const boarding = await Boarding.findById(BoardingId);
     console.log(boarding)
+
     const boardingType = boarding.boardingType
     const occupantID = user._id;
     const paymentType = PaymentType;
@@ -55,10 +55,23 @@ const reserveRoom = asyncHandler(async (req, res) => {
                         const updatedRoom = await Room.findOneAndUpdate(
                             { _id: RoomID },
                             {
-                                $push: { occupant: occupantID }
+                                $push: { occupant: occupantID },
+                                $set: { visibility: 'false' }
+
                             },
                             { new: true }
                         );
+
+                        if (noOfBeds === occupantCount) {
+                            const updatedVisibility = await Room.findOneAndUpdate(
+                                { _id: RoomID },
+                                {
+                                    $set: { visibility: 'false' }
+                                },
+                                { new: true }
+                            )
+
+                        }
 
                         res.status(201).json({
                             message: "inserted"
@@ -98,6 +111,7 @@ const reserveRoom = asyncHandler(async (req, res) => {
 
                     if (boarding) {
                         boarding.occupant = occupantID;
+                        boarding.visibility = 'false';
                         console.log(occupantID);
                         await boarding.save();
 
@@ -154,7 +168,8 @@ const updateDuration = asyncHandler(async (req, res) => {
         const updatedDuration = await reservation.save();
 
         res.status(200).json({
-            updatedDuration
+            updatedDuration,
+            message: "Updated successfully",
         })
     } else {
         res.status(404);
@@ -177,7 +192,7 @@ const getMyReservation = asyncHandler(async (req, res) => {
 
     if (ViewMyReservation) {
 
-        if (ViewMyReservation.boardingType === "Annex" && ViewMyReservation.status === "Paid") {
+        if (ViewMyReservation.boardingType === "Annex" && ViewMyReservation.status === "Approved") {
             const myDetails = {
                 Id: ViewMyReservation._id,
                 name: user.firstName,
@@ -190,7 +205,7 @@ const getMyReservation = asyncHandler(async (req, res) => {
                 myDetails,
             })
 
-        } else if (ViewMyReservation.boardingType === "Hostel" && ViewMyReservation.status === "Paid") {
+        } else if (ViewMyReservation.boardingType === "Hostel" && ViewMyReservation.status === "Approved") {
 
             const myDetails = {
                 Id: ViewMyReservation._id,
@@ -227,7 +242,7 @@ const getBoardingReservations = asyncHandler(async (req, res) => {
 
     const boarding = await Boarding.findById(boardingId);
 
-    const reserve = await Reservation.find({ boardingId: boardingId, status: 'Approvedupdates' });
+    const reserve = await Reservation.find({ boardingId: boardingId, status: 'Approved' });
 
     if (reserve) {
 
@@ -336,79 +351,19 @@ const approvePendingStatus = asyncHandler(async (req, res) => {
 
     if (reservation) {
 
-        if (reservation.PaymentType === "Cash") {
-            if (reservation.boardingType === "Annex") {
-
-                reservation.status = 'Approved';
-                reservation.paymentStatus = 'Paid';
-
-                const updatedVisibility = await Boarding.findByIdAndUpdate(
-                    { _id: reservation.BoardingId },
-                    { $set: { visibility: 'false' } },
-                    { new: true },
-                )
-            }
-            else if (reservation.boardingType === "Hostel") {
-                reservation.status = 'Approved';
-                reservation.paymentStatus = 'Paid';
-
-                const room = await Room.findById(reservation.roomID);
-
-                const noOfBeds = parseInt(room.noOfBeds);
-
-                const occupants = room.occupant.length;
-
-                if (noOfBeds === occupants){
-                    const updatedVisibility = await Room.findByIdAndUpdate(
-                        { _id: reservation.roomID },
-                        { $set: { visibility: 'false' } },
-                        { new: true },
-                    )
-
-                }
-
-            }
-
-
+        if (reservation.paymentType === "Cash") {
+            reservation.status = 'Approved';
+            reservation.paymentStatus = 'Paid';
 
         } else {
-            if (reservation.boardingType === "Annex") {
-
-                reservation.status = 'Approved';
-
-                const updatedVisibility = await Boarding.findByIdAndUpdate(
-                    { _id: reservation.BoardingId },
-                    { $set: { visibility: 'false' } },
-                    { new: true },
-                )
-            }
-            else if (reservation.boardingType === "Hostel") {
-                reservation.status = 'Approved';
-
-                const room = await Room.findById(reservation.roomID);
-
-                const noOfBeds = parseInt(room.noOfBeds);
-
-                const occupants = room.occupant.length;
-
-                if (noOfBeds === occupants){
-                    const updatedVisibility = await Room.findByIdAndUpdate(
-                        { _id: reservation.roomID },
-                        { $set: { visibility: 'false' } },
-                        { new: true },
-                    )
-
-                }
-
-            }
+            reservation.status = 'Approved';
 
         }
 
-
-        const paidReservation = await reservation.save();
+        const approvedReservation = await reservation.save();
 
         res.status(200).json({
-            paidReservation
+            approvedReservation
         })
     } else {
         res.status(404);
@@ -426,8 +381,32 @@ const deletePendingStatus = asyncHandler(async (req, res) => {
     const reservation = await Reservation.findById(ReservationId);
 
     if (reservation) {
-        await Reservation.findByIdAndDelete(ReservationId)
-        res.status(200).json("Pending reservation Successfully Deleted")
+        const deletedPending = await Reservation.findByIdAndDelete(ReservationId);
+
+        if (deletedPending.boardingType === "Annex") {
+            const updatedBoarding = await Boarding.findOneAndUpdate(
+                { _id: deletedPending.BoardingId },
+                {
+                    $unset: { occupant: deletedPending.occupantID },
+                    $set: { visibility: 'true' }
+                },
+                { new: true }
+            );
+        }
+        else if (deletedPending.boardingType === "Hostel") {
+            const updatedRoom = await Room.findOneAndUpdate(
+                { _id: deletedPending.roomID },
+                {
+                    $pull: { occupant: deletedPending.occupantID },
+                    $set: { visibility: 'true' }
+                },
+                { new: true }
+            );
+        }
+
+        res.status(200).json({
+            message: "Pending reservation Successfully Deleted",
+        })
     }
     else {
         res.status(404);
@@ -475,7 +454,10 @@ const deleteReservation = asyncHandler(async (req, res) => {
             console.log(deletedReservation.occupantID)
             const updatedBoarding = await Boarding.findOneAndUpdate(
                 { _id: deletedReservation.BoardingId },
-                { $unset: { occupant: deletedReservation.occupantID } },
+                {
+                    $unset: { occupant: deletedReservation.occupantID },
+                    $set: { visibility: 'true' }
+                },
                 { new: true }
             );
 
@@ -498,7 +480,10 @@ const deleteReservation = asyncHandler(async (req, res) => {
 
             const updatedRoom = await Room.findOneAndUpdate(
                 { _id: deletedReservation.roomID },
-                { $pull: { occupant: deletedReservation.occupantID } },
+                {
+                    $pull: { occupant: deletedReservation.occupantID },
+                    $set: { visibility: 'true' },
+                },
                 { new: true }
             );
 
