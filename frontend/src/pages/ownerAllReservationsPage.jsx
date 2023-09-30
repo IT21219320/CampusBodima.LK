@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetBoardingsByIdMutation } from '../slices/reservationsApiSlice.js';
 import PendingReservations from '../components/pendingReservationsComponent';
 import ViewAllReservations from '../components/viewAllReservationsComponent';
+import BoardingReservationHistory from '../components/BoardingReservationHistoryComponent';
 
 import ownerStyles from '../styles/ownerStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
@@ -37,7 +38,7 @@ const OwnerAllReservations = () => {
             const resBoardings = await getOwnerBoarding({ ownerId: userInfo._id }).unwrap();
             if (resBoardings) {
                 setBoarding(resBoardings.ownerBoardings);
-                
+
             }
         } catch (error) {
             console.log(error);
@@ -63,7 +64,7 @@ const OwnerAllReservations = () => {
                         </Col>
                     </Row>
 
-                    <Row>
+                    <Row style={{marginTop:'33px', marginLeft:'2px', width:'25%'}}>
                         <InputLabel id="demo-simple-select-standard-label" >Boarding</InputLabel>
                         <Select
                             labelId="demo-simple-select-standard-label"
@@ -73,12 +74,12 @@ const OwnerAllReservations = () => {
                             onChange={(e) => setBoardingID(e.target.value)}
                             label="Boardings"
 
-                        >{boarding.length>0 ? (
+                        >{boarding.length > 0 ? (
                             boarding.map((boarding) => (
                                 <MenuItem key={boarding._id} value={boarding._id}>
                                     <em>{boarding.boardingName}</em>
                                 </MenuItem>
-                                
+
                             ))
 
                         ) : (
@@ -89,7 +90,7 @@ const OwnerAllReservations = () => {
                         </Select>
 
                     </Row>
-                    <Row>
+                    <Row style={{marginTop: '25px'}}>
                         <Box sx={{ width: '100%', typography: 'body1' }}>
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -99,9 +100,9 @@ const OwnerAllReservations = () => {
                                         <Tab label="History" value="3" />
                                     </TabList>
                                 </Box>
-                                <TabPanel value="1"><PendingReservations bId={boardingID}/></TabPanel>
-                                <TabPanel value="2"><ViewAllReservations bId={boardingID}/></TabPanel>
-                                <TabPanel value="3">Item Three</TabPanel>
+                                <TabPanel value="1"><PendingReservations bId={boardingID} /></TabPanel>
+                                <TabPanel value="2"><ViewAllReservations bId={boardingID} /></TabPanel>
+                                <TabPanel value="3"><BoardingReservationHistory bId={boardingID} /></TabPanel>
                             </TabContext>
                         </Box>
                     </Row>

@@ -30,8 +30,6 @@ const PendingReservations = ({bId}) => {
   const [delPending, setDelPending] = useState('');
   const [ApprPending, setApprPending] = useState('');
 
-  //const { bId } = useParams();
-
   const loadData = async () => {
     try {
       const res = await getPending({ boardingId: bId }).unwrap();
@@ -45,7 +43,7 @@ const PendingReservations = ({bId}) => {
 
   useEffect(() => {
     loadData();
-  }, [delPending,ApprPending]);
+  }, [bId,delPending,ApprPending]);
 
   const handleDelete = async (reservationID) => {
     try {

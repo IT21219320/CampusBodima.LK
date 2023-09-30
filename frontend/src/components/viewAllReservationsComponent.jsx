@@ -38,7 +38,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const ViewAllReservations = ({bId}) => {
   const { userInfo } = useSelector((state) => state.auth);
-  //const { bId } = useParams();
 
   const [getReservation] = useGetBoardingReservationsMutation();
   const [reservations, setReservations] = useState([]);
@@ -56,7 +55,7 @@ const ViewAllReservations = ({bId}) => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [bId]);
 
   return (
     <>

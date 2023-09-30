@@ -3,8 +3,8 @@ import { getReservationHistory, myReservationHistory } from '../controllers/rese
 
 const router = express.Router();
 
-router.get('/ReservationHistory', getReservationHistory);
-router.get('/myHistory' , myReservationHistory);
+router.post('/BoardingHistory', getReservationHistory);
+router.post('/myHistory' , myReservationHistory);
 
 
 export default router;
