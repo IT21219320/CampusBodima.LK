@@ -137,7 +137,7 @@ const router = createBrowserRouter(
 
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
-          <Route path='/occupant/makeMonthlyPayment/:bId' element={<MakeMonthlyPaymentPage />} />
+          <Route path='/occupant/makeMonthlyPayment/:bId/:amount' element={<MakeMonthlyPaymentPage />} />
 
           <Route path='/occupant/reservations/reserve/:bId/:rId' element={<ReserveHostelPage />} />
           <Route path='/occupant/reservations/reserve/:bId/' element={<ReserveAnnexPage />} />

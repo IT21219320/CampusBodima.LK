@@ -31,7 +31,7 @@ const getPublichkey = expressAsyncHandler(async (req, res) => {
 const makePayment = expressAsyncHandler(async (req, res) => {
 
   const { userInfo_id, bId, des, amount } = req.body;
-  
+
   const user = await User.findById(userInfo_id);
 
   const boarding = await Boarding.findById(bId);
@@ -41,7 +41,7 @@ const makePayment = expressAsyncHandler(async (req, res) => {
 
 
   if (boarding.boardingType === "Annex") {
-    
+
     const response = await payment.create({
       occupant: user,
       owner: oUser,
@@ -72,7 +72,7 @@ const makePayment = expressAsyncHandler(async (req, res) => {
       amount: amount,
       description: des,
       boarding: boarding,
-      room:roomT,
+      room: roomT,
       credited: amount,
     })
     if (response) {
@@ -113,94 +113,143 @@ const getPaymentsByOwnerID = expressAsyncHandler(async (req, res) => {
 
 })
 
-
-
-cron.schedule('0 0 10 * *', async () => {
+cron.schedule('0 0 10 * *',async () => {
   try {
     // Calculate the monthly fee for each subscribed user
     const reservedUsers = await reservations.find();
 
+    const currentDate = new Date(Date.now());
+    const currentMonth = currentDate.getMonth() + 1
+
     for (const userReservation of reservedUsers) {
       if (userReservation) {
+        const boardingT = await Boarding.findById(userReservation.boardingId);
 
-        const boardingT = await Boarding.findById(userReservation.occupantID)
         let oneUserUtitlity = 0;
         if (boardingT) {
-          const utility = await Utility.find({ boarding: boardingT._id })
-          if (utility) {
-            const usersB = await reservations.find({ boardingId: boardingT._id })
+          const [utility, usersB] = await Promise.all([
+            Utility.find({ boarding: boardingT._id }),
+            reservations.find({ boardingId: boardingT._id }),
+          ]);
+
+          if (utility.length > 0) {
             const userCount = usersB.length;
-            let totalUtility
+
+            let totalUtility = 0;
             for (const oneU of utility) {
-              totalUtility += oneU.amount;
+              totalUtility += parseInt(oneU.amount);
             }
 
-            oneUserUtitlity = totalUtility / userCount;
+            console.log("Total utility: ", totalUtility, " User count: ", userCount);
+            oneUserUtitlity = totalUtility / parseInt(userCount);
           }
 
+          console.log("One user utility: ", oneUserUtitlity);
         }
-        const res = await toDoPayment.create({
 
+        await toDoPayment.create({
           amount: oneUserUtitlity,
           occupant: userReservation.occupantID,
-
-        })
+          month: currentMonth,
+        });
       }
     }
-    
+
     console.log('Monthly fees calculated and updated.');
   } catch (error) {
     console.error('Error calculating monthly fees:', error);
   }
 });
 
-const calcMonthlyPayment = expressAsyncHandler(async(req,res) => {
+const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
   try {
     // Calculate the monthly fee for each subscribed user
     const reservedUsers = await reservations.find();
 
+    const currentDate = new Date(Date.now());
+    const currentMonth = currentDate.getMonth() + 1
+
     for (const userReservation of reservedUsers) {
       if (userReservation) {
+        const boardingT = await Boarding.findById(userReservation.boardingId);
 
-        const boardingT = await Boarding.findById(userReservation.boardingId)
-        
-        
         let oneUserUtitlity = 0;
         if (boardingT) {
-          
-          const utility = await Utility.find({ boarding: boardingT._id })
-          
-          if (utility) {
-            const usersB = await reservations.find({ boardingId: boardingT._id })
+          const [utility, usersB] = await Promise.all([
+            Utility.find({ boarding: boardingT._id }),
+            reservations.find({ boardingId: boardingT._id }),
+          ]);
+
+          if (utility.length > 0) {
             const userCount = usersB.length;
-            
+
             let totalUtility = 0;
             for (const oneU of utility) {
-              
               totalUtility += parseInt(oneU.amount);
-              
             }
-            console.log(" total utility ",totalUtility, "   ", userCount)
+
+            console.log("Total utility: ", totalUtility, " User count: ", userCount);
             oneUserUtitlity = totalUtility / parseInt(userCount);
           }
-          console.log("one user utility",oneUserUtitlity)
 
+          console.log("One user utility: ", oneUserUtitlity);
         }
-        const res = await toDoPayment.create({
+
+        await toDoPayment.create({
           amount: oneUserUtitlity,
           occupant: userReservation.occupantID,
-
-        })
+          month: currentMonth,
+        });
       }
     }
+
     res.status(200).json({
-      message : "Calculation done"
-    })
+      message: "Calculation done",
+    });
 
     console.log('Monthly fees calculated and updated.');
   } catch (error) {
     console.error('Error calculating monthly fees:', error);
   }
+});
+
+const getToDoPaymentsByUserCMonth = expressAsyncHandler(async (req, res) => {
+  const { userInfo_id } = req.body;
+  const currentDate = new Date(Date.now());
+  const currentMonth = currentDate.getMonth() + 1;
+  try {
+    
+    const response = await toDoPayment.find({ occupant: userInfo_id, month: currentMonth });
+    if (response) {
+      res.status(200).json(
+        response
+      )
+    }
+
+  } catch (error) {
+
+    console.log(error)
+
+  }
+
+})
+
+const getToDoPaymentsByUser = expressAsyncHandler(async (req, res) => {
+  const { userInfo_id } = req.body;
+  const currentDate = new Date(Date.now());
+  const currentMonth = currentDate.getMonth() + 1;
+  try {
+    const response = await toDoPayment.find({ occupant: userInfo_id, month: currentMonth });
+    if (response) {
+      res.status(200).json(
+        response
+      )
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+
 })
 
 const getIntent = expressAsyncHandler(async (req, res) => {
@@ -268,4 +317,4 @@ const getWebHook = expressAsyncHandler(async (req, res) => {
 })
 
 
-export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment };
+export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser };

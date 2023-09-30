@@ -77,6 +77,7 @@ const getCardById = expressAsyncHandler(async (req, res) => {
 
     userCards.push({
       id:user_card._id,
+      cardName:user_card.cardName,
       cardNumber : decryptedCardNumber,
       exNumber : user_card.expireDate,
       cvv : decryptedCvv

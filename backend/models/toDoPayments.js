@@ -21,7 +21,10 @@ const toDoPaymentSchema = mongoose.Schema({
     },
     status : {
         type : String,
-        default : 'pendding'
+        default : 'pending'
+    },
+    month : {
+        type : Number,
     }
 
     
