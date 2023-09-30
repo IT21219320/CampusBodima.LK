@@ -7,7 +7,7 @@ import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Form } from 'react-bootstrap';
 import { useGetCardByUserMutation, useDeleteCardMutation, useUpdateCardMutation } from "../slices/cardApiSlice";
-import { useGetPaymentByUserMutation } from "../slices/paymentApiSlice";
+import { useGetPaymentByUserMutation,useGetToDoPaymentMutation } from "../slices/paymentApiSlice";
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css"
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -74,22 +74,23 @@ const OccupantPaymentDash = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [deleteC, setDeleteCard] = useState('');
     const [updateC, setUpdateCard] = useState('');
-    
+
     const [open, setOpen] = useState(false);
     const [cardIdR, setCardIdR] = useState('');
     const [cardid, setCardid] = useState();
     const [cardNumberF, setcardNumberF] = useState('');
     const [expireDate, setexpireDate] = useState('');
     const [cvvF, setcvvF] = useState('');
+    const [toDoPayment, setToDoPayment] = useState([]);
     //tabViews
     const [value, setValue] = useState('1');
     let bId;
-    if(payments.length > 0){
-        console.log(payments[0].boarding._id);
+    if (payments.length > 0) {
+        //console.log(payments[0].boarding._id);
         bId = payments[0].boarding._id;
     }
 
-    
+
 
     const navigate = useNavigate();
 
@@ -101,6 +102,7 @@ const OccupantPaymentDash = () => {
     const [getPayment] = useGetPaymentByUserMutation();
     const [deleteCard] = useDeleteCardMutation();
     const [updateCard] = useUpdateCardMutation();
+    const [getToDoPayment] = useGetToDoPaymentMutation();
 
 
 
@@ -123,26 +125,40 @@ const OccupantPaymentDash = () => {
     const handleClose = () => {
 
         setOpen(false);
+
     };
 
     const loadData = async () => {
         try {
-            const res = await getCard({ userInfo_id: userInfo._id }).unwrap();
 
+            const res = await getCard({ userInfo_id: userInfo._id }).unwrap();
             setCards(res);
 
-
         } catch (error) {
+
             console.error('Error getting cards', error);
+
         }
         try {
 
             const resGetPay = await getPayment({ _id: userInfo._id }).unwrap();
-
             setPayments(resGetPay.payments);
 
         } catch (error) {
+
             console.error('Error getting payments', error);
+        }
+        
+        try {
+
+            console.log( userInfo._id);
+            const resGetToDOPay = await getToDoPayment({ userInfo_id: userInfo._id }).unwrap();
+            setToDoPayment(resGetToDOPay);
+            
+        } catch (error) {
+
+            console.error('Error getting To Do payments', error);
+
         }
 
 
@@ -186,8 +202,8 @@ const OccupantPaymentDash = () => {
         }
     }
 
-    const navigateToPay = ()=>{
-        navigate(`/occupant/makeMonthlyPayment/${bId}`)
+    const navigateToPay = () => {
+        navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPayment.length>0&&toDoPayment[0].amount}`)
     }
 
     return (
@@ -207,7 +223,7 @@ const OccupantPaymentDash = () => {
                             </Breadcrumbs>
                         </Col>
                     </Row>
-                    <Box sx={{ width: '100%', typography: 'body1', marginTop:'10px' }}>
+                    <Box sx={{ width: '100%', typography: 'body1', marginTop: '10px' }}>
                         <TabContext value={value}>
                             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                 <TabList onChange={handleChange} aria-label="lab API tabs example">
@@ -227,11 +243,30 @@ const OccupantPaymentDash = () => {
                                 </Col>
                             </Row>
                                 <Row style={{ paddingLeft: "2%", paddingRight: "2%" }}>
-                                    <Col style={{ backgroundColor: "#b8a2ff", padding: "5%", borderRadius: "20px" }}>
-                                        Your Monthly payment :
+                                    <Col style={{ backgroundColor: "#cfd8fa", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginRight: "2%" }}>
+                                        <Row>
+                                            <h4 style={{ textAlign: " center" }}>This Month Fees </h4>
+                                            <hr style={{}}/>
+                                        </Row>
+                                        <Row>
+                                            <h5>Total Fee {toDoPayment.length>0&&toDoPayment[0].amount}</h5>
+                                        </Row>
+                                        <Row style={{ marginLeft: "68%" }}>
+
+                                            <Button variant="contained" style={{}} onClick={() => navigateToPay()}>Pay your Fee</Button>
+
+                                        </Row>
                                     </Col>
-                                    <Col>
-                                        <Button variant="contained" style={{ margin: "9% 30%" }} onClick={()=>navigateToPay()}>Pay your Fee</Button>
+                                    <Col style={{ backgroundColor: "#cfd8fa", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginLeft: "2%" }}>
+                                        <Row>
+                                            <h4 style={{ textAlign: " center" }}>Previous Month Fees </h4>
+                                            <hr/>
+                                        </Row>
+                                        <Row style={{ marginLeft: "68%" }}>
+
+                                            <Button variant="contained" style={{}} onClick={() => navigateToPay()}>Pay your Fee</Button>
+
+                                        </Row>
                                     </Col>
                                 </Row></TabPanel>
                             <TabPanel value="2"><Row>

@@ -3,16 +3,18 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { Row, Col, Form } from "react-bootstrap";
 import Button from '@mui/material/Button';
-import paymentFormStyle from "../styles/paymentFormStyle.module.css"
-import Box from '@mui/material/Box';
+import paymentFormStyle from "../styles/paymentFormStyle.module.css";
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { useMakePaymentMutation } from "../slices/paymentApiSlice";
-import { useAddCardMutation } from "../slices/cardApiSlice";
-import Header from "./header.jsx";
-import { Container } from "@mui/material";
+import { useAddCardMutation,useGetCardByUserMutation } from "../slices/cardApiSlice";
 import { toast } from 'react-toastify';
+import * as React from 'react';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 
 
@@ -26,13 +28,39 @@ const PaymentForm = ({ des }) => {
     const { bId } = useParams();
     const { userInfo } = useSelector((state) => state.auth);
     const userID = userInfo._id;
+    const [cards, setCards] = useState([]);
+    const [cardId, setCardId] = useState('');
 
+    
     const [makePayment] = useMakePaymentMutation();
     const [addCard] = useAddCardMutation();
-
+    const [getCards] = useGetCardByUserMutation();
 
 
     const navigate = useNavigate();
+
+    const loadData = async()=>{
+        try {
+            const resCards = await getCards({ userInfo_id: userInfo._id }).unwrap();
+            setCards(resCards);
+            
+      
+          } catch (error) {
+            console.log(error);
+          }
+    }
+
+    const handleChange =(e)=>{
+        setCardId(e.target.value)
+        setCardNUmber(e.target.value.cardNumber)
+        setcvv(e.target.value.cvv)
+        setExDate(e.target.value.exNumber)
+        setCardName(e.target.value.cardName)
+    }
+
+    useEffect(()=>{
+        loadData();
+    },[])
 
     const handleExDateChange = (e) => {
         let input = e.target.value;
@@ -119,6 +147,35 @@ const PaymentForm = ({ des }) => {
                     <Button variant="contained" type="submit">Pay</Button>
 
                 </Form>
+
+                <Row  style={{margin: "10% 0px"}} >
+                    
+                  {cards.length > 0 ? (
+                    <>
+                    <h6>Choose Your Card</h6>
+                      <FormControl style={{ margin:"0px auto"}}>
+                        <InputLabel id="demo-simple-select-label" >Saved Cards</InputLabel>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          value={cardId}
+                          onChange={handleChange}
+                          
+                          label='Saved Cards' 
+                        >
+                          {cards.map((card) => (
+                            
+                            <MenuItem key={card.id} value={card}>{card.cardNumber}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </>
+
+                  ) : (
+                  <>
+                    
+                  </>)}
+
+                </Row>
 
             </div>
         </>
