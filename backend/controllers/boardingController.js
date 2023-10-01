@@ -6,6 +6,7 @@ import storage from '../utils/firebaseConfig.js';
 import { sendMail } from '../utils/mailer.js'
 import { sendSMS } from '../utils/smsSender.js';
 import { ref, uploadBytesResumable, deleteObject  } from "firebase/storage";
+import Reservation from '../models/reservationModel.js';
 
 // @desc    Register a new Boarding
 // route    POST /api/boardings/register
@@ -230,6 +231,24 @@ const getBoardingById = asyncHandler(async (req, res) => {
     else{
         res.status(400);
         throw new Error("Boarding Not Found!")
+    }
+});
+
+// @desc    Get Reservations by boarding ID
+// route    GET /api/boardings/:boardingId/reservations
+const getReservationsByBoardingId = asyncHandler(async (req, res) => {
+    const boardingId = req.params.boardingId;
+   
+    const reservations = await Reservation.find({boardingId}).populate('occupantID');
+    
+    if(reservations.length > 0){
+        res.status(200).json({
+            reservations
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("No Reservations Found!")
     }
 });
 
@@ -467,7 +486,7 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
     if(boardingType == 'Annex'){
 
         totalRows = await Boarding.countDocuments({
-            //boardingType,
+            boardingType,
             visibility: true,
             status: 'Approved',
             ...(food !== 'All' ? { food } : {}),
@@ -497,7 +516,7 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
         });
 
         boardings = await Boarding.find({
-            //boardingType,
+            boardingType,
             visibility: true,
             status: 'Approved',
             ...(food !== 'All' ? { food } : {}),
@@ -542,8 +561,8 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
 
 
         totalRows = await Boarding.countDocuments({
-            //boardingType,
-            visibility: 'true',
+            boardingType,
+            visibility: true,
             status: 'Approved',
             room: { $in: rooms},
             ...(food !== 'All' ? { food } : {}),
@@ -574,8 +593,8 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
 
 
         boardings = await Boarding.find({
-            //boardingType,
-            visibility: 'true',
+            boardingType,
+            visibility: true,
             status: 'Approved',
             room: { $in: rooms},
             ...(food !== 'All' ? { food } : {}),
@@ -1159,6 +1178,7 @@ export {
     getAllPublicBoardings,
     getOwnerBoardings,
     getBoardingById,
+    getReservationsByBoardingId,
     getRoomById,
     getOccupantBoarding,
     getPendingApprovalBoardings,
