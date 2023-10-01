@@ -59,46 +59,52 @@ const ViewAllReservations = ({bId}) => {
 
   return (
     <>
-      <Container>
+            <TableContainer component={Paper} style={{marginTop: "30px"}}>
+                <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                    <TableHead style={{backgroundColor: "#242745"}}>
+                        <TableRow>
+                            <TableCell style={{color: "#ffffff"}}>Reservation ID</TableCell>
+                            <TableCell align="right" style={{color: "#ffffff"}}>Name</TableCell>
+                            <TableCell align="right" style={{color: "#ffffff"}}>Date</TableCell>
+                            <TableCell align="right" style={{color: "#ffffff"}}>Duration</TableCell>
+                            <TableCell align="right" style={{color: "#ffffff"}}>Room Number</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody style={{backgroundColor:'#858bc72b'}}>
 
-        <Row>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }} aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>Reservation ID</StyledTableCell>
-                  <StyledTableCell align="right">Name</StyledTableCell>
-                  <StyledTableCell align="right">Date</StyledTableCell>
-                  <StyledTableCell align="right">Duration</StyledTableCell>
-                  <StyledTableCell align="right">RoomNo</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+                        {reservations.length > 0 ? (
+                            <>
+                                {reservations.map((reservation) => (
+                                    <TableRow
+                                        key={reservation.Id}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {reservation.Id}
+                                        </TableCell>
+                                        
+                                        <TableCell align="right">{reservation.Name}</TableCell>
+                                        <TableCell align="right">{new Date(reservation.Date).toDateString()}</TableCell>
+                                        <TableCell align="right">{reservation.Duration}</TableCell>
+                                        <TableCell align="right">{reservation.RoomNo}</TableCell>
+                                                                                
+                                    </TableRow>
+                                ))
+                                }</>) : (<>
+                                <TableRow>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell style={{fontSize:'20px', fontFamily:'cursive', color:'#64651d'}}>No Reservations to display</TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
+                                </TableRow>
 
-                {reservations.length > 0 ? (
-                  reservations.map((reservation) => (
-                    <StyledTableRow key={reservation.Id}>
-                      <StyledTableCell component="th" scope="row">
-                        {reservation.Id}
-                      </StyledTableCell>
-                      <StyledTableCell align="right">{reservation.Name}</StyledTableCell>
-                      <StyledTableCell align="right">{reservation.Date}</StyledTableCell>
-                      <StyledTableCell align="right">{reservation.Duration}</StyledTableCell>
-                      <StyledTableCell align="right">{reservation.RoomNo}</StyledTableCell>
-                    </StyledTableRow>
-                  ))) : (
-                  <StyledTableRow >
-                    <StyledTableCell component="th" scope="row">
-                      No data
-                    </StyledTableCell>
-                  </StyledTableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Row>
-      </Container>
-    </>
+                                </>)}
+
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </>
   )
 }
 

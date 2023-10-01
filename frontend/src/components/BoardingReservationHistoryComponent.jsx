@@ -41,7 +41,7 @@ const BoardingReservationHistory = ({ bId }) => {
 
     return (
         <>
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} style={{marginTop: "30px"}}>
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                     <TableHead style={{backgroundColor: "#242745"}}>
                         <TableRow>
@@ -55,7 +55,7 @@ const BoardingReservationHistory = ({ bId }) => {
                             <TableCell align="right" style={{color: "#ffffff"}}>Cancelled Date</TableCell>
                         </TableRow>
                     </TableHead>
-                    <TableBody>
+                    <TableBody style={{backgroundColor:'#858bc72b'}}>
 
                         {reservationHis.length > 0 ? (
                             <>
@@ -73,12 +73,22 @@ const BoardingReservationHistory = ({ bId }) => {
                                         <TableCell align="right">{his.phoneNo}</TableCell>
                                         <TableCell align="right">{his.gender}</TableCell>
                                         <TableCell align="right">{his.roomNo}</TableCell>
-                                        <TableCell align="right">{his.reservedDate}</TableCell>
-                                        <TableCell align="right">{his.cancelledDate}</TableCell>
+                                        <TableCell align="right">{new Date(his.reservedDate).toDateString()}</TableCell>
+                                        <TableCell align="right">{new Date(his.cancelledDate).toDateString()}</TableCell>
                                         
                                     </TableRow>
                                 ))
                                 }</>) : (<>
+                                <TableRow>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right" style={{fontSize:'20px', fontFamily:'cursive', color:'#64651d'}}>No data to display</TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
+                                </TableRow>
 
                                 </>)}
 

@@ -18,7 +18,7 @@ import { Breadcrumbs, Typography, Link, CircularProgress, Box, Collapse, IconBut
 import { useGetPendingReservationsMutation, useApprovePendingStatusMutation, useDeletePendingStatusMutation } from '../slices/reservationsApiSlice';
 
 
-const PendingReservations = ({bId}) => {
+const PendingReservations = ({ bId }) => {
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -34,7 +34,7 @@ const PendingReservations = ({bId}) => {
     try {
       const res = await getPending({ boardingId: bId }).unwrap();
       setPendings(res);
-      
+
     } catch (error) {
       console.error('Error getting pending', error);
     }
@@ -43,7 +43,7 @@ const PendingReservations = ({bId}) => {
 
   useEffect(() => {
     loadData();
-  }, [bId,delPending,ApprPending]);
+  }, [bId, delPending, ApprPending]);
 
   const handleDelete = async (reservationID) => {
     try {
@@ -56,7 +56,7 @@ const PendingReservations = ({bId}) => {
       console.error('Error in deleting', error);
     }
   }
-  
+
   const handleUpdate = async (reservationID) => {
     try {
       const resUpdate = await approvePending({ reservationId: reservationID }).unwrap();
@@ -78,24 +78,24 @@ const PendingReservations = ({bId}) => {
         <div className="bla">
 
         </div>
-        <TableContainer component={Paper} style={{marginTop: "30px"}}>
+        <TableContainer component={Paper} style={{ marginTop: "30px" }}>
           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
 
-            <TableHead style={{backgroundColor: "#242745"}}>
+            <TableHead style={{ backgroundColor: "#242745" }}>
               <TableRow >
 
-                <TableCell style={{color: "#ffffff"}}>Reservation ID</TableCell>
-                <TableCell style={{color: "#ffffff"}}>First Name</TableCell>
-                <TableCell style={{color: "#ffffff"}}>Reserved Date</TableCell>
-                <TableCell style={{color: "#ffffff"}}>Duration</TableCell>
-                <TableCell style={{color: "#ffffff"}}>Room No</TableCell>
-                <TableCell style={{color: "#ffffff"}}>Approve</TableCell>
-                <TableCell style={{color: "#ffffff"}}align="left">Delete</TableCell>
+                <TableCell style={{ color: "#ffffff" }}>Reservation ID</TableCell>
+                <TableCell style={{ color: "#ffffff" }}>First Name</TableCell>
+                <TableCell style={{ color: "#ffffff" }}>Reserved Date</TableCell>
+                <TableCell style={{ color: "#ffffff" }}>Duration</TableCell>
+                <TableCell style={{ color: "#ffffff" }}>Room No</TableCell>
+                <TableCell style={{ color: "#ffffff" }}>Approve</TableCell>
+                <TableCell style={{ color: "#ffffff" }} align="left">Delete</TableCell>
 
               </TableRow>
             </TableHead>
 
-            <TableBody>
+            <TableBody style={{ backgroundColor: '#858bc72b' }}>
               {pendings.length > 0 ? (
 
                 pendings.map((pending) => (
@@ -129,8 +129,13 @@ const PendingReservations = ({bId}) => {
                 )) : (
                 <>
                   <TableRow>
-
-                    <TableCell align="right">No pendig resrevations to display</TableCell>
+                    <TableCell align="left">   </TableCell>
+                    <TableCell align="left">   </TableCell>
+                    <TableCell align="right" style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No pendig resrevations to display</TableCell>
+                    <TableCell align="left">   </TableCell>
+                    <TableCell align="left">   </TableCell>
+                    <TableCell align="left">   </TableCell>
+                    <TableCell align="left">   </TableCell>
                   </TableRow>
                 </>
               )}
