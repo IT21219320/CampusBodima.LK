@@ -454,7 +454,7 @@ const deleteReservation = asyncHandler(async (req, res) => {
             console.log("after inserting in to table")
             console.log(deletedReservation.occupantID)
             const updatedBoarding = await Boarding.findOneAndUpdate(
-                { _id: deletedReservation.BoardingId },
+                { _id: deletedReservation.boardingId },
                 {
                     $unset: { occupant: deletedReservation.occupantID },
                     $set: { visibility: 'true' }
