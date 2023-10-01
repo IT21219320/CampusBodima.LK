@@ -386,7 +386,7 @@ const deletePendingStatus = asyncHandler(async (req, res) => {
 
         if (deletedPending.boardingType === "Annex") {
             const updatedBoarding = await Boarding.findOneAndUpdate(
-                { _id: deletedPending.BoardingId },
+                { _id: deletedPending.boardingId },
                 {
                     $unset: { occupant: deletedPending.occupantID },
                     $set: { visibility: 'true' }
