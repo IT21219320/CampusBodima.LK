@@ -105,6 +105,7 @@ const reserveRoom = asyncHandler(async (req, res) => {
                     boardingType,
                     occupantID,
                     Duration,
+                    paymentType,
                 });
 
                 if (Reserve) {
