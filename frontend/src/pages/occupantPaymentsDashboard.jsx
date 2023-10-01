@@ -389,10 +389,11 @@ const OccupantPaymentDash = () => {
                                                             <StyledTableCell component="th" scope="row">
                                                                 {payment._id}
                                                             </StyledTableCell>
-                                                            <StyledTableCell align="right" >{payment.amount}</StyledTableCell>
+                                                            <StyledTableCell align="right" >LKR {payment.amount}</StyledTableCell>
                                                             <StyledTableCell align="right" >{payment.description}</StyledTableCell>
 
-                                                            <StyledTableCell align="right">{payment.date}</StyledTableCell>
+                                                            <StyledTableCell align="right"> {new Date(payment.date).toDateString()}</StyledTableCell>
+                                                            
                                                             <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
                                                         </StyledTableRow>
                                                     ))) : (

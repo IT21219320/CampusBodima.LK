@@ -113,7 +113,7 @@ const getPaymentsByOwnerID = expressAsyncHandler(async (req, res) => {
 
 })
 
-cron.schedule('0 0 10 * *',async () => {
+cron.schedule('0 0 10 * *', async () => {
   try {
     // Calculate the monthly fee for each subscribed user
     const reservedUsers = await reservations.find();
@@ -172,6 +172,24 @@ const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
     for (const userReservation of reservedUsers) {
       if (userReservation) {
         const boardingT = await Boarding.findById(userReservation.boardingId);
+        
+        let monthlyFee = 0;
+        if (boardingT.boardingType === "Annex") {
+
+          monthlyFee = parseInt(boardingT.rent)
+           
+        }
+        else if(boardingT.boardingType === "Hostel"){
+          const roomT = await Room.findById(userReservation.roomID);
+          
+          if(roomT){
+            monthlyFee = parseInt(roomT.rent);
+          }
+          else{
+            console.log(userReservation.roomID, "No room available")
+          }
+          
+        }
 
         let oneUserUtitlity = 0;
         if (boardingT) {
@@ -182,7 +200,6 @@ const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
 
           if (utility.length > 0) {
             const userCount = usersB.length;
-
             let totalUtility = 0;
             for (const oneU of utility) {
               totalUtility += parseInt(oneU.amount);
@@ -194,9 +211,9 @@ const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
 
           console.log("One user utility: ", oneUserUtitlity);
         }
-
+        console.log(oneUserUtitlity+monthlyFee)
         await toDoPayment.create({
-          amount: oneUserUtitlity,
+          amount: oneUserUtitlity+monthlyFee,
           occupant: userReservation.occupantID,
           month: currentMonth,
         });
@@ -218,7 +235,7 @@ const getToDoPaymentsByUserCMonth = expressAsyncHandler(async (req, res) => {
   const currentDate = new Date(Date.now());
   const currentMonth = currentDate.getMonth() + 1;
   try {
-    
+
     const response = await toDoPayment.find({ occupant: userInfo_id, month: currentMonth });
     if (response) {
       res.status(200).json(

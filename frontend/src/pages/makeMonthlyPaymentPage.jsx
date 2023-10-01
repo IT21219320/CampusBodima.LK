@@ -87,7 +87,7 @@ function MakeMonthlyPaymentPage() {
             <Col>
               <h3 className={paymentScreenStyles.h3Topic}>Enter card details</h3>
               <div className={paymentScreenStyles.paymentForm}>
-                <PaymentForm des={des} /> 
+                <PaymentForm des={des} amount={amount}/> 
               </div>
             </Col>
           </Row>

@@ -18,7 +18,7 @@ import Select from '@mui/material/Select';
 
 
 
-const PaymentForm = ({ des }) => {
+const PaymentForm = ({ des, amount }) => {
 
     const [cardName, setCardName] = useState('')
     const [cardNumber, setCardNUmber] = useState('')
@@ -92,7 +92,7 @@ const PaymentForm = ({ des }) => {
     const submitHandler = async (e) => {
 
         e.preventDefault();
-        const resPay = await makePayment({ userInfo_id: userID, bId: bId, des: des })
+        const resPay = await makePayment({ userInfo_id: userID, bId: bId, des: des, amount:amount })
         if (isChecked) {
             try {
                 console.log({ des });
