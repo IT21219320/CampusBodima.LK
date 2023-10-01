@@ -34,7 +34,7 @@ const SearchPage = () => {
     const [food, setFood] = useState('All')
     const [utilityBills, setUtilityBills] = useState('All')
     const [noOfRooms, setNoOfRooms] = useState(0)
-    const [boardingType, setBoardingType] = useState('Hostel')
+    const [boardingType, setBoardingType] = useState('Annex')
     const [gender, setGender] = useState('All')
     const [rentRange, setRentRange] = useState([0, 50000])
     const [rent, setRent] = useState('All')
