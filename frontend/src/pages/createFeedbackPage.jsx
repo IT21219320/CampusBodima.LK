@@ -130,7 +130,7 @@ const CreateFeedback = () => {
                       <Col lg={9} xs={6} className={`mt-3 ${CreateFeedbackStyles.formControl}`}>
                         <FormControl sx={{ minWidth: 120 }}>
                           <Select value={category} onChange={(e) => setCategory(e.target.value)} required>
-                            <MenuItem value={'boarding'}>Boarding</MenuItem>
+                            <MenuItem value={'hostel'}>Hostel</MenuItem>
                             <MenuItem value={'anex'}>Anex</MenuItem>
                           </Select>
                         </FormControl>

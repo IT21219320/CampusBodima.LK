@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useDeleteFeedbackMutation, useGetFeedbackByUserIdMutation } from "../slices/feedbackApiSlice";
+import { useDeleteFeedbackMutation,useGetAllFeedbacksMutation  } from "../slices/feedbackApiSlice";
 import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
@@ -13,7 +13,7 @@ import jsPDF from 'jspdf';
 import { GetAppRounded, GridViewRounded } from '@mui/icons-material';
 import StarRating from "./StarRating";
 
-const OccupantFeedback = () => {
+const AllFeedbacks = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [filteredFeedbacks, setFilteredFeedbacks] = useState([]);
   //const [search, setSearch] = useState('');
@@ -21,14 +21,14 @@ const OccupantFeedback = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [deleteFeedbacks, setDeleteFeedbacks] = useState('');
-  const [getFeedbackByUserId, { isLoading }] = useGetFeedbackByUserIdMutation();
+  const [getAllFeedbacks, { isLoading }] = useGetAllFeedbacksMutation();
   const [deleteFeedback, { isLoading2 }] = useDeleteFeedbackMutation();
   const [searchQuery, setSearchQuery] = useState('');
 
 
   const loadFeedbackData = async () => {
     try {
-      const res = await getFeedbackByUserId({ userId: userInfo._id ,searchQuery}).unwrap();
+      const res = await getAllFeedbacks().unwrap();
       setFeedbacks(res.feedback);
       setFilteredFeedbacks(res.feedback);
     } catch (error) {
@@ -38,7 +38,7 @@ const OccupantFeedback = () => {
 
   useEffect(() => {
     loadFeedbackData();
-  }, [ userInfo._id,searchQuery,deleteFeedbacks]);
+  }, [searchQuery,deleteFeedbacks]);
 
   useEffect(() => {
     filterFeedbacksByCategory();
@@ -94,7 +94,7 @@ const OccupantFeedback = () => {
     // Map the admin data to table rows
 
     const data = feedbacks.map((feedback) => [
-      feedback.feedbackkId,
+      feedback.ticketId,
       feedback.category,
       feedback.description,
       feedback.rating,
@@ -232,9 +232,7 @@ const OccupantFeedback = () => {
                         <td>{feedback.description}</td>
                         <td><Rating name="read-only" value={parseInt(feedback.rating)} readOnly /></td>
                         <td>
-                        <Button type="button" onClick={() => navigate(`/occupant/feedback/update/${feedback._id}`)} className="mt-4 mb-4 me-3" style={{ float: 'right' }} variant="contained">
-                          <BrowserUpdatedIcon/>Update
-                        </Button>
+                        
                         
                           <Button
                             className="mt-4 mb-4 me-3" style={{ float: 'right' ,
@@ -261,4 +259,4 @@ const OccupantFeedback = () => {
   );
 }
 
-export default OccupantFeedback;
+export default AllFeedbacks;
