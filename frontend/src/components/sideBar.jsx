@@ -139,6 +139,17 @@ export default function Sidebar() {
                 </Tooltip>
               </ListItem></Link>
 
+              <Link to='/admin/feedbacks' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+              <Tooltip title={!open ? "All Feedbacks" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/feedback') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                  <RateReviewRounded />
+                  </ListItemIcon>
+                  <ListItemText primary={"All Feedbacks"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
+            </ListItem></Link>
+
             </>
 
           : <></>}

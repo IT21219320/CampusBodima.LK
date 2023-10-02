@@ -11,12 +11,13 @@ import { NavigateNext, Search, BrowserUpdated as BrowserUpdatedIcon, Delete as D
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
 import jsPDF from 'jspdf';
 import { GetAppRounded, GridViewRounded } from '@mui/icons-material';
-import StarRating from "./StarRating";
+
 
 const AllFeedbacks = () => {
+
+
   const [feedbacks, setFeedbacks] = useState([]);
   const [filteredFeedbacks, setFilteredFeedbacks] = useState([]);
-  //const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const { userInfo } = useSelector((state) => state.auth);
   const navigate = useNavigate();
@@ -53,20 +54,6 @@ const AllFeedbacks = () => {
     }
   };
 
-  /*const handleDeleteFeedback = async (feedbackId) => {
-    try {
-      //const data = `${feedbackId}`;
-      const res = await deleteFeedback(data).unwrap();
-      if (res.message === "Feedback deleted successfully") {
-        toast.success("Feedback deleted successfully");
-        loadFeedbackData();
-      } else {
-        toast.error("Failed to delete Feedback");
-      }
-    } catch (err) {
-      toast.error(err.data?.message || err.error);
-    }
-  };*/
 
   const handleDeleteFeedback = async (feedbackId) => {
     try {
@@ -75,10 +62,11 @@ const AllFeedbacks = () => {
         setDeleteFeedbacks(resDelete.message );
         toast.success('Feedback deleted successfully');
        
-    } catch (err) {
+    } catch (err) {  
       toast.error(err.data?.message || err.error);
-    }
-};
+      }
+  };
+
   const handleSearch=(event) =>{
     setSearchQuery(event.target.value);
   };
@@ -142,56 +130,52 @@ const AllFeedbacks = () => {
             </Col>
           </Row>
           <Col>
-                            <Card variant="outlined" className={occupantFeedbackStyles.card}>
-                                
-                                    <h4>Feedbacks</h4>
-                                
-                            </Card>
-                        </Col>
+              <Card variant="outlined" className={occupantFeedbackStyles.card}>
+                <h4>Feedbacks</h4>
+              </Card>
+          </Col>
           <Row>
             <Col>
-            <Paper
-  component="form"
-  sx={{
-    p: '2px 4px',
-    display: 'flex',
-    alignItems: 'center',
-    width: 400,
-    background: '#e3e7ea8f', // Background color for the Paper component
-  }}
->
-  <InputBase
-    sx={{ ml: 1, flex: 1 }}
-    placeholder="Search Feedbacks"
-    onChange={handleSearch}
-  />
-  <IconButton
-    type="button"
-    sx={{
-      p: '10px',
-      backgroundColor: '#007bff', // Background color for the button
-      color: 'white', // Text color for the button
-      '&:hover': {
-        backgroundColor: '#0056b3', // Hover background color
-      },
-    }}
-    aria-label="search"
-  >
-    <Search />
-  </IconButton>
-</Paper>
-            </Col>
-            <Col style={{ textAlign: 'right' }}>
-              <Button variant="contained" onClick={() => navigate('/occupant/feedback/create')}>New Feedback</Button>
+              <Paper
+                component="form"
+                sx={{
+                p: '2px 4px',
+                display: 'flex',
+                alignItems: 'center',
+                width: 400,
+                background: '#e3e7ea8f', // Background color for the Paper component
+                }}
+              >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Search Feedbacks"
+                onChange={handleSearch}
+              />
+                 <IconButton
+                  type="button"
+                  sx={{
+                   p: '10px',
+                   backgroundColor: '#007bff', // Background color for the button
+                   color: 'white', // Text color for the button
+                  '&:hover': {
+                   backgroundColor: '#0056b3', // Hover background color
+                   },
+                  }}
+                 aria-label="search"
+                >
+                <Search />
+               </IconButton>
+              </Paper>
             </Col>
           </Row>
+
           <Row>
                 <Col style={{textAlign:'right'}}>
                     <Button variant="contained" style={{marginRight:'10px', background:'#4c4c4cb5'}} onClick={exportToPDF}>Export<GetAppRounded /></Button>
                 </Col>
-            </Row>
+          </Row>
+
           <Row style={{ marginTop: '30px' }}>
-            
             <Col>
             <form  className={occupantFeedbackStyles.form}>
               <FormControl  style={{Width:'20px'}}>
@@ -202,13 +186,15 @@ const AllFeedbacks = () => {
                   onChange={(event) => setCategory(event.target.value)}
                 >
                   <MenuItem value={'all'}>All</MenuItem>
-                  <MenuItem value={'boarding'}>Boarding</MenuItem>
+                  <MenuItem value={'hostal'}>Hostal</MenuItem>
                   <MenuItem value={'anex'}>Anex</MenuItem>
                 </Select>
               </FormControl>
-              </form>
+            </form>
             </Col>
           </Row>
+
+
           <Row style={{marginTop: '30px'}}>
             <Col>
             <Table striped bordered hover>
