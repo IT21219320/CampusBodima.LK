@@ -10,6 +10,10 @@ const feedbackSchema = mongoose.Schema({
         type:User.schema,
         required:true,
     },
+    ownerId:{
+        type:User.schema,
+        required:true,
+    },
     
     
     category:{

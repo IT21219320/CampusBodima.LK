@@ -32,7 +32,7 @@ const AllFeedbacks = () => {
       setFeedbacks(res.feedback);
       setFilteredFeedbacks(res.feedback);
     } catch (error) {
-      console.error('Error getting feedbacks', error);
+      console.error(error);
     }
   };
 

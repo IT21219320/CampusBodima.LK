@@ -14,8 +14,8 @@ export const feedbackApiSlice = apiSlice.injectEndpoints({
         }),
 
         getAllFeedbacks: builder.mutation({
-            query: (data) => ({
-                url: `${FEEDBACKS_URL}/getfeedback/${data}`,
+            query: () => ({
+                url: `${FEEDBACKS_URL}/getfeedback`,
                 method: 'GET',
                 
                 
