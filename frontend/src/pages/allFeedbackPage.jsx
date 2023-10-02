@@ -13,6 +13,7 @@ import jsPDF from 'jspdf';
 import { GetAppRounded, GridViewRounded } from '@mui/icons-material';
 
 
+
 const AllFeedbacks = () => {
 
 
@@ -223,6 +224,7 @@ const AllFeedbacks = () => {
                           <Button
                             className="mt-4 mb-4 me-3" style={{ float: 'right' ,
                              background: 'red', color: 'black', marginLeft: '10px',variant:"contained" }}
+
                             onClick={() => handleDeleteFeedback(feedback._id)}
                           >
                             <DeleteIcon /> Delete
