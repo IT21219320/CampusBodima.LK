@@ -48,6 +48,7 @@ import UpdateUtilitiesPage from './pages/updateUtilityPage';
 import CreateFeedback from './pages/createFeedbackPage.jsx';
 import OccupantFeedback from './pages/occupantFeedbackPage.jsx';
 import UpdateFeedbackpage from './pages/updateFeedbackPage.jsx';
+import AllFeedbacks from './pages/allFeedbackPage.jsx';
 
 import OccupantPaymentDash from './pages/occupantPaymentsDashboard.jsx';
 import MakeInitialPaymentPage from './pages/makeInitialPaymentPage.jsx';
@@ -94,6 +95,7 @@ const router = createBrowserRouter(
         {/* Admin Routes */}
         <Route path='' element={ <AdminRoute /> }>
           <Route path='/admin/boardings' element={ <AdminVerifyBoardingPage /> } />
+          <Route path='/admin/feedbacks' element={ <AllFeedbacks /> } />
         </Route>
 
         {/* Owner Routes */}
@@ -143,6 +145,7 @@ const router = createBrowserRouter(
           <Route path='/occupant/reservations/reserve/:bId/' element={<ReserveAnnexPage />} />
           <Route path='/occupant/reservations/confirm/' element={<ConfirmReservationPage />} />
           <Route path='/occupant/boarding' element={<MyReservationPage />} />
+          <Route path='/occupant/boarding/join/:tokenHeader/:tokenPayload/:tokenSecret' element={ <VerifyEmailPage /> } />
           
           <Route path='/occupant/feedback' element={<OccupantFeedback />} />
           <Route path='/occupant/feedback/create' element={<CreateFeedback />} />
