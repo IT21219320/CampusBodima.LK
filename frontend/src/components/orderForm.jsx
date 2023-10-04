@@ -276,7 +276,7 @@ const OrderForm = () => {
           border: '1px solid #ccc',
           borderRadius: '5px',
           margin: '10px auto',
-        }}>Price: {calculatePrice()}</div>
+        }}>Unit Price: {calculatePrice()}</div>
       
       {/* Display the total by multiplying quantity by price */}
       <div style={{
