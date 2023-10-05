@@ -5,7 +5,7 @@ import { useGetOrderMutation } from "../slices/orderApiSlice";
 import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { Container, Row, Col, Table, Tabs, Tab} from 'react-bootstrap';
+import { Container, Row, Col, Tabs, Tab} from 'react-bootstrap';
 import { Breadcrumbs, Typography, Fade, Card, CardContent,Link, Button, TextField ,CircularProgress} from '@mui/material';
 import { NavigateNext, Search, GridViewRounded } from '@mui/icons-material';
 import { DateRange } from 'react-date-range';
@@ -22,6 +22,7 @@ import { useTheme } from "@emotion/react";
 import DeleteOrder from "./DeleteOrder";
 import OrderForm from "../components/orderForm";
 import formStyle from '../styles/formStyle.module.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const OrderList = () =>{
 
@@ -127,11 +128,12 @@ const OrderList = () =>{
                                 />
                                 <Row>
                                     <Col>
-                                        <Table striped bordered hover className={occupantFeedbackStyles.table}>
-                                            <thead>
+                                        <table striped bordered hover className="table table-striped table-bordered">
+                                        <thead >
                                                     <tr style={{textAlign:'center'}}>
                                                         {/*<th>Order id</th>*/}
-                                                        <th>Date & Time</th>
+                                                        <th>Date</th>
+                                                        <th>Time</th>
                                                         <th>Order Number</th>
                                                         <th>Product</th>
                                                         <th>Food Type</th>
@@ -152,7 +154,8 @@ const OrderList = () =>{
                                                 filteredOrders.map((order, index) => (
                                                         <tr key={index}>
                                                             {/*<td>{order._id}</td>*/}
-                                                            <td>{order.date}</td>
+                                                            <td>{new Date(order.date).toDateString()}</td>
+                                                            <td align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</td>
                                                             <td>{order.orderNo}</td>
                                                             <td>{order.product}</td>
                                                             <td>{order.foodType}</td>
@@ -161,19 +164,33 @@ const OrderList = () =>{
                                                             <td>{order.total}</td>
                                                             <td>{order.status}</td>
                                                             {/* Render additional feedback data as needed */}
-                                                            <td > 
+                                                            {order.status === "Pending" ? (
+                                                                    <>
+                                                                        <td align="center">
+                                                                        <Button
+                                                                            style={{ background: '#00FF00', color: 'black', marginRight: '10px' }}
+                                                                            onClick={() => navigate(`/occupant/order/orderList/updateOrder/${order._id}`)}
+                                                                        >
+                                                                            <BrowserUpdatedIcon /> Update
+                                                                        </Button>
+                                                                        <Button
+                                                                            style={{ background: '#FF0000', color: 'black' }}
+                                                                            onClick={() => openDeleteModal(order)}
+                                                                        >
+                                                                            <DeleteIcon /> Delete
+                                                                        </Button>
+                                                                        </td>
+                                                                    </>
+                                                                    ) : order.status === "Ready" ? (
+                                                                    <>
+                                                                        <td style={{color:'green'}}>Your Order Is Ready for Pickup!</td>
+                                                                    </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <td>Order Completed</td>
+                                                                        </>
+                                                                        )  }
                                                             
-                                                                <Button  style={{ background: ' blue', color: 'black', marginRight: '10px' }}
-                                                                onClick={() => navigate(`/occupant/order/orderList/updateOrder/${order._id}`)}>
-                                                                    <BrowserUpdatedIcon /> Update
-                                                                </Button>
-                                                                <Button
-                                                                style={{ background: 'red', color: 'black' }}
-                                                                onClick={() => openDeleteModal(order)}
-                                                                >
-                                                                <DeleteIcon /> Delete
-                                                                </Button>
-                                                            </td> 
                                             
                                                         </tr>
                                                         
@@ -193,7 +210,7 @@ const OrderList = () =>{
                                                 onDeleteSuccess={handleDeleteSuccess}
                                                 />
                                             )}
-                                        </Table>
+                                        </table>
                                     </Col>
                                 </Row>
                             </>

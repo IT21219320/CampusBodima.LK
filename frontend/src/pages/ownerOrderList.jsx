@@ -66,9 +66,11 @@ const OrderList = () =>{
         toast.error('Failed to fetch orders. Please try again later.');
       }
     };
-    
-    
-
+    //date and time
+    const orderDate = new Date(order.date);
+    const formattedDate = orderDate.toDateString();
+    const formattedTime = `${orderDate.getHours()}:${String(orderDate.getMinutes()).padStart(2, '0')}:${String(orderDate.getSeconds()).padStart(2, '0')}`;
+    const result = `${formattedDate} ${formattedTime}`;
     useEffect(() => {
         // Dispatch the action to fetch feedback data
         loadOrderData();
@@ -126,7 +128,8 @@ const OrderList = () =>{
                                             <thead>
                                                     <tr style={{textAlign:'center'}}>
                                                         {/*<th>Order id</th>*/}
-                                                        <th>Date & Time</th>
+                                                        <th>Date</th>
+                                                        <th>Time</th>
                                                         <th>Order Number</th>
                                                         <th>Product</th>
                                                         <th>Food Type</th>
@@ -147,7 +150,8 @@ const OrderList = () =>{
                                                 filteredOrders.map((order, index) => (
                                                         <tr key={index}>
                                                             {/*<td>{order._id}</td>*/}
-                                                            <td>{order.date}</td>
+                                                            <td>{new Date(order.date).toDateString()}</td>
+                                                            <td>{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</td>
                                                             <td>{order.orderNo}</td>
                                                             <td>{order.product}</td>
                                                             <td>{order.foodType}</td>
