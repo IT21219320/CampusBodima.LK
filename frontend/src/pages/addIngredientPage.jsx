@@ -186,7 +186,12 @@ const AddIngredientPage = () => {
                                 type='number'
                                 placeholder='Enter Alert Quantity'
                                 value={alertquantity}
-                                onChange={(e) => setAlertQuantity(e.target.value)}
+                                onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  if (/^\d+$/.test(inputValue) && parseInt(inputValue) > 0) {
+                                    setAlertQuantity(inputValue);
+                                  }
+                                }}
                                 required
                               ></Form.Control>
                             </Form.Group>
