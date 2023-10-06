@@ -172,23 +172,23 @@ const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
     for (const userReservation of reservedUsers) {
       if (userReservation) {
         const boardingT = await Boarding.findById(userReservation.boardingId);
-        
+
         let monthlyFee = 0;
         if (boardingT.boardingType === "Annex") {
 
           monthlyFee = parseInt(boardingT.rent)
-           
+
         }
-        else if(boardingT.boardingType === "Hostel"){
+        else if (boardingT.boardingType === "Hostel") {
           const roomT = await Room.findById(userReservation.roomID);
-          
-          if(roomT){
+
+          if (roomT) {
             monthlyFee = parseInt(roomT.rent);
           }
-          else{
+          else {
             console.log(userReservation.roomID, "No room available")
           }
-          
+
         }
 
         let oneUserUtitlity = 0;
@@ -211,9 +211,9 @@ const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
 
           console.log("One user utility: ", oneUserUtitlity);
         }
-        console.log(oneUserUtitlity+monthlyFee)
+        console.log(oneUserUtitlity + monthlyFee)
         await toDoPayment.create({
-          amount: oneUserUtitlity+monthlyFee,
+          amount: oneUserUtitlity + monthlyFee,
           occupant: userReservation.occupantID,
           month: currentMonth,
         });
@@ -236,7 +236,7 @@ const getToDoPaymentsByUserCMonth = expressAsyncHandler(async (req, res) => {
   const currentMonth = currentDate.getMonth() + 1;
   try {
 
-    const response = await toDoPayment.find({ occupant: userInfo_id, month: currentMonth });
+    const response = await toDoPayment.find({ occupant: userInfo_id, month: currentMonth, status:'pending' });
     if (response) {
       res.status(200).json(
         response
@@ -254,9 +254,9 @@ const getToDoPaymentsByUserCMonth = expressAsyncHandler(async (req, res) => {
 const getToDoPaymentsByUser = expressAsyncHandler(async (req, res) => {
   const { userInfo_id } = req.body;
   const currentDate = new Date(Date.now());
-  const currentMonth = currentDate.getMonth() + 1;
+  const lastMonth = currentDate.getMonth();
   try {
-    const response = await toDoPayment.find({ occupant: userInfo_id, month: currentMonth });
+    const response = await toDoPayment.find({ occupant: userInfo_id, month: lastMonth, status:'pending' });
     if (response) {
       res.status(200).json(
         response
@@ -267,6 +267,33 @@ const getToDoPaymentsByUser = expressAsyncHandler(async (req, res) => {
     console.log(error)
   }
 
+})
+
+const changeStatus = expressAsyncHandler(async (req, res) => {
+  const payId = req.body.payId;
+  console.log(payId)
+  const payRes = await toDoPayment.findById(payId);
+  payRes.status = 'paid';
+  await payRes.save();
+  if(payRes){
+    res.status(200).json({
+      message:"Payment status updated",
+      payRes
+    })
+  }
+})
+
+const getMyReservation = expressAsyncHandler(async (req, res) => {
+  const userInfo_id = req.body;
+
+  try {
+    const resMyB = await reservations.findOne({occupantID : userInfo_id})
+    res.status(200).json(resMyB);
+  } catch (error) {
+    console.log(error)
+  }
+
+  
 })
 
 const getIntent = expressAsyncHandler(async (req, res) => {
@@ -334,4 +361,4 @@ const getWebHook = expressAsyncHandler(async (req, res) => {
 })
 
 
-export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser };
+export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser, getMyReservation, changeStatus };

@@ -7,7 +7,7 @@ import paymentFormStyle from "../styles/paymentFormStyle.module.css";
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { useMakePaymentMutation } from "../slices/paymentApiSlice";
+import { useMakePaymentMutation, useChangeStatusMutation } from "../slices/paymentApiSlice";
 import { useAddCardMutation,useGetCardByUserMutation } from "../slices/cardApiSlice";
 import { toast } from 'react-toastify';
 import * as React from 'react';
@@ -18,7 +18,7 @@ import Select from '@mui/material/Select';
 
 
 
-const PaymentForm = ({ des, amount }) => {
+const PaymentForm = ({ des, amount, payId }) => {
 
     const [cardName, setCardName] = useState('')
     const [cardNumber, setCardNUmber] = useState('')
@@ -35,6 +35,7 @@ const PaymentForm = ({ des, amount }) => {
     const [makePayment] = useMakePaymentMutation();
     const [addCard] = useAddCardMutation();
     const [getCards] = useGetCardByUserMutation();
+    const [change] = useChangeStatusMutation();
 
 
     const navigate = useNavigate();
@@ -108,6 +109,7 @@ const PaymentForm = ({ des, amount }) => {
         }
         if (resPay) {
             console.log(resPay)
+            const cRes = await change({payId: payId});
             if (resPay.data.message === "payment inserted") {
 
                 toast.success('Payment successfull!', { position: toast.POSITION.TOP_RIGHT });
