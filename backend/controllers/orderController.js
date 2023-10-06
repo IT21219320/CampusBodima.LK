@@ -112,7 +112,6 @@ const getOrderById = asyncHandler(async (req, res) => {
 
 });
 
-
 const updateOrder = asyncHandler(async (req, res) => {
   const order = await Order.findOne({_id:req.body._id});    
     if (order) {
@@ -148,6 +147,33 @@ const updateOrder = asyncHandler(async (req, res) => {
 });
 
 
+const updateStatus = asyncHandler(async (req, res) => {
+  console.log(req.body._id);
+  const order = await Order.findOne({_id:req.body._id});    
+    if (order) {
+      
+      order.status = req.body.status||order.status;
+      
+    
+      const updateOrder = await order.save();
+
+    res.status(200).json({
+      _id:updateOrder._id,
+      product:updateOrder.product,
+      foodType:updateOrder.foodType,
+      quantity:updateOrder.quantity,
+      price:updateOrder.price,
+      orderNo:updateOrder.orderNo,
+      status:updateOrder.status,
+      
+    });
+    }else{
+      res.status(404);
+      throw new Error('Order not found');
+     }
+});
+
+
 const deleteOrder = asyncHandler(async (req, res) => {
   const orderId = req.body._id;
   console.log(orderId);
@@ -175,6 +201,7 @@ export{
   getTodayOrder,
   getOrder,
   getOrderById,
+  updateStatus,
   updateOrder,
   deleteOrder,
 };
