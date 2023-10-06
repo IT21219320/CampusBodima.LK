@@ -148,7 +148,7 @@ const router = createBrowserRouter(
           <Route path='/occupant/boarding/join/:tokenHeader/:tokenPayload/:tokenSecret' element={ <VerifyEmailPage /> } />
           
           <Route path='/occupant/feedback' element={<OccupantFeedback />} />
-          <Route path='/occupant/feedback/create' element={<CreateFeedback />} />
+          <Route path='/occupant/feedback/create/:boardingId/:boardingName' element={<CreateFeedback />} />
           <Route path='/occupant/feedback/update/:feedbackId' element={<UpdateFeedbackpage />} />
           
         </Route>
