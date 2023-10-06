@@ -42,8 +42,8 @@ const SearchPage = () => {
     const [endDate, setEndDate] = useState(new Date())
     const [date, setDate] = useState('All')
     const [search, setSearch] = useState('')
-    const [sortBy, setSortBy] = useState('createdAt')
-    const [order, setOrder] = useState(1)
+    const [sortBy, setSortBy] = useState('updatedAt')
+    const [order, setOrder] = useState(-1)
     const [confirmDialog, setConfirmDialog] = useState(false);
     
     const theme = useTheme();

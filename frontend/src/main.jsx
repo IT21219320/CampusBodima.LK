@@ -29,6 +29,7 @@ import AddBoardingRoomPage from './pages/addBoardingRoomPage.jsx';
 import EditBoardingRoomPage from './pages/editBoardingRoomPage.jsx';
 import OwnerBoardingOccupants from './pages/ownerBoardingOccupants.jsx';
 import AdminVerifyBoardingPage from './pages/adminVerifyBoardingPage.jsx';
+import VerifyOccupantEmailPage from './pages/verifyOccupantEmailPage.jsx';
 
 import OwnerIngredientPage from './pages/OwnerIngredientPage.jsx';
 import AddIngredientPage from './pages/addIngredientPage.jsx';
@@ -139,13 +140,13 @@ const router = createBrowserRouter(
 
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
-          <Route path='/occupant/makeMonthlyPayment/:bId/:amount' element={<MakeMonthlyPaymentPage />} />
+          <Route path='/occupant/makeMonthlyPayment/:bId/:amount/:payId' element={<MakeMonthlyPaymentPage />} />
 
           <Route path='/occupant/reservations/reserve/:bId/:rId' element={<ReserveHostelPage />} />
           <Route path='/occupant/reservations/reserve/:bId/' element={<ReserveAnnexPage />} />
           <Route path='/occupant/reservations/confirm/' element={<ConfirmReservationPage />} />
           <Route path='/occupant/boarding' element={<MyReservationPage />} />
-          <Route path='/occupant/boarding/join/:tokenHeader/:tokenPayload/:tokenSecret' element={ <VerifyEmailPage /> } />
+          <Route path='/occupant/boarding/join/:tokenHeader/:tokenPayload/:tokenSecret' element={ <VerifyOccupantEmailPage /> } />
           
           <Route path='/occupant/feedback' element={<OccupantFeedback />} />
           <Route path='/occupant/feedback/create/:boardingId/:boardingName' element={<CreateFeedback />} />

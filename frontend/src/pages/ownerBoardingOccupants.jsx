@@ -1,24 +1,28 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Row, Col, Image, Button, Carousel, Tabs, Tab, } from 'react-bootstrap';
-import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, CircularProgress, Dialog, DialogContent, Skeleton, useMediaQuery, Tooltip, Switch, DialogTitle, DialogActions, Collapse, Alert, IconButton } from "@mui/material";
+import { Container, Row, Col, Image, Button, Carousel, Tabs, Tab, Spinner, Modal, Form, } from 'react-bootstrap';
+import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, CircularProgress, Dialog, DialogContent, Skeleton, useMediaQuery, Tooltip, Switch, DialogTitle, DialogActions, Collapse, Alert, IconButton, Avatar } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
-import { NavigateNext, MeetingRoom, Warning, Close } from '@mui/icons-material';
+import { NavigateNext, MeetingRoom, Warning, Close, Email, Phone, HighlightOffRounded } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useDeleteBoardingMutation, useDeleteRoomMutation, useGetBoardingByIdMutation, useUpdateRoomVisibilityMutation, useUpdateVisibilityMutation } from '../slices/boardingsApiSlice';
+import { useAddOccupantMutation, useDeleteBoardingMutation, useDeleteReservationMutation, useGetBoardingByIdMutation, useGetReservationsByBoardingIdMutation, useUpdateRoomVisibilityMutation, useUpdateVisibilityMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
+import { StringToAvatar } from "../utils/StringToAvatar";
 import { ref, getDownloadURL } from "firebase/storage";
 import storage from "../utils/firebaseConfig";
 
 import Sidebar from '../components/sideBar';
 
 import ownerStyles from '../styles/ownerStyles.module.css';
+import occupantStyles from '../styles/occupantStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import '../styles/overrideCss.css';
 
 import defaultImage from '/images/defaultImage.png';
 import { FiEdit } from "react-icons/fi";
+import { MdPersonRemoveAlt1 } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
+import { BsPersonFillAdd } from "react-icons/bs";
 
 const OwnerBoardingOccupants = () => {
     const theme = useTheme();
@@ -26,14 +30,18 @@ const OwnerBoardingOccupants = () => {
     const [noticeStatus, setNoticeStatus] = useState(true);
     const [viewUserInfo, setViewUserInfo] = useState();
     const [boarding, setBoarding] = useState('');
+    const [reservations, setReservations] = useState('');
+    const [reservationLoading, setReservationLoading] = useState(false);
     const [imgLoading, setImgLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [activeImage, setActiveImage] = useState(0);
     const [imagePreview, setImagePreview] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState(false);
     const [tempDeleteId, setTempDeleteId] = useState('');
-    const [roomConfirmDialog, setRoomConfirmDialog] = useState(false);
-    const [tempRoomDeleteId, setTempRoomDeleteId] = useState('');
+    const [reservationConfirmDialog, setReservationConfirmDialog] = useState(false);
+    const [tempReservationDeleteId, setTempReservationDeleteId] = useState('');
+    const [email, setEmail] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     const {boardingId} = useParams();
 
@@ -44,8 +52,11 @@ const OwnerBoardingOccupants = () => {
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const [getOwnerBoardingsById, {isLoading}] = useGetBoardingByIdMutation();
+    const [getBoardingReservations] = useGetReservationsByBoardingIdMutation();
     const [updateVisibility] = useUpdateVisibilityMutation();
+    const [addOccpant] = useAddOccupantMutation();
     const [deleteOwnerBoarding] = useDeleteBoardingMutation();
+    const [deleteOccupantReservation] = useDeleteReservationMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
 
@@ -53,7 +64,7 @@ const OwnerBoardingOccupants = () => {
         try {
             setImgLoading(true);
             const res = await getOwnerBoardingsById( boardingId ).unwrap();
-
+            console.log(res)
             if(res.boarding.boardingType == "Hostel"){
                 navigate(`/owner/boardings/${boardingId}/rooms`)
             }
@@ -112,6 +123,16 @@ const OwnerBoardingOccupants = () => {
                     // Handle the error as needed
                 });
 
+            try {
+                setReservationLoading(true);
+                const reservationRes = await getBoardingReservations( boardingId ).unwrap();
+                setReservations(reservationRes.reservations);
+                setReservationLoading(false)
+            } catch (err) {
+                setReservations('');
+                setReservationLoading(false)
+                toast.info(err.data?.message || err.error);
+            }    
                 
 
             
@@ -149,8 +170,14 @@ const OwnerBoardingOccupants = () => {
 
     const handleDialogOpen = (e, id) => {
         e.preventDefault();
-        setTempDeleteId(id);
-        setConfirmDialog(true);
+
+        if(boarding.occupant){
+            toast.error("Cannot delete boarding while it is rented out!")
+        }
+        else{
+            setTempDeleteId(id);
+            setConfirmDialog(true);
+        }
     }
 
     const handleDialogClose = () => {
@@ -187,75 +214,52 @@ const OwnerBoardingOccupants = () => {
         }
     }
 
-    const toggleRoomVisibility = async(e, id, index) => {
-        e.preventDefault();
-        try {
-            setLoading(true);
-
-            const res = await updateRoomVisibility({id}).unwrap();
-
-            const updatedroom = [...boarding.room];
-            updatedroom[index] = {
-                ...updatedroom[index],
-                visibility: !updatedroom[index].visibility,
-            };
-
-            let updatedBoarding = boarding;
-
-            updatedBoarding = {
-                ...updatedBoarding,
-                room: updatedroom
-            }
-
-            setBoarding(updatedBoarding);
-            toast.success('Room visibility updated successfully!');
-            setLoading(false);
-        } catch (err) {
-            toast.error(err.data?.message || err.error);
-            setLoading(false);
-        }
-    }
-
-    const handleRoomDialogOpen = (e, id) => {
-        e.preventDefault();
-        setTempRoomDeleteId(id);
-        setRoomConfirmDialog(true);
-    }
-
-    const handleRoomDialogClose = () => {
-        setTempRoomDeleteId('');
-        setRoomConfirmDialog(false);
-    }
-
-    const deleteRoom = async() => {
-        handleRoomDialogClose();
-        try {
-            setLoading(true);
-
-            const res = await deleteOwnerBoardingRoom(tempRoomDeleteId).unwrap();
-
-            toast.success('Room Deleted successfully!');
-            if(parseInt(res.roomCount) == 0){
-                toast.info('Your boarding has being moved to incomplete section!');
-            }
-
-            setLoading(false);
-            navigate(`/owner/boardings/${boardingId}/rooms`)
-        } catch (err) {
-            toast.error(err.data?.message || err.error);
-            setLoading(false);
-        }
-    }
-
-    const editRoom = (e,index) => {
-        e.preventDefault();
-        const id = boarding.room[index]._id;
-
-        if(boarding.room[index].occupant.length > 0){
-            toast.error("Cannot update Room while it is occupied");
+    const handleAddOccupant = async(e) => {
+        e.preventDefault()
+        setShowModal(false);
+        setLoading(true);
+        if(boarding.occupant){
+            toast.error('Boarding is full!')
         }
         else{
-            navigate(`/owner/boardings/${boarding._id}/${boarding.boardingName}/rooms/${id}/edit`)
+            try {
+                const res = await addOccpant({Email:email,BoardingId:boarding._id}).unwrap();
+
+                loadData();
+                toast.success('Invitation sent successfully')
+                setLoading(false);
+            } catch (err) {
+                setEmail('');
+                toast.error(err.data?.message || err.error);
+                setLoading(false);
+            }
+        }
+    }
+
+    const handleReservationDialogOpen = (e, id) => {
+        e.preventDefault();
+        setTempReservationDeleteId(id);
+        setReservationConfirmDialog(true);
+    }
+
+    const handleReservationDialogClose = () => {
+        setTempReservationDeleteId('');
+        setReservationConfirmDialog(false);
+    }
+
+    const deleteReservation = async() => {
+        handleReservationDialogClose();
+        try {
+            setLoading(true);
+
+            const res = await deleteOccupantReservation(tempReservationDeleteId).unwrap();
+
+            toast.success('Occupant Removed successfully!');
+            loadData()
+            setLoading(false);
+        } catch (err) {
+            toast.error(err.data?.message || err.error);
+            setLoading(false);
         }
     }
 
@@ -400,164 +404,103 @@ const OwnerBoardingOccupants = () => {
                                                 </Row>
                                             </Col>
                                         </Row>
-                                        <Row style={{textAlign:'right'}}>
+                                        <Row className=" mt-4" style={{textAlign:'right'}}>
                                             <Col>
-                                                <Link href={`/owner/boardings/${boarding._id}/${boarding.boardingName}/rooms/${parseInt(boarding.room[boarding.room.length-1]?.roomNo || 0)+1}/add`}>
-                                                    <Button className={`${ownerStyles.addBtn} mt-4`}>
-                                                        <MeetingRoom />
-                                                        Add New Room
-                                                    </Button>
-                                                </Link>
+                                                {(boarding.boardingType == "Annex" && !boarding.occupant && boarding.status == 'Approved') ? 
+                                                <Button className={`${ownerStyles.addBtn}`} onClick={() => setShowModal(true)}>
+                                                    <BsPersonFillAdd style={{fontSize:'1.5em', marginRight:'5px'}}/>
+                                                    Add Existing occupant
+                                                </Button>
+                                                : 
+                                                <h3 style={{textAlign:'left', fontFamily:'fantasy', marginBottom:0}}>OCCUPANTS</h3>}
                                             </Col>
                                         </Row>
-                                        <Row style={{minHeight:'calc(100vh - 240px)'}}>
+                                        <hr />
+                                        <Row style={{minHeight:'calc(100vh - 400px)'}}>
                                             <Col>
-                                                <Tabs defaultActiveKey="registered"  id="uncontrolled-tab-example" className="mb-3">
-                                                    <Tab eventKey="registered" title="Registered Rooms">
-                                                        {boarding.room.length > 0 ? 
-                                                            boarding.room.some(room => room.status == "Approved") ?
-                                                                boarding.room.map((room, index) => (
-                                                                    room.status=="Approved" ? 
-                                                                        <Card key={index} className={`${ownerStyles.card} mt-4`}>
-                                                                            <CardContent className={ownerStyles.cardContent}>
-                                                                                <Row style={{height:'100%', width:'100%'}}>
-                                                                                    <Col style={{height:'100%'}} xs={4}>
-                                                                                        {imgLoading ? <Skeleton variant="rounded" animation="wave" width='100%' height='100%' /> :<Image src={room.roomImages[0] ? room.roomImages[0] : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images}height='100%' width='100%'/> }
-                                                                                    </Col>
-                                                                                    <Col lg={8}>
-                                                                                        <Row>
-                                                                                            <Col>
-                                                                                                <h2>Room No: {room.roomNo}</h2>
-                                                                                            </Col>
-                                                                                            {room.status!='PendingApproval' && boarding.status != 'PendingApproval' ? 
-                                                                                            <Col lg={2}>
-                                                                                                <Row style={{marginTop:'-15px', marginRight:'-30px', justifyContent:'flex-end'}}>
-                                                                                                    <Col style={{display:'contents'}}>
-                                                                                                        <Tooltip title="Edit" placement="top" arrow>
-                                                                                                            <button className={`${ownerStyles.ctrls} ${ownerStyles.edtBtn}`} onClick={(e) => editRoom(e,index)}>
-                                                                                                                <FiEdit />
-                                                                                                            </button>
-                                                                                                        </Tooltip>
-                                                                                                    </Col>
-                                                                                                    <Col style={{display:'contents'}}>
-                                                                                                        <Tooltip title="Delete" placement="top" arrow>
-                                                                                                            <button className={`${ownerStyles.ctrls} ${ownerStyles.deleteBtn}`} onClick={(e) => handleRoomDialogOpen(e,room._id)}>
-                                                                                                                <RiDeleteBinLine />
-                                                                                                            </button>
-                                                                                                        </Tooltip>
-                                                                                                    </Col>
-                                                                                                    {room.status=='Approved' ?
-                                                                                                    <Col style={{display:'contents'}}>
-                                                                                                        <Tooltip title={room.visibility ? 'Mark as unavailable' : 'Mark as available for rent'} placement="top" arrow>
-                                                                                                            <Switch checked={room.visibility} color="secondary" sx={{mt:'-5px'}} onClick={(e) => toggleRoomVisibility(e,room._id,index)} />
-                                                                                                        </Tooltip>
-                                                                                                    </Col>
-                                                                                                    :''}
-                                                                                                </Row>
-                                                                                            </Col>
-                                                                                            :
-                                                                                            ''}
-                                                                                        </Row>
-                                                                                        <Row>
-                                                                                            <Col>
-                                                                                                <p className={ownerStyles.paras}><b>Beds:</b> {room.noOfBeds}</p>
-                                                                                                <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(room.noOfAttachBaths)+parseInt(room.noOfCommonBaths)}</p>
-                                                                                            </Col>
-                                                                                            {room.occupant.length > 0 ?
-                                                                                            <Col>
-                                                                                                <>
-                                                                                                    <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Occupants</b></p>
-                                                                                                    <ul style={{paddingLeft:'1.5em'}}>
-                                                                                                        {room.occupant.map((occupant,index) => (
-                                                                                                        <li key={index} style={{color:'dimgray'}}>{occupant.firstName}</li>
-                                                                                                        ))}
-                                                                                                    </ul>
-                                                                                                </>
-                                                                                            </Col>
-                                                                                            :''}
-                                                                                            <Col>
-                                                                                            {boarding.boardingType == 'Hostel' ? 
-                                                                                                <>
-                                                                                                    <p className={ownerStyles.paras}><b>Rent:</b> Rs {room.rent} /Month</p>
-                                                                                                    <p className={ownerStyles.paras}><b>Key Money:</b> {room.keyMoney} Months</p>
-                                                                                                </>
-                                                                                            :''}
-                                                                                            </Col>
-                                                                                        </Row>
-                                                                                    </Col>
-                                                                                </Row>
-                                                                            </CardContent>
-                                                                        </Card>
-                                                                    : ''
-                                                                ))
-                                                            :   
-                                                                <div style={{height:'60vh', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
-                                                                    <h2>You don't have any approved rooms!</h2>
-                                                                </div>
-                                                        :
-                                                            <div style={{height:'60vh', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
-                                                                <h2>You don't have any registered rooms!</h2>
-                                                            </div>
-                                                        }
-                                                    </Tab>
-                                                    <Tab eventKey="pending" title="Pending Approval">
-                                                        {boarding.room.length > 0 ? 
-                                                            boarding.room.some(room => room.status == "PendingApproval") ?
-                                                                boarding.room.map((room, index) => (
-                                                                    room.status=="PendingApproval" ? 
-                                                                    <Card key={index} className={`${ownerStyles.card} mt-4`}>
-                                                                    <CardContent className={ownerStyles.cardContent}>
-                                                                        <Row style={{height:'100%', width:'100%'}}>
-                                                                            <Col style={{height:'100%'}} xs={4}>
-                                                                                {imgLoading ? <Skeleton variant="rounded" animation="wave" width='100%' height='100%' /> :<Image src={room.roomImages[0] ? room.roomImages[0] : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images}height='100%' width='100%'/> }
+                                                { reservationLoading ? <div style={{width:'100%',height:'100%',display: 'flex',alignItems: 'center',justifyContent: 'center'}}><Spinner animation="grow" variant="info" /></div> : 
+                                                    
+                                                    reservations.length > 0 ? 
+                                                        <div style={{height:'100%', width:'100%',display:'flex', color:'dimgrey'}}>                                                    
+                                                            {reservations.map((reservation, index) => (
+                                                                reservation.status == 'PendingInvite' ? 
+                                                                <Card key={index} className={`${occupantStyles.card} mt-4`}>
+                                                                    <CardContent className={`${occupantStyles.cardContent}`}>
+                                                                        <div className={occupantStyles.removeBtnPos}>
+                                                                            <Tooltip title="Cancel Invitation" placement="top" arrow>
+                                                                                <button className={`${occupantStyles.ctrls} ${occupantStyles.deleteBtn}`} onClick={(e) => handleReservationDialogOpen(e,reservation._id)}>
+                                                                                    <MdPersonRemoveAlt1 />
+                                                                                </button>
+                                                                            </Tooltip>
+                                                                        </div>
+                                                                        <div className={`${occupantStyles.pendingInviteContent}`}>
+                                                                        <Row>
+                                                                            <Col>
+                                                                                <Typography component="div" className={occupantStyles.pendingInviteIcon}>
+                                                                                    <Avatar alt={"Pending Invite"} {...StringToAvatar("Pending Invite")} style={{ width: 80, height: 80, fontSize: 50 }} />
+                                                                                </Typography> 
                                                                             </Col>
-                                                                            <Col lg={8}>
-                                                                                <Row>
-                                                                                    <Col>
-                                                                                        <h2>Room No: {room.roomNo}</h2>
-                                                                                    </Col>
-                                                                                </Row>
-                                                                                <Row>
-                                                                                    <Col>
-                                                                                        <p className={ownerStyles.paras}><b>Beds:</b> {room.noOfBeds}</p>
-                                                                                        <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(room.noOfAttachBaths)+parseInt(room.noOfCommonBaths)}</p>
-                                                                                    </Col>
-                                                                                    {room.occupant.length > 0 ?
-                                                                                    <Col>
-                                                                                            <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Occupants</b></p>
-                                                                                            <ul style={{paddingLeft:'1.5em'}}>
-                                                                                                {room.occupant.map((occupant,index) => (
-                                                                                                <li key={index} style={{color:'dimgray'}}>{occupant.firstName}</li>
-                                                                                                ))}
-                                                                                            </ul>
-                                                                                    </Col>
-                                                                                    :''}
-                                                                                    <Col>
-                                                                                    {boarding.boardingType == 'Hostel' ? 
-                                                                                        <>
-                                                                                            <p className={ownerStyles.paras}><b>Rent:</b> Rs {room.rent} /Month</p>
-                                                                                            <p className={ownerStyles.paras}><b>Key Money:</b> {room.keyMoney} Months</p>
-                                                                                        </>
-                                                                                    :''}
-                                                                                    </Col>
-                                                                                </Row>
+                                                                        </Row>
+                                                                        <Row style={{textAlign:'center'}}>
+                                                                            <Col>
+                                                                                <h3 style={{marginTop:'10px'}}>Pending Invite</h3>
                                                                             </Col>
+                                                                        </Row>
+                                                                        <Row className={occupantStyles.userInfoRow}>
+                                                                            <Col style={{display:'flex',justifyContent:'center'}}><Email style={{marginRight:'5px'}}/><a href={`mailto:${reservation.boardingType}`} style={{textDecoration:'none', color:'inherit'}}>{reservation.boardingType}</a></Col>
+                                                                        </Row>
+                                                                        <Row className={occupantStyles.userInfoRow}>
+                                                                            <Col style={{display:'flex',justifyContent:'center'}}><Phone style={{marginRight:'5px'}}/>{reservation.occupantID?.phoneNo ? reservation.occupantID.phoneNo : 'Not Available'}</Col>
+                                                                        </Row>
+                                                                        </div>
+                                                                    </CardContent>
+                                                                </Card>
+                                                                :
+                                                                <Card key={index} className={`${occupantStyles.card} mt-4 ${reservation.status=="Pending" ? occupantStyles.pending : ''}`}>
+                                                                    <CardContent className={`${occupantStyles.cardContent} ${reservation.status=="Pending" ? occupantStyles.pendingContent : ''}`}>
+                                                                        <Row>
+                                                                            <Col>
+                                                                            {reservation.status=="Approved" ?
+                                                                                <div className={occupantStyles.removeBtnPos}>
+                                                                                    <Tooltip title="Remove Occupant" placement="top" arrow>
+                                                                                        <button className={`${occupantStyles.ctrls} ${occupantStyles.deleteBtn}`} onClick={(e) => handleReservationDialogOpen(e,reservation._id)}>
+                                                                                            <MdPersonRemoveAlt1 />
+                                                                                        </button>
+                                                                                    </Tooltip>
+                                                                                </div>
+                                                                            :''}
+                                                                            {reservation.occupantID.image ? 
+                                                                                <Avatar alt={reservation.occupantID.firstName+" "+reservation.occupantID.lastName} src={reservation.occupantID.image} sx={{ width: 80, height: 80 }} /> 
+                                                                                : 
+                                                                                <Typography component="div">
+                                                                                    <Avatar alt={reservation.occupantID.firstName+" "+reservation.occupantID.lastName} {...StringToAvatar(reservation.occupantID.firstName+" "+reservation.occupantID.lastName)} style={{ width: 80, height: 80, fontSize: 50 }} />
+                                                                                </Typography> 
+                                                                            }
+                                                                            </Col>
+                                                                        </Row>
+                                                                        <Row>
+                                                                            <Col>
+                                                                                <h3 style={{marginTop:'10px'}}>{reservation.occupantID.firstName+" "+(reservation.occupantID.lastName?reservation.occupantID.lastName:'')}</h3>
+                                                                            </Col>
+                                                                        </Row>
+                                                                        <Row className={occupantStyles.userInfoRow}>
+                                                                            <Col style={{display:'flex',justifyContent:'center'}}><Email style={{marginRight:'5px'}}/><a href={`mailto:${reservation.occupantID.email}`} style={{textDecoration:'none', color:'inherit'}}>{reservation.occupantID.email}</a></Col>
+                                                                        </Row>
+                                                                        <Row className={occupantStyles.userInfoRow}>
+                                                                            <Col style={{display:'flex',justifyContent:'center'}}><Phone style={{marginRight:'5px'}}/>{reservation.occupantID.phoneNo ? reservation.occupantID.phoneNo : 'Not Available'}</Col>
+                                                                        </Row>
+                                                                        <Row className={occupantStyles.userInfoRow}>
+                                                                            <Col style={{display:'flex',justifyContent:'center'}}>{reservation.occupantID.gender}</Col>
                                                                         </Row>
                                                                     </CardContent>
                                                                 </Card>
-                                                                    : ''
-                                                                ))
-                                                            :   
-                                                                <div style={{height:'60vh', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
-                                                                    <h2>You don't have any rooms pending approval!</h2>
-                                                                </div>
-                                                        :
-                                                            <div style={{height:'60vh', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
-                                                                <h2>You don't have any registered rooms!</h2>
-                                                            </div>
-                                                        }
-                                                    </Tab>
-                                                </Tabs>
+                                                            ))}
+                                                        </div>
+                                                    : 
+                                                    <div style={{height:'100%', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>                                                    
+                                                        <h2>You don't have any Reservations for this boarding!</h2>
+                                                    </div>
+                                                }
                                             </Col>
                                         </Row>
                                     </Col>
@@ -591,25 +534,49 @@ const OwnerBoardingOccupants = () => {
             </Dialog>
             <Dialog
                 fullScreen={fullScreen}
-                open={roomConfirmDialog}
-                onClose={handleRoomDialogClose}
+                open={reservationConfirmDialog}
+                onClose={handleReservationDialogClose}
                 aria-labelledby="responsive-dialog-title"
             >
                 <DialogContent className={ownerStyles.confirmIcon}>
                     <Warning style={{fontSize:'100px'}} />
                 </DialogContent>
                 <DialogTitle id="responsive-dialog-title">
-                    {"Are you sure you want to delete this room?"}
+                    {"Are you sure you want to remove this Occupant?"}
                 </DialogTitle>
                 <DialogActions>
-                    <Button autoFocus onClick={handleRoomDialogClose}>
+                    <Button autoFocus onClick={handleReservationDialogClose}>
                         Cancel
                     </Button>
-                    <Button onClick={deleteRoom} autoFocus variant="danger">
+                    <Button onClick={deleteReservation} autoFocus variant="danger">
                         Confirm
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Modal show={showModal} onHide={() => {setShowModal(false);setEmail('');}}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Send Invitation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group className="mb-3">
+                    <Form.Label>Email address</Form.Label>
+                    <Form.Control
+                        type="email"
+                        placeholder="name@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={() => {setShowModal(false);setEmail('');}}>
+                    Cancel
+                </Button>
+                <Button variant="primary" autoFocus onClick={(e) => handleAddOccupant(e)}>
+                    Send
+                </Button>
+                </Modal.Footer>
+            </Modal>
         </> 
     )
 };

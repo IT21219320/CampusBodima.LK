@@ -280,7 +280,7 @@ const RegisterBoardingPage = () => {
                 
                 if(boardingType == 'Annex'){
                     const boardingId = res.boarding._id;
-                    navigate(`owner/boardings/${boardingId}/occupants`);
+                    navigate(`/owner/boardings/${boardingId}/occupants`);
                 }
                 else{
                     const boardingId = res.boarding._id;
