@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { toast } from 'react-toastify';
 import { Row, Col, Form } from "react-bootstrap";
 import { Breadcrumbs,Container, Button,Link,Typography,Card, CardContent, TextField, CircularProgress } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { NavigateNext } from '@mui/icons-material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -293,14 +294,14 @@ const OrderForm = () => {
           borderRadius: '5px',
           margin: '10px auto',
         }}>Order No: {orderNo}</div>
-      <Button 
+      <LoadingButton 
       type="submit" 
       loading={isLoading} 
       variant="contained"
       color="primary"
       >
         {isLoading ? 'Creating Order...' : 'Create Order'}
-      </Button>
+      </LoadingButton>
       {isError && <div>Error: {error.message}</div>}
     </form>
     </div>

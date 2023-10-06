@@ -21,8 +21,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from "@emotion/react";
 import DeleteOrder from "./DeleteOrder";
 import OrderForm from "../components/orderForm";
-import formStyle from '../styles/formStyle.module.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import orderStyles from '../styles/orderStyles.module.css';
+
 
 const OrderList = () =>{
 
@@ -118,14 +118,16 @@ const OrderList = () =>{
                                         </Card>
                                     </Col>
                                 </Row>
-                                <TextField
+                                <Row><div className={orderStyles.search}><TextField
                                     id="search"
-                                    label="Search Product"
-                                    variant="outlined"
+                                    label="Search"
+                                    //variant="outlined"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className={formStyle.searchField}
+                                    className={orderStyles.searchField}
                                 />
+                                </div>
+                                </Row>
                                 <Row>
                                     <Col>
                                         <table striped bordered hover className="table table-striped table-bordered">

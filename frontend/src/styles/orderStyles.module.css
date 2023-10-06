@@ -1,0 +1,53 @@
+.card {
+    box-shadow: 5px 5px 10px #0000002b !important;
+    margin-top: 22px;
+  }
+  
+  #newTicket {
+    color: rgb(41, 60, 210);
+  }
+  
+  .require {
+    color: red;
+    margin-left: 3px;
+  }
+  
+  .lbl {
+    margin-top: 16px;
+    margin-left: 80px;
+    font-size: larger;
+  }
+  
+  #subject {
+    width: 50%;
+    height: 45px;
+  }
+  
+  .col-lg-9 {
+    margin-top: 10px !important;
+  }
+
+  .searchField { 
+    width: 200px;
+  font-size: 14px;
+  border-radius: 20px;
+   /* Align the text inside the TextField to the right */
+  border: 2px solid #ccc;
+  padding: 8px;
+  outline: none;
+  }
+  
+  /* Customize the outline and text color */
+  .searchField input {
+    border-color: #00FF00; /* Green outline */
+    color: #333; /* Text color */
+  }
+  
+  /* Style the label text */
+  .searchField label {
+    color: #c1c1c1; /* Label text color */
+  }
+  .search{
+    text-align: right;
+    
+  }

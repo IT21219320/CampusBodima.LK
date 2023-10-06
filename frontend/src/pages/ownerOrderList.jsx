@@ -150,8 +150,7 @@ const OrderList = () =>{
                                                 filteredOrders.map((order, index) => (
                                                         <tr key={index}>
                                                             {/*<td>{order._id}</td>*/}
-                                                            <td>{new Date(order.date).toDateString()}</td>
-                                                            <td>{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</td>
+                                                            <td>{result}</td>
                                                             <td>{order.orderNo}</td>
                                                             <td>{order.product}</td>
                                                             <td>{order.foodType}</td>
