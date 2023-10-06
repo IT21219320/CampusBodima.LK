@@ -62,7 +62,7 @@ import MyReservationPage from './pages/myReservationPage.jsx';
 import OwnerAllReservarions from './pages/ownerAllReservationsPage.jsx';
 
 import Orders from './pages/Orders.jsx';
-import OrderPage from './pages/OrderPage.jsx';
+import OwnerOrderList from './pages/ownerOrderList.jsx';
 import UpdateOrder from './pages/UpdateOrder.jsx';
 
 import PrivateRoute from './components/privateRoute';
@@ -117,7 +117,7 @@ const router = createBrowserRouter(
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
           
-          <Route path='/owner/order/' element={<OrderPage />} />
+          <Route path='/owner/orders/' element={<OwnerOrderList />} />
 
           <Route path='/owner/ticket' element={<OwnerTicketsPage />} />
           <Route path='/owner/ticket/:ticketId' element={<OwnerTicketThreadPage />} />
