@@ -366,7 +366,7 @@ const AdminAllBoardings = () => {
                                     ))
                                 :
                                     <tr style={{width:'100%',height:'100%',textAlign: 'center', color:'dimgrey'}}>
-                                        <td colSpan={11}></td>
+                                        <td colSpan={11}>No Boardings available</td>
                                     </tr>
                             }
                         </tbody>
