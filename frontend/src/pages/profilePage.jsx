@@ -126,7 +126,7 @@ const ProfilePage = () => {
                         <Col>
                             <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
-                                <Link underline="hover" key="2" color="inherit" href="/profile">{userType == 'owner' ? 'Owner' : (userType == 'occupant' ? 'Occupant' : userType == 'admin' ? 'Admin' : <></>)}</Link>,
+                                <Link underline="hover" key="2" color="inherit" href="/profile">{userType == 'owner' ? 'Owner' : (userType == 'occupant' ? 'Occupant' : userType == 'admin' ? 'Admin' : userType == 'kitchen' ? 'Kitchen' : <></>)}</Link>,
                                 <Typography key="3" color="text.primary">Profile</Typography>
                             </Breadcrumbs>
                         </Col>
@@ -135,7 +135,7 @@ const ProfilePage = () => {
                     <Row>
                         <Col>
                             <Card className='mt-3 py-3 text-center'>
-                                {userType == 'owner' ? <h2>Owner Dashboard</h2> : (userType == 'occupant' ? <h2>Occupant Dashboard</h2> : userType == 'admin' ? <h2>Admin Dashboard</h2> : <></>)}
+                                {userType == 'owner' ? <h2>Owner Dashboard</h2> : (userType == 'occupant' ? <h2>Occupant Dashboard</h2> : userType == 'admin' ? <h2>Admin Dashboard</h2> : userType == 'kitchen' ? <h2>Inventory Manager Dashboard</h2> : <></>)}
                             </Card>
                         </Col>
                     </Row>

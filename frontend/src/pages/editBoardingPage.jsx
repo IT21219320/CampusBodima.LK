@@ -307,7 +307,7 @@ const EditBoardingPage = () => {
                         <Col>
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
-                                <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
+                                <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : userInfo.userType == 'kitchen' ? 'Kitchen' : <></>)}</Link>,
                                 <Link underline="hover" key="3" color="inherit" href="/owner/boardings">Boardings</Link>,
                                 <Link underline="hover" key="3" color="inherit" href={`/owner/boardings/${boardingId}/rooms`}>{boardingName}</Link>,
                                 <Typography key="4" color="text.primary">Edit</Typography>
