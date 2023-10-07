@@ -417,7 +417,8 @@ const OwnerBoardingRoomPage = () => {
                                                             boarding.room.some(room => room.status == "Approved") ?
                                                                 boarding.room.map((room, index) => (
                                                                     room.status=="Approved" ? 
-                                                                        <Card key={index} className={`${ownerStyles.card} mt-4`}>
+                                                                    <Link key={index} href={`/owner/boardings/${boarding._id}/rooms/${room._id}/occupants`} style={{textDecoration:'none'}}>  
+                                                                        <Card className={`${ownerStyles.card} mt-4`}>
                                                                             <CardContent className={ownerStyles.cardContent}>
                                                                                 <Row style={{height:'100%', width:'100%'}}>
                                                                                     <Col style={{height:'100%'}} xs={4}>
@@ -478,6 +479,7 @@ const OwnerBoardingRoomPage = () => {
                                                                                 </Row>
                                                                             </CardContent>
                                                                         </Card>
+                                                                    </Link>
                                                                     : ''
                                                                 ))
                                                             :   

@@ -78,6 +78,12 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 method: 'GET',
             }),
         }),
+        getReservationsByRoomId: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/room/${data}/reservations`,
+                method: 'GET',
+            }),
+        }),
         getBoardingById: builder.mutation({
             query: (data) => ({
                 url: `${BOARDINGS_URL}/${data}`,
@@ -152,6 +158,7 @@ export const {
     useRejectBoardingMutation, 
     useGetBoardingByIdMutation, 
     useGetReservationsByBoardingIdMutation, 
+    useGetReservationsByRoomIdMutation,
     useGetRoomByIdMutation, 
     useUpdateVisibilityMutation, 
     useUpdateRoomVisibilityMutation, 

@@ -5,7 +5,7 @@ import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, CircularProgres
 import { useTheme } from '@mui/material/styles';
 import { NavigateNext, MeetingRoom, Warning, Close, Email, Phone, HighlightOffRounded } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAddOccupantMutation, useDeleteBoardingMutation, useDeleteReservationMutation, useGetBoardingByIdMutation, useGetReservationsByBoardingIdMutation, useUpdateRoomVisibilityMutation, useUpdateVisibilityMutation } from '../slices/boardingsApiSlice';
+import { useAddOccupantMutation, useDeleteBoardingMutation, useDeleteReservationMutation, useDeleteRoomMutation, useGetReservationsByBoardingIdMutation, useGetReservationsByRoomIdMutation, useGetRoomByIdMutation, useUpdateRoomVisibilityMutation, useUpdateVisibilityMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
 import { StringToAvatar } from "../utils/StringToAvatar";
 import { ref, getDownloadURL } from "firebase/storage";
@@ -24,12 +24,12 @@ import { MdPersonRemoveAlt1 } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { BsPersonFillAdd } from "react-icons/bs";
 
-const OwnerBoardingOccupants = () => {
+const OwnerBoardingRoomOccupants = () => {
     const theme = useTheme();
 
     const [noticeStatus, setNoticeStatus] = useState(true);
     const [viewUserInfo, setViewUserInfo] = useState();
-    const [boarding, setBoarding] = useState('');
+    const [room, setRoom] = useState('');
     const [reservations, setReservations] = useState('');
     const [reservationLoading, setReservationLoading] = useState(false);
     const [imgLoading, setImgLoading] = useState(false);
@@ -43,7 +43,7 @@ const OwnerBoardingOccupants = () => {
     const [email, setEmail] = useState('');
     const [showModal, setShowModal] = useState(false);
 
-    const {boardingId} = useParams();
+    const {boardingId, roomId} = useParams();
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -51,11 +51,11 @@ const OwnerBoardingOccupants = () => {
     const largeScreen = useMediaQuery(theme.breakpoints.up('md'));
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    const [getOwnerBoardingsById, {isLoading}] = useGetBoardingByIdMutation();
-    const [getBoardingReservations] = useGetReservationsByBoardingIdMutation();
-    const [updateVisibility] = useUpdateVisibilityMutation();
+    const [getOwnerRoomById, {isLoading}] = useGetRoomByIdMutation();
+    const [getRoomReservations] = useGetReservationsByRoomIdMutation();
+    const [updateRoomVisibility] = useUpdateRoomVisibilityMutation();
     const [addOccpant] = useAddOccupantMutation();
-    const [deleteOwnerBoarding] = useDeleteBoardingMutation();
+    const [deleteOwnerBoardingRoom] = useDeleteRoomMutation();
     const [deleteOccupantReservation] = useDeleteReservationMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
@@ -63,14 +63,10 @@ const OwnerBoardingOccupants = () => {
     const loadData = async () => {
         try {
             setImgLoading(true);
-            const res = await getOwnerBoardingsById( boardingId ).unwrap();
-            console.log(res)
-            if(res.boarding.boardingType == "Hostel"){
-                navigate(`/owner/boardings/${boardingId}/rooms`)
-            }
-
+            const res = await getOwnerRoomById( roomId ).unwrap();
+            console.log(res);
             // Create an array of promises for image retrieval
-                const updatedImages = res.boarding.boardingImages.map(async (image, index) => {
+                const updatedImages = res.room.roomImages.map(async (image, index) => {
                     try {
                         const imageUrl = await getDownloadURL(ref(storage, image));
                         
@@ -89,9 +85,9 @@ const OwnerBoardingOccupants = () => {
             Promise.all(updatedImages)
                 .then((imageUrl) => {
                     
-                    const updatedBoarding = { ...res.boarding, boardingImages: imageUrl };
+                    const updatedRoom = { ...res.room, roomImages: imageUrl };
                         
-                    setBoarding(updatedBoarding);
+                    setRoom(updatedRoom);
                     setImgLoading(false);
 
                     /*const roomImagePromises = updatedBoarding.room.map(async (room, index) => {
@@ -125,7 +121,7 @@ const OwnerBoardingOccupants = () => {
 
             try {
                 setReservationLoading(true);
-                const reservationRes = await getBoardingReservations( boardingId ).unwrap();
+                const reservationRes = await getRoomReservations( roomId ).unwrap();
                 setReservations(reservationRes.reservations);
                 setReservationLoading(false)
             } catch (err) {
@@ -138,7 +134,7 @@ const OwnerBoardingOccupants = () => {
             
         } catch (err) {
             toast.error(err.data?.message || err.error);
-            navigate('/owner/boardings')
+            navigate(`/owner/boardings/${boardingId}/rooms`)
         }
     }
 
@@ -147,20 +143,20 @@ const OwnerBoardingOccupants = () => {
         loadData();     
     },[]);
 
-    const toggleVisibility = async(e, id) => {
+    const toggleRoomVisibility = async(e, id) => {
         e.preventDefault();
         try {
             setLoading(true);
 
-            const res = await updateVisibility({id}).unwrap();
+            const res = await updateRoomVisibility({id}).unwrap();
 
-            let updatedVisibilityBoarding = boarding;
-            updatedVisibilityBoarding = {
-                ...updatedVisibilityBoarding,
-                visibility: !updatedVisibilityBoarding.visibility,
+            let updatedroom = room;
+            updatedroom = {
+                ...updatedroom,
+                visibility: !updatedroom.visibility,
             };
-            setBoarding(updatedVisibilityBoarding);
-            toast.success('Boarding visibility updated successfully!');
+            
+            toast.success('Room visibility updated successfully!');
             setLoading(false);
         } catch (err) {
             toast.error(err.data?.message || err.error);
@@ -168,49 +164,46 @@ const OwnerBoardingOccupants = () => {
         }
     }
 
-    const handleDialogOpen = (e, id) => {
+    const handleRoomDialogOpen = (e, id) => {
         e.preventDefault();
-
-        if(boarding.occupant){
-            toast.error("Cannot delete boarding while it is rented out!")
-        }
-        else{
-            setTempDeleteId(id);
-            setConfirmDialog(true);
-        }
+        setTempDeleteId(id);
+        setConfirmDialog(true);
     }
 
-    const handleDialogClose = () => {
+    const handleRoomDialogClose = () => {
         setTempDeleteId('');
         setConfirmDialog(false);
     }
 
-    const deleteBoarding = async() => {
-        handleDialogClose();
+    const deleteRoom = async() => {
+        handleRoomDialogClose();
         try {
             setLoading(true);
 
-            const res = await deleteOwnerBoarding(tempDeleteId).unwrap();
+            const res = await deleteOwnerBoardingRoom(tempDeleteId).unwrap();
 
-            toast.success('Boarding Deleted successfully!');
-            navigate('/owner/boardings')
+            toast.success('Room Deleted successfully!');
+            if(parseInt(res.roomCount) == 0){
+                toast.info('Your boarding has being moved to incomplete section!');
+            }
+
+            setLoading(false);
+            navigate(`/owner/boardings/${boardingId}/rooms`)
         } catch (err) {
             toast.error(err.data?.message || err.error);
             setLoading(false);
         }
     }
 
-    const editBoarding = (e) => {
+    const editRoom = (e,index) => {
         e.preventDefault();
+        const id = room._id;
 
-        const id = boarding._id;
-        const type = boarding.boardingType;
-
-        if(type == 'Annex' && boarding.occupant){
-            toast.error("Cannot update Annex while it is occupied");
+        if(room.occupant.length > 0){
+            toast.error("Cannot update Room while it is occupied");
         }
         else{
-            navigate(`/owner/boardings/${id}/edit`);
+            navigate(`/owner/boardings/${boardingId}/${room.boardingId.boardingName}/rooms/${id}/edit`)
         }
     }
 
@@ -218,16 +211,17 @@ const OwnerBoardingOccupants = () => {
         e.preventDefault()
         setShowModal(false);
         setLoading(true);
-        if(boarding.occupant){
-            toast.error('Boarding is full!')
+        if(room.occupant.length == room.noOfBeds){
+            toast.error('Room is full!')
         }
         else{
             try {
-                const res = await addOccpant({Email:email,BoardingId:boarding._id}).unwrap();
+                const res = await addOccpant({Email:email,BoardingId:boardingId,RoomID:roomId}).unwrap();
 
                 loadData();
                 toast.success('Invitation sent successfully')
                 setLoading(false);
+                setEmail('');
             } catch (err) {
                 setEmail('');
                 toast.error(err.data?.message || err.error);
@@ -274,27 +268,22 @@ const OwnerBoardingOccupants = () => {
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
                                 <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
                                 <Link underline="hover" key="3" color="inherit" href="/owner/boardings/">Boardings</Link>,
-                                <Typography key="4" color="text.primary">{boarding.boardingName}</Typography>
+                                <Link underline="hover" key="4" color="inherit" href={`/owner/boardings/${boardingId}/rooms`}>{room.boardingId?.boardingName}</Link>,
+                                <Typography key="5" color="text.primary">Room {room.roomNo}</Typography>
                             </Breadcrumbs>
                         </Col>
                     </Row>
 
-                    {boarding.status != 'Approved' && !loading ? 
+                    {room.status != 'Approved' && !loading ? 
                     <Row>
                         <Col>
                             <Collapse in={noticeStatus}>
                                 <Alert
                                     action={ <IconButton aria-label="close" color="inherit" size="small" onClick={() => { setNoticeStatus(false); }} > <Close fontSize="inherit" /> </IconButton> }
                                     sx={{ mt: 2, }}
-                                    severity={boarding.status=='PendingRoom' ? "warning" : "info"}
+                                    severity="info"
                                 >
-                                    {boarding.status=='PendingRoom' ?
-                                        <><strong>Warning</strong> -  Please add atleast 1 room to your boarding.</>
-                                    : 
-                                        boarding.status=='PendingApproval' ?
-                                            <><strong>Info</strong> -  Please wait while an admin reviews and approves your boarding.</>
-                                        :''
-                                    }
+                                    <><strong>Info</strong> -  Please wait while an admin reviews and approves your Room.</>      
                                 </Alert>
                             </Collapse>
                         </Col>
@@ -304,7 +293,7 @@ const OwnerBoardingOccupants = () => {
                     <Fade in={viewUserInfo} >
                         <Row className='mt-4'>
                             <Col className="mb-3" xs={12} md={12}>
-                                {(isLoading || !boarding || loading) ? <div style={{width:'100%',height:'80vh',display: 'flex',alignItems: 'center',justifyContent: 'center'}}><CircularProgress /></div> : 
+                                {(isLoading || !room || loading) ? <div style={{width:'100%',height:'80vh',display: 'flex',alignItems: 'center',justifyContent: 'center'}}><CircularProgress /></div> : 
                                 <Row>
                                     <Col>
                                         <Row>
@@ -313,7 +302,7 @@ const OwnerBoardingOccupants = () => {
                                                     <Col xs={12} lg={4}>
                                                         {imgLoading ? <Skeleton variant="rounded" animation="wave" width='100%' height='100%' /> :
                                                         <Carousel controls={false} onClick={() => setImagePreview(largeScreen)} style={largeScreen? {cursor:'pointer'} : {cursor:'auto'}} className={ownerStyles.carousel}>
-                                                            {boarding.boardingImages.map((image, index) => (
+                                                            {room.roomImages.map((image, index) => (
                                                                 <Carousel.Item key={index}>
                                                                     {Math.abs(activeImage - index) <= 2 ? (
                                                                         <Image src={image? image : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images} height='250px' width='100%'/>
@@ -325,7 +314,7 @@ const OwnerBoardingOccupants = () => {
                                                         <Dialog open={imagePreview} onClose={() => setImagePreview(false)} style={{maxHeight:'90vh', maxWidth:'100vw', transform:'scale(1.5)'}}>
                                                             <DialogContent>
                                                                 <Carousel fade interval={10000} style={{borderRadius:'10px'}}>
-                                                                    {boarding.boardingImages.map((image, index) => (
+                                                                    {room.roomImages.map((image, index) => (
                                                                         <Carousel.Item key={index}>
                                                                             {Math.abs(activeImage - index) <= 2 ? (
                                                                                 <Image src={image? image : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images} style={{height:'50vh', objectFit:'contain', background:'black'}}/>
@@ -339,30 +328,30 @@ const OwnerBoardingOccupants = () => {
                                                     <Col lg={8}>
                                                         <Row>
                                                             <Col>
-                                                                <h2>{boarding.boardingName.toUpperCase()}</h2>
-                                                                <p style={{color: 'dimgray'}}>{boarding.city}, {boarding.boardingType}</p>
+                                                                <h2>{room.boardingId.boardingName.toUpperCase()}</h2>
+                                                                <p style={{color: 'dimgray'}}>{room.boardingId.address}</p>
                                                             </Col>
-                                                            {boarding.status!='PendingApproval' ? 
+                                                            {room.status!='PendingApproval' ? 
                                                             <Col lg={2}>
                                                                 <Row style={{marginRight:'-30px', justifyContent:'flex-end'}}>
                                                                     <Col style={{display:'contents'}}>
                                                                         <Tooltip title="Edit" placement="top" arrow>
-                                                                            <button className={`${ownerStyles.ctrls} ${ownerStyles.edtBtn}`} onClick={(e) => editBoarding(e)}>
+                                                                            <button className={`${ownerStyles.ctrls} ${ownerStyles.edtBtn}`} onClick={(e) => editRoom(e)}>
                                                                                 <FiEdit />
                                                                             </button>
                                                                         </Tooltip>
                                                                     </Col>
                                                                     <Col style={{display:'contents'}}>
                                                                         <Tooltip title="Delete" placement="top" arrow>
-                                                                            <button className={`${ownerStyles.ctrls} ${ownerStyles.deleteBtn}`} onClick={(e) => handleDialogOpen(e,boarding._id)}>
+                                                                            <button className={`${ownerStyles.ctrls} ${ownerStyles.deleteBtn}`} onClick={(e) => handleRoomDialogOpen(e,room._id)}>
                                                                                 <RiDeleteBinLine />
                                                                             </button>
                                                                         </Tooltip>
                                                                     </Col>
-                                                                    {boarding.status=='Approved' ?
+                                                                    {room.status=='Approved' ?
                                                                     <Col style={{display:'contents'}}>
-                                                                        <Tooltip title={boarding.visibility ? 'Mark as unavailable' : 'Mark as available for rent'} placement="top" arrow>
-                                                                            <Switch checked={boarding.visibility} color="secondary" sx={{mt:'-5px'}} onClick={(e) => toggleVisibility(e,boarding._id)} />
+                                                                        <Tooltip title={room.visibility ? 'Mark as unavailable' : 'Mark as available for rent'} placement="top" arrow>
+                                                                            <Switch checked={room.visibility} color="secondary" sx={{mt:'-5px'}} onClick={(e) => toggleRoomVisibility(e,room._id)} />
                                                                         </Tooltip>
                                                                     </Col>
                                                                     :''}
@@ -373,21 +362,24 @@ const OwnerBoardingOccupants = () => {
                                                         </Row>
                                                         <Row>
                                                             <Col>
-                                                                <p className={ownerStyles.paras}><b>Address:</b> {boarding.address}</p>
-                                                                <p className={ownerStyles.paras}><b>Rooms:</b> {boarding.boardingType=='Annex' ? boarding.noOfRooms : boarding.room.length}</p>
-                                                                {boarding.boardingType=='Annex' ? 
-                                                                    <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(boarding.noOfCommonBaths)+parseInt(boarding.noOfAttachBaths)}</p> 
+                                                                <p className={ownerStyles.paras}><b>Room No:</b> {room.roomNo}</p>
+                                                                <p className={ownerStyles.paras}><b>Beds:</b> {room.noOfBeds}</p>
+                                                                {room.noOfAttachBaths!=0 ? 
+                                                                    <p className={ownerStyles.paras}><b> Attached Baths:</b> {room.noOfAttachBaths}</p> 
                                                                 : ''}
-                                                                <p className={ownerStyles.paras}><b>Gender:</b> {boarding.gender}</p>
+                                                                {room.noOfCommonBaths!=0 ? 
+                                                                    <p className={ownerStyles.paras}><b> Common Baths:</b> {room.noOfCommonBaths}</p> 
+                                                                : ''}
+                                                                <p className={ownerStyles.paras}><b>Gender:</b> {room.boardingId.gender}</p>
                                                             </Col>
                                                             <Col>
-                                                                <p className={ownerStyles.paras}><b>Utility Bills:</b> {boarding.utilityBills ? 'Yes' : 'No'}</p>
-                                                                <p className={ownerStyles.paras}><b>Food:</b> {boarding.food ? 'Yes' : 'No'}</p>
-                                                                {boarding.facilities.length > 0 ?
+                                                                <p className={ownerStyles.paras}><b>Utility Bills:</b> {room.boardingId.utilityBills ? 'Yes' : 'No'}</p>
+                                                                <p className={ownerStyles.paras}><b>Food:</b> {room.boardingId.food ? 'Yes' : 'No'}</p>
+                                                                {room.boardingId.facilities.length > 0 ?
                                                                 <>
                                                                     <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Facilities</b></p>
                                                                     <ul style={{paddingLeft:'0.5em'}}>
-                                                                        {boarding.facilities.map((facility,index) => (
+                                                                        {room.boardingId.facilities.map((facility,index) => (
                                                                         <li key={index} style={{color:'dimgray', listStyleType:'none'}} className={ownerStyles.facilities}>{facility}</li>
                                                                         ))}
                                                                     </ul>
@@ -395,9 +387,7 @@ const OwnerBoardingOccupants = () => {
                                                                 :''}
                                                             </Col>
                                                             <Col>
-                                                            {boarding.boardingType == 'Annex' ? 
-                                                                <p className={ownerStyles.paras}><b>Rent:</b> Rs {boarding.rent} /Month</p>
-                                                            :''}
+                                                                <p className={ownerStyles.paras}><b>Rent:</b> Rs {room.rent} /Month</p>
                                                             </Col>
                                                         </Row>
                                                     </Col>
@@ -406,8 +396,8 @@ const OwnerBoardingOccupants = () => {
                                         </Row>
                                         <Row className=" mt-4" style={{textAlign:'right'}}>
                                             <Col>
-                                                {boarding.status == 'Approved'?
-                                                    (boarding.boardingType == "Annex" && !boarding.occupant) ? 
+                                                {room.status == 'Approved'?
+                                                    (room.occupant.length!=room.noOfBeds) ? 
                                                     <Button className={`${ownerStyles.addBtn}`} onClick={() => setShowModal(true)}>
                                                         <BsPersonFillAdd style={{fontSize:'1.5em', marginRight:'5px'}}/>
                                                         Add Existing occupant
@@ -501,7 +491,7 @@ const OwnerBoardingOccupants = () => {
                                                         </div>
                                                     : 
                                                     <div style={{height:'100%', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>                                                    
-                                                        <h2>You don't have any Reservations for this boarding!</h2>
+                                                        <h2>You don't have any Reservations for this Room!</h2>
                                                     </div>
                                                 }
                                             </Col>
@@ -517,20 +507,20 @@ const OwnerBoardingOccupants = () => {
             <Dialog
                 fullScreen={fullScreen}
                 open={confirmDialog}
-                onClose={handleDialogClose}
+                onClose={handleRoomDialogClose}
                 aria-labelledby="responsive-dialog-title"
             >
                 <DialogContent className={ownerStyles.confirmIcon}>
                     <Warning style={{fontSize:'100px'}} />
                 </DialogContent>
                 <DialogTitle id="responsive-dialog-title">
-                    {"Are you sure you want to delete this boarding?"}
+                    {"Are you sure you want to delete this room?"}
                 </DialogTitle>
                 <DialogActions>
-                    <Button autoFocus onClick={handleDialogClose}>
+                    <Button autoFocus onClick={handleRoomDialogClose}>
                         Cancel
                     </Button>
-                    <Button onClick={deleteBoarding} autoFocus variant="danger">
+                    <Button onClick={deleteRoom} autoFocus variant="danger">
                         Confirm
                     </Button>
                 </DialogActions>
@@ -584,4 +574,4 @@ const OwnerBoardingOccupants = () => {
     )
 };
 
-export default OwnerBoardingOccupants
+export default OwnerBoardingRoomOccupants

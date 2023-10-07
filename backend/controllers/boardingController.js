@@ -279,9 +279,15 @@ const occupantJoin = asyncHandler(async (req, res) => {
     const { userId, token } = req.body;
     
     const reservation = await Reservation.findById(jwt.decode(token).reservation._id)
+    
+    if(!reservation){
+        res.status(400);
+        throw new Error("Opps! Looks like your invitation has been cancelled. Sorry for the inconvenience")
+    }
 
     const boarding = await Boarding.findById(reservation.boardingId);
     const reservationExists = await Reservation.findOne({occupantID:userId})
+
 
     if(reservationExists){
         res.status(400);
@@ -396,12 +402,30 @@ const getReservationsByBoardingId = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Get Reservations by boarding ID
+// route    GET /api/boardings/:roomId/reservations
+const getReservationsByRoomId = asyncHandler(async (req, res) => {
+    const roomId = req.params.roomId;
+   
+    const reservations = await Reservation.find({roomID:roomId}).populate('occupantID');
+    
+    if(reservations.length > 0){
+        res.status(200).json({
+            reservations
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("No Reservations Found!")
+    }
+});
+
 // @desc    Get Room by ID
 // route    GET /api/rooms/:roomId
 const getRoomById = asyncHandler(async (req, res) => {
     const roomId = req.params.roomId;
    
-    const room = await Room.findById(roomId);
+    const room = await Room.findById(roomId).populate('boardingId');
     
     if(room){
         res.status(200).json({
@@ -1479,6 +1503,7 @@ export {
     getOwnerBoardings,
     getBoardingById,
     getReservationsByBoardingId,
+    getReservationsByRoomId,
     getRoomById,
     getOccupantBoarding,
     getPendingApprovalBoardings,

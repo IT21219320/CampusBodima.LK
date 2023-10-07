@@ -219,7 +219,7 @@ const EditBoardingRoomPage = () => {
 
                 
                 toast.success("Room updated successfully!")
-                navigate(`/owner/boardings/${boardingId}/rooms`)
+                navigate(`/owner/boardings/${boardingId}/rooms/${roomId}/occupants`)
 
             } catch (err) {
                 setBackDropOpen(false);
