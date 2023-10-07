@@ -539,17 +539,21 @@ const getAllBoardings = asyncHandler(async (req, res) => {
             ...(status !== 'All' ? { status } : {}),
             ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), 
         });
-        const roomConditions = rooms.map(room => ({ 'room.rent': room.rent }));
+        const roomConditions = rooms.map(room => ({ room: room._id }));
 
-        console.log(roomConditions);
+        console.log(roomConditions.map(condition => condition['room'].toString()));
 
         totalRows = await Boarding.countDocuments({
             boardingType,
-            ...(status !== 'All' ? { status } : {}),
+            ...(status !== 'All' ? { status } : {status: { $ne: 'PendingRoom' }}),
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
-            //...(rent !== 'All' ? (roomConditions.length>0 ? { $and: [{$or: roomConditions }]} : {}) : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(rent !== 'All' ? {
+                room: {
+                    $in: roomConditions.map(condition => condition['room'].toString())
+                }
+              } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(gender !== 'All' ? { 
                 $and: [{
@@ -575,11 +579,15 @@ const getAllBoardings = asyncHandler(async (req, res) => {
 
         boardings = await Boarding.find({
             boardingType,
-            ...(status !== 'All' ? { status } : {}),
+            ...(status !== 'All' ? { status } : {status: { $ne: 'PendingRoom' }}),
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
-            //...(rent !== 'All' ? (roomConditions.length>0 ? { $or: roomConditions } : {}) : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(rent !== 'All' ? {
+                room: {
+                    $in: roomConditions.map(condition => condition['room'].toString())
+                }
+              } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(gender !== 'All' ? { 
                 $and: [{

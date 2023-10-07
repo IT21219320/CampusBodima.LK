@@ -34,7 +34,7 @@ const AdminAllBoardings = () => {
     const [food, setFood] = useState('All')
     const [utilityBills, setUtilityBills] = useState('All')
     const [noOfRooms, setNoOfRooms] = useState(0)
-    const [boardingType, setBoardingType] = useState('Hostel')
+    const [boardingType, setBoardingType] = useState('Annex')
     const [gender, setGender] = useState('All')
     const [rentRange, setRentRange] = useState([0, 50000])
     const [rent, setRent] = useState('All')
@@ -272,7 +272,6 @@ const AdminAllBoardings = () => {
                         </Select>
                     </FormControl>
                 </Col>
-                {boardingType=='Annex' ? 
                 <Col>
                     <FormControl fullWidth>
                         <InputLabel>Rent</InputLabel>
@@ -297,7 +296,6 @@ const AdminAllBoardings = () => {
                         </Select>
                     </FormControl>
                 </Col>
-                : ""}
                 <Col>
                     <FormControl fullWidth>
                         <InputLabel>Date</InputLabel>
@@ -331,7 +329,7 @@ const AdminAllBoardings = () => {
                                 <th style={{cursor:'pointer'}} onClick={() => handleSortClick('utilityBills')}>Utility Bills {sortBy=="utilityBills" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
                                 <th style={{cursor:'pointer'}} onClick={() => handleSortClick('noOfRooms')}>No Of Rooms {sortBy=="noOfRooms" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
                                 <th style={{cursor:'pointer'}} onClick={() => handleSortClick('gender')}>Gender {sortBy=="gender" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
-                                {boardingType === 'Annex' ? <th style={{cursor:'pointer'}} onClick={() => handleSortClick('rent')}>Rent {sortBy=="rent" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th> : ''}
+                                <th style={{cursor:'pointer'}} onClick={() => handleSortClick('rent')}>Rent {sortBy=="rent" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
                                 <th style={{cursor:'pointer'}} onClick={() => handleSortClick('createdAt')}>Date {sortBy=="createdAt" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
                             </tr>
                         </thead>
@@ -354,7 +352,15 @@ const AdminAllBoardings = () => {
                                                     <td>
                                                         {boarding.rent}
                                                     </td>
-                                                    : ''}
+                                                    : 
+                                                    <td>
+                                                        {boarding.room.map((room,index) => (
+                                                            room.rent >= rentRange[0] && room.rent <= rentRange[1]? 
+                                                                <span>Room {room.roomNo}: {room.rent}<br /></span>
+                                                            : ''
+                                                        ))}
+                                                    </td>
+                                                    }
                                                     <td>{new Date(boarding.createdAt).toLocaleDateString('en-GB')}</td>
                                                 </tr>
                                             

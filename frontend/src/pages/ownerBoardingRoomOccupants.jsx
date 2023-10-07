@@ -155,6 +155,8 @@ const OwnerBoardingRoomOccupants = () => {
                 ...updatedroom,
                 visibility: !updatedroom.visibility,
             };
+
+            setRoom(updatedroom);
             
             toast.success('Room visibility updated successfully!');
             setLoading(false);
