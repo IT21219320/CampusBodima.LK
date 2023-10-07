@@ -226,6 +226,23 @@ export default function Sidebar() {
 
           : <></>}
           
+          {userInfo.userType == 'kitchen' ?  //Navigations for Inventory Manager
+
+          <>
+            <Link to='/kitchen/ingredient' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+              <Tooltip title={!open ? "Kitchen" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/kitchen/ingredient') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <Kitchen/>
+                  </ListItemIcon>
+                  <ListItemText primary={"Kitchen"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
+            </ListItem></Link>
+          </>
+
+          : <></>}
+          
           {userInfo.userType == 'occupant' ?  //Navigations for Occupants
 
           <>

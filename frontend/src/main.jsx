@@ -70,6 +70,7 @@ import UpdateOrder from './pages/UpdateOrder.jsx';
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
 import OwnerRoute from './components/ownerRoute';
+import KitchenRoute from './components/kitchenRoute';
 import OccupantRoute from './components/occupantRoute';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -127,6 +128,12 @@ const router = createBrowserRouter(
           <Route path='/owner/utility/' element={<AllUtilitiesPage />} />
           <Route path='/owner/utility/update/:boardingId/:utilityType/:utilityId' element={<UpdateUtilitiesPage />} />
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
+        </Route>
+
+        <Route path='' element={<KitchenRoute />}>
+          <Route path='/kitchen/ingredient' element={ <OwnerIngredientPage /> } />
+          <Route path='/kitchen/ingredient/add' element={ <AddIngredientPage /> } />
+          <Route path='/kitchen/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
         </Route>
 
         {/* Occupant Routes */}
