@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, Container, Row, Col, Image } from 'react-bootstrap';
-import { Divider, TextField, Box, InputAdornment, IconButton, Button, Radio, RadioGroup , FormControlLabel , FormControl, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Divider, TextField, Box, InputAdornment, IconButton, Button, Radio, RadioGroup , FormControlLabel , FormControl, ToggleButton, ToggleButtonGroup, Select, MenuItem, Menu } from "@mui/material";
 import { LinearProgress, Typography, Stack } from '@mui/joy';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Delete, Sync, Visibility, VisibilityOff } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useGoogleLoginMutation, useRegisterMutation } from '../slices/usersApiSlice';
@@ -26,7 +26,10 @@ const RegisterPage = () => {
     const [gender, setGender] = useState('Male');
     const [isGoogleLoadingOccupant, setIsGoogleLoadingOccupant] = useState(false);
     const [isGoogleLoadingOwner, setIsGoogleLoadingOwner] = useState(false);
-
+    const [ownerType, setOwnerType] = useState('owner');
+    const [anchorEl, setAnchorEl] = useState(null);
+    const openMenu = Boolean(anchorEl);
+    
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleMouseDownPassword = (event) => {
@@ -164,6 +167,12 @@ const RegisterPage = () => {
         setImage(data);
     }
 
+    const handleOwnerTypeChange = (value) => {
+        setOwnerType(value);
+        setUserType(value);
+        setAnchorEl(null)
+    }
+
     return (
         <>        
             <div className={styles.trapezoid}></div>
@@ -194,16 +203,23 @@ const RegisterPage = () => {
                                     <ToggleButtonGroup
                                         value={userType}
                                         exclusive
-                                        onChange={ (e) => setUserType(e.target.value) }
                                         aria-label="User Type"
                                         fullWidth
                                     >
-                                        <ToggleButton value="occupant" aria-label="User Type Occupant">
+                                        <ToggleButton value="occupant" aria-label="User Type Occupant" onClick={ () => setUserType("occupant") }>
                                             Occupant
                                         </ToggleButton>
-                                        <ToggleButton value="owner" aria-label="User Type Boarding Owner">
-                                            Boarding Owner
+                                        <ToggleButton value={ownerType} aria-label="User Type Boarding Owner" onClick={(e) => setAnchorEl(e.currentTarget)}>
+                                            {ownerType == "owner" ? "Boarding Owner" : "Kitchen User"}
                                         </ToggleButton>
+                                        <Menu
+                                            anchorEl={anchorEl}
+                                            open={openMenu}
+                                            onClose={() => setAnchorEl(null)}
+                                        >
+                                            <MenuItem value="owner" onClick={() => handleOwnerTypeChange("owner")}>Boarding Owner</MenuItem>
+                                            <MenuItem value="kitchen" onClick={() => handleOwnerTypeChange("kitchen")}>Kitchen User</MenuItem>
+                                        </Menu>
                                     </ToggleButtonGroup>
                                 </Row>
                                 <Row>

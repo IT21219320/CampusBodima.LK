@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Container, Row, Col, Image } from 'react-bootstrap';
-import { Divider, TextField, Box, InputAdornment, IconButton, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Divider, TextField, Box, InputAdornment, IconButton, Button, ToggleButton, ToggleButtonGroup, Menu, MenuItem } from "@mui/material";
 import { Person, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLoginMutation, useGoogleLoginMutation } from '../slices/usersApiSlice';
@@ -18,6 +18,9 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isGoogleLoadingOccupant, setIsGoogleLoadingOccupant] = useState(false);
     const [isGoogleLoadingOwner, setIsGoogleLoadingOwner] = useState(false);
+    const [ownerType, setOwnerType] = useState('owner');
+    const [anchorEl, setAnchorEl] = useState(null);
+    const openMenu = Boolean(anchorEl);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -129,6 +132,12 @@ const LoginPage = () => {
       onFailure: googleLoginFail
     });
 
+    const handleOwnerTypeChange = (value) => {
+        setOwnerType(value);
+        setUserType(value);
+        setAnchorEl(null)
+    }
+
 
     const submitHandler = async (e) => {
         e.preventDefault();
@@ -169,17 +178,24 @@ const LoginPage = () => {
                                     <ToggleButtonGroup
                                         value={userType}
                                         exclusive
-                                        onChange={ (e) => setUserType(e.target.value) }
                                         aria-label="User Type"
                                         fullWidth
                                     >
-                                        <ToggleButton value="occupant" aria-label="User Type Occupant">
+                                        <ToggleButton value="occupant" aria-label="User Type Occupant" onClick={ () => setUserType("occupant") }>
                                             Occupant
                                         </ToggleButton>
-                                        <ToggleButton value="owner" aria-label="User Type Boarding Owner">
-                                            Owner
+                                        <ToggleButton value={ownerType} aria-label="User Type Boarding Owner" onClick={(e) => setAnchorEl(e.currentTarget)}>
+                                            {ownerType == "owner" ? "Boarding Owner" : "Kitchen User"}
                                         </ToggleButton>
-                                        <ToggleButton value="admin" aria-label="User Type Admin">
+                                        <Menu
+                                            anchorEl={anchorEl}
+                                            open={openMenu}
+                                            onClose={() => setAnchorEl(null)}
+                                        >
+                                            <MenuItem value="owner" onClick={() => handleOwnerTypeChange("owner")}>Boarding Owner</MenuItem>
+                                            <MenuItem value="kitchen" onClick={() => handleOwnerTypeChange("kitchen")}>Kitchen User</MenuItem>
+                                        </Menu>
+                                        <ToggleButton value="admin" aria-label="User Type Admin" onClick={ () => setUserType("admin") }>
                                             Admin
                                         </ToggleButton>
                                     </ToggleButtonGroup>
