@@ -169,11 +169,9 @@ const OrderList = () =>{
                                                             {order.status === "Pending" ? (
                                                                     <>
                                                                         <td align="center">
-                                                                        <Button
-                                                                            style={{ background: '#00FF00', color: 'black', marginRight: '10px' }}
-                                                                            onClick={() => navigate(`/occupant/order/orderList/updateOrder/${order._id}`)}
-                                                                        >
-                                                                            <BrowserUpdatedIcon /> Update
+                                                                        <Button  style={{ background: ' lightgreen', color: 'white', marginRight: '10px' }}
+                                                                        onClick={() => navigate(`/occupant/order/orderList/updateOrder/${order._id}`)}>
+                                                                            <BrowserUpdatedIcon />
                                                                         </Button>
                                                                         <Button
                                                                             style={{ background: '#FF0000', color: 'black' }}
