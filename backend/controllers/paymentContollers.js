@@ -60,7 +60,7 @@ const makePayment = expressAsyncHandler(async (req, res) => {
   else if (boarding.boardingType === "Hostel") {
     let roomT;
     if (reserve) {
-      console.log(reserve.roomID._id)
+      
       roomT = await Room.findById(reserve.roomID);
 
     }
@@ -282,7 +282,7 @@ const getToDoPaymentsByUser = expressAsyncHandler(async (req, res) => {
 
 const changeStatus = expressAsyncHandler(async (req, res) => {
   const payId = req.body.payId;
-  console.log(payId)
+  
   const payRes = await toDoPayment.findById(payId);
   payRes.status = 'paid';
   await payRes.save();

@@ -59,10 +59,11 @@ const searchBar = {
     borderRadius: "20px",
     margin: "4% 2% 0px 2%",
     width: "50%",
-    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'currentColor\' class=\'bi bi-search\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.854 3.853a1 1 0 0 0 1.415-1.414l-3.853-3.854z\'/%3E%3Cpath d=\'M10.5 6.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0z\'/%3E%3C/svg%3E")',
+    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' x=\'0px\' y=\'0px\' width=\'100\' height=\'100\' viewBox=\'0 0 50 50\'%3E%3Cpath d=\'M 21 3 C 11.621094 3 4 10.621094 4 20 C 4 29.378906 11.621094 37 21 37 C 24.710938 37 28.140625 35.804688 30.9375 33.78125 L 44.09375 46.90625 L 46.90625 44.09375 L 33.90625 31.0625 C 36.460938 28.085938 38 24.222656 38 20 C 38 10.621094 30.378906 3 21 3 Z M 21 5 C 29.296875 5 36 11.703125 36 20 C 36 28.296875 29.296875 35 21 35 C 12.703125 35 6 28.296875 6 20 C 6 11.703125 12.703125 5 21 5 Z\'%3E%3C/path%3E%3C/svg%3E")',
     backgroundPosition: '96% center',
     backgroundRepeat: 'no-repeat',
-    backgroundSize: '20px 20px',
+    backgroundSize: '26px 26px',
+    border: "1px black solid",
 }
 
 const OccupantPaymentDash = () => {
@@ -307,7 +308,7 @@ const OccupantPaymentDash = () => {
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
                                         <Col>
-                                            <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
+                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
                                         </Col>
                                     </Row>
                                     {cards.length > 0 ? (
@@ -333,7 +334,6 @@ const OccupantPaymentDash = () => {
                                                         </Card>
                                                     </Box>
                                                 </Col>
-
                                             ))}
                                         </Row>
                                     ) : (
@@ -389,7 +389,7 @@ const OccupantPaymentDash = () => {
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
                                         <Col>
-                                            <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Transactions</h4>
+                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Transactions</h4>
                                         </Col>
 
                                     </Row>
@@ -444,11 +444,6 @@ const OccupantPaymentDash = () => {
                                 </Row></TabPanel>
                         </TabContext>
                     </Box>
-
-
-
-
-
                 </Container>
             </div>
         </>

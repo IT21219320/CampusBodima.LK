@@ -27,6 +27,16 @@ function MakeInitialPaymentPage() {
       console.log(error)
     }
   }
+  let am
+  if(boardingDetails){
+    if(boardingDetails.boardingType == 'Hostel'){
+      am = (boardingDetails.room[0].keyMoney)*(boardingDetails.room[0].rent)
+    }
+    else{
+      am = boardingDetails.keyMoney
+    }
+  }
+  
 
   useEffect(() => {
     load()
@@ -58,14 +68,15 @@ function MakeInitialPaymentPage() {
             <Col className={paymentScreenStyles.card40}>
               <h3 className={paymentScreenStyles.h3PaymentTopic}>Payment Summery</h3>
               <hr style={{ color: "white", borderWidth: "2px" }}></hr>
-              <h5 className={paymentScreenStyles.h5Text}>
+              {boardingDetails ? (<>
+                <h5 className={paymentScreenStyles.h5Text}>
                 {boardingDetails ? (
                   boardingDetails.boardingType == "Hostel" ? (
                     <>
-                      Hostel name <p style={{ float: "right" }}>{boardingDetails.boardingName}</p>
+                      <p style={{ float: "left", width: "52%" }}>Hostel name</p> <p >{boardingDetails.boardingName}</p>
                     </>) : (
                     <>
-                      Annex name <p style={{ float: "right" }}>{boardingDetails.boardingName}</p>
+                      <p style={{ float: "left", width: "52%" }}>Annex name</p> <p >{boardingDetails.boardingName}</p>
                     </>)) : (
                   <>
 
@@ -73,20 +84,34 @@ function MakeInitialPaymentPage() {
                 )}
               </h5>
               <hr style={{ color: "white", borderWidth: "2px" }}></hr>
-              <h5 className={paymentScreenStyles.h5Text}>Additional options</h5>
+              <h5 className={paymentScreenStyles.h5Text}>Additional options
+              {boardingDetails.facilities && boardingDetails.facilities.length > 0 ? (
+                      <ul style={{ margin: "0% 0px 0px 52%" }}>
+                        {boardingDetails.facilities.map((facility, index) => (
+                          <li key={index}>{facility}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>No facilities specified</p>
+                    )}
+              </h5>
               <hr style={{ color: "white", borderWidth: "2px" }}></hr>
               <h5 className={paymentScreenStyles.h5Text}>
-                {boardingDetails ? (
-                  boardingDetails.boardingType == "Hostel" ? (
-                    <>Initial Payment <p style={{ float: "right" }}>LKR {(boardingDetails.room[0].keyMoney)*(boardingDetails.room[0].rent)}</p>
+                
+                  {boardingDetails.boardingType == "Hostel" ? (
+                    <>
+                      <h5 className={paymentScreenStyles.h5Text}><p style={{ float: "left", width: "52%" }}>Monthly Payment</p> <p>LKR {am}</p></h5>
                     </>) : (
-                    <></>)) : (<></>)}</h5>
+                    <>
+                      <h5 className={paymentScreenStyles.h5Text}><p style={{ float: "left", width: "52%" }}>Monthly Payment</p> <p className={paymentScreenStyles.h5Text}>LKR {am}</p></h5>
+                    </>)}</h5></>):(<>No Boarding</>)}
+              
 
             </Col>
             <Col>
               <h3 className={paymentScreenStyles.h3Topic}>Enter card details</h3>
               <div className={paymentScreenStyles.paymentForm}>
-                <PaymentForm />
+                <PaymentForm amount={am}/>
               </div>
             </Col>
           </Row>
