@@ -307,6 +307,25 @@ const getMyReservation = expressAsyncHandler(async (req, res) => {
   
 })
 
+const changeReservationPaidStatus = expressAsyncHandler(async(req,res) => {
+  const userInfo_id = req.body.userInfo_id;
+
+  try {
+    const resPayPen = await reservations.findOne({occupantID:userInfo_id, paymentStatus:'Pending'})
+    if(resPayPen){
+      resPayPen.paymentStatus = 'Paid'
+      resPayPen.save();
+      res.status(200).json(resPayPen)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+
+  res.status(404).json({
+    message:"Not updated"
+  })
+})
+
 const getIntent = expressAsyncHandler(async (req, res) => {
 
   const userInfo_id = req.body;
@@ -372,4 +391,4 @@ const getWebHook = expressAsyncHandler(async (req, res) => {
 })
 
 
-export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser, getMyReservation, changeStatus };
+export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser, getMyReservation, changeStatus, changeReservationPaidStatus };
