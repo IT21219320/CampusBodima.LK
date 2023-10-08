@@ -58,44 +58,13 @@ const getReservationHistory = asyncHandler(async (req, res) => {
 
 
 const myReservationHistory = asyncHandler(async (req, res) => {
-    const {userID} = req.body;
+    const userID = req.body.userID;
     console.log(userID)
-    const reservedHistory = await ReservationHistory.find({ 'occupantID._id': userID });
+    const reservedHistory = await ReservationHistory.find({ 'occupant._id': userID });
+    console.log(reservedHistory)
 
     if (reservedHistory) {
-        const returnHistory = [];
-
-        for (const reserveHis of reservedHistory) {
-
-
-            if (reserveHis.boarding.boardingType === 'Annex') {
-
-                returnHistory.push({
-                    Id : reserveHis._id,
-                    BoardingName: reserveHis.boarding.boardingName,
-                    BoardingType: reserveHis.boarding.boardingType,
-                    reservedDate: reserveHis.ReservedDate,
-                    cancelledDate: reserveHis.cancelledDate
-                })
-
-            } else if (reserveHis.boardingType === 'Hostel') {
-
-                const boarding = await Boarding.findById(reserveHis.boardingId);
-                const room = await Room.findById(reserveHis.roomID);
-                
-                returnHistory.push({
-                    Id : reserveHis._id,
-                    BoardingName: reserveHis.boarding.boardingName,
-                    BoardingType: reserveHis.boarding.boardingType,
-                    RoomNo: reserveHis.room.roomNo,
-                    reservedDate: reserveHis.ReservedDate,
-                    cancelledDate: reserveHis.cancelledDate
-                })
-            }
-
-        } res.status(200).json(returnHistory);
-
-
+        res.status(200).json(reservedHistory);
     }
     else {
         res.status(400);

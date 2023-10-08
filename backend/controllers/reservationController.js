@@ -424,23 +424,23 @@ const deletePendingStatus = asyncHandler(async (req, res) => {
 const deleteReservation = asyncHandler(async (req, res) => {
 
 
-    const ReservationId = req.body;
-    console.log(ReservationId.reservationId)
+    const ReservationId = req.body.ReservationId;
+    console.log(ReservationId)
 
-    const deletedReservation = await Reservation.findByIdAndDelete(ReservationId.reservationId);
+    const deletedReservation = await Reservation.findByIdAndDelete(ReservationId);
     console.log(deletedReservation)
     if (deletedReservation) {
 
         const user = await User.findById(deletedReservation.occupantID);
+        const boarding =  await Boarding.findById(deletedReservation.boardingId);
+        console.log(boarding)
 
         if (deletedReservation.boardingType === "Annex") {
-            console.log(deletedReservation.boardingId);
 
             const reservationHistory = new ReservationHistory({
 
-                boardingId: deletedReservation.boardingId,
-                boardingType: deletedReservation.boardingType,
-                occupantID: user,
+                boarding: boarding,
+                occupant: user,
                 ReservedDate: deletedReservation.createdAt,
 
             });
@@ -463,12 +463,13 @@ const deleteReservation = asyncHandler(async (req, res) => {
             );
 
         } else if (deletedReservation.boardingType === "Hostel") {
+
+            const room = await Room.findById(deletedReservation.roomID)
             const reservationHistory = new ReservationHistory({
 
-                boardingId: deletedReservation.boardingId,
-                boardingType: deletedReservation.boardingType,
-                roomID: deletedReservation.roomID,
-                occupantID: user,
+                boarding: boarding,
+                room: room,
+                occupant: user,
                 ReservedDate: deletedReservation.createdAt,
 
             });
