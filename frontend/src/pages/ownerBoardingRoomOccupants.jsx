@@ -5,7 +5,7 @@ import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, CircularProgres
 import { useTheme } from '@mui/material/styles';
 import { NavigateNext, MeetingRoom, Warning, Close, Email, Phone, HighlightOffRounded } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAddOccupantMutation, useDeleteBoardingMutation, useDeleteReservationMutation, useDeleteRoomMutation, useGetReservationsByBoardingIdMutation, useGetReservationsByRoomIdMutation, useGetRoomByIdMutation, useUpdateRoomVisibilityMutation, useUpdateVisibilityMutation } from '../slices/boardingsApiSlice';
+import { useAddOccupantMutation, useDeleteBoardingMutation, useDeleteBoardingReservationMutation, useDeleteRoomMutation, useGetReservationsByBoardingIdMutation, useGetReservationsByRoomIdMutation, useGetRoomByIdMutation, useUpdateRoomVisibilityMutation, useUpdateVisibilityMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
 import { StringToAvatar } from "../utils/StringToAvatar";
 import { ref, getDownloadURL } from "firebase/storage";
@@ -56,7 +56,7 @@ const OwnerBoardingRoomOccupants = () => {
     const [updateRoomVisibility] = useUpdateRoomVisibilityMutation();
     const [addOccpant] = useAddOccupantMutation();
     const [deleteOwnerBoardingRoom] = useDeleteRoomMutation();
-    const [deleteOccupantReservation] = useDeleteReservationMutation();
+    const [deleteOccupantReservation] = useDeleteBoardingReservationMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
 

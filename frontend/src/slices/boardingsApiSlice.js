@@ -72,6 +72,20 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 body:data
             }),
         }),
+        approveRoom: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/approveRoom/`,
+                method: 'PUT',
+                body:data
+            }),
+        }),
+        rejectRoom: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/rejectRoom/`,
+                method: 'PUT',
+                body:data
+            }),
+        }),
         getReservationsByBoardingId: builder.mutation({
             query: (data) => ({
                 url: `${BOARDINGS_URL}/${data}/reservations`,
@@ -136,7 +150,7 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 method: 'DELETE',
             }),
         }),
-        deleteReservation:builder.mutation({
+        deleteBoardingReservation:builder.mutation({
             query: (data) => ({
                 url: `${BOARDINGS_URL}/deleteReservation/${data}`,
                 method: 'DELETE',
@@ -156,6 +170,8 @@ export const {
     useGetPendingApprovalBoardingsMutation, 
     useApproveBoardingMutation, 
     useRejectBoardingMutation, 
+    useApproveRoomMutation,
+    useRejectRoomMutation,
     useGetBoardingByIdMutation, 
     useGetReservationsByBoardingIdMutation, 
     useGetReservationsByRoomIdMutation,
@@ -166,5 +182,5 @@ export const {
     useUpdateRoomMutation, 
     useDeleteBoardingMutation, 
     useDeleteRoomMutation,
-    useDeleteReservationMutation 
+    useDeleteBoardingReservationMutation 
 } = boardingsApiSlice;
