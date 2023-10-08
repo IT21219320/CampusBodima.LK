@@ -11,38 +11,36 @@ import Boarding from "../models/boardingModel.js";
 const getReservationHistory = asyncHandler(async (req, res) => {
     const boardingId = req.body.boardingId;
 
-    const reservationHistory = await ReservationHistory.find({ boardingId: boardingId });
+    const reservationHistory = await ReservationHistory.find({ 'boarding._id': boardingId });
 
     if (reservationHistory) {
         const history = [];
 
         for (const his of reservationHistory) {
-            if (his.boardingType == 'Annex') {
+            if (his.boarding.boardingType == 'Annex') {
                 history.push({
                     Id: his._id,
-                    occEmail: his.occupantID.email,
-                    firstName: his.occupantID.firstName,
-                    lastName: his.occupantID.lastName,
-                    phoneNo: his.occupantID.phoneNo,
-                    gender: his.occupantID.gender,
+                    occEmail: his.occupant.email,
+                    firstName: his.occupant.firstName,
+                    lastName: his.occupant.lastName,
+                    phoneNo: his.occupant.phoneNo,
+                    gender: his.occupant.gender,
                     reservedDate: his.ReservedDate,
                     cancelledDate: his.cancelledDate
                 })
 
 
             }
-            else if (his.boardingType == 'Hostel') {
-
-                const room = await Room.findById(his.roomID);
+            else if (his.boarding.boardingType == 'Hostel') {
                 
                 history.push({
                     Id: his._id,
-                    occEmail: his.occupantID.email,
-                    firstName: his.occupantID.firstName,
-                    lastName: his.occupantID.lastName,
-                    phoneNo: his.occupantID.phoneNo,
-                    gender: his.occupantID.gender,
-                    roomNo: room.roomNo,
+                    occEmail: his.occupant.email,
+                    firstName: his.occupant.firstName,
+                    lastName: his.occupant.lastName,
+                    phoneNo: his.occupant.phoneNo,
+                    gender: his.occupant.gender,
+                    roomNo: his.room.roomNo,
                     reservedDate: his.ReservedDate,
                     cancelledDate: his.cancelledDate
                 })
@@ -60,7 +58,7 @@ const getReservationHistory = asyncHandler(async (req, res) => {
 
 
 const myReservationHistory = asyncHandler(async (req, res) => {
-    const userID = req.body.occId;
+    const {userID} = req.body;
     console.log(userID)
     const reservedHistory = await ReservationHistory.find({ 'occupantID._id': userID });
 
@@ -70,14 +68,12 @@ const myReservationHistory = asyncHandler(async (req, res) => {
         for (const reserveHis of reservedHistory) {
 
 
-            if (reserveHis.boardingType === 'Annex') {
+            if (reserveHis.boarding.boardingType === 'Annex') {
 
-                const boarding = await Boarding.findById(reserveHis.boardingId);
-                console.log(boarding)
                 returnHistory.push({
                     Id : reserveHis._id,
-                    BoardingName: boarding.boardingName,
-                    BoardingType: reserveHis.boardingType,
+                    BoardingName: reserveHis.boarding.boardingName,
+                    BoardingType: reserveHis.boarding.boardingType,
                     reservedDate: reserveHis.ReservedDate,
                     cancelledDate: reserveHis.cancelledDate
                 })
@@ -89,9 +85,9 @@ const myReservationHistory = asyncHandler(async (req, res) => {
                 
                 returnHistory.push({
                     Id : reserveHis._id,
-                    BoardingName: boarding.boardingName,
-                    BoardingType: reserveHis.boardingType,
-                    RoomNo: room.roomNo,
+                    BoardingName: reserveHis.boarding.boardingName,
+                    BoardingType: reserveHis.boarding.boardingType,
+                    RoomNo: reserveHis.room.roomNo,
                     reservedDate: reserveHis.ReservedDate,
                     cancelledDate: reserveHis.cancelledDate
                 })

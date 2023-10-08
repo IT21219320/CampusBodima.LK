@@ -6,24 +6,42 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
+import Button from '@mui/material/Button';
+import SearchIcon from '@mui/icons-material/Search';
 import { useMyHistoryMutation } from '../slices/reservationHistoryApiSlice';
+import { Icon, IconButton } from '@mui/material';
 
 
 const MyReservationHistoryComponent = () => {
 
+    const searchStyle = {
+        width: '29%',
+        borderRadius: '20px',
+        padding: '6px',
+        border: '2px rgb(176 176 177) solid'
+    }
+
     const { userInfo } = useSelector((state) => state.auth);
 
     const [myHistory] = useMyHistoryMutation();
+    const navigate = useNavigate();
 
     const [myHistoryDetails, setMyHistoryDetails] = useState([]);
 
-    const loadData = async() => {
+    const feedbackHandler = () => {
+        navigate(`/occupant/feedback/create`)
+    }
+
+    const loadData = async () => {
         try {
-            const res = await myHistory({occId:userInfo._id}).unwrap();
+            const res = await myHistory({ occId: userInfo._id }).unwrap();
             console.log(res)
-            if(res){
+            if (res) {
                 setMyHistoryDetails(res);
                 console.log(myHistoryDetails)
             }
@@ -38,49 +56,66 @@ const MyReservationHistoryComponent = () => {
 
 
 
-    return(
+    return (
         <>
-        <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Boarding Name</TableCell>
-            <TableCell align="right">Boarding Type</TableCell>
-            <TableCell align="right">Room No</TableCell>
-            <TableCell align="right">Reserved Date</TableCell>
-            <TableCell align="right">Cancelled Date</TableCell>
-            <TableCell align="right">FeedBack</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-            {myHistoryDetails > 0 ? (
-                <>
-                {myHistoryDetails.map((myHis) => (
-                    <TableRow
-                    key={myHis.Id}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {myHis.BoardingName}
-                    </TableCell>
-                    <TableCell align="right">{myHis.BoardingType}</TableCell>
-                    <TableCell align="right">{myHis.RoomNo}</TableCell>
-                    <TableCell align="right">{myHis.reservedDate}</TableCell>
-                    <TableCell align="right">{myHis.cancelledDate}</TableCell>
-                    <TableCell align="right">{myHis.cancelledDate}</TableCell>
-                  </TableRow>
+            <div>
+                <input id="outlined-search" type="search" placeholder="Search boarding name..." style={searchStyle} />
 
-                ))}
-                </>
-            ):(
-                <>
-                <TableRow>No reservations</TableRow>
-                </>
-            )}
-          
-        </TableBody>
-      </Table>
-    </TableContainer>
+                <IconButton>
+                    <SearchIcon />
+                </IconButton>
+            </div>
+
+
+            <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+                <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                    <TableHead style={{ backgroundColor: "#242745" }}>
+                        <TableRow>
+                            <TableCell style={{ color: "#ffffff" }}>Boarding Name</TableCell>
+                            <TableCell style={{ color: "#ffffff" }} align="right">Boarding Type</TableCell>
+                            <TableCell style={{ color: "#ffffff" }} align="right">Room No</TableCell>
+                            <TableCell style={{ color: "#ffffff" }} align="right">Reserved Date</TableCell>
+                            <TableCell style={{ color: "#ffffff" }} align="right">Cancelled Date</TableCell>
+                            <TableCell style={{ color: "#ffffff" }} align="right">FeedBack</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody style={{ backgroundColor: '#858bc72b' }}>
+                        {myHistoryDetails.length > 0 ? (
+                            <>
+                                {myHistoryDetails.map((myHis) => (
+                                    <TableRow
+                                        key={myHis.Id}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {myHis.BoardingName}
+                                        </TableCell>
+                                        <TableCell align="right">{myHis.BoardingType}</TableCell>
+                                        <TableCell align="right">{myHis.RoomNo}</TableCell>
+                                        <TableCell align="right">{new Date(myHis.reservedDate).toDateString()}</TableCell>
+                                        <TableCell align="right">{new Date(myHis.cancelledDate).toDateString()}</TableCell>
+                                        <TableCell align="right"><Button variant="contained" size="small" onClick={feedbackHandler}>give FeedBack</Button></TableCell>
+                                    </TableRow>
+
+                                ))}
+                            </>
+                        ) : (
+                            <>
+                                <TableRow>
+                                    <TableCell></TableCell>
+                                    <TableCell></TableCell>
+                                    <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No reservations</TableCell>
+                                    <TableCell></TableCell>
+                                    <TableCell></TableCell>
+                                    <TableCell></TableCell>
+                                </TableRow>
+
+                            </>
+                        )}
+
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </>
     );
 
