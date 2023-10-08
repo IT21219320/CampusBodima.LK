@@ -60,7 +60,7 @@ const makePayment = expressAsyncHandler(async (req, res) => {
   else if (boarding.boardingType === "Hostel") {
     let roomT;
     if (reserve) {
-      console.log(reserve.roomID._id)
+      
       roomT = await Room.findById(reserve.roomID);
 
     }
@@ -90,9 +90,19 @@ const makePayment = expressAsyncHandler(async (req, res) => {
 })
 
 const getPaymentsByUserID = expressAsyncHandler(async (req, res) => {
-  const userInfo_id = req.body;
+  const {userInfo_id, oId} = req.body;
   const user = await User.findById(userInfo_id);
-  const payments = await payment.find({ "occupant._id": userInfo_id });
+  
+  
+  let payments
+  if(oId){
+    payments = await payment.find({ "occupant._id": userInfo_id,amount:{ $regex: oId } });
+  }else{
+    
+    payments = await payment.find({ "occupant._id": userInfo_id });
+    
+  }
+  
   if (payments) {
     res.status(200).json({
       payments
@@ -237,6 +247,7 @@ const getToDoPaymentsByUserCMonth = expressAsyncHandler(async (req, res) => {
   try {
 
     const response = await toDoPayment.find({ occupant: userInfo_id, month: currentMonth, status:'pending' });
+
     if (response) {
       res.status(200).json(
         response
@@ -271,7 +282,7 @@ const getToDoPaymentsByUser = expressAsyncHandler(async (req, res) => {
 
 const changeStatus = expressAsyncHandler(async (req, res) => {
   const payId = req.body.payId;
-  console.log(payId)
+  
   const payRes = await toDoPayment.findById(payId);
   payRes.status = 'paid';
   await payRes.save();
