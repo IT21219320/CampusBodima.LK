@@ -83,6 +83,7 @@ const OccupantPaymentDash = () => {
     const [cvvF, setcvvF] = useState('');
     const [toDoPayment, setToDoPayment] = useState([]);
     const [toDoPaymentOld, setToDoPaymentOld] = useState();
+    const [searchQ, setsearchQ] = useState();
 
     const [myReserve, setMyReserve] = useState([]);
     //tabViews
@@ -146,7 +147,7 @@ const OccupantPaymentDash = () => {
         }
         try {
 
-            const resGetPay = await getPayment({ _id: userInfo._id }).unwrap();
+            const resGetPay = await getPayment({ userInfo_id: userInfo._id, oId:searchQ }).unwrap();
             setPayments(resGetPay.payments);
 
         } catch (error) {
@@ -188,7 +189,7 @@ const OccupantPaymentDash = () => {
 
     useEffect(() => {
         loadData();
-    }, [deleteC, updateC]);
+    }, [deleteC, updateC, searchQ]);
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -399,7 +400,9 @@ const OccupantPaymentDash = () => {
                                 <Row>
                                     <input
                                         type="text"
-                                        placeholder="Search..." style={searchBar}
+                                        value={searchQ}
+                                        placeholder="Search By Amount..." style={searchBar}
+                                        onChange={(e) => setsearchQ(e.target.value)}
                                     />
                                 </Row>
                                 <Row>
