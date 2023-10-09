@@ -827,9 +827,22 @@ const getPendingApprovalBoardings = asyncHandler(async (req, res) => {
 
     const skipCount = (page) * pageSize;
 
-    const boardings = await Boarding.find({status:'PendingApproval'}).populate('room').skip(skipCount).limit(pageSize);
+    const rooms = await Room.find({status:'PendingApproval'});
+    const roomConditions = rooms.map(room => ({ room: room._id }));
 
-    const totalRows = await Boarding.countDocuments({status:'PendingApproval'}).populate('room').skip(skipCount).limit(pageSize);
+    const boardings = await Boarding.find({
+        $or: [
+          { status: 'PendingApproval' },
+          { room: { $in: roomConditions.map(condition => condition['room'].toString()) } }
+        ]
+      }).populate(['room','owner']).skip(skipCount).limit(pageSize);
+
+    const totalRows = await Boarding.countDocuments({
+        $or: [
+          { status: 'PendingApproval' },
+          { room: { $in: roomConditions.map(condition => condition['room'].toString()) } }
+        ]
+      }).skip(skipCount).limit(pageSize);
 
     res.status(200).json({
         boardings,
@@ -1004,6 +1017,47 @@ const approveBoarding = asyncHandler(async (req, res) => {
 
 })
 
+// @desc    Update Room status
+// route    PUT /api/boardings/approveRoom/
+const approveRoom = asyncHandler(async (req, res) => {
+      const roomId = req.body.roomId;
+
+      try {
+          let room = await Room.findById(roomId).populate({
+            path:'boardingId',
+            populate: {
+                path: 'owner', 
+            },
+        });
+
+          var roomCapacity = room.noOfBeds;
+          var roomOccupantCount = room.occupant.length;
+
+          let visibility = true;
+          if(roomCapacity==roomOccupantCount){
+            visibility = false;
+          }
+
+          room.status = "Approved";
+          room.visibility = visibility;
+          room = await room.save();
+    
+          const message = `<p><b>Hello ${room.boardingId.owner.firstName},</b></p>
+          <p>We are pleased to inform you that the room ${room.roomNo} in ${room.boardingId.boardingName} has been approved.</p>
+          <p>Thank you for using CampusBodima!</p>
+          <p>Best wishes,<br>The CampusBodima Team</p>`
+        
+          sendMail(room.boardingId.owner.email,message,"Your Registered Room Has Been Approved");
+
+          res.status(200).json('')
+      } catch (error) {
+            res.status(400)
+            throw new Error(error);
+      }
+
+
+})
+
 // @desc    Delete particular boarding
 // route    DELETE /api/boardings/rejectBoarding/
 const rejectBoarding = asyncHandler(async (req, res) => {
@@ -1062,7 +1116,6 @@ const rejectBoarding = asyncHandler(async (req, res) => {
             let boarding = await Boarding.findById(boardingId).populate('owner');
             boarding.status = "PendingRoom";
             boarding = await boarding.save();
-            const rooms = await Room.updateMany({boardingId},{ $set: { status: 'Incomplete' } });
 
             message = `Dear ${boarding.owner.firstName},<br><br>
             We regret to inform you that your boarding, ${boarding.boardingName} does not meet our listing criteria at this time, and your registration has been moved to the incomplete section.<br>
@@ -1076,6 +1129,73 @@ const rejectBoarding = asyncHandler(async (req, res) => {
 
         res.status(200).json({
             message:'Boarding rejected successfully!'
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("Oops something went wrong :(");
+    }
+});
+
+// @desc    Delete particular room
+// route    DELETE /api/boardings/rejectRoom/
+const rejectRoom = asyncHandler(async (req, res) => {
+    const roomId = req.body.roomId;
+
+    const room = await Room.findById(roomId).populate({
+        path:'boardingId',
+        populate: {
+            path: 'owner', 
+        },
+    });
+    
+    if(room){
+
+        var occupantCount = room.occupant.length;
+
+        let message;
+        let email = room.boardingId.owner.email;
+        if(occupantCount == 0){
+
+            var fileRef;
+            for (let j = 0; j < room.roomImages.length; j++) {
+                fileRef = ref(storage,room.roomImages[j]);
+            
+                try {
+                    await deleteObject(fileRef); // deleteing images of the room
+                } catch (err) {
+                    console.log(err);;
+                }        
+            }
+
+            let boarding = Boarding.findById(room.boardingId);
+            boarding.room.pull(room._id);
+            await boarding.save()
+
+            await Room.findByIdAndDelete(room._id); // deleting the room
+
+            message = `Dear ${room.boardingId.owner.firstName},<br><br>
+            We regret to inform you that your room in ${room.boardingId.boardingName} does not meet our listing criteria at this time, and your registration has been declined.<br>
+            While we appreciate your interest, please review our guidelines and consider making necessary updates before reapplying.<br>
+            For any questions, contact us at info.campusbodima@gmail.com.<br><br>
+            Best regards,<br>
+            The CampusBodima Team`;
+        }
+        else{
+            const rooms = await Room.findOneAndUpdate({_id:roomId},{ $set: { status: 'Incomplete' } });
+
+            message = `Dear ${room.boardingId.owner.firstName},<br><br>
+            We regret to inform you that your room in ${room.boardingId.boardingName} does not meet our listing criteria at this time, and your registration has been moved to the incomplete section.<br>
+            Please review our guidelines and consider making necessary updates to get your boarding approved.<br>
+            For any questions, contact us at info.campusbodima@gmail.com.<br><br>
+            Best regards,<br>
+            The CampusBodima Team`
+        }
+
+        sendMail(email,message,"Your Registered Boarding Has Been Declined");      
+
+        res.status(200).json({
+            message:'Room rejected successfully!'
         })
     }
     else{
@@ -1518,7 +1638,9 @@ export {
     updateBoardingVisibility,
     updateRoomVisibility,
     approveBoarding,
+    approveRoom,
     rejectBoarding,
+    rejectRoom,
     updateBoarding,
     updateRoom,
     deleteBoarding,

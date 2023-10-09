@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerBoarding, addRoom, addOccupant, occupantJoin, getAllBoardings, getAllPublicBoardings, getOwnerBoardings, getBoardingById, getReservationsByBoardingId, getReservationsByRoomId, getRoomById, getOccupantBoarding, getPendingApprovalBoardings, approveBoarding, rejectBoarding, updateBoardingVisibility, updateRoomVisibility, updateBoarding, updateRoom, deleteBoarding, deleteRoom, deleteReservation } from '../controllers/boardingController.js';
+import { registerBoarding, addRoom, addOccupant, occupantJoin, getAllBoardings, getAllPublicBoardings, getOwnerBoardings, getBoardingById, getReservationsByBoardingId, getReservationsByRoomId, getRoomById, getOccupantBoarding, getPendingApprovalBoardings, approveBoarding, approveRoom, rejectBoarding, rejectRoom, updateBoardingVisibility, updateRoomVisibility, updateBoarding, updateRoom, deleteBoarding, deleteRoom, deleteReservation } from '../controllers/boardingController.js';
 
 const router = express.Router();
 
@@ -19,6 +19,8 @@ router.get('/occupant/:occupantId', getOccupantBoarding);
 router.get('/pendingApproval/:page/:pageSize', getPendingApprovalBoardings);
 router.put('/approveBoarding', approveBoarding);
 router.put('/rejectBoarding', rejectBoarding);
+router.put('/approveRoom', approveRoom);
+router.put('/rejectRoom', rejectRoom);
 router.put('/updateBoardingVisibility', updateBoardingVisibility);
 router.put('/updateRoomVisibility', updateRoomVisibility);
 router.put('/updateBoarding', updateBoarding);

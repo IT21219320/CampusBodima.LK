@@ -284,7 +284,7 @@ const OwnerBoardingRoomPage = () => {
                                     severity={boarding.status=='PendingRoom' ? "warning" : "info"}
                                 >
                                     {boarding.status=='PendingRoom' ?
-                                        <><strong>Warning</strong> -  Please add atleast 1 room to your boarding.</>
+                                        <><strong>Warning</strong> -  Please make sure your boarding is complete and its details are accurate.</>
                                     : 
                                         boarding.status=='PendingApproval' ?
                                             <><strong>Info</strong> -  Please wait while an admin reviews and approves your boarding.</>

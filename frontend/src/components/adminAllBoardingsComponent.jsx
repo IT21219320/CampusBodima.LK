@@ -355,7 +355,7 @@ const AdminAllBoardings = () => {
                                                     <td>
                                                         {boarding.room.map((room,index) => (
                                                             room.rent >= rentRange[0] && room.rent <= rentRange[1]? 
-                                                                <span>Room {room.roomNo}: {room.rent}<br /></span>
+                                                                <span key={index}>Room {room.roomNo}: {room.rent}<br /></span>
                                                             : ''
                                                         ))}
                                                     </td>
