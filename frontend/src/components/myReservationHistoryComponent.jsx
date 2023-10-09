@@ -23,6 +23,7 @@ const MyReservationHistoryComponent = () => {
         width: '29%',
         borderRadius: '20px',
         padding: '6px',
+        paddingLeft: '18px',
         border: '2px rgb(176 176 177) solid'
     }
 
@@ -39,7 +40,7 @@ const MyReservationHistoryComponent = () => {
 
     const loadData = async () => {
         try {
-            const res = await myHistory({ occId: userInfo._id }).unwrap();
+            const res = await myHistory({ userID: userInfo._id }).unwrap();
             console.log(res)
             if (res) {
                 setMyHistoryDetails(res);
@@ -84,15 +85,15 @@ const MyReservationHistoryComponent = () => {
                             <>
                                 {myHistoryDetails.map((myHis) => (
                                     <TableRow
-                                        key={myHis.Id}
+                                        key={myHis._id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
                                         <TableCell component="th" scope="row">
-                                            {myHis.BoardingName}
+                                            {myHis.boarding.boardingName}
                                         </TableCell>
-                                        <TableCell align="right">{myHis.BoardingType}</TableCell>
-                                        <TableCell align="right">{myHis.RoomNo}</TableCell>
-                                        <TableCell align="right">{new Date(myHis.reservedDate).toDateString()}</TableCell>
+                                        <TableCell align="right">{myHis.boarding.boardingType}</TableCell>
+                                        <TableCell align="right">{myHis.room.roomNo}</TableCell>
+                                        <TableCell align="right">{new Date(myHis.ReservedDate).toDateString()}</TableCell>
                                         <TableCell align="right">{new Date(myHis.cancelledDate).toDateString()}</TableCell>
                                         <TableCell align="right"><Button variant="contained" size="small" onClick={feedbackHandler}>give FeedBack</Button></TableCell>
                                     </TableRow>

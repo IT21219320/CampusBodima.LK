@@ -399,7 +399,7 @@ const OccupantPaymentDash = () => {
 
                                 <Row>
                                     <input
-                                        type="text"
+                                        type="number"
                                         value={searchQ}
                                         placeholder="Search By Amount..." style={searchBar}
                                         onChange={(e) => setsearchQ(e.target.value)}

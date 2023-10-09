@@ -76,6 +76,14 @@ export const reservationApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
+        updateGender: builder.mutation({
+            query: (data) => ({
+                url: `${RESERVATION_URL}/updateGender`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+
     }),    
 
 })
@@ -90,4 +98,5 @@ export const {
     useDeletePendingStatusMutation,
     useDeleteReservationMutation,
     useGetBoardingsByIdMutation,
+    useUpdateGenderMutation,
 } = reservationApiSlice;
