@@ -115,7 +115,7 @@ const MyReservationComponent = () => {
     console.log(userInfo.email)
 
     if (userInfo.email === email) {
-      const res = await deleteReservation({ reservationId: myReservation.Id }).unwrap();
+      const res = await deleteReservation({ ReservationId: myReservation.Id }).unwrap();
 
       console.log(res);
       setDeleteS(res);

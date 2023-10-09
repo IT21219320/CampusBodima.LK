@@ -23,6 +23,7 @@ const MyReservationHistoryComponent = () => {
         width: '29%',
         borderRadius: '20px',
         padding: '6px',
+        paddingLeft: '18px',
         border: '2px rgb(176 176 177) solid'
     }
 

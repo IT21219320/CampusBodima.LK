@@ -293,10 +293,15 @@ const getBoardingReservations = asyncHandler(async (req, res) => {
 
 const getPendingReservations = asyncHandler(async (req, res) => {
     const boardingId = req.body.boardingId;
+    let reserve;
 
-    const boarding = await Boarding.findById(boardingId);
+    if (boardingId) {
+        const boarding = await Boarding.findById(boardingId);
 
-    const reserve = await Reservation.find({ boardingId: boardingId, status: 'Pending' });
+         reserve = await Reservation.find({ boardingId: boardingId, status: 'Pending' });
+    } else {
+     reserve = await Reservation.find({ status: 'Pending' });
+    }
 
     if (reserve) {
 
@@ -432,7 +437,7 @@ const deleteReservation = asyncHandler(async (req, res) => {
     if (deletedReservation) {
 
         const user = await User.findById(deletedReservation.occupantID);
-        const boarding =  await Boarding.findById(deletedReservation.boardingId);
+        const boarding = await Boarding.findById(deletedReservation.boardingId);
         console.log(boarding)
 
         if (deletedReservation.boardingType === "Annex") {
@@ -509,22 +514,56 @@ const deleteReservation = asyncHandler(async (req, res) => {
 //route GET/api/reservations/deleteReservation
 // @access  Private - owner
 
-const getBoardingByOwnerID = asyncHandler (async(req, res) => {
-    const ownerID =  req.body.ownerId;
+const getBoardingByOwnerID = asyncHandler(async (req, res) => {
+    const ownerID = req.body.ownerId;
 
-    const ownerBoardings = await Boarding.find({owner:ownerID});
+    const ownerBoardings = await Boarding.find({ owner: ownerID });
 
-    if(ownerBoardings){
+    if (ownerBoardings) {
         res.status(200).json({
             ownerBoardings,
         })
     }
-    else{
+    else {
         res.status(400);
         throw new Error("No Boardings Available")
     }
 
 });
+
+//@desc add gender to google accounts
+//route POST/api/reservations/updateGender
+// @access  Private - occupant
+
+const updateGender = asyncHandler(async (req, res) => {
+    const { occId, gender } = req.body;
+
+    const occupant = await User.findById({ _id: occId });
+
+    if (occupant) {
+        if (occupant.accType == 'google') {
+            console.log(occupant.accType)
+            /*const updatedGender =  await User.findOneAndUpdate(
+                { _id: occId },
+                {
+                    $push: { gender: gender }
+                },
+                { new: true }
+            )*/
+
+            occupant.gender = gender
+            occupant.save()
+            res.status(200).json(occupant)
+        } else {
+            res.status(200).json({
+                message: 'normal account',
+            })
+        }
+    } else {
+        res.status(400);
+        throw new Error("No User Exist")
+    }
+})
 
 
 export {
@@ -537,4 +576,5 @@ export {
     deletePendingStatus,
     deleteReservation,
     getBoardingByOwnerID,
+    updateGender,
 }

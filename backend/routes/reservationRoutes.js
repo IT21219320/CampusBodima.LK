@@ -7,7 +7,8 @@ import { reserveRoom,
          approvePendingStatus,
          deletePendingStatus,
          deleteReservation,
-         getBoardingByOwnerID, 
+         getBoardingByOwnerID,
+         updateGender, 
     } from '../controllers/reservationController.js';
  
 
@@ -22,5 +23,6 @@ router.put('/aprovePending', approvePendingStatus);
 router.delete('/deletePending', deletePendingStatus);
 router.delete('/deleteReservation' , deleteReservation);
 router.post('/boardings', getBoardingByOwnerID);
+router.post('/updateGender', updateGender)
 
 export default router;
