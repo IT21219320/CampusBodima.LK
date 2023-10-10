@@ -15,6 +15,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { toast } from 'react-toastify';
+import { red } from "@mui/material/colors";
 
 
 const MyReservationComponent = () => {
@@ -25,14 +26,15 @@ const MyReservationComponent = () => {
 
   //inline styles
   const myStyle = {
-    backgroundColor: '#a3aab591',
+    boxShadow: '1px 9px 20px 5px #d8d6d6',
+    backgroundColor: 'rgb(240 242 255)',
     padding: '40px',
     marginTop: '20px',
     borderRadius: '20px',
   };
 
   const hederStyle = {
-    backgroundColor: '#84888f',
+    backgroundColor: 'rgb(36 39 69)',
     padding: '10px',
     marginTop: '20px',
     borderRadius: '10px',
@@ -91,7 +93,7 @@ const MyReservationComponent = () => {
 
     const res = await updateDuration({ userInfo_id: userID, Duration: duration }).unwrap();
     setUpdateS(res);
-    
+
     toast.success("Duration Updated Successfully");
 
   }
@@ -106,6 +108,10 @@ const MyReservationComponent = () => {
 
   const handleDltClose = () => {
     deleteHandler();
+    setDltOpen(false);
+  };
+
+  const handleDltcancel = () => {
     setDltOpen(false);
   };
 
@@ -127,7 +133,7 @@ const MyReservationComponent = () => {
     }
 
     else {
-      window.alert("incorrect email");
+      toast.error("Incorrect email. Please try again!");
     }
 
   }
@@ -146,20 +152,23 @@ const MyReservationComponent = () => {
         {myReservation ? (
           <><Row>
             <Col>
-              <div style={{ backgroundColor: '#a3aab591', padding: '40px', marginTop: '20px', borderRadius: '20px', height: '96%' }}>
+              <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '25px', marginTop: '20px', borderRadius: '20px', height: '96%' }}>
                 <h3 style={{ marginBottom: '30px' }}>My Reservation Details</h3>
+
                 <Row>
-                  <Col><p style={fonts}>Reservation ID</p></Col>
                   <Col>
-                    <TextField id="standard-basic" value={myReservation && myReservation.Id ? myReservation.Id : ''} variant="standard" style={{ width: '100%' }} />
+                    <p style={fonts}> First Name</p>
+                  </Col>
+                  <Col>
+                    <TextField id="standard-basic" value={myReservation && myReservation.firstName ? myReservation.firstName : ''} variant="standard" style={{ width: '100%' }} />
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <p style={fonts}>Name</p>
+                    <p style={fonts}> Last Name</p>
                   </Col>
                   <Col>
-                    <TextField id="standard-basic" value={myReservation && myReservation.name ? myReservation.name : ''} variant="standard" style={{ width: '100%' }} />
+                    <TextField id="standard-basic" value={myReservation && myReservation.lastName ? myReservation.lastName : ''} variant="standard" style={{ width: '100%' }} />
                   </Col>
                 </Row>
                 <Row>
@@ -180,10 +189,26 @@ const MyReservationComponent = () => {
                 </Row>
                 <Row>
                   <Col>
+                    <p style={fonts}>Boarding Address</p>
+                  </Col>
+                  <Col>
+                    <TextField id="standard-basic" value={myReservation && myReservation.bAddress ? myReservation.bAddress : ''} variant="standard" style={{ width: '100%' }} />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
                     <p style={fonts}>Room No</p>
                   </Col>
                   <Col>
                     <TextField id="standard-basic" value={myReservation && myReservation.rNo ? myReservation.rNo : ''} variant="standard" style={{ width: '100%' }} />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <p style={fonts}>Monthly Rent</p>
+                  </Col>
+                  <Col>
+                    <TextField id="standard-basic" value={myReservation && myReservation.rent ? myReservation.rent : ''} variant="standard" style={{ width: '100%' }} />
                   </Col>
                 </Row>
 
@@ -203,7 +228,7 @@ const MyReservationComponent = () => {
                         <p style={fonts}>Reserved Date</p>
                       </Col>
                       <Col>
-                        <TextField id="standard-basic" value={myReservation && myReservation.reservedDt ? myReservation.reservedDt : ''} variant="standard" style={{ width: '100%' }} />
+                        <TextField id="standard-basic" value={myReservation && new Date(myReservation.reservedDt).toDateString() ? new Date(myReservation.reservedDt).toDateString() : ''} variant="standard" style={{ width: '100%' }} />
                       </Col>
                     </Row>
 
@@ -269,7 +294,10 @@ const MyReservationComponent = () => {
                         <DialogTitle>Delete Reservation</DialogTitle>
                         <DialogContent>
                           <DialogContentText>
-                            To delete reservation, you have to enter the email that used do the reservation.
+
+                            <p style={{color:'#ff0000'}}>Are you sure you want to delete this reservation?</p>
+                            <p>To delete your reservation, you need to enter the email that used to do the reservation.</p>
+                            
                           </DialogContentText>
                           <TextField
                             autoFocus
@@ -284,7 +312,7 @@ const MyReservationComponent = () => {
                           />
                         </DialogContent>
                         <DialogActions>
-                          <Button onClick={handleDltClose}>Cancel</Button>
+                          <Button onClick={handleDltcancel}>Cancel</Button>
                           <Button onClick={handleDltClose}>Delete</Button>
                         </DialogActions>
                       </Dialog>

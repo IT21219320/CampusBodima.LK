@@ -33,6 +33,7 @@ const MyReservationHistoryComponent = () => {
     const navigate = useNavigate();
 
     const [myHistoryDetails, setMyHistoryDetails] = useState([]);
+    const [word, setWord] = useState();
 
     const feedbackHandler = () => {
         navigate(`/occupant/feedback/create`)
@@ -40,7 +41,7 @@ const MyReservationHistoryComponent = () => {
 
     const loadData = async () => {
         try {
-            const res = await myHistory({ userID: userInfo._id }).unwrap();
+            const res = await myHistory({ userID: userInfo._id, word:word }).unwrap();
             console.log(res)
             if (res) {
                 setMyHistoryDetails(res);
@@ -53,14 +54,14 @@ const MyReservationHistoryComponent = () => {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [word]);
 
 
 
     return (
         <>
-            <div>
-                <input id="outlined-search" type="search" placeholder="Search boarding name..." style={searchStyle} />
+            <div style={{marginTop: '17px'}}>
+                <input id="outlined-search" type="search" placeholder="Search boarding name..." style={searchStyle} onChange={(e) => setWord(e.target.value)}/>
 
                 <IconButton>
                     <SearchIcon />
@@ -68,7 +69,7 @@ const MyReservationHistoryComponent = () => {
             </div>
 
 
-            <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+            <TableContainer component={Paper} style={{ marginTop: '35px' }}>
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                     <TableHead style={{ backgroundColor: "#242745" }}>
                         <TableRow>

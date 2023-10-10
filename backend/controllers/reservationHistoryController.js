@@ -9,11 +9,13 @@ import Boarding from "../models/boardingModel.js";
 // @access  Private - owner
 
 const getReservationHistory = asyncHandler(async (req, res) => {
+
     const boardingId = req.body.boardingId;
 
     const reservationHistory = await ReservationHistory.find({ 'boarding._id': boardingId });
 
     if (reservationHistory) {
+
         const history = [];
 
         for (const his of reservationHistory) {
@@ -32,7 +34,7 @@ const getReservationHistory = asyncHandler(async (req, res) => {
 
             }
             else if (his.boarding.boardingType == 'Hostel') {
-                
+
                 history.push({
                     Id: his._id,
                     occEmail: his.occupant.email,
@@ -45,6 +47,7 @@ const getReservationHistory = asyncHandler(async (req, res) => {
                     cancelledDate: his.cancelledDate
                 })
             }
+            
         } res.status(200).json(history);
 
 
@@ -56,12 +59,22 @@ const getReservationHistory = asyncHandler(async (req, res) => {
 
 });
 
-
+//@desc get all the reservation history for a particular user
+//route post/api/reservationHistory/myHistory
+// @access  Private - occupant
 const myReservationHistory = asyncHandler(async (req, res) => {
-    const userID = req.body.userID;
-    console.log(userID)
-    const reservedHistory = await ReservationHistory.find({ 'occupant._id': userID });
-    console.log(reservedHistory)
+
+    const { userID, word } = req.body;
+
+    let reservedHistory;
+
+    if (word) {
+        reservedHistory = await ReservationHistory.find({ 'occupant._id': userID, 'boarding.boardingName': { $regex: new RegExp(word, 'i') } });
+    } else {
+        reservedHistory = await ReservationHistory.find({ 'occupant._id': userID });
+    }
+
+    console.log('Result:', reservedHistory);
 
     if (reservedHistory) {
         res.status(200).json(reservedHistory);

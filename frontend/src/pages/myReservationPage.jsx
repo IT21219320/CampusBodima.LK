@@ -44,7 +44,7 @@ const MyReservationPage = () => {
           </Col>
 
         </Row>
-        <Row>
+        <Row style={{marginTop: '25px'}}>
 
           <Box sx={{ width: '100%', typography: 'body1' }}>
             <TabContext value={value}>

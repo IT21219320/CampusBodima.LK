@@ -42,7 +42,7 @@ const OwnerAllReservations = () => {
             if (resBoardings) {
                 setBoarding(resBoardings.ownerBoardings);
                
-                setBoardingID(boarding[0]._id)
+                setBoardingID(resBoardings.ownerBoardings[0]._id)
             }
         } catch (error) {
             console.log(error);
@@ -54,7 +54,7 @@ const OwnerAllReservations = () => {
         loadData();
         
         
-    }, [boarding]);
+    }, []);
 
     return (
         <>
