@@ -3,10 +3,12 @@ import User from '../models/userModel.js';
 import Boarding from '../models/boardingModel.js';
 import Room from '../models/roomModel.js';
 import storage from '../utils/firebaseConfig.js';
+import jwt from 'jsonwebtoken';
 import { sendMail } from '../utils/mailer.js'
 import { sendSMS } from '../utils/smsSender.js';
 import { ref, uploadBytesResumable, deleteObject  } from "firebase/storage";
 import Reservation from '../models/reservationModel.js';
+import ReservationHistory from '../models/reservationHistory.js';
 
 // @desc    Register a new Boarding
 // route    POST /api/boardings/register
@@ -177,6 +179,163 @@ const addRoom = asyncHandler(async (req, res) => {
 
 });
 
+// @desc    Add occupant
+// route    POST /api/boardings/addoccupant
+const addOccupant = asyncHandler(async (req, res) => {
+    const { Email, BoardingId, RoomID } = req.body;
+
+    const user = await User.findOne({email:Email,userType:'occupant'});
+    let boarding = await Boarding.findById(BoardingId);
+    let reservation;
+
+    if(boarding){
+        
+        if(user){
+            const reservation = await Reservation.findOne({occupantID:user._id})
+            if(reservation){
+                res.status(400);
+                throw new Error('User already has a reservation');
+            }
+        }
+
+        if(boarding.boardingType == "Hostel"){
+            let room = await Room.findById(RoomID);
+            if(room.occupant.length == parseInt(room.noOfBeds)){
+                res.status(400);
+                throw new Error('Room is full');
+            }
+
+            room.visibility = false;
+            room.occupant.push('123456789012');
+
+            await room.save();
+
+            reservation = await Reservation.create({
+                boardingId:BoardingId,
+                boardingType:Email,
+                roomID:RoomID,
+                occupantID:'123456789012',
+                Duration:24,
+                paymentType:'Cash',
+                paymentStatus:'Pending',
+                status:'PendingInvite'
+            });
+        }
+        else{
+            if(boarding.occupant){
+                res.status(400);
+                throw new Error('Boarding is already rented out');
+            }
+
+            boarding.visibility = false;
+            boarding.occupant = '123456789012';
+
+            await boarding.save();
+
+            reservation = await Reservation.create({
+                boardingId:BoardingId,
+                boardingType:Email,
+                occupantID:'123456789012',
+                Duration:24,
+                paymentType:'Cash',
+                paymentStatus:'Pending',
+                status:'PendingInvite'
+            });
+        }
+
+        console.log(reservation);
+
+        var token = jwt.sign({ reservation }, process.env.JWT_SECRET, { 
+            expiresIn: '7d' 
+        });
+    
+        token = `${token.split('.')[0]}/${token.split('.')[1]}/${token.split('.')[2]}`;
+
+        const message = `<p>Dear Occupant,</p>
+                        <p>You're invited to join ${boarding.boardingName}! Click the following link to complete your registration and become a part of our community:</p>
+                        <p><a href="http://${process.env.DOMAIN}/occupant/boarding/join/${token}">Invitation Link</a></p>
+                        <p>If you are already registered, please log in first and then click the link.</p>
+                        <p>If you haven't registered yet, create an account as an occupant and join ${boarding.boardingName}.</p>
+                        <p>Please note that this invitation link will expire in 7 days.</p>
+                        <p>We look forward to welcoming you!</p>
+                        <p>Best regards,<br>
+                        The Campus Bodim Team</p>`;
+
+        sendMail(Email, message, `Invitation to Join ${boarding.boardingName}`);
+
+        res.status(200).json({message:'Email sent successfully'});
+
+    }
+    else{
+        res.status(400);
+        throw new Error("Opps! Something went wrong");
+    }
+
+})
+
+// @desc    Add occupant
+// route    POST /api/boardings/occupant/Join
+const occupantJoin = asyncHandler(async (req, res) => {
+    const { userId, token } = req.body;
+    
+    const reservation = await Reservation.findById(jwt.decode(token).reservation._id)
+    
+    if(!reservation){
+        res.status(400);
+        throw new Error("Opps! Looks like your invitation has been cancelled. Sorry for the inconvenience")
+    }
+
+    const boarding = await Boarding.findById(reservation.boardingId);
+    const reservationExists = await Reservation.findOne({occupantID:userId})
+
+
+    if(reservationExists){
+        res.status(400);
+        throw new Error("You already have a reservation")
+    }
+
+    if(boarding){
+        if(boarding.boardingType == "Hostel"){
+            const room = await Room.findById(reservation.roomID);
+            if(room.noOfBeds == room.occupant.length){
+                res.status(400);
+                throw new Error("Boarding room is full")
+            }
+            else{
+                reservation.occupantID = userId;
+                reservation.boardingType = 'Hostel';
+                reservation.paymentStatus = 'Paid';
+                reservation.status = 'Approved';
+            }
+        }
+        else if(boarding.boardingType == "Annex"){
+            if(boarding.occupantId){
+                res.status(400);
+                throw new Error("Boarding is full")
+            }
+            else{
+                reservation.occupantID = userId;
+                reservation.boardingType = 'Annex';
+                reservation.paymentStatus = 'Paid';
+                reservation.status = 'Approved';
+            }
+        }
+    }else{
+        res.status(400);
+        throw new Error("Boarding not found")
+    }
+
+    try {
+        await reservation.save()
+        res.status(200).json({message: 'Successfully reserved'})
+    } catch (error) {
+        res.status(400);
+        throw new Error(error);
+    }
+    
+
+})
+
 // @desc    Get all Boardings of particular owner
 // route    GET /api/boardings/owner/:ownerId/:page/:status
 // @access  Private - Owner
@@ -210,16 +369,7 @@ const getOwnerBoardings = asyncHandler(async (req, res) => {
 const getBoardingById = asyncHandler(async (req, res) => {
     const boardingId = req.params.boardingId;
    
-    const boarding = await Boarding.findById(boardingId).populate({
-        path:'room',
-        populate: {
-            path: 'occupant', 
-            select: '-password',
-        },
-    }).populate({
-        path: 'occupant', 
-        select: '-password',
-    });
+    const boarding = await Boarding.findById(boardingId).populate('room');
 
     boarding.room.sort((a, b) => a.roomNo - b.roomNo);
     
@@ -252,12 +402,30 @@ const getReservationsByBoardingId = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Get Reservations by boarding ID
+// route    GET /api/boardings/:roomId/reservations
+const getReservationsByRoomId = asyncHandler(async (req, res) => {
+    const roomId = req.params.roomId;
+   
+    const reservations = await Reservation.find({roomID:roomId}).populate('occupantID');
+    
+    if(reservations.length > 0){
+        res.status(200).json({
+            reservations
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("No Reservations Found!")
+    }
+});
+
 // @desc    Get Room by ID
 // route    GET /api/rooms/:roomId
 const getRoomById = asyncHandler(async (req, res) => {
     const roomId = req.params.roomId;
    
-    const room = await Room.findById(roomId);
+    const room = await Room.findById(roomId).populate('boardingId');
     
     if(room){
         res.status(200).json({
@@ -371,17 +539,21 @@ const getAllBoardings = asyncHandler(async (req, res) => {
             ...(status !== 'All' ? { status } : {}),
             ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), 
         });
-        const roomConditions = rooms.map(room => ({ 'room.rent': room.rent }));
+        const roomConditions = rooms.map(room => ({ room: room._id }));
 
-        console.log(roomConditions);
+        console.log(roomConditions.map(condition => condition['room'].toString()));
 
         totalRows = await Boarding.countDocuments({
             boardingType,
-            ...(status !== 'All' ? { status } : {}),
+            ...(status !== 'All' ? { status } : {status: { $ne: 'PendingRoom' }}),
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
-            //...(rent !== 'All' ? (roomConditions.length>0 ? { $and: [{$or: roomConditions }]} : {}) : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(rent !== 'All' ? {
+                room: {
+                    $in: roomConditions.map(condition => condition['room'].toString())
+                }
+              } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(gender !== 'All' ? { 
                 $and: [{
@@ -407,11 +579,15 @@ const getAllBoardings = asyncHandler(async (req, res) => {
 
         boardings = await Boarding.find({
             boardingType,
-            ...(status !== 'All' ? { status } : {}),
+            ...(status !== 'All' ? { status } : {status: { $ne: 'PendingRoom' }}),
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
-            //...(rent !== 'All' ? (roomConditions.length>0 ? { $or: roomConditions } : {}) : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(rent !== 'All' ? {
+                room: {
+                    $in: roomConditions.map(condition => condition['room'].toString())
+                }
+              } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(gender !== 'All' ? { 
                 $and: [{
@@ -651,9 +827,22 @@ const getPendingApprovalBoardings = asyncHandler(async (req, res) => {
 
     const skipCount = (page) * pageSize;
 
-    const boardings = await Boarding.find({status:'PendingApproval'}).populate('room').skip(skipCount).limit(pageSize);
+    const rooms = await Room.find({status:'PendingApproval'});
+    const roomConditions = rooms.map(room => ({ room: room._id }));
 
-    const totalRows = await Boarding.countDocuments({status:'PendingApproval'}).populate('room').skip(skipCount).limit(pageSize);
+    const boardings = await Boarding.find({
+        $or: [
+          { status: 'PendingApproval' },
+          { room: { $in: roomConditions.map(condition => condition['room'].toString()) } }
+        ]
+      }).populate(['room','owner']).skip(skipCount).limit(pageSize);
+
+    const totalRows = await Boarding.countDocuments({
+        $or: [
+          { status: 'PendingApproval' },
+          { room: { $in: roomConditions.map(condition => condition['room'].toString()) } }
+        ]
+      }).skip(skipCount).limit(pageSize);
 
     res.status(200).json({
         boardings,
@@ -828,6 +1017,47 @@ const approveBoarding = asyncHandler(async (req, res) => {
 
 })
 
+// @desc    Update Room status
+// route    PUT /api/boardings/approveRoom/
+const approveRoom = asyncHandler(async (req, res) => {
+      const roomId = req.body.roomId;
+
+      try {
+          let room = await Room.findById(roomId).populate({
+            path:'boardingId',
+            populate: {
+                path: 'owner', 
+            },
+        });
+
+          var roomCapacity = room.noOfBeds;
+          var roomOccupantCount = room.occupant.length;
+
+          let visibility = true;
+          if(roomCapacity==roomOccupantCount){
+            visibility = false;
+          }
+
+          room.status = "Approved";
+          room.visibility = visibility;
+          room = await room.save();
+    
+          const message = `<p><b>Hello ${room.boardingId.owner.firstName},</b></p>
+          <p>We are pleased to inform you that the room ${room.roomNo} in ${room.boardingId.boardingName} has been approved.</p>
+          <p>Thank you for using CampusBodima!</p>
+          <p>Best wishes,<br>The CampusBodima Team</p>`
+        
+          sendMail(room.boardingId.owner.email,message,"Your Registered Room Has Been Approved");
+
+          res.status(200).json('')
+      } catch (error) {
+            res.status(400)
+            throw new Error(error);
+      }
+
+
+})
+
 // @desc    Delete particular boarding
 // route    DELETE /api/boardings/rejectBoarding/
 const rejectBoarding = asyncHandler(async (req, res) => {
@@ -886,7 +1116,6 @@ const rejectBoarding = asyncHandler(async (req, res) => {
             let boarding = await Boarding.findById(boardingId).populate('owner');
             boarding.status = "PendingRoom";
             boarding = await boarding.save();
-            const rooms = await Room.updateMany({boardingId},{ $set: { status: 'Incomplete' } });
 
             message = `Dear ${boarding.owner.firstName},<br><br>
             We regret to inform you that your boarding, ${boarding.boardingName} does not meet our listing criteria at this time, and your registration has been moved to the incomplete section.<br>
@@ -900,6 +1129,73 @@ const rejectBoarding = asyncHandler(async (req, res) => {
 
         res.status(200).json({
             message:'Boarding rejected successfully!'
+        })
+    }
+    else{
+        res.status(400);
+        throw new Error("Oops something went wrong :(");
+    }
+});
+
+// @desc    Delete particular room
+// route    DELETE /api/boardings/rejectRoom/
+const rejectRoom = asyncHandler(async (req, res) => {
+    const roomId = req.body.roomId;
+
+    const room = await Room.findById(roomId).populate({
+        path:'boardingId',
+        populate: {
+            path: 'owner', 
+        },
+    });
+    
+    if(room){
+
+        var occupantCount = room.occupant.length;
+
+        let message;
+        let email = room.boardingId.owner.email;
+        if(occupantCount == 0){
+
+            var fileRef;
+            for (let j = 0; j < room.roomImages.length; j++) {
+                fileRef = ref(storage,room.roomImages[j]);
+            
+                try {
+                    await deleteObject(fileRef); // deleteing images of the room
+                } catch (err) {
+                    console.log(err);;
+                }        
+            }
+
+            let boarding = Boarding.findById(room.boardingId);
+            boarding.room.pull(room._id);
+            await boarding.save()
+
+            await Room.findByIdAndDelete(room._id); // deleting the room
+
+            message = `Dear ${room.boardingId.owner.firstName},<br><br>
+            We regret to inform you that your room in ${room.boardingId.boardingName} does not meet our listing criteria at this time, and your registration has been declined.<br>
+            While we appreciate your interest, please review our guidelines and consider making necessary updates before reapplying.<br>
+            For any questions, contact us at info.campusbodima@gmail.com.<br><br>
+            Best regards,<br>
+            The CampusBodima Team`;
+        }
+        else{
+            const rooms = await Room.findOneAndUpdate({_id:roomId},{ $set: { status: 'Incomplete' } });
+
+            message = `Dear ${room.boardingId.owner.firstName},<br><br>
+            We regret to inform you that your room in ${room.boardingId.boardingName} does not meet our listing criteria at this time, and your registration has been moved to the incomplete section.<br>
+            Please review our guidelines and consider making necessary updates to get your boarding approved.<br>
+            For any questions, contact us at info.campusbodima@gmail.com.<br><br>
+            Best regards,<br>
+            The CampusBodima Team`
+        }
+
+        sendMail(email,message,"Your Registered Boarding Has Been Declined");      
+
+        res.status(200).json({
+            message:'Room rejected successfully!'
         })
     }
     else{
@@ -1171,23 +1467,183 @@ const deleteRoom = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Delete particular reservation
+// route    DELETE /api/boardings/deleteReservation/:reservationId/
+const deleteReservation = asyncHandler(async (req, res) => {
+    const reservationId = req.params.reservationId;
+
+    const reservation = await Reservation.findByIdAndDelete(reservationId);
+    let message;
+    let subject;
+    
+    if(reservation){
+        const user = await User.findById(reservation.occupantID);
+
+        let boarding;
+        if(reservation.boardingType == "Hostel"){
+
+
+            const reservationHistory = new ReservationHistory({
+
+                boardingId: reservation.boardingId,
+                boardingType: reservation.boardingType,
+                roomID: reservation.roomID,
+                occupantID: user,
+                ReservedDate: reservation.createdAt,
+    
+            });
+    
+            const resHis = await reservationHistory.save();
+
+
+            let room = await Room.findById(reservation.roomID);
+
+            room.occupant.pull(reservation.occupantID);
+            room.visibility = true;
+            
+            await room.save();
+
+            boarding = await Boarding.findOneAndUpdate(
+                { _id: reservation.boardingId },
+                {
+                    $set: { visibility: 'true' }
+                },
+                { new: true }
+            ).populate('owner');
+
+
+            message = `<p>Dear ${user.firstName},</p>
+                        <p>You have been removed from <strong>${boarding.boardingName}</strong> by the owner. We hope you've enjoyed your stay.</p>
+                        <p>Your feedback is valuable. Kindly share your thoughts so future occupants can benefit. If this was a mistake, contact the boarding owner at <a href="mailto:${boarding.owner.email}">${boarding.owner.email}</a> or call 0${boarding.owner.phoneNo}.</p>
+                        <p>Thank you.</p>
+                        <p>Best wishes,<br>
+                        The Campus Boarding Team</p>`
+
+            subject = `Important Update: Your Boarding Status at ${boarding.boardingName}`
+
+
+
+        }
+        else if(reservation.boardingType == "Annex"){
+
+
+            const reservationHistory = new ReservationHistory({
+
+                boardingId: reservation.boardingId,
+                boardingType: reservation.boardingType,
+                roomID: reservation.roomID,
+                occupantID: user,
+                ReservedDate: reservation.createdAt,
+    
+            });
+    
+            const resHis = await reservationHistory.save();
+
+
+            boarding = await Boarding.findOneAndUpdate(
+                { _id: reservation.boardingId },
+                {
+                    $unset: { occupant: reservation.occupantID },
+                    $set: { visibility: 'true' }
+                },
+                { new: true }
+            ).populate('owner');
+
+
+            message = `<p>Dear ${user.firstName},</p>
+                        <p>You have been removed from <strong>${boarding.boardingName}</strong> by the owner. We hope you've enjoyed your stay.</p>
+                        <p>Your feedback is valuable. Kindly share your thoughts so future occupants can benefit. If this was a mistake, contact the boarding owner at <a href="mailto:${boarding.owner.email}">${boarding.owner.email}</a> or call 0${boarding.owner.phoneNo}.</p>
+                        <p>Thank you.</p>
+                        <p>Best wishes,<br>
+                        The Campus Boarding Team</p>`
+
+            subject = `Important Update: Your Boarding Status at ${boarding.boardingName}`
+
+
+        }
+        else{// for cancelling invitations
+            if(reservation.roomID){
+                let room = await Room.findById(reservation.roomID);
+
+                room.visibility = true;
+                room.occupant.pull('313233343536373839303132')
+                
+                await room.save();
+
+                boarding = await Boarding.findOneAndUpdate(
+                    { _id: reservation.boardingId },
+                    {
+                        $set: { visibility: 'true' }
+                    },
+                    { new: true }
+                ).populate('owner');
+            }
+            else{
+                boarding = await Boarding.findOneAndUpdate(
+                    { _id: reservation.boardingId },
+                    {
+                        $unset: {occupant: '313233343536373839303132'},
+                        $set: { visibility: 'true' }
+                    },
+                    { new: true }
+                ).populate('owner');
+            }
+            
+
+
+            message = `<p>Dear occupant,</p>
+                        <p>Your invitation for <strong>${boarding.boardingName}</strong> has being cancelled by the owner.
+                        <p>If this was a mistake, contact the boarding owner at <a href="mailto:${boarding.owner.email}">${boarding.owner.email}</a> or call 0${boarding.owner.phoneNo}.</p>
+                        <p>Thank you.</p>
+                        <p>Best wishes,<br>
+                        The Campus Boarding Team</p>`
+
+            subject = `Important Update: Your Invitation Status at ${boarding.boardingName}`
+
+
+
+        }
+
+        
+
+        sendMail(user?.email || reservation.boardingType, message, subject)
+
+
+        res.status(200).json({message:'Reservation successfully removed'})
+
+
+
+    }else{
+        res.status(400);
+        throw new Error("Reservation Not Found!")
+    }
+
+    
+});
+
 export { 
     registerBoarding,
     addRoom,
+    addOccupant,
+    occupantJoin,
     getAllBoardings,
     getAllPublicBoardings,
     getOwnerBoardings,
     getBoardingById,
     getReservationsByBoardingId,
+    getReservationsByRoomId,
     getRoomById,
     getOccupantBoarding,
     getPendingApprovalBoardings,
     updateBoardingVisibility,
     updateRoomVisibility,
     approveBoarding,
+    approveRoom,
     rejectBoarding,
+    rejectRoom,
     updateBoarding,
     updateRoom,
     deleteBoarding,
-    deleteRoom
+    deleteRoom,
+    deleteReservation
 };

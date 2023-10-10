@@ -40,7 +40,37 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        getToDoPaymentOld: builder.mutation({
+            query:(data) => ({
+                url: `${PAYMENT_URL}/getToDoPaymentsByUser`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+        changeStatus: builder.mutation({
+            query:(data) => ({
+                url: `${PAYMENT_URL}/changeStatus`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+
+        changePaidStatus: builder.mutation({
+            query:(data) => ({
+                url: `${PAYMENT_URL}/changeReservationPaidStatus`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+        
+        getMyRes: builder.mutation({
+            query:(data) => ({
+                url: `${PAYMENT_URL}/getMyRe`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
     }),
 });
 
-export const { useGetPaymentByUserMutation, useMakePaymentMutation, useGetPaymentByOwnerMutation,useSearchPayMutation, useGetToDoPaymentMutation } = paymentApiSlice;
+export const { useGetPaymentByUserMutation, useMakePaymentMutation, useGetPaymentByOwnerMutation,useSearchPayMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation, useChangeStatusMutation, useChangePaidStatusMutation } = paymentApiSlice;

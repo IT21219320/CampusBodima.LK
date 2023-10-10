@@ -1,22 +1,20 @@
 import mongoose from "mongoose";
 import User from "../models/userModel.js";
+import Boarding from "./boardingModel.js";
+import Room from "./roomModel.js";
 
 const reservationHistorySchema = mongoose.Schema({
-    boardingId: {
-        type: String, 
+    
+    boarding:{
+        type: Boarding.schema,
         required: true,
     },
 
-    boardingType:{
-        type: String,
-        required: true,
+    room: {
+        type: Room.schema,
     },
 
-    roomID: {
-        type: String,
-    },
-
-    occupantID: {
+    occupant: {
         type: User.schema,
         required: true,
     },

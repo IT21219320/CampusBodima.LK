@@ -76,6 +76,22 @@ export const reservationApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
+        getBoardingBybId: builder.mutation({
+            query: (data) => ({
+                url: `${RESERVATION_URL}/boardingbyId`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+
+        updateGender: builder.mutation({
+            query: (data) => ({
+                url: `${RESERVATION_URL}/updateGender`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+
     }),    
 
 })
@@ -90,4 +106,6 @@ export const {
     useDeletePendingStatusMutation,
     useDeleteReservationMutation,
     useGetBoardingsByIdMutation,
+    useGetBoardingBybIdMutation,
+    useUpdateGenderMutation,
 } = reservationApiSlice;

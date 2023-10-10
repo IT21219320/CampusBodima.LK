@@ -4,12 +4,11 @@ import { toast } from 'react-toastify';
 import { Row, Col, Form } from "react-bootstrap";
 import { Breadcrumbs,Container, Button,Link,Typography,Card, CardContent, TextField, CircularProgress } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { NavigateNext } from '@mui/icons-material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { useCreateOrderMutation } from '../slices/orderApiSlice'; // Import the generated mutation function
-import Sidebar from './sideBar';
+import { useCreateOrderMutation } from '../slices/orderApiSlice'; 
+import orderStyles from '../styles/orderStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import formStyle from '../styles/formStyle.module.css';
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
@@ -109,7 +108,43 @@ const OrderForm = () => {
       
   };
   
+  const foodItems = [
+    { id: 1, name: 'Burger', price: 5.99, image: 'burger.jpg' },
+    { id: 2, name: 'Pizza', price: 8.99, image: 'pizza.jpg' },
+    { id: 3, name: 'Pasta', price: 7.99, image: 'pasta.jpg' },
+    { id: 1, name: 'Burger', price: 5.99, image: 'burger.jpg' },
+    { id: 2, name: 'Pizza', price: 8.99, image: 'pizza.jpg' },
+    { id: 3, name: 'Pasta', price: 7.99, image: 'pasta.jpg' },
+    { id: 1, name: 'Burger', price: 5.99, image: 'burger.jpg' },
+    { id: 2, name: 'Pizza', price: 8.99, image: 'pizza.jpg' },
+    { id: 3, name: 'Pasta', price: 7.99, image: 'pasta.jpg' },
+    { id: 1, name: 'Burger', price: 5.99, image: 'burger.jpg' },
+    { id: 2, name: 'Pizza', price: 8.99, image: 'pizza.jpg' },
+    { id: 3, name: 'Pasta', price: 7.99, image: 'pasta.jpg' },
+  ];
 
+  const FoodItem = ({ id, name, price, image }) => {
+    return (
+      <div className={orderStyles.fooditem}>
+        <img src={image} alt={name} />
+        <h3>{name}</h3>
+        <p>${price.toFixed(2)}</p>
+        {/* Add a button to add the item to the cart or perform other actions */}
+      </div>
+    );
+  };
+  
+  const FoodMenu = () => {
+    return (
+      <div className={orderStyles.foodmenu}>
+        {foodItems.map((item) => (
+          <FoodItem key={item.id} {...item} />
+        ))}
+      </div>
+    );
+  };
+  
+  
   const renderFoodTypeDropdown = () => {
     if (product === '3' || product === '6') {
       return (
@@ -203,15 +238,20 @@ const OrderForm = () => {
 
   return (<>
     
-                <Row>
-                        <Col>
-                            <Card variant="outlined" className={occupantFeedbackStyles.card}>
-                                <CardContent>
-                                    <h3>Create New Order</h3>
-                                </CardContent>
-                            </Card>
-                        </Col>
-                    </Row>
+    <Row>
+      <Col>
+      <div>
+      <div className={orderStyles.card}>
+       <h3>Food Menu</h3>
+      </div>
+      <FoodMenu />
+    </div>
+      </Col>
+      
+      <Col>
+      <div className={orderStyles.card}>
+        <h3>Place Order</h3>
+        </div>
     <div className="order-box">
       <div className="order-form-container">
       
@@ -250,8 +290,7 @@ const OrderForm = () => {
 </Select>
 
         
-      </Row>
-      <Row>
+      
 
       {renderFoodTypeDropdown()}
       </Row>
@@ -306,6 +345,8 @@ const OrderForm = () => {
     </form>
     </div>
     </div>
+    </Col>
+    </Row>
     </>
   );
   

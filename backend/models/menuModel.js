@@ -6,22 +6,33 @@ const menuSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    cost: {
-        type: String, 
-        required: true
-    },
-    price: {
-        type: String, 
-        required: true
-    },
-    type: {
-        type: String, 
-        required: true
-    },
     boarding: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Boarding',
         required: true
+    },
+    foodImages: {
+        type: [String], 
+    },
+    cost: {
+        type: String, 
+        required: true
+    },
+    product:{
+        type:String,
+        required:true,
+    },
+    foodType:{
+        type:String,
+        required:true,
+    },
+    price:{
+        type:String,
+        required:true,
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
 });
 

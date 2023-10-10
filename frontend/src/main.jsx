@@ -28,7 +28,9 @@ import OwnerBoardingRoomPage from './pages/ownerBoardingRoomPage.jsx';
 import AddBoardingRoomPage from './pages/addBoardingRoomPage.jsx';
 import EditBoardingRoomPage from './pages/editBoardingRoomPage.jsx';
 import OwnerBoardingOccupants from './pages/ownerBoardingOccupants.jsx';
+import OwnerBoardingRoomOccupants from './pages/ownerBoardingRoomOccupants.jsx';
 import AdminVerifyBoardingPage from './pages/adminVerifyBoardingPage.jsx';
+import VerifyOccupantEmailPage from './pages/verifyOccupantEmailPage.jsx';
 
 import OwnerIngredientPage from './pages/OwnerIngredientPage.jsx';
 import AddIngredientPage from './pages/addIngredientPage.jsx';
@@ -68,6 +70,7 @@ import UpdateOrder from './pages/UpdateOrder.jsx';
 import PrivateRoute from './components/privateRoute';
 import AdminRoute from './components/adminRoute';
 import OwnerRoute from './components/ownerRoute';
+import KitchenRoute from './components/kitchenRoute';
 import OccupantRoute from './components/occupantRoute';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -105,9 +108,9 @@ const router = createBrowserRouter(
           <Route path='/owner/boardings/:boardingId/occupants' element={ <OwnerBoardingOccupants /> } />
           <Route path='/owner/boardings/:boardingId/rooms' element={ <OwnerBoardingRoomPage /> } />
           <Route path='/owner/boardings/:boardingId/edit' element={ <EditBoardingPage /> } />
+          <Route path='/owner/boardings/:boardingId/rooms/:roomId/occupants' element={ <OwnerBoardingRoomOccupants /> } />
           <Route path='/owner/boardings/:boardingId/:boardingName/rooms/:roomNo/add' element={ <AddBoardingRoomPage /> } />
           <Route path='/owner/boardings/:boardingId/:boardingName/rooms/:roomId/edit' element={ <EditBoardingRoomPage /> } />
-          <Route path='/owner/boardings/:boardingId/:boardingName/rooms/:roomId/occupants' element={ <EditBoardingRoomPage /> } />
 
           <Route path='/owner/reservations/' element={<OwnerAllReservarions />} />
 
@@ -127,6 +130,12 @@ const router = createBrowserRouter(
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
         </Route>
 
+        <Route path='' element={<KitchenRoute />}>
+          <Route path='/kitchen/ingredient' element={ <OwnerIngredientPage /> } />
+          <Route path='/kitchen/ingredient/add' element={ <AddIngredientPage /> } />
+          <Route path='/kitchen/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
+        </Route>
+
         {/* Occupant Routes */}
         <Route path='' element={ <OccupantRoute /> }>
           <Route path='/occupant/ticket' element={<OccupantTicketsPage />} />
@@ -139,16 +148,16 @@ const router = createBrowserRouter(
 
           <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
           <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
-          <Route path='/occupant/makeMonthlyPayment/:bId/:amount' element={<MakeMonthlyPaymentPage />} />
+          <Route path='/occupant/makeMonthlyPayment/:bId/:amount/:payId' element={<MakeMonthlyPaymentPage />} />
 
           <Route path='/occupant/reservations/reserve/:bId/:rId' element={<ReserveHostelPage />} />
           <Route path='/occupant/reservations/reserve/:bId/' element={<ReserveAnnexPage />} />
           <Route path='/occupant/reservations/confirm/' element={<ConfirmReservationPage />} />
           <Route path='/occupant/boarding' element={<MyReservationPage />} />
-          <Route path='/occupant/boarding/join/:tokenHeader/:tokenPayload/:tokenSecret' element={ <VerifyEmailPage /> } />
+          <Route path='/occupant/boarding/join/:tokenHeader/:tokenPayload/:tokenSecret' element={ <VerifyOccupantEmailPage /> } />
           
           <Route path='/occupant/feedback' element={<OccupantFeedback />} />
-          <Route path='/occupant/feedback/create' element={<CreateFeedback />} />
+          <Route path='/occupant/feedback/create/:boardingId/:boardingName' element={<CreateFeedback />} />
           <Route path='/occupant/feedback/update/:feedbackId' element={<UpdateFeedbackpage />} />
           
         </Route>

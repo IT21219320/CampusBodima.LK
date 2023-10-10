@@ -7,7 +7,7 @@ import paymentFormStyle from "../styles/paymentFormStyle.module.css";
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { useMakePaymentMutation, useChangeStatusMutation } from "../slices/paymentApiSlice";
+import { useMakePaymentMutation, useChangePaidStatusMutation } from "../slices/paymentApiSlice";
 import { useAddCardMutation,useGetCardByUserMutation } from "../slices/cardApiSlice";
 import { toast } from 'react-toastify';
 import * as React from 'react';
@@ -18,7 +18,7 @@ import Select from '@mui/material/Select';
 
 
 
-const PaymentForm = ({ des, amount, payId }) => {
+const PaymentFormI = ({ des, amount, payId }) => {
 
     const [cardName, setCardName] = useState('')
     const [cardNumber, setCardNUmber] = useState('')
@@ -35,7 +35,7 @@ const PaymentForm = ({ des, amount, payId }) => {
     const [makePayment] = useMakePaymentMutation();
     const [addCard] = useAddCardMutation();
     const [getCards] = useGetCardByUserMutation();
-    const [change] = useChangeStatusMutation();
+    const [changePaid] = useChangePaidStatusMutation();
 
 
     const navigate = useNavigate();
@@ -109,7 +109,7 @@ const PaymentForm = ({ des, amount, payId }) => {
         }
         if (resPay) {
             console.log(resPay)
-            const cRes = await change({payId: payId});
+            const cRes = await changePaid({userInfo_id: userInfo._id});
             if (resPay.data.message === "payment inserted") {
 
                 toast.success('Payment successfull!', { position: toast.POSITION.TOP_RIGHT });
@@ -184,4 +184,4 @@ const PaymentForm = ({ des, amount, payId }) => {
     )
 }
 
-export default PaymentForm;
+export default PaymentFormI;

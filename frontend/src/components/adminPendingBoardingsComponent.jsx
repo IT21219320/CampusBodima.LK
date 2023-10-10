@@ -1,22 +1,21 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import { Row, Col, Image, Button, Carousel} from 'react-bootstrap';
-import { Card, CardContent, TablePagination, CircularProgress, Box, Button as MuiButton, Skeleton, Alert, Switch, Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery } from "@mui/material";
+import { Row, Col, Image, Button, Carousel, Table} from 'react-bootstrap';
+import { Card, CardContent, TablePagination, CircularProgress, Box, Button as MuiButton, Skeleton, Alert, Switch, Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, Backdrop, IconButton } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import { Close, Warning } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetOwnerBoardingsMutation, useUpdateVisibilityMutation, useDeleteBoardingMutation, useGetPendingApprovalBoardingsMutation, useApproveBoardingMutation, useRejectBoardingMutation } from '../slices/boardingsApiSlice';
+import { useGetOwnerBoardingsMutation, useUpdateVisibilityMutation, useDeleteBoardingMutation, useGetPendingApprovalBoardingsMutation, useApproveBoardingMutation, useRejectBoardingMutation, useApproveRoomMutation, useRejectRoomMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
+import { BiShowAlt } from "react-icons/bi";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { FiEdit } from "react-icons/fi";
 import LoadingButton from '@mui/lab/LoadingButton';
 import storage from "../utils/firebaseConfig";
 import { ref, getDownloadURL } from "firebase/storage";
 
-import Sidebar from './sideBar';
-
 import ownerStyles from '../styles/ownerStyles.module.css';
-import dashboardStyles from '../styles/dashboardStyles.module.css';
+import adminStyles from '../styles/adminStyles.module.css';
 
 import defaultImage from '/images/defaultImage.png';
 
@@ -24,17 +23,21 @@ const AdminPendingBoardings = () => {
 
     const [noticeStatus, setNoticeStatus] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [approvalLoading, setApprovalLoading] = useState(false);
     const [imgLoading, setImgLoading] = useState(false);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [totalRows, setTotalRows] = useState(0);
-    const [imagePreview, setImagePreview] = useState(false);
     const [boardings, setBoardings] = useState([]);
+    const [tempBoarding, setTempBoarding] = useState('');
+    const [showBoarding, setShowBoarding] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState(false);
+    const [roomConfirmDialog, setRoomConfirmDialog] = useState(false);
     const [tempDeleteId, setTempDeleteId] = useState('');
+    const [tempRoomDeleteId, setTempRoomDeleteId] = useState('');
     
     const theme = useTheme();
-    const largeScreen = useMediaQuery(theme.breakpoints.up('md'));
+    const largeScreen = useMediaQuery(theme.breakpoints.down('xs'));
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const navigate = useNavigate();
@@ -43,6 +46,8 @@ const AdminPendingBoardings = () => {
     const [getPendingApprovalBoardings, { isLoading }] = useGetPendingApprovalBoardingsMutation();
     const [approveBoardings] = useApproveBoardingMutation();
     const [rejectBoardings] = useRejectBoardingMutation();
+    const [approveRooms] = useApproveRoomMutation();
+    const [rejectRooms] = useRejectRoomMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
 
@@ -53,8 +58,9 @@ const AdminPendingBoardings = () => {
             const res = await getPendingApprovalBoardings( data ).unwrap();
             setBoardings(res.boardings);
             setTotalRows(res.totalRows);
-            setLoading(false);
             setImgLoading(true);
+
+            console.log(res);
 
             const imagePromises = res.boardings.map(async (boarding) => {
             const updatedImages = await Promise.all(boarding.boardingImages.map(async (image, index) => {
@@ -126,9 +132,11 @@ const AdminPendingBoardings = () => {
                     setBoardings(updatedRoomsNBoardings);
                     setTotalRows(res.totalRows);
                     setImgLoading(false);
+                    setLoading(false);
                 })
                 .catch((error) => {
                     console.error('Error updating image URLs:', error);
+                    setLoading(false);
                     // Handle the error as needed
                 });
 
@@ -142,6 +150,11 @@ const AdminPendingBoardings = () => {
     useEffect(() => {
         loadData();     
     },[page,pageSize]);
+
+    const handleView = (boarding) => {
+        setTempBoarding(boarding);
+        setShowBoarding(true)
+    }
 
     const handleDialogOpen = (e, id) => {
         e.preventDefault();
@@ -157,29 +170,93 @@ const AdminPendingBoardings = () => {
     const rejectBoarding = async() => {
         handleDialogClose();
         try {
-            setLoading(true);
+            setApprovalLoading(true);
 
             const res = await rejectBoardings({boardingId:tempDeleteId}).unwrap();
-            loadData();
+            setShowBoarding(false);
+            setTempBoarding('')
             toast.success('Boarding rejected successfully!');
-            setLoading(false);
+            setApprovalLoading(false);
+            loadData();
         } catch (err) {
             toast.error(err.data?.message || err.error);
-            setLoading(false);
+            setApprovalLoading(false);
         }
     }
 
     const approveBoarding = async(id) => {
         try {
-            setLoading(true);
+            setApprovalLoading(true);
 
             const res = await approveBoardings({boardingId:id}).unwrap();
-            loadData();
+            setShowBoarding(false);
+            setTempBoarding('')
             toast.success('Boarding approved successfully!');
-            setLoading(false);
+            setApprovalLoading(false);
+            loadData();
         } catch (err) {
             toast.error(err.data?.message || err.error);
-            setLoading(false);
+            setApprovalLoading(false);
+        }
+    }
+
+    const handleRoomDialogOpen = (e, id) => {
+        e.preventDefault();
+        setTempRoomDeleteId(id);
+        setRoomConfirmDialog(true);
+    }
+
+    const handleRoomDialogClose = () => {
+        setTempRoomDeleteId('');
+        setRoomConfirmDialog(false);
+    }
+
+    const rejectRoom = async() => {
+        handleRoomDialogClose();
+        try {
+            setApprovalLoading(true);
+
+            const res = await rejectRooms({roomId:tempRoomDeleteId}).unwrap();
+
+            const updatedTempBoarding = { ...tempBoarding }; 
+            if (updatedTempBoarding.room) {
+                updatedTempBoarding.room = updatedTempBoarding.room.filter(room => room._id !== id);
+            }
+            setTempBoarding(updatedTempBoarding);
+
+            console.log(res);
+            loadData();
+            toast.success('Room rejected successfully!');
+            setApprovalLoading(false);
+        } catch (err) {
+            toast.error(err.data?.message || err.error);
+            setApprovalLoading(false);
+        }
+    }
+
+    const approveRoom = async(id) => {
+        try {
+            setApprovalLoading(true);
+
+            const res = await approveRooms({roomId:id}).unwrap();
+
+            const updatedTempBoarding = { ...tempBoarding }; // Create a shallow copy of tempBoarding
+            if (updatedTempBoarding.room) {
+                updatedTempBoarding.room = updatedTempBoarding.room.filter(room => room._id !== id);
+            }
+            setTempBoarding(updatedTempBoarding);
+
+            if(updatedTempBoarding.status != "PendingApproval" && updatedTempBoarding.room?.every(room => room.status !== "PendingApproval")){
+                setTempBoarding('');
+                setShowBoarding(false);
+            }
+            
+            loadData();
+            toast.success('Room approved successfully!');
+            setApprovalLoading(false);
+        } catch (err) {
+            toast.error(err.data?.message || err.error);
+            setApprovalLoading(false);
         }
     }
 
@@ -187,102 +264,39 @@ const AdminPendingBoardings = () => {
         <>
             <Row style={{minHeight:'calc(100vh - 240px)'}}>
                 <Col>
-                    {loading ? <div style={{width:'100%',height:'100%',display: 'flex',alignItems: 'center',justifyContent: 'center'}}><CircularProgress /></div> : 
+                    <Table striped hover>
+                        <thead>
+                            <tr>
+                                <th>Boarding Name</th>
+                                <th>Boarding Type</th>
+                                <th>City</th>
+                                <th>Owner Name</th>
+                                <th>Owner Email</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody> 
+                        {loading ? <tr style={{width:'100%',height:'100%', textAlign:'center'}}><td colSpan={6}><CircularProgress /></td></tr> :
                         boardings.length > 0 ? 
                             boardings.map((boarding, index) => (
-                                <Card key={index} style={{cursor:'auto'}} className={`${ownerStyles.card} mt-4`}>
-                                    <CardContent className={ownerStyles.cardContent}>
-                                        <Row style={{height:'100%', width:'100%'}}>
-                                            <Col style={{height:'100%'}} lg={4}>
-                                                {imgLoading ? <Skeleton variant="rounded" animation="wave" width='100%' height='100%' /> :
-                                                    <Carousel controls={false} onClick={() => setImagePreview(true)} style={{cursor:'pointer'}} className={ownerStyles.carousel}>
-                                                        {boarding.boardingImages.map((image, index) => (
-                                                            <Carousel.Item key={index}>
-                                                                <Image src={image? image : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images} height='250px' width='100%'/>
-                                                            </Carousel.Item>
-                                                        ))}
-                                                        {boarding.room.map((room, index) => (
-                                                            room.roomImages.map((image, index) => (
-                                                                <Carousel.Item key={index}>
-                                                                    <Image src={image? image : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images} height='250px' width='100%'/>
-                                                                </Carousel.Item>
-                                                            ))
-                                                        ))}
-                                                    </Carousel>
-                                                }
-                                                {/*<Dialog open={imagePreview} onClose={() => setImagePreview(false)} style={{maxHeight:'90vh', maxWidth:'100vw', transform:'scale(1.5)'}}>
-                                                    <DialogContent>
-                                                        <Carousel fade interval={10000} style={{borderRadius:'10px'}}>
-                                                            {boarding.boardingImages.map((image, index) => (
-                                                                <Carousel.Item key={index}>
-                                                                    <Image src={image? image : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images} height='250px' width='100%'/>
-                                                                </Carousel.Item>
-                                                            ))}
-                                                            {boarding.room.map((room, index) => (
-                                                                room.roomImages.map((image, index) => (
-                                                                    <Carousel.Item key={index}>
-                                                                        <Image src={image? image : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={ownerStyles.images} height='250px' width='100%'/>
-                                                                    </Carousel.Item>
-                                                                ))
-                                                            ))}
-                                                        </Carousel>
-                                                    </DialogContent>
-                                                </Dialog>*/}
-                                            </Col>
-                                            <Col lg={8}>
-                                                <Row>
-                                                    <Col>
-                                                        <h2>{boarding.boardingName.toUpperCase()}</h2>
-                                                        <p style={{color: 'dimgray'}}>{boarding.city}, {boarding.boardingType}</p>
-                                                    </Col>
-                                                </Row>
-                                                <Row>
-                                                    <Col>
-                                                        <p className={ownerStyles.paras}><b>Address:</b> {boarding.address}</p>
-                                                        <p className={ownerStyles.paras}><b>Rooms:</b> {boarding.boardingType=='Annex' ? boarding.noOfRooms : boarding.room.length}</p>
-                                                        {boarding.boardingType=='Annex' ? 
-                                                            <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(boarding.noOfCommonBaths)+parseInt(boarding.noOfAttachBaths)}</p> 
-                                                        : ''}
-                                                        <p className={ownerStyles.paras}><b>Gender:</b> {boarding.gender}</p>
-                                                    </Col>
-                                                    <Col>
-                                                        <p className={ownerStyles.paras}><b>Utility Bills:</b> {boarding.utilityBills ? 'Yes' : 'No'}</p>
-                                                        <p className={ownerStyles.paras}><b>Food:</b> {boarding.food ? 'Yes' : 'No'}</p>
-                                                        {boarding.facilities.length > 0 ?
-                                                        <>
-                                                            <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Facilities</b></p>
-                                                            <ul style={{paddingLeft:'0.5em'}}>
-                                                                {boarding.facilities.map((facility,index) => (
-                                                                <li key={index} style={{color:'dimgray', listStyleType:'none'}} className={ownerStyles.facilities}>{facility}</li>
-                                                                ))}
-                                                            </ul>
-                                                        </>
-                                                        :''}
-                                                    </Col>
-                                                    <Col>
-                                                    {boarding.boardingType == 'Annex' ? 
-                                                        <p className={ownerStyles.paras}><b>Rent:</b> Rs {boarding.rent} /Month</p>
-                                                    :''}
-                                                    <Row style={{marginTop:'30px'}}>
-                                                        <Col lg={6}>
-                                                            <MuiButton variant="contained" style={{background:'#e02200'}} onClick={(e) => handleDialogOpen(e,boarding._id)}>Reject</MuiButton>
-                                                        </Col>
-                                                        <Col lg={6}>
-                                                            <MuiButton variant="contained" style={{background:"#2e8500"}} onClick={() => approveBoarding(boarding._id)}>Approve</MuiButton>
-                                                        </Col>
-                                                    </Row>
-                                                    </Col>
-                                                </Row>
-                                            </Col>
-                                        </Row>
-                                    </CardContent>
-                                </Card>
+                            <tr key={index}>
+                                <td>{boarding.boardingName}</td>
+                                <td>{boarding.boardingType}</td>
+                                <td>{boarding.city}</td>
+                                <td>{boarding.owner.firstName}</td>
+                                <td>{boarding.owner.email}</td>
+                                <td><MuiButton variant="contained" onClick={() => handleView(boarding)}>View &nbsp;<BiShowAlt style={{fontSize:'1.5em'}}/></MuiButton></td>
+                            {/**/}
+                            </tr>
                             ))
                         :
-                            <div style={{height:'100%', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
-                                <h2>No Boardings to Approve!</h2>
-                            </div>
-                    }
+                            <tr style={{height:'100%', width:'100%', textAlign:'center', color:'dimgrey'}}>
+                                <td colSpan={6}>No Boardings to Approve!</td>
+                            </tr>
+                        
+                        }
+                    </tbody>
+                </Table>
                 </Col>
             </Row>
             <Row>
@@ -300,6 +314,157 @@ const AdminPendingBoardings = () => {
                     />
                 </Col>
             </Row>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={showBoarding}
+            >
+                <Card className={`${adminStyles.card} mt-4`}>
+                    <IconButton style={{float:'right'}} onClick={() => {setShowBoarding(false);setTempBoarding('')}}><Close /></IconButton>
+                    <CardContent className={ownerStyles.cardContent}>
+                        <Row style={{height:'100%', width:'100%'}}>
+                            <Col style={{height:'100%'}} lg={4}>
+                                {imgLoading ? <Skeleton variant="rounded" animation="wave" width='100%' height='100%' /> :
+                                    <Carousel fade controls={false} onClick={() => setImagePreview(true)} style={{cursor:'pointer'}} className={ownerStyles.carousel}>
+                                        {tempBoarding.boardingImages?.map((image, index) => (
+                                            <Carousel.Item key={index}>
+                                                <Image src={image? image : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={adminStyles.images} height='250px' width='100%'/>
+                                            </Carousel.Item>
+                                        ))}
+                                    </Carousel>
+                                }
+                            </Col>
+                            <Col lg={8}>
+                                <Row>
+                                    <Col>
+                                        <h2>{tempBoarding.boardingName?.toUpperCase()}</h2>
+                                        <p style={{color: 'dimgray'}}>{tempBoarding.city}, {tempBoarding.boardingType}</p>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <p className={ownerStyles.paras}><b>Address:</b> {tempBoarding.address}</p>
+                                        <p className={ownerStyles.paras}><b>Rooms:</b> {tempBoarding.boardingType=='Annex' ? tempBoarding.noOfRooms : tempBoarding.room?.length}</p>
+                                        {tempBoarding.boardingType=='Annex' ? 
+                                            <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(tempBoarding.noOfCommonBaths)+parseInt(tempBoarding.noOfAttachBaths)}</p> 
+                                        : ''}
+                                        <p className={ownerStyles.paras}><b>Gender:</b> {tempBoarding.gender}</p>
+                                    </Col>
+                                    <Col>
+                                        <p className={ownerStyles.paras}><b>Utility Bills:</b> {tempBoarding.utilityBills ? 'Yes' : 'No'}</p>
+                                        <p className={ownerStyles.paras}><b>Food:</b> {tempBoarding.food ? 'Yes' : 'No'}</p>
+                                        {tempBoarding.facilities?.length > 0 ?
+                                        <>
+                                            <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Facilities</b></p>
+                                            <ul style={{paddingLeft:'0.5em'}}>
+                                                {tempBoarding.facilities?.map((facility,index) => (
+                                                <li key={index} style={{color:'dimgray', listStyleType:'none'}} className={ownerStyles.facilities}>{facility}</li>
+                                                ))}
+                                            </ul>
+                                        </>
+                                        :''}
+                                    </Col>
+                                    <Col>
+                                    {tempBoarding.boardingType == 'Annex' ? 
+                                        <p className={ownerStyles.paras}><b>Rent:</b> Rs {tempBoarding.rent} /Month</p>
+                                    :
+                                    tempBoarding.status == 'PendingApproval' ? // show the approve reject buttons for hostel if the boarding is pending
+                                    <>
+                                        <Row style={{marginTop:'0px'}}>
+                                            <Col>
+                                                <MuiButton variant="contained" style={{background:"#2e8500"}} onClick={() => approveBoarding(tempBoarding._id)}>{tempBoarding.room?.some(room => room.status == 'PendingApproval') ? 'Approve All' : 'Approve'}</MuiButton>
+                                            </Col>
+                                        </Row>
+                                        <Row style={{marginTop:'15px'}}>
+                                            <Col>
+                                                <MuiButton variant="contained" style={{background:'#e02200'}} onClick={(e) => handleDialogOpen(e,tempBoarding._id)}>{tempBoarding.room?.some(room => room.status == 'PendingApproval') ? 'Reject All' : 'Reject'}</MuiButton>
+                                            </Col>
+                                        </Row>
+                                    </>
+                                    : ''
+                                    }
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                        {tempBoarding.boardingType=="Annex" ? 
+                        <>
+                            <Row style={{marginTop:'30px'}}>
+                                <Col>
+                                    <p style={{color: 'dimgray'}}>{tempBoarding.description}</p>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop:'30px'}}>
+                                <Col lg={6}>
+                                    <MuiButton variant="contained" style={{background:"#2e8500"}} onClick={() => approveBoarding(tempBoarding._id)}>Approve</MuiButton>
+                                </Col>
+                                <Col lg={6}>
+                                    <MuiButton variant="contained" style={{background:'#e02200'}} onClick={(e) => handleDialogOpen(e,tempBoarding._id)}>Reject</MuiButton>
+                                </Col>
+                            </Row>
+                        </>
+                        : '' }
+                        
+                        {tempBoarding.room?.map((room, index) => (
+                                <Row key={index} style={{height:'100%', width:'100%'}}>
+                                    <Col style={{height:'100%', width:'100%'}}>    
+                                        <Card className={`${ownerStyles.card} mt-4`} style={{minHeight:'315px', height:'auto'}}>
+                                            <CardContent className={ownerStyles.cardContent}>
+                                                <Row key={index} style={{height:'100%', width:'100%'}}>
+                                                    <Col style={{height:'100%'}} lg={4}>
+                                                        {imgLoading ? <Skeleton variant="rounded" animation="wave" width='100%' height='100%' /> :
+                                                            <Carousel fade controls={false} onClick={() => setImagePreview(true)} style={{cursor:'pointer'}} className={ownerStyles.carousel}>
+                                                                {room.roomImages?.map((image, index) => (
+                                                                    <Carousel.Item key={index}>
+                                                                        <Image src={image? image : defaultImage } onError={ (e) => {e.target.src=defaultImage}} className={adminStyles.images} height='250px' width='100%'/>
+                                                                    </Carousel.Item>
+                                                                ))}
+                                                            </Carousel>
+                                                        }
+                                                    </Col>
+                                                    <Col lg={8}>
+                                                        <Row>
+                                                            <Col>
+                                                                <h2>Room No: {room.roomNo}</h2>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
+                                                            <Col>
+                                                                <p className={ownerStyles.paras}><b>Beds:</b> {room.noOfBeds}</p>
+                                                                <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(room.noOfAttachBaths)+parseInt(room.noOfCommonBaths)}</p>
+                                                            </Col>
+                                                            <Col>
+                                                                <p className={ownerStyles.paras}><b>Occupants:</b> {room.occupant.length}</p>
+                                                            </Col>
+                                                            <Col>
+                                                                <p className={ownerStyles.paras}><b>Rent:</b> Rs {room.rent} /Month</p>
+                                                                <p className={ownerStyles.paras}><b>Key Money:</b> {room.keyMoney} Months</p>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row style={{marginTop:'30px'}}>
+                                                            <Col>
+                                                                <p style={{color: 'dimgray'}}>{room.description}</p>
+                                                            </Col>
+                                                        </Row>
+                                                    </Col>
+                                                </Row>
+                                                    {room.status == "PendingApproval" ?
+                                                <Row style={{marginTop:'30px'}}>
+                                                    <Col lg={6}>
+                                                        <MuiButton variant="contained" style={{background:"#2e8500"}} onClick={() => approveRoom(room._id)}>Approve</MuiButton>
+                                                    </Col>
+                                                    <Col lg={6}>
+                                                        <MuiButton variant="contained" style={{background:'#e02200'}} onClick={(e) => handleRoomDialogOpen(e,room._id)}>Reject</MuiButton>
+                                                    </Col>
+                                                </Row>
+                                                    : ''}
+                                            </CardContent>
+                                        </Card>
+                                    </Col>
+                                </Row>
+                        ))}
+                    </CardContent>
+                </Card>
+            </Backdrop>
             <Dialog
                 fullScreen={fullScreen}
                 open={confirmDialog}
@@ -322,6 +487,34 @@ const AdminPendingBoardings = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Dialog
+                fullScreen={fullScreen}
+                open={roomConfirmDialog}
+                onClose={handleRoomDialogClose}
+                aria-labelledby="responsive-dialog-title"
+                style={{padding:'15px'}}
+            >
+                <DialogContent className={ownerStyles.confirmIcon}>
+                    <Warning style={{fontSize:'100px'}} />
+                </DialogContent>
+                <DialogTitle>
+                    {"Are you sure you want to reject this Room?"}
+                </DialogTitle>
+                <DialogActions>
+                    <Button autoFocus onClick={handleRoomDialogClose}>
+                        Cancel
+                    </Button>
+                    <Button onClick={rejectRoom} autoFocus variant="danger">
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={approvalLoading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </> 
     )
 };

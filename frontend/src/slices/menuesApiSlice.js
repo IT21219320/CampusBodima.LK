@@ -13,8 +13,9 @@ export const menuesApiSlice = apiSlice.injectEndpoints({
         }),
         getOwnerMenues: builder.mutation({
             query: (data) => ({
-                url: `${Menu_URL}/owner/${data}`,
-                method: 'GET',
+                url: `${Menu_URL}/ownerMenu`,
+                method: 'POST',
+                body:data,
             }),
         }),
         updateMenues: builder.mutation({

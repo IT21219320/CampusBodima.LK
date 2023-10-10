@@ -7,10 +7,10 @@ const toDoPaymentSchema = mongoose.Schema({
         required : true
     },
     
-    room: [{
+    room: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room'
-    }],
+    },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

@@ -267,7 +267,7 @@ const OwnerBoardingRoomPage = () => {
                         <Col>
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
-                                <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
+                                <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : userInfo.userType == 'kitchen' ? 'Kitchen' : <></>)}</Link>,
                                 <Link underline="hover" key="3" color="inherit" href="/owner/boardings/">Boardings</Link>,
                                 <Typography key="4" color="text.primary">{boarding.boardingName}</Typography>
                             </Breadcrumbs>
@@ -284,7 +284,7 @@ const OwnerBoardingRoomPage = () => {
                                     severity={boarding.status=='PendingRoom' ? "warning" : "info"}
                                 >
                                     {boarding.status=='PendingRoom' ?
-                                        <><strong>Warning</strong> -  Please add atleast 1 room to your boarding.</>
+                                        <><strong>Warning</strong> -  Please make sure your boarding is complete and its details are accurate.</>
                                     : 
                                         boarding.status=='PendingApproval' ?
                                             <><strong>Info</strong> -  Please wait while an admin reviews and approves your boarding.</>
@@ -417,7 +417,8 @@ const OwnerBoardingRoomPage = () => {
                                                             boarding.room.some(room => room.status == "Approved") ?
                                                                 boarding.room.map((room, index) => (
                                                                     room.status=="Approved" ? 
-                                                                        <Card key={index} className={`${ownerStyles.card} mt-4`}>
+                                                                    <Link key={index} href={`/owner/boardings/${boarding._id}/rooms/${room._id}/occupants`} style={{textDecoration:'none'}}>  
+                                                                        <Card className={`${ownerStyles.card} mt-4`}>
                                                                             <CardContent className={ownerStyles.cardContent}>
                                                                                 <Row style={{height:'100%', width:'100%'}}>
                                                                                     <Col style={{height:'100%'}} xs={4}>
@@ -462,18 +463,9 @@ const OwnerBoardingRoomPage = () => {
                                                                                                 <p className={ownerStyles.paras}><b>Beds:</b> {room.noOfBeds}</p>
                                                                                                 <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(room.noOfAttachBaths)+parseInt(room.noOfCommonBaths)}</p>
                                                                                             </Col>
-                                                                                            {room.occupant.length > 0 ?
                                                                                             <Col>
-                                                                                                <>
-                                                                                                    <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Occupants</b></p>
-                                                                                                    <ul style={{paddingLeft:'1.5em'}}>
-                                                                                                        {room.occupant.map((occupant,index) => (
-                                                                                                        <li key={index} style={{color:'dimgray'}}>{occupant.firstName}</li>
-                                                                                                        ))}
-                                                                                                    </ul>
-                                                                                                </>
+                                                                                                <p className={ownerStyles.paras}><b>Occupants:</b> {room.occupant.length}</p>
                                                                                             </Col>
-                                                                                            :''}
                                                                                             <Col>
                                                                                             {boarding.boardingType == 'Hostel' ? 
                                                                                                 <>
@@ -487,6 +479,7 @@ const OwnerBoardingRoomPage = () => {
                                                                                 </Row>
                                                                             </CardContent>
                                                                         </Card>
+                                                                    </Link>
                                                                     : ''
                                                                 ))
                                                             :   
@@ -521,16 +514,9 @@ const OwnerBoardingRoomPage = () => {
                                                                                         <p className={ownerStyles.paras}><b>Beds:</b> {room.noOfBeds}</p>
                                                                                         <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(room.noOfAttachBaths)+parseInt(room.noOfCommonBaths)}</p>
                                                                                     </Col>
-                                                                                    {room.occupant.length > 0 ?
                                                                                     <Col>
-                                                                                            <p className={ownerStyles.paras} style={{marginBottom:0}}><b>Occupants</b></p>
-                                                                                            <ul style={{paddingLeft:'1.5em'}}>
-                                                                                                {room.occupant.map((occupant,index) => (
-                                                                                                <li key={index} style={{color:'dimgray'}}>{occupant.firstName}</li>
-                                                                                                ))}
-                                                                                            </ul>
+                                                                                        <p className={ownerStyles.paras}><b>Occupants:</b> {room.occupant.length}</p>
                                                                                     </Col>
-                                                                                    :''}
                                                                                     <Col>
                                                                                     {boarding.boardingType == 'Hostel' ? 
                                                                                         <>

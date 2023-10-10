@@ -4,7 +4,7 @@ import {addMenu,getOwnerMenu,updateMenu,deleteMenu} from '../controllers/menuCon
 const router = express.Router();
 
 router.post('/add', addMenu);
-router.get('/owner/:ownerId', getOwnerMenu);
+router.post('/ownerMenu', getOwnerMenu);
 router.put('/owner', updateMenu);
 router.delete('/owner/:ownerId/:menuId', deleteMenu);
 

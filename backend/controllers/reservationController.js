@@ -196,9 +196,12 @@ const getMyReservation = asyncHandler(async (req, res) => {
         if (ViewMyReservation.boardingType === "Annex" && ViewMyReservation.status === "Approved") {
             const myDetails = {
                 Id: ViewMyReservation._id,
-                name: user.firstName,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 bType: ViewMyReservation.boardingType,
+                bAddress: boarding.address,
                 bName: boarding.boardingName,
+                rent: boarding.rent,
                 Duration: ViewMyReservation.Duration,
                 reservedDt: ViewMyReservation.createdAt
             }
@@ -210,10 +213,13 @@ const getMyReservation = asyncHandler(async (req, res) => {
 
             const myDetails = {
                 Id: ViewMyReservation._id,
-                name: user.firstName,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 bType: ViewMyReservation.boardingType,
+                bAddress: boarding.address,
                 bName: boarding.boardingName,
                 rNo: room.roomNo,
+                rent: room.rent,
                 Duration: ViewMyReservation.Duration,
                 reservedDt: ViewMyReservation.createdAt
             }
@@ -259,6 +265,7 @@ const getBoardingReservations = asyncHandler(async (req, res) => {
                     Name: occName.firstName,
                     Date: reserveI.createdAt,
                     Duration: reserveI.Duration,
+                    bType: boarding.boardingType,
 
                 });
 
@@ -273,6 +280,7 @@ const getBoardingReservations = asyncHandler(async (req, res) => {
                     Date: reserveI.createdAt,
                     Duration: reserveI.Duration,
                     RoomNo: room.roomNo,
+                    bType: boarding.boardingType,
                 });
 
             }
@@ -297,8 +305,8 @@ const getPendingReservations = asyncHandler(async (req, res) => {
     const boarding = await Boarding.findById(boardingId);
 
     const reserve = await Reservation.find({ boardingId: boardingId, status: 'Pending' });
-
-    if (reserve) {
+    console.log(reserve.length);
+    if (reserve.length>0) {
 
         const detailsArry = [];
         for (const reserveI of reserve) {
@@ -334,8 +342,8 @@ const getPendingReservations = asyncHandler(async (req, res) => {
 
     }
     else {
-        res.status(400);
-        throw new Error("No pending reservations for boarding");
+        
+        res.status(200).json({message:"No Pendings"});
     }
 
 });
@@ -424,23 +432,23 @@ const deletePendingStatus = asyncHandler(async (req, res) => {
 const deleteReservation = asyncHandler(async (req, res) => {
 
 
-    const ReservationId = req.body;
-    console.log(ReservationId.reservationId)
+    const ReservationId = req.body.ReservationId;
+    console.log(ReservationId)
 
-    const deletedReservation = await Reservation.findByIdAndDelete(ReservationId.reservationId);
+    const deletedReservation = await Reservation.findByIdAndDelete(ReservationId);
     console.log(deletedReservation)
     if (deletedReservation) {
 
         const user = await User.findById(deletedReservation.occupantID);
+        const boarding = await Boarding.findById(deletedReservation.boardingId);
+        console.log(boarding)
 
         if (deletedReservation.boardingType === "Annex") {
-            console.log(deletedReservation.boardingId);
 
             const reservationHistory = new ReservationHistory({
 
-                boardingId: deletedReservation.boardingId,
-                boardingType: deletedReservation.boardingType,
-                occupantID: user,
+                boarding: boarding,
+                occupant: user,
                 ReservedDate: deletedReservation.createdAt,
 
             });
@@ -463,12 +471,13 @@ const deleteReservation = asyncHandler(async (req, res) => {
             );
 
         } else if (deletedReservation.boardingType === "Hostel") {
+
+            const room = await Room.findById(deletedReservation.roomID)
             const reservationHistory = new ReservationHistory({
 
-                boardingId: deletedReservation.boardingId,
-                boardingType: deletedReservation.boardingType,
-                roomID: deletedReservation.roomID,
-                occupantID: user,
+                boarding: boarding,
+                room: room,
+                occupant: user,
                 ReservedDate: deletedReservation.createdAt,
 
             });
@@ -505,25 +514,80 @@ const deleteReservation = asyncHandler(async (req, res) => {
 });
 
 //@desc get boardings by owner ID
-//route GET/api/reservations/deleteReservation
+//route GET/api/reservations/boardings
 // @access  Private - owner
 
-const getBoardingByOwnerID = asyncHandler (async(req, res) => {
-    const ownerID =  req.body.ownerId;
+const getBoardingByOwnerID = asyncHandler(async (req, res) => {
+    const ownerID = req.body.ownerId;
 
-    const ownerBoardings = await Boarding.find({owner:ownerID});
+    const ownerBoardings = await Boarding.find({ owner: ownerID });
 
-    if(ownerBoardings){
+    if (ownerBoardings) {
         res.status(200).json({
             ownerBoardings,
         })
     }
-    else{
+    else {
         res.status(400);
         throw new Error("No Boardings Available")
     }
 
 });
+
+//@desc get boardings by boardingId
+//route GET/api/reservations/deleteReservation
+// @access  Private - owner
+
+const getBoardingByBId = asyncHandler(async (req, res) => {
+    const bid = req.body.bId;
+
+    const selectedBoarding = await Boarding.findById({ _id: bid });
+
+    if (selectedBoarding) {
+        res.status(200).json({
+            selectedBoarding,
+        })
+    }
+    else {
+        res.status(400);
+        throw new Error("No Boarding for this id")
+    }
+
+});
+
+//@desc add gender to google accounts
+//route POST/api/reservations/updateGender
+// @access  Private - occupant
+
+const updateGender = asyncHandler(async (req, res) => {
+    const { occId, gender } = req.body;
+
+    const occupant = await User.findById({ _id: occId });
+
+    if (occupant) {
+        if (occupant.accType == 'google') {
+            console.log(occupant.accType)
+            /*const updatedGender =  await User.findOneAndUpdate(
+                { _id: occId },
+                {
+                    $push: { gender: gender }
+                },
+                { new: true }
+            )*/
+
+            occupant.gender = gender
+            occupant.save()
+            res.status(200).json(occupant)
+        } else {
+            res.status(200).json({
+                message: 'normal account',
+            })
+        }
+    } else {
+        res.status(400);
+        throw new Error("No User Exist")
+    }
+})
 
 
 export {
@@ -536,4 +600,6 @@ export {
     deletePendingStatus,
     deleteReservation,
     getBoardingByOwnerID,
+    getBoardingByBId,
+    updateGender,
 }
