@@ -7,7 +7,7 @@ import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Form } from 'react-bootstrap';
 import { useGetCardByUserMutation, useDeleteCardMutation, useUpdateCardMutation } from "../slices/cardApiSlice";
-import { useGetPaymentByUserMutation,useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation } from "../slices/paymentApiSlice";
+import { useGetPaymentByUserMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation } from "../slices/paymentApiSlice";
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css";
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -90,10 +90,10 @@ const OccupantPaymentDash = () => {
     //tabViews
     const [value, setValue] = useState('1');
     let bId
-    if(myReserve){
+    if (myReserve) {
         bId = myReserve.boardingId
     }
-    
+
 
 
 
@@ -148,30 +148,30 @@ const OccupantPaymentDash = () => {
         }
         try {
 
-            const resGetPay = await getPayment({ userInfo_id: userInfo._id, oId:searchQ }).unwrap();
+            const resGetPay = await getPayment({ userInfo_id: userInfo._id, oId: searchQ }).unwrap();
             setPayments(resGetPay.payments);
 
         } catch (error) {
 
             console.error('Error getting payments', error);
         }
-        
+
         try {
 
             const resGetToDOPay = await getToDoPayment({ userInfo_id: userInfo._id }).unwrap();
             setToDoPayment(resGetToDOPay);
-            
+
         } catch (error) {
 
             console.error('Error getting To Do payments', error);
 
         }
         try {
-            
-            const userInfo_id = userInfo._id 
-            const myReserv = await getReserv({_id:userInfo_id}).unwrap();
+
+            const userInfo_id = userInfo._id
+            const myReserv = await getReserv({ _id: userInfo_id }).unwrap();
             setMyReserve(myReserv)
-            
+
         } catch (error) {
             console.log("Error in my reservration", error)
         }
@@ -180,7 +180,7 @@ const OccupantPaymentDash = () => {
 
             const myOldPay = await getToDoPaymentOld({ userInfo_id: userInfo._id }).unwrap();
             setToDoPaymentOld(myOldPay[0])
-            
+
         } catch (error) {
             console.log(error)
         }
@@ -227,11 +227,15 @@ const OccupantPaymentDash = () => {
     }
 
     const navigateToPay = () => {
-        navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPayment.length>0&&toDoPayment[0].amount}/${toDoPayment.length>0&&toDoPayment[0]._id}`)
+        navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPayment.length > 0 && toDoPayment[0].amount}/${toDoPayment.length > 0 && toDoPayment[0]._id}`)
     }
 
     const navigateToPayOld = () => {
-        navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPaymentOld&&toDoPaymentOld.amount}/${toDoPaymentOld&&toDoPaymentOld._id}`)
+        navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPaymentOld && toDoPaymentOld.amount}/${toDoPaymentOld && toDoPaymentOld._id}`)
+    }
+
+    const navigateToPayI = () => {
+        navigate(`/occupant/makePayment/${bId}`)
     }
 
     return (
@@ -270,40 +274,49 @@ const OccupantPaymentDash = () => {
                                     </Row>
                                 </Col>
                             </Row>
-                                <Row style={{ paddingLeft: "2%", paddingRight: "2%" }}>
-                                    <Col style={{ backgroundColor: "#cfd8fa", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginRight: "2%" }}>
+                                {myReserve.paymentStatus == 'Pending'&& myReserve.paymentType == 'Online' ? (
+                                    <>
                                         <Row>
-                                            <h4 style={{ textAlign: " center" }}>This Month Fees </h4>
-                                            <hr style={{}}/>
+                                            <p>Payment is pending. Do your Initial payment in here</p>
+                                            <Button onClick={navigateToPayI}>Pay</Button>
                                         </Row>
-                                        {toDoPayment.length>0 ? (<><Row>
-                                            <h5>Total Fee {toDoPayment.length>0 && toDoPayment[0].amount}</h5>
-                                        </Row>
-                                        <Row style={{ marginLeft: "68%" }}>
 
-                                            <Button variant="contained" style={{}} onClick={() => navigateToPay()}>Pay your Fee</Button>
+                                    </>) : (
+                                    <><Row style={{ paddingLeft: "2%", paddingRight: "2%" }}>
+                                        <Col style={{ backgroundColor: "#cfd8fa", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginRight: "2%" }}>
+                                            <Row>
+                                                <h4 style={{ textAlign: " center" }}>This Month Fees </h4>
+                                                <hr style={{}} />
+                                            </Row>
+                                            {toDoPayment.length > 0 ? (<><Row>
+                                                <h5>Total Fee {toDoPayment.length > 0 && toDoPayment[0].amount}</h5>
+                                            </Row>
+                                                <Row style={{ marginLeft: "68%" }}>
 
-                                        </Row></>):(<>
-                                        <p>You have done the payment</p>
-                                        </>)}
-                                        
-                                    </Col>
-                                    <Col style={{ backgroundColor: "#ffcaca", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginLeft: "2%" }}>
-                                        <Row>
-                                            <h4 style={{ textAlign: " center" }}>Previous Month Fees </h4>
-                                            <hr/>
-                                        </Row>
-                                        {toDoPaymentOld ? (<><Row>
-                                            <h5>Total Fee {toDoPaymentOld && toDoPaymentOld.amount}</h5>
-                                        </Row>
-                                        <Row style={{ marginLeft: "68%" }}>
-                                        
-                                            <Button variant="contained" style={{}} onClick={() => navigateToPayOld()}>Pay your Fee</Button>
+                                                    <Button variant="contained" style={{}} onClick={() => navigateToPay()}>Pay your Fee</Button>
 
-                                        </Row></>):(<><p>You have done the payment</p></>)}
-                                        
-                                    </Col>
-                                </Row></TabPanel>
+                                                </Row></>) : (<>
+                                                    <p>You have done the payment</p>
+                                                </>)}
+
+                                        </Col>
+                                        <Col style={{ backgroundColor: "#ffcaca", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginLeft: "2%" }}>
+                                            <Row>
+                                                <h4 style={{ textAlign: " center" }}>Previous Month Fees </h4>
+                                                <hr />
+                                            </Row>
+                                            {toDoPaymentOld ? (<><Row>
+                                                <h5>Total Fee {toDoPaymentOld && toDoPaymentOld.amount}</h5>
+                                            </Row>
+                                                <Row style={{ marginLeft: "68%" }}>
+
+                                                    <Button variant="contained" style={{}} onClick={() => navigateToPayOld()}>Pay your Fee</Button>
+
+                                                </Row></>) : (<><p>You have done the payment</p></>)}
+
+                                        </Col></Row></>)}
+
+                            </TabPanel>
                             <TabPanel value="2"><Row>
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
@@ -429,7 +442,7 @@ const OccupantPaymentDash = () => {
                                                             <StyledTableCell align="right" >{payment.description}</StyledTableCell>
 
                                                             <StyledTableCell align="right"> {new Date(payment.date).toDateString()}</StyledTableCell>
-                                                            
+
                                                             <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
                                                         </StyledTableRow>
                                                     ))) : (

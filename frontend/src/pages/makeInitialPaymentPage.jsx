@@ -14,7 +14,7 @@ function MakeInitialPaymentPage() {
 
   const [activeStep, setActiveStep] = useState(2);
   const [boardingDetails, setBoardingDetails] = useState();
-  console.log(boardingDetails)
+  
   const { bId } = useParams();
   const [getBoardingById] = useGetBoardingByIdMutation();
   
@@ -34,7 +34,7 @@ function MakeInitialPaymentPage() {
       am = (boardingDetails.room[0].keyMoney) * (boardingDetails.room[0].rent)
     }
     else {
-      am = boardingDetails.keyMoney
+      am = boardingDetails.keyMoney * boardingDetails.rent
     }
   }
 
@@ -97,7 +97,7 @@ function MakeInitialPaymentPage() {
                     )}
                   </h5>
                   <hr style={{ color: "white", borderWidth: "2px" }}></hr>
-                  <h5 className={paymentScreenStyles.h5Text}>
+                  <h5 className={paymentScreenStyles.h5Text}></h5>
 
                     {boardingDetails.boardingType == "Hostel" ? (
                       <>
@@ -105,7 +105,7 @@ function MakeInitialPaymentPage() {
                       </>) : (
                       <>
                         <h5 className={paymentScreenStyles.h5Text}><p style={{ float: "left", width: "52%" }}>Initial Payment</p> <p className={paymentScreenStyles.h5Text}>LKR {am}</p></h5>
-                      </>)}</h5></>) : (<>No Boarding</>)}
+                      </>)}</>) : (<><h5>No Boarding</h5></>)}
 
 
               </Col>
