@@ -12,10 +12,7 @@ import { DateRange } from 'react-date-range';
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
-import { fontFamily } from "@mui/system";
-import { formatDistanceToNow } from 'date-fns';
-import { FiEdit } from 'react-icons/fi';
-import {RiDeleteBinLine} from 'react-icons/ri'
+import { sort } from 'lodash';
 import { BrowserUpdated as BrowserUpdatedIcon } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from "@emotion/react";
@@ -51,7 +48,22 @@ const OrderList = () =>{
       };
     const { userInfo } = useSelector((state) => state.auth);
 
+    const getStatusValue = (status) => {
+        switch (status) {
+          case 'Pending':
+            return 1;
+          case 'Ready':
+            return 2;
+          case 'Completed':
+            return 3;
+          default:
+            return 4;
+        }
+      };
+      
+      // Sort the filteredOrders array by status
     
+
 
     const navigate = useNavigate();
 
@@ -82,6 +94,8 @@ const OrderList = () =>{
         );
       });
 
+      // Sort the filteredOrders array by status
+    filteredOrders.sort((a, b) => getStatusValue(a.status) - getStatusValue(b.status));
 
     return(
         <>
@@ -111,11 +125,9 @@ const OrderList = () =>{
                             <>
                                 <Row>
                                     <Col>
-                                        <Card variant="outlined" className={occupantFeedbackStyles.card}>
-                                            <CardContent>
-                                                <h3>My Orders</h3>
-                                            </CardContent>
-                                        </Card>
+                                        <div className={orderStyles.card}>
+                                            <h3>My Orders</h3>
+                                        </div>
                                     </Col>
                                 </Row>
                                 <Row><div className={orderStyles.search}><TextField
@@ -177,17 +189,17 @@ const OrderList = () =>{
                                                                             style={{ background: '#FF0000', color: 'black' }}
                                                                             onClick={() => openDeleteModal(order)}
                                                                         >
-                                                                            <DeleteIcon /> Delete
+                                                                            <DeleteIcon /> 
                                                                         </Button>
                                                                         </td>
                                                                     </>
                                                                     ) : order.status === "Ready" ? (
                                                                     <>
-                                                                        <td style={{color:'green'}}>Your Order Is Ready for Pickup!</td>
+                                                                        <td style={{color:'red',textAlign:"center"}}>Your Order Is Ready for Pickup!</td>
                                                                     </>
                                                                     ) : (
                                                                         <>
-                                                                            <td>Order Completed</td>
+                                                                            <td style={{color:'darkgreen',textAlign:"center"}}>Order Completed</td>
                                                                         </>
                                                                         )  }
                                                             

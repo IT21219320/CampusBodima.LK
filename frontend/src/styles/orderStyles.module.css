@@ -55,3 +55,28 @@
     text-align: right;
     
   }
+
+  .foodmenu {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px;
+  }
+  
+  .fooditem {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .fooditem img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .fooditem h3 {
+    margin: 10px 0;
+  }
+  
+  /* Add more styling as needed */
+  

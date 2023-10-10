@@ -35,7 +35,7 @@ const createOrder = async (req, res) => {
       foodType:foodTypeNames[foodType],
       quantity:quantity,
       price:price,
-      orderNo:orderNo+1,
+      orderNo:orderNo+orderNo,
       
       owner:owner,
       occupant: occupantId,
@@ -148,7 +148,6 @@ const updateOrder = asyncHandler(async (req, res) => {
 
 
 const updateStatus = asyncHandler(async (req, res) => {
-  console.log(req.body._id);
   const order = await Order.findOne({_id:req.body._id});    
     if (order) {
       

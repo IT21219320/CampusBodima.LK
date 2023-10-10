@@ -6,17 +6,13 @@ import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Table, Tabs, Tab} from 'react-bootstrap';
-import { Breadcrumbs, Typography, Fade, Card, CardContent,Link, Button, TextField ,CircularProgress} from '@mui/material';
+import { Button, TextField ,CircularProgress} from '@mui/material';
 import { GetAppRounded} from '@mui/icons-material';
-import { DateRange } from 'react-date-range';
+
 import orderStyles from '../styles/orderStyles.module.css';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
-import { fontFamily } from "@mui/system";
-import { formatDistanceToNow } from 'date-fns';
-import { FiEdit } from 'react-icons/fi';
-import {RiDeleteBinLine} from 'react-icons/ri'
-import { BrowserUpdated as BrowserUpdatedIcon } from '@mui/icons-material';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from "@emotion/react";
 import DeleteOrder from "../pages/DeleteOrder";
@@ -79,12 +75,12 @@ const OrderComplete = () =>{
     };
    
     useEffect(() => {
-        // Dispatch the action to fetch feedback data
+        
         loadOrderData();
-      }, []); // Empty dependency array to trigger the effect on component mount
+      }, []); 
 
       const filteredOrders = product
-        .filter((order) => order.status === "Completed") // Filter by "Pending" status
+        .filter((order) => order.status === "Completed") 
         .filter((order) => {
             return (
             order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -92,17 +88,17 @@ const OrderComplete = () =>{
             );
         });
 
-        const exportToPDF = () => {;
-               
-            // Create a new jsPDF instance
+        const exportToPDF = () => {;//Report Generating
+            
+            const completedOrders = product.filter((order) => order.status === 'Completed');
+
             const doc = new jsPDF();
         
-            // Define the table headers
             const headers = [[ "Date","Time","Order Number","Product","Food Type","Qty","Price","Total"]];
         
             // Map the admin data to table rows
         
-            const data = product.map((order) => [
+            const data = completedOrders.map((order) => [
                 new Date(order.date).toLocaleDateString(),
                 `${new Date(order.date).getHours()}:${new Date(order.date).getMinutes()}`,
                 order.orderNo,
@@ -114,27 +110,28 @@ const OrderComplete = () =>{
                 order.status,
             ]);
         
-            // Set the table styles
             const styles = {
               halign: "center",
               valign: "middle",
               fontSize: 10,
             };
         
-            // Add the table to the PDF document
             doc.autoTable({
               head: headers,
               body: data,
               styles,
               margin: { top: 70 },
-              startY: 20
+              startY: 50
             });
         
             
-        
-            doc.text("Orders", 90, 10);
-            doc.setFontSize(9);
-        
+            
+            
+            doc.text("Order History List", 85, 40);
+            doc.setFontSize(8);
+            doc.text(`Report of Order List`, 20, 20)
+            doc.text(`Date: ${new Date().toDateString()}`, 20, 24)
+            doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 28)
             doc.save("OrderHistory.pdf");
         
         };
@@ -150,7 +147,8 @@ const OrderComplete = () =>{
                     
                 </Col>
             </Row>
-        
+            <Row>
+                <Col>
             <TextField
                 id="search"
                 label="Search Product"
@@ -159,10 +157,11 @@ const OrderComplete = () =>{
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={formStyle.searchField}
             />
-            <Row>
+            </Col>
                 <Col style={{textAlign:'right'}}>
-                    <Button variant="contained" style={{marginRight:'10px', background:'#4c4c4cb5'}} onClick={exportToPDF}>Export<GetAppRounded /></Button>
+                    <Button variant="contained" style={{marginRight:'10px', background:'#4c4c4cb5'}} onClick={exportToPDF}>Download Report<GetAppRounded /></Button>
                 </Col>
+                <p></p>
             </Row>
             <Row>
                 <Col>
@@ -186,7 +185,7 @@ const OrderComplete = () =>{
                         <tbody>
                         {isLoading ? (
                                 <tr style={{ width: '100%', height: '100%', textAlign: 'center' }}>
-                                    <td colSpan={3}><CircularProgress /></td>
+                                    <td colSpan={10}><CircularProgress /></td>
                                 </tr>
                             ) : filteredOrders.length > 0 ? ( // Step 4: Display filtered orders
                             filteredOrders.map((order, index) => (

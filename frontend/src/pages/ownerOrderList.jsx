@@ -8,16 +8,9 @@ import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Table, Tabs, Tab} from 'react-bootstrap';
 import { Breadcrumbs, Typography, Fade, Card, CardContent,Link, Button, TextField ,CircularProgress} from '@mui/material';
 import { NavigateNext, Search, GridViewRounded } from '@mui/icons-material';
-import { DateRange } from 'react-date-range';
-import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
-import { fontFamily } from "@mui/system";
-import { formatDistanceToNow } from 'date-fns';
-import { FiEdit } from 'react-icons/fi';
-import {RiDeleteBinLine} from 'react-icons/ri'
-import { BrowserUpdated as BrowserUpdatedIcon } from '@mui/icons-material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import orderStyles from '../styles/orderStyles.module.css';
+import 'react-date-range/dist/styles.css'; 
+import 'react-date-range/dist/theme/default.css'; 
 import { useTheme } from "@emotion/react";
 import DeleteOrder from "./DeleteOrder";
 import formStyle from '../styles/formStyle.module.css';
@@ -124,11 +117,9 @@ const OrderList = () =>{
                     <Tab eventKey="Pending Orders" title="Pending Orders">
                         <Row>
                             <Col>
-                                <Card variant="outlined" className={occupantFeedbackStyles.card}>
-                                    <CardContent>
-                                        <h3>Pending Orders</h3>
-                                    </CardContent>
-                                </Card>
+                                <div className={orderStyles.card}>
+                                <h3>Pending Orders</h3>
+                                </div>
                             </Col>
                         </Row>
                         <TextField
@@ -138,10 +129,10 @@ const OrderList = () =>{
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className={formStyle.searchField}
-                        />
+                        /><p></p>
                         <Row>
                             <Col>
-                                <Table striped bordered hover className={occupantFeedbackStyles.table}>
+                                <Table striped bordered hover className={orderStyles.table}>
                                     <thead>
                                             <tr style={{textAlign:'center'}}>
                                                 {/*<th>Order id</th>*/}
@@ -161,7 +152,7 @@ const OrderList = () =>{
                                     <tbody>
                                     {isLoading ? (
                                             <tr style={{ width: '100%', height: '100%', textAlign: 'center' }}>
-                                                <td colSpan={3}><CircularProgress /></td>
+                                                <td colSpan={10}><CircularProgress /></td>
                                             </tr>
                                         ) : filteredOrders.length > 0 ? ( // Step 4: Display filtered orders
                                         filteredOrders.map((order, index) => (
@@ -203,10 +194,10 @@ const OrderList = () =>{
                         </Row>
                     </Tab>
                     <Tab eventKey="Ready Orders" title="Ready Orders">
-                        <OrderReady />
+                        {activeTab=="Ready Orders" ?<OrderReady>Ready</OrderReady>:''}
                     </Tab>
                     <Tab eventKey="Completed Orders" title="Completed Orders">
-                        <OrderComplete />
+                    {activeTab=="Completed Orders" ?<OrderComplete>Ready</OrderComplete>:''}
                     </Tab>
                 </Tabs>
                                                    

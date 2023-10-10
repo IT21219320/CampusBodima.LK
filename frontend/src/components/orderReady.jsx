@@ -9,7 +9,7 @@ import { Container, Row, Col, Table, Tabs, Tab} from 'react-bootstrap';
 import { Breadcrumbs, Typography, Fade, Card, CardContent,Link, Button, TextField ,CircularProgress} from '@mui/material';
 import { NavigateNext, Search, GridViewRounded } from '@mui/icons-material';
 import { DateRange } from 'react-date-range';
-import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
+import orderStyles from '../styles/orderStyles.module.css';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { fontFamily } from "@mui/system";
@@ -23,7 +23,7 @@ import DeleteOrder from "../pages/DeleteOrder";
 import formStyle from '../styles/formStyle.module.css';
 
 const OrderReady = () =>{
-
+    
     const theme = useTheme();
 
     const [product, setOrder] = useState([]);
@@ -32,7 +32,7 @@ const OrderReady = () =>{
     const [activeTab, setActiveTab] = useState('Place Order');
     const [searchQuery, setSearchQuery] = useState(''); 
     
-
+    
     
     const openDeleteModal = (order) => {
         setSelectedOrder(order);
@@ -102,11 +102,9 @@ const OrderReady = () =>{
         <>
             <Row>
                 <Col>
-                    <Card variant="outlined" className={occupantFeedbackStyles.card}>
-                        <CardContent>
-                            <h3>Ready Orders</h3>
-                        </CardContent>
-                    </Card>
+                <div className={orderStyles.card}>
+                            <h3>Prepared Orders</h3>
+                        </div>
                 </Col>
             </Row>
             <TextField
@@ -116,10 +114,10 @@ const OrderReady = () =>{
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={formStyle.searchField}
-            />
+            /><p></p>
             <Row>
                 <Col>
-                    <Table striped bordered hover className={occupantFeedbackStyles.table}>
+                    <Table striped bordered hover className={orderStyles.table}>
                         <thead>
                                 <tr style={{textAlign:'center'}}>
                                     {/*<th>Order id</th>*/}
@@ -132,14 +130,14 @@ const OrderReady = () =>{
                                     <th>Price</th>
                                     <th>Total</th>
                                     <th>Status</th>
-                                    <th>Update Or Delete</th>
+                                    <th>Change Status</th>
                                     
                                 </tr>
                         </thead>
                         <tbody>
                         {isLoading ? (
                                 <tr style={{ width: '100%', height: '100%', textAlign: 'center' }}>
-                                    <td colSpan={3}><CircularProgress /></td>
+                                    <td colSpan={10}><CircularProgress /></td>
                                 </tr>
                             ) : filteredOrders.length > 0 ? ( // Step 4: Display filtered orders
                             filteredOrders.map((order, index) => (
