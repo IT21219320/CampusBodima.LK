@@ -47,7 +47,7 @@ const OwnerIngredientPage = () => {
             const res = await getOwnerBoarding(ownerId).unwrap();  
             setBoardingNames(res.boardings);  
             
-            if (res.boardings.length > 0) {
+            if (res.boardings.length > 0 && res.boardings[0].inventoryManager) {
                 // Set the default selected boarding ID to the first one in the list
                 setBoardingId(res.boardings[0]._id);
             }
@@ -64,7 +64,13 @@ const OwnerIngredientPage = () => {
 
     // Function to handle when a boarding is selected
     const handleBoardingSelect = (event) => {
-        setBoardingId(event.target.value);
+        const boarding = boardingNames.find(item => item._id === event.target.value);
+        if(!boarding.inventoryManager){
+            alert('select manager')
+        }
+        else{
+            setBoardingId(event.target.value);
+        }
     };
 
     return (

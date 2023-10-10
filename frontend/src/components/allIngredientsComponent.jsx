@@ -146,7 +146,11 @@ const AllIngredients = ({ boardingId }) => {
                             
                         ):(
                             <div style={{height:'100%', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
-                                <h2>You don't have any Ingredients!</h2>
+                                {boardingId ? 
+                                    <h2>You don't have any Ingredients!</h2>
+                                :
+                                    <h2>Please Select a boarding!</h2>
+                                }
                             </div>
                     )}
                 </Col>
