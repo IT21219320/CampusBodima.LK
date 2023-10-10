@@ -15,6 +15,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import SearchIcon from '@mui/icons-material/Search';
 import { useGetBoardingReservationsMutation } from '../slices/reservationsApiSlice';
+import { useGetBoardingBybIdMutation } from '../slices/reservationsApiSlice';
 import { useParams } from 'react-router-dom';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -50,12 +51,18 @@ const ViewAllReservations = ({ bId }) => {
   const { userInfo } = useSelector((state) => state.auth);
 
   const [getReservation] = useGetBoardingReservationsMutation();
+  const [getBording] = useGetBoardingBybIdMutation();
+
   const [reservations, setReservations] = useState([]);
+  const [boardingId , setBoardingId] = useState([]);
 
   const loadData = async () => {
     try {
       const res = await getReservation({ boardingId: bId }).unwrap();
+      const resbor = await getBording({ bId:bId })
       setReservations(res);
+      setBoardingId(resbor.data.selectedBoarding);
+      console.log(resbor.data.selectedBoarding);
 
     } catch (error) {
       console.error('Error getting boardings', error);
@@ -85,7 +92,11 @@ const ViewAllReservations = ({ bId }) => {
               <TableCell align="right" style={{ color: "#ffffff" }}>Name</TableCell>
               <TableCell align="right" style={{ color: "#ffffff" }}>Date</TableCell>
               <TableCell align="right" style={{ color: "#ffffff" }}>Duration</TableCell>
-              <TableCell align="right" style={{ color: "#ffffff" }}>Room Number</TableCell>
+              {console.log(boardingId.boardingType)}
+              {boardingId.boardingType === 'Hostel'? (
+                <TableCell align="right" style={{ color: "#ffffff" }}>Room Number</TableCell>
+              ):(<></>)}
+              
             </TableRow>
           </TableHead>
           <TableBody style={{ backgroundColor: '#858bc72b' }}>
@@ -104,7 +115,9 @@ const ViewAllReservations = ({ bId }) => {
                     <TableCell align="right">{reservation.Name}</TableCell>
                     <TableCell align="right">{new Date(reservation.Date).toDateString()}</TableCell>
                     <TableCell align="right">{reservation.Duration}</TableCell>
+                    {reservation.bType === 'Hostel'?(
                     <TableCell align="right">{reservation.RoomNo}</TableCell>
+                    ):(<></>)}
 
                   </TableRow>
                 ))

@@ -197,7 +197,7 @@ const getMyReservation = asyncHandler(async (req, res) => {
             const myDetails = {
                 Id: ViewMyReservation._id,
                 firstName: user.firstName,
-                lastName:user.lastName,
+                lastName: user.lastName,
                 bType: ViewMyReservation.boardingType,
                 bAddress: boarding.address,
                 bName: boarding.boardingName,
@@ -214,7 +214,7 @@ const getMyReservation = asyncHandler(async (req, res) => {
             const myDetails = {
                 Id: ViewMyReservation._id,
                 firstName: user.firstName,
-                lastName:user.lastName,
+                lastName: user.lastName,
                 bType: ViewMyReservation.boardingType,
                 bAddress: boarding.address,
                 bName: boarding.boardingName,
@@ -265,6 +265,7 @@ const getBoardingReservations = asyncHandler(async (req, res) => {
                     Name: occName.firstName,
                     Date: reserveI.createdAt,
                     Duration: reserveI.Duration,
+                    bType: boarding.boardingType,
 
                 });
 
@@ -279,6 +280,7 @@ const getBoardingReservations = asyncHandler(async (req, res) => {
                     Date: reserveI.createdAt,
                     Duration: reserveI.Duration,
                     RoomNo: room.roomNo,
+                    bType: boarding.boardingType,
                 });
 
             }
@@ -299,17 +301,12 @@ const getBoardingReservations = asyncHandler(async (req, res) => {
 
 const getPendingReservations = asyncHandler(async (req, res) => {
     const boardingId = req.body.boardingId;
-    let reserve;
 
-    if (boardingId) {
-        const boarding = await Boarding.findById(boardingId);
+    const boarding = await Boarding.findById(boardingId);
 
-         reserve = await Reservation.find({ boardingId: boardingId, status: 'Pending' });
-    } else {
-     reserve = await Reservation.find({ status: 'Pending' });
-    }
-
-    if (reserve) {
+    const reserve = await Reservation.find({ boardingId: boardingId, status: 'Pending' });
+    console.log(reserve.length);
+    if (reserve.length>0) {
 
         const detailsArry = [];
         for (const reserveI of reserve) {
@@ -345,8 +342,8 @@ const getPendingReservations = asyncHandler(async (req, res) => {
 
     }
     else {
-        res.status(400);
-        throw new Error("No pending reservations for boarding");
+        
+        res.status(200).json({message:"No Pendings"});
     }
 
 });
@@ -517,7 +514,7 @@ const deleteReservation = asyncHandler(async (req, res) => {
 });
 
 //@desc get boardings by owner ID
-//route GET/api/reservations/deleteReservation
+//route GET/api/reservations/boardings
 // @access  Private - owner
 
 const getBoardingByOwnerID = asyncHandler(async (req, res) => {
@@ -533,6 +530,27 @@ const getBoardingByOwnerID = asyncHandler(async (req, res) => {
     else {
         res.status(400);
         throw new Error("No Boardings Available")
+    }
+
+});
+
+//@desc get boardings by boardingId
+//route GET/api/reservations/deleteReservation
+// @access  Private - owner
+
+const getBoardingByBId = asyncHandler(async (req, res) => {
+    const bid = req.body.bId;
+
+    const selectedBoarding = await Boarding.findById({ _id: bid });
+
+    if (selectedBoarding) {
+        res.status(200).json({
+            selectedBoarding,
+        })
+    }
+    else {
+        res.status(400);
+        throw new Error("No Boarding for this id")
     }
 
 });
@@ -582,5 +600,6 @@ export {
     deletePendingStatus,
     deleteReservation,
     getBoardingByOwnerID,
+    getBoardingByBId,
     updateGender,
 }
