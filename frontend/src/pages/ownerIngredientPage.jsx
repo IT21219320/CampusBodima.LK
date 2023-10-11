@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Form, Container, Row, Col, Table, Button, Tabs, Tab } from 'react-bootstrap';
+import { Form, Container, Row, Col, Table, Button, Tabs, Tab,Modal } from 'react-bootstrap';
 import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, Pagination, CircularProgress, Box, FormControl,  InputLabel, MenuItem, Select  } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import { NavigateNext,} from '@mui/icons-material';
@@ -32,6 +32,7 @@ const OwnerIngredientPage = () => {
     const [boardingId, setBoardingId] = useState('');
     const [boardingNames, setBoardingNames] = useState([]);
     const [activeTab, setActiveTab] = useState("Ingredients");
+    const [showModal, setShowModal] = useState(false);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -66,12 +67,17 @@ const OwnerIngredientPage = () => {
     const handleBoardingSelect = (event) => {
         const boarding = boardingNames.find(item => item._id === event.target.value);
         if(!boarding.inventoryManager){
-            alert('select manager')
+            setShowModal(true);
         }
         else{
             setBoardingId(event.target.value);
         }
     };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
 
     return (
         <>
@@ -139,6 +145,24 @@ const OwnerIngredientPage = () => {
                      
                 </Container>
             </div>
+
+             {/* Bootstrap Modal */}
+             <Modal show={showModal} onHide={handleCloseModal} backdrop="static" keyboard={false}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select Manager</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Please select a boarding with an inventory manager.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleCloseModal}>
+                        Understood
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </> 
     )
 };
