@@ -63,6 +63,8 @@ import ConfirmReservationPage from './pages/confirmReservationPage.jsx';
 import MyReservationPage from './pages/myReservationPage.jsx';
 import OwnerAllReservarions from './pages/ownerAllReservationsPage.jsx';
 
+import MenuView from './pages/menuView.jsx';
+
 import Orders from './pages/Orders.jsx';
 import OwnerOrderList from './pages/ownerOrderList.jsx';
 import UpdateOrder from './pages/UpdateOrder.jsx';
@@ -120,6 +122,8 @@ const router = createBrowserRouter(
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
           
+          <Route path='/owner/menu/' element={<MenuView />} />
+
           <Route path='/owner/orders/' element={<OwnerOrderList />} />
 
           <Route path='/owner/ticket' element={<OwnerTicketsPage />} />
@@ -130,6 +134,7 @@ const router = createBrowserRouter(
           <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
         </Route>
 
+        {/* Inventory Manager Routes */}
         <Route path='' element={<KitchenRoute />}>
           <Route path='/kitchen/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/kitchen/ingredient/add' element={ <AddIngredientPage /> } />
