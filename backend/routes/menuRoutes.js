@@ -6,6 +6,6 @@ const router = express.Router();
 router.post('/add', addMenu);
 router.post('/ownerMenu', getOwnerMenu);
 router.put('/owner', updateMenu);
-router.delete('/owner/:ownerId/:menuId', deleteMenu);
+router.delete('/owner/deletemenu', deleteMenu);
 
 export default router;

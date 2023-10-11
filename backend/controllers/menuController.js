@@ -68,21 +68,21 @@ const getOwnerMenu = asyncHandler(async (req, res) => {
 const updateMenu = asyncHandler(async (req, res) => {
     const menu = await Menu.findOne({_id:req.body._id});    
     if (menu) {
-      
-      menu.product = req.body.product||menu.product;
-      menu.boarding = req.body.boarding||menu.boarding;
-      menu.foodType = req.body.foodType||menu.foodType;
       menu.price = req.body.price||menu.price;
-      menu.date = req.body.date||menu.date;
+      menu.cost = req.body.cost||menu.cost;
       
       const updateMenu = await menu.save();
 
     res.status(200).json({
-      _id:updateMenu._id,
+      
       product:updateMenu.product,
       foodType:updateMenu.foodType,
       price:updateMenu.price,
-      date:updateMenu.date,
+      menuName:updateMenu.menuName,
+      boarding:updateMenu.boarding,
+      cost:updateMenu.cost,
+      ownerId:updateMenu.ownerId,
+
     });
     }else{
       res.status(404);
@@ -94,25 +94,26 @@ const updateMenu = asyncHandler(async (req, res) => {
 // route    DELETE /api/menues/owner/:ownerId/:menuId
 // @access  Private - Owner
 const deleteMenu = asyncHandler(async (req, res) => {
-    const ownerId = req.params.ownerId;
-    const menuId = req.params.menuId;  
+    const menuId = req.body._id;
+  console.log(menuId);
+  try {
+    const menu = await Menu.findById(menuId);
 
-    try {
-        const result = await Menu.deleteOne({ _id: menuId, owner: ownerId });
-
-        if (result.deletedCount === 0) {
-            res.status(404);
-            throw new Error("Menu not found");
-        }
-
-        res.status(200).json({
-            message: "Menu deleted successfully"
-        });
-    } catch (error) {
-        res.status(400).json({
-            error: error.message || "Failed to delete Menu"
-        });
+    if (!menu) {
+      res.status(404);
+      throw new Error("Item not found");
     }
+
+    await Menu.deleteOne({ _id:menuId });
+    res.status(200).json({
+      message: "Menu Item deleted successfully"
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Failed to delete Menu Item",
+      error: error.message
+    });
+  }
 });
 
 export { 

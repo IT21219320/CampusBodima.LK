@@ -7,13 +7,15 @@ import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { Breadcrumbs, Typography, Fade, Card, CardContent,Link, Button, TextField ,CircularProgress} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { BrowserUpdated as BrowserUpdatedIcon } from '@mui/icons-material';
 
 // Assuming MenuStyles and DeleteOrder are correctly imported.
 //import menuStyles from '../styles/menuStyles.module.css';
-import DeleteOrder from './DeleteOrder'; // Make sure to provide the correct path
+import DeleteOrder from '../pages/DeleteOrder'; // Make sure to provide the correct path
 
 import { useGetOwnerMenuesMutation } from '../slices/menuesApiSlice';
 import orderStyles from '../styles/orderStyles.module.css';
+import DeleteMenu from './deleteMenu';
 
 const MenuView = () => {
   const [menuData, setMenuData] = useState([]);
@@ -59,8 +61,7 @@ const MenuView = () => {
   };
 
   const handleDeleteSuccess = () => {
-    // Handle the delete success action here
-    // You might want to refetch the menus or update the state accordingly
+    loadMenuData();
     closeDeleteModal();
   };
 
@@ -95,7 +96,7 @@ const MenuView = () => {
                 <th>Food Type</th>
                 <th>Cost</th>
                 <th>Price</th>
-                <th>Owner</th>
+                {/*<th>Owner</th>*/}
                 <th>Action</th>
               </tr>
             </thead>
@@ -114,8 +115,12 @@ const MenuView = () => {
                     <td>{menu.foodType}</td>
                     <td>{menu.cost}</td>
                     <td>{menu.price}</td>
-                    <td>{menu.owner}</td>
+                    {/*<td>{menu.owner}</td>*/}
                     <td align="center">
+                    <Button  style={{ background: ' lightgreen', color: 'white', marginRight: '10px' }}
+                          onClick={() => navigate(`/owner/menu/updateMenu/${menu._id}`)}>
+                              <BrowserUpdatedIcon />
+                          </Button>
                       <Button
                         style={{ background: 'red', color: 'white' }}
                         onClick={() => openDeleteModal(menu)}
@@ -137,7 +142,7 @@ const MenuView = () => {
         </Col>
       </Row>
       {selectedmenu && (
-        <DeleteOrder
+        <DeleteMenu
           menu={selectedmenu}
           onClose={closeDeleteModal}
           onDeleteSuccess={handleDeleteSuccess}

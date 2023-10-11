@@ -27,8 +27,9 @@ export const menuesApiSlice = apiSlice.injectEndpoints({
         }),
         deleteMenues: builder.mutation({
             query: (data) => ({
-                url: `${Menu_URL}/owner/${data}`,
+                url: `${Menu_URL}/owner/deletemenu`,
                 method: 'DELETE',
+                body:data,
             }),
         }),
     }),
