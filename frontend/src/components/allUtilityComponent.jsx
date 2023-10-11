@@ -16,7 +16,7 @@ import BillStyles from '../styles/billStyles.module.css';
 
 
 
-const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
+const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [utilities, setUtilities] = useState([]);
@@ -32,7 +32,8 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
     const { userInfo } = useSelector((state) => state.auth);
     const [getOccupantName,{isLoadings3}] = useGetOccupantNameMutation();
 
-    const fetchOccupantNameById = async (occupantID) => {
+    
+    /*const fetchOccupantNameById = async (occupantID) => {
         try {
             if (!occupantID) {
                 return 'N/A'; // Handle null or undefined occupantID
@@ -43,14 +44,15 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
             console.error('Error fetching occupant:', error);
             return 'N/A'; // Handle errors gracefully
         }
-    }
+    }*/
     
 
     const loadData = async (pageNo) => {
         try {
-            if (boardingId && utilityType) {
-                const res = await getUtilitiesForBoarding({boardingId,utilityType,pageNo,searchQuery }).unwrap();
+            if (boardingId && utilityType || occupant) {
+                const res = await getUtilitiesForBoarding({boardingId,utilityType,occupant,pageNo,searchQuery }).unwrap();
                 console.log(res);
+                
                 setUtilities(res.utility);
                 setTotalPages(res.totalPages);
                 
@@ -66,9 +68,9 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
                             return null;
                         }
                     }));
-                    const occupants=utility.occupant;
-                    const occupantName = await fetchOccupantNameById(occupants);
-                    console.log('Occupant Name:', occupantName); // Add this line for debugging
+                    //const occupants=[utility.occupant];
+                    //const occupantName = await fetchOccupantNameById(occupants);
+                    //console.log('Occupant Name:', occupantName); // Add this line for debugging
         
                     return { ...utility, utilityImage: updatedImages };
 
@@ -86,7 +88,7 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
 
     useEffect(() => {
         loadData(page);
-    }, [boardingId,utilityType,searchQuery]);
+    }, [boardingId,utilityType,occupant,searchQuery]);
 
     const handlePageChange = (event, value) => {
         setPage(value);
@@ -112,12 +114,13 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
     const handleSort = (order) => {
         const sortedUtilities = [...utilities];
         if (order === "asc") {
-            sortedUtilities.sort((a, b) => new Date(a.date) - new Date(b.date));
+            sortedUtilities.sort((a, b) => new Date(a.month) - new Date(b.month));
         } else if (order === "desc") {
-            sortedUtilities.sort((a, b) => new Date(b.date) - new Date(a.date));
+            sortedUtilities.sort((a, b) => new Date(b.month) - new Date(a.month));
         }
         setUtilities(sortedUtilities);
     };
+    
     const handleSearch = (event) => {
         setSearchQuery(event.target.value);
     };
@@ -128,7 +131,7 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
                     <Row>
                         <Col>
                                             <div style={{ marginBottom: '10px', textAlign: 'left', color:'darkslategray' }}>
-                                <label className={BillStyles.sortinglable}>Sort by Date:</label>
+                                <label className={BillStyles.sortinglable}>Sort by Month:</label>
                                 <select onChange={(e) => handleSort(e.target.value)} style={{ marginLeft: '10px', padding: '5px',color:'darkslategray'  }}>
                                     <option value="asc">Ascending</option>
                                     <option value="desc">Descending</option>
@@ -157,7 +160,7 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
                             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <CircularProgress />
                             </div>
-                        ) : (utilities.length > 0 ? (
+                        ) : (utilities && utilities.length !== 0 ? (
                             utilities.map((utility, index) => (
                                 <Card className={`${ownerStyles.card} mt-4`} key={utility._id} >
                                     <CardContent className={ownerStyles.cardContent}>
@@ -175,18 +178,37 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType }) => {
                                                     <p><b>Amount:</b> Rs. {utility.amount} .00</p>
                                                 </Row>
                                                 <Row>
-                                                    {utility.date ? (
-                                                        <p><b>Date:</b> {new Date(utility.date).toLocaleDateString()}</p>
-                                                    ) : null}
+                                                
+                                                    <p><b>Month:</b> {utility.month}</p>
+                                                
                                                 </Row>
+
                                                 {utility.occupant ? 
                                                 <Row>
-                                                        {/* Display the occupant's name */}
-                                                        <p><b>Occupant:</b> {utility.occupant.firstName}</p>
-
+                                                    <p><b>Occupant: </b>
+                                                {utility.occupant.map((occup,index) => (
+                                                        <span key={index}>{occup.firstName}{index != utility.occupant.length - 1 ? ', ' : ''}</span>
+                                                ))}
+                                                </p>
                                                 </Row>
                                                 : ''}
                                                 <Row>
+                                                <Row>
+                                                                <p>
+                                                                    <b>No of occupants:</b> {utility.occupant.length}{" "}
+                                                                    {utility.occupant.length !== 1 ? "occupants" : "occupant"}
+                                                                </p>
+                                                            </Row>
+
+                                                                                                                                    <Row>
+                                                                            {utility.perCost !== null && (
+                                                                                <p><b>Per Occupant Cost:</b> Rs. {utility.perCost.toFixed(2)}</p>
+                                                                            )}
+                                                                        </Row>
+
+
+                                                            
+
                                                     <Col>
                                                         <p><b>Description:</b> {utility.description}</p>
                                                     </Col>
