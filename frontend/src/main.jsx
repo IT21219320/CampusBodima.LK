@@ -63,7 +63,7 @@ import ConfirmReservationPage from './pages/confirmReservationPage.jsx';
 import MyReservationPage from './pages/myReservationPage.jsx';
 import OwnerAllReservarions from './pages/ownerAllReservationsPage.jsx';
 
-import MenuView from './pages/menuView.jsx';
+import MenuForm from './pages/Menu.jsx';
 
 import Orders from './pages/Orders.jsx';
 import OwnerOrderList from './pages/ownerOrderList.jsx';
@@ -122,7 +122,7 @@ const router = createBrowserRouter(
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
           
-          <Route path='/owner/menu/' element={<MenuView />} />
+          <Route path='/owner/menu/' element={<MenuForm />} />
 
           <Route path='/owner/orders/' element={<OwnerOrderList />} />
 
