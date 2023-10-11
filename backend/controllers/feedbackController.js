@@ -3,6 +3,8 @@ import Feedback from '../models/feedbackModel.js';
 import User from '../models/userModel.js';
 import Reservation from '../models/reservationModel.js'
 import Boarding from '../models/boardingModel.js';
+import bodyParser from 'body-parser';
+import ReservationHistory from '../models/reservationHistory.js';
 
 
 
@@ -14,25 +16,13 @@ import Boarding from '../models/boardingModel.js';
 
 
 const createFeedback = asyncHandler(async (req, res) => {
-    const {senderId,category, description, rating, } = req.body;
-
-    /*const reservation = await Reservation.findOne({occupantID: senderId});
-   
-
-    if(!reservation){
-        res.status(400);
-        throw new Error('Please join a boarding if you wont to create Feedback')
-    }
-
-    const boarding = await Boarding.findOne({_id: reservation.boardingId});
-
-    console.log(reservation.boardingId);
-    const owner = await User.findById(boarding.owner)*/;
-
-
+    const {senderId,category, description, rating,boardingId } = req.body;
     
+    const reservationHistory = await ReservationHistory.findOne({boardingId,'occupantID._id':senderId});
 
-    const largestFeedbackNo = await Feedback.findOne({}, { feedbackId: 1}).sort({feedbackId: -1});
+    if(reservationHistory){
+
+      const largestFeedbackNo = await Feedback.findOne({}, { feedbackId: 1}).sort({feedbackId: -1});
     
     var feedbackId;
 
@@ -42,13 +32,24 @@ const createFeedback = asyncHandler(async (req, res) => {
         feedbackId = 1;
     }
 
+
+
     feedbackId = feedbackId.toString();
 
+   
     const sender = await User.findById(senderId);
+    const boarding = await Boarding.findById(boardingId);
+    if(!boarding){
+      res.status(400);
+      throw new Error('Boarding Not Found!');
+    }
+   
+  
 
       const feedback = await Feedback.create({
         feedbackId,
         senderId: sender,
+        boardingId: boarding,
         category,
         description,
         rating,
@@ -62,6 +63,14 @@ const createFeedback = asyncHandler(async (req, res) => {
         res.status(400)
         throw new Error('error');
     }
+
+    }else{
+
+      res.status(400);
+        throw new Error(' Not Found!');
+
+    }
+    
     
   });
 
