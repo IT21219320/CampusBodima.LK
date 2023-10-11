@@ -21,75 +21,76 @@ import UtilityReport from '../components/utilityReportComponent';
   
 const AllUtilitiesPage = () =>{
 
-  const { userInfo } = useSelector((state) => state.auth); 
-  const [boardingId, setBoardingId] = useState('');
-  const [boardingData, setBoardingData] = useState([]);
-  const [utilityType,setUtilityType] = useState('Electricity');
-  const [selectedBoardingId, setSelectedBoardingId] = useState('');
-  const [selectedOccupant, setSelectedOccupant] = useState('');
-  const [occupantData, setOccupantData] = useState([]);
-
-  const [getBoarding, { isLoadings }] =useGetBoardingMutation();
-  const[getOccupant,{isLoading2}]=useGetOccupantMutation();
- 
-
-  useEffect(() => {
-    const loadData = async () => {
-        try {
-            const data = userInfo._id;
-            const res = await getBoarding( data ).unwrap();
-            console.log('res.boardings:', res.boardings);
-            if (Array.isArray(res.boardings)) {
-              const boardingData = res.boardings.map((boarding)=> ({
-                id: boarding._id,
-                name: boarding.boardingName,
-              }));
-              setBoardingData(boardingData);
-              } else {
-                console.error("boardings data is not an array:", res.boardings);
-              } 
-        } catch (err) {
-            toast.error(err.data?.message || err.error);
-        }
-    };
-    loadData();
-},[getBoarding, userInfo._id]);
-useEffect(() => {
-  if (boardingData.length > 0) {
-    setSelectedBoardingId(boardingData[0].id);
+    const { userInfo } = useSelector((state) => state.auth);
+    const [boardingData, setBoardingData] = useState([]);
+    const [occupantData, setOccupantData] = useState([]);
+    const [selectedBoardingId, setSelectedBoardingId] = useState('');
+    const [selectedOccupant, setSelectedOccupant] = useState('');
+    const [utilityType, setUtilityType] = useState('Electricity');
     
-    // Load occupants for the default selected boarding here
-    loadOccupants(boardingData[0].id);
-  }
-}, [boardingData]);
-
-const loadOccupants = async (selectedBoardingId) => {
-  try {
-    const response = await getOccupant(selectedBoardingId).unwrap();
-    const occupantsData = response.occupants;
-    setOccupantData(occupantsData);
-  } catch (err) {
-    toast.error(err.data?.message || err.error);
-  }
-};
-
-const handleBoardingNameChange = (event) => {
-  const selectedValue = event.target.value;
-  setSelectedBoardingId(selectedValue);
-
-  // Load occupants only if a boarding is selected (not empty)
-  if (selectedValue) {
-    loadOccupants(selectedValue);
-  } else {
-    // Handle the case when the user selects the empty option (clear selection)
-    setOccupantData([]); // Clear the occupants data
-  }
-};
-
-    const handleChange = (event, newUtilityType) => {
-      setUtilityType( newUtilityType);
+    const [getBoarding, { isLoading: isLoadingBoarding }] = useGetBoardingMutation();
+    const [getOccupant, { isLoading: isLoadingOccupant }] = useGetOccupantMutation();
+    
+    useEffect(() => {
+      const loadData = async () => {
+        try {
+          const data = userInfo._id;
+          const res = await getBoarding(data).unwrap();
+          if (Array.isArray(res.boardings)) {
+            const boardingData = res.boardings.map((boarding) => ({
+              id: boarding._id,
+              name: boarding.boardingName,
+            }));
+            setBoardingData(boardingData);
+            if (boardingData.length > 0) {
+              setSelectedBoardingId(boardingData[0].id);
+            }
+          } else {
+            console.error("boardings data is not an array:", res.boardings);
+          }
+        } catch (err) {
+          toast.error(err.data?.message || err.error);
+        }
+      };
+      loadData();
+    }, [getBoarding, userInfo._id]);
+    
+    useEffect(() => {
+      if (selectedBoardingId) {
+        loadOccupants(selectedBoardingId);
+      }
+    }, [selectedBoardingId]);
+    
+    const loadOccupants = async (selectedBoardingId) => {
+      try {
+        const response = await getOccupant(selectedBoardingId).unwrap();
+        const occupantsData = response.occupants;
+        setOccupantData(occupantsData);
+      } catch (err) {
+        toast.error(err.data?.message || err.error);
+      }
     };
-
+  
+    const handleBoardingNameChange = (event) => {
+      const selectedValue = event.target.value;
+      setSelectedBoardingId(selectedValue);
+      if (selectedValue) {
+        loadOccupants(selectedValue);
+      } else {
+        setOccupantData([]);
+        setSelectedOccupant('');
+      }
+    };
+  
+    const handleOccupantNameChange = (event) => {
+      const selectedValue = event.target.value;
+      console.log(event);
+      setSelectedOccupant(selectedValue);
+    };
+  
+    const handleChange = (event, newUtilityType) => {
+      setUtilityType(newUtilityType);
+    };
   
  return(
     <>
@@ -122,7 +123,7 @@ const handleBoardingNameChange = (event) => {
                                  <Select className={BillStyles.select}
                                       labelId="demo-simple-select-label"
                                       id="demo-simple-select"
-                                      value={selectedBoardingId}
+                                      value={selectedBoardingId }
                                       label="Boarding Name"
                                       onChange={handleBoardingNameChange} >
                                                   <MenuItem value="">
@@ -136,6 +137,26 @@ const handleBoardingNameChange = (event) => {
                                  </Select>
                              </FormControl>
                                    </Col>
+                                    <Col className="ml-5">
+                                  <FormControl sx={{ m: 1, width: 300 }}>
+                                    <InputLabel id="occupant-name-label"> Occupant Name </InputLabel>
+                                    <Select
+                                      className={BillStyles.select}
+                                      labelId="demo-simple-select-label"
+                                      id="demo-simple-select"
+                                      value={selectedOccupant} // Use selectedOccupant as the value
+                                      label="Occupant Name"
+                                      onChange={(e) => handleOccupantNameChange(e)}// Update selectedOccupant state
+                                    >
+                                      {occupantData.map((occupantName,index) => (
+                                        <MenuItem key={index} value={occupantName._id}>
+                                          {occupantName.firstName}
+                                        </MenuItem>
+                                      ))}
+                                    </Select>
+                                  </FormControl>
+                                </Col>
+
                                    <Col>
                                    <Row style={{textAlign:'right', marginBottom:'20px'}}>
                                     <Col><Link href='/owner/utility/add'><Button className="mt-4" style={{background: '#685DD8'}}><RiWaterFlashFill style={{fontSize:'1.5em'}}/> Add New Utility Bill</Button></Link></Col>
@@ -160,7 +181,7 @@ const handleBoardingNameChange = (event) => {
                       <Tab >
                       </Tab>
                     </Tabs>
-                    {utilityType === 'Electricity' && <AllUtility boardingId ={selectedBoardingId} utilityType={utilityType}/>  }
+                    {utilityType === 'Electricity' && <AllUtility boardingId ={selectedBoardingId} utilityType={utilityType} occupant={selectedOccupant}/>  }
                     {utilityType === 'Water'&& <AllUtility boardingId ={selectedBoardingId} utilityType={utilityType}/> }
                     {utilityType === 'Other' &&<AllUtility boardingId ={selectedBoardingId} utilityType={utilityType}/>  }
                     {utilityType ==='UtilityReport' && <UtilityReport boardingId={selectedBoardingId}/>}
