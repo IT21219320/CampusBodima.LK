@@ -10,7 +10,7 @@ import { useGetBoardingByIdMutation } from "../slices/boardingsApiSlice";
 function MakeMonthlyPaymentPage() {
 
   const { userInfo } = useSelector((state) => state.auth);
-  const { bId, amount } = useParams();
+  const { bId, amount, payId } = useParams();
   const [boardingDetails, setBoardingDetails] = useState();
   const des = "Monthly payment";
 
@@ -87,7 +87,7 @@ function MakeMonthlyPaymentPage() {
             <Col>
               <h3 className={paymentScreenStyles.h3Topic}>Enter card details</h3>
               <div className={paymentScreenStyles.paymentForm}>
-                <PaymentForm des={des} amount={amount}/> 
+                <PaymentForm des={des} amount={amount} payId = {payId}/> 
               </div>
             </Col>
           </Row>

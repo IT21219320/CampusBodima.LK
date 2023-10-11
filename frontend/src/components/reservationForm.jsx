@@ -16,11 +16,13 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import reserveFormStyle from "../styles/reserveFormStyle.module.css";
 import { useReserveRoomMutation } from "../slices/reservationsApiSlice";
+import { useUpdateGenderMutation } from "../slices/reservationsApiSlice";
 import { toast } from 'react-toastify';
 
 const ReservationForm = () => {
 
     const [reserveRoom] = useReserveRoomMutation()
+    const [updateGender] = useUpdateGenderMutation();
 
     const [gender, setGender] = useState('');
     const [duration, setDuration] = useState('');
@@ -42,6 +44,7 @@ const ReservationForm = () => {
         console.log(userInfo._id);
         const userID = userInfo._id;
         const res = await reserveRoom({ Gender: gender, Duration: duration, userInfo_id: userID, BoardingId: bId, RoomID: rId, PaymentType: paymentType }).unwrap();
+        const resupdateGen =  await updateGender({occId:userID, gender:gender}).unwrap();
         console.log(res)
         if (res.message === "you have already reserved") {
             toast.error("you have already reserved");

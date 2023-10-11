@@ -18,6 +18,20 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 body: data
             }),
         }),
+        addOccupant: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/addoccupant`,
+                method: 'POST',
+                body: data
+            }),
+        }),
+        occupantJoin: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/occupant/join`,
+                method: 'POST',
+                body: data
+            }),
+        }),
         getAllBoardings: builder.mutation({
             query: (data) => ({
                 url: `${BOARDINGS_URL}/all`,
@@ -56,6 +70,32 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 url: `${BOARDINGS_URL}/rejectBoarding/`,
                 method: 'PUT',
                 body:data
+            }),
+        }),
+        approveRoom: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/approveRoom/`,
+                method: 'PUT',
+                body:data
+            }),
+        }),
+        rejectRoom: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/rejectRoom/`,
+                method: 'PUT',
+                body:data
+            }),
+        }),
+        getReservationsByBoardingId: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/${data}/reservations`,
+                method: 'GET',
+            }),
+        }),
+        getReservationsByRoomId: builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/room/${data}/reservations`,
+                method: 'GET',
             }),
         }),
         getBoardingById: builder.mutation({
@@ -110,7 +150,37 @@ export const boardingsApiSlice = apiSlice.injectEndpoints({
                 method: 'DELETE',
             }),
         }),
+        deleteBoardingReservation:builder.mutation({
+            query: (data) => ({
+                url: `${BOARDINGS_URL}/deleteReservation/${data}`,
+                method: 'DELETE',
+            }),
+        }),
     }),
 });
 
-export const { useRegisterBoardingMutation, useAddRoomMutation, useGetAllBoardingsMutation, useGetAllPublicBoardingsMutation, useGetOwnerBoardingsMutation, useGetPendingApprovalBoardingsMutation, useApproveBoardingMutation, useRejectBoardingMutation, useGetBoardingByIdMutation, useGetRoomByIdMutation, useUpdateVisibilityMutation, useUpdateRoomVisibilityMutation, useUpdateBoardingMutation, useUpdateRoomMutation, useDeleteBoardingMutation, useDeleteRoomMutation } = boardingsApiSlice;
+export const { 
+    useRegisterBoardingMutation, 
+    useAddRoomMutation, 
+    useAddOccupantMutation,
+    useOccupantJoinMutation,
+    useGetAllBoardingsMutation, 
+    useGetAllPublicBoardingsMutation, 
+    useGetOwnerBoardingsMutation, 
+    useGetPendingApprovalBoardingsMutation, 
+    useApproveBoardingMutation, 
+    useRejectBoardingMutation, 
+    useApproveRoomMutation,
+    useRejectRoomMutation,
+    useGetBoardingByIdMutation, 
+    useGetReservationsByBoardingIdMutation, 
+    useGetReservationsByRoomIdMutation,
+    useGetRoomByIdMutation, 
+    useUpdateVisibilityMutation, 
+    useUpdateRoomVisibilityMutation, 
+    useUpdateBoardingMutation, 
+    useUpdateRoomMutation, 
+    useDeleteBoardingMutation, 
+    useDeleteRoomMutation,
+    useDeleteBoardingReservationMutation 
+} = boardingsApiSlice;

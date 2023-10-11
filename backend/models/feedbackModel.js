@@ -10,9 +10,12 @@ const feedbackSchema = mongoose.Schema({
         type:User.schema,
         required:true,
     },
-    ownerId:{
-        type:User.schema,
-        required:true,
+   
+    
+    boardingId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Boarding',
+        required: true
     },
     
     

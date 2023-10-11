@@ -6,7 +6,8 @@ const roomSchema = mongoose.Schema({
         required: true
     },
     boardingId: {
-        type: String, 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Boarding', 
         required: true,
     },
     roomImages: {

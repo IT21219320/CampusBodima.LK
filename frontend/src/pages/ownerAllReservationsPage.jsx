@@ -25,6 +25,9 @@ const OwnerAllReservations = () => {
     const [boarding, setBoarding] = useState([]);
     const [boardingID, setBoardingID] = useState('');
 
+    
+    
+
     const [getOwnerBoarding] = useGetBoardingsByIdMutation();
 
     const [value, setValue] = useState('1');
@@ -38,7 +41,8 @@ const OwnerAllReservations = () => {
             const resBoardings = await getOwnerBoarding({ ownerId: userInfo._id }).unwrap();
             if (resBoardings) {
                 setBoarding(resBoardings.ownerBoardings);
-
+               
+                setBoardingID(resBoardings.ownerBoardings[0]._id)
             }
         } catch (error) {
             console.log(error);
@@ -46,7 +50,10 @@ const OwnerAllReservations = () => {
     }
 
     useEffect(() => {
+        
         loadData();
+        
+        
     }, []);
 
     return (
@@ -58,13 +65,14 @@ const OwnerAllReservations = () => {
                         <Col>
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
-                                <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
+                                <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : userInfo.userType == 'kitchen' ? 'Kitchen' : <></>)}</Link>,
                                 <Typography key="3" color="text.primary">Reservations</Typography>
                             </Breadcrumbs>
                         </Col>
                     </Row>
 
-                    <Row style={{marginTop:'33px', marginLeft:'2px', width:'25%'}}>
+                    <Row style={{ marginTop: '33px', marginLeft: '2px', width: '25%' }}>
+                    <FormControl >
                         <InputLabel id="demo-simple-select-standard-label" >Boarding</InputLabel>
                         <Select
                             labelId="demo-simple-select-standard-label"
@@ -74,23 +82,26 @@ const OwnerAllReservations = () => {
                             onChange={(e) => setBoardingID(e.target.value)}
                             label="Boardings"
 
-                        >{boarding.length > 0 ? (
-                            boarding.map((boarding) => (
-                                <MenuItem key={boarding._id} value={boarding._id}>
-                                    <em>{boarding.boardingName}</em>
-                                </MenuItem>
+                        >
+                            
+                            {boarding.length > 0 ? (
+                                boarding.map((boarding) => (
+                                    <MenuItem key={boarding._id} value={boarding._id}>
+                                        <em>{boarding.boardingName}</em>
+                                    </MenuItem>
 
-                            ))
+                                ))
 
-                        ) : (
-                            <MenuItem value="">
-                                <em>No reservation</em>
-                            </MenuItem>)}
+                            ) : (
+                                <MenuItem value="">
+                                    <em>No reservation</em>
+                                </MenuItem>)}
 
                         </Select>
+                    </FormControl>
 
                     </Row>
-                    <Row style={{marginTop: '25px'}}>
+                    <Row style={{ marginTop: '25px' }}>
                         <Box sx={{ width: '100%', typography: 'body1' }}>
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

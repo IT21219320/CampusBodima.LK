@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import { useSelector } from 'react-redux';
 import { useNavigate, Link as ReactLink } from 'react-router-dom';
 import Sidebar from '../components/sideBar';
@@ -7,8 +7,8 @@ import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Form } from 'react-bootstrap';
 import { useGetCardByUserMutation, useDeleteCardMutation, useUpdateCardMutation } from "../slices/cardApiSlice";
-import { useGetPaymentByUserMutation,useGetToDoPaymentMutation } from "../slices/paymentApiSlice";
-import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css"
+import { useGetPaymentByUserMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation } from "../slices/paymentApiSlice";
+import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css";
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
@@ -59,10 +59,11 @@ const searchBar = {
     borderRadius: "20px",
     margin: "4% 2% 0px 2%",
     width: "50%",
-    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'currentColor\' class=\'bi bi-search\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.854 3.853a1 1 0 0 0 1.415-1.414l-3.853-3.854z\'/%3E%3Cpath d=\'M10.5 6.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0z\'/%3E%3C/svg%3E")',
+    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' x=\'0px\' y=\'0px\' width=\'100\' height=\'100\' viewBox=\'0 0 50 50\'%3E%3Cpath d=\'M 21 3 C 11.621094 3 4 10.621094 4 20 C 4 29.378906 11.621094 37 21 37 C 24.710938 37 28.140625 35.804688 30.9375 33.78125 L 44.09375 46.90625 L 46.90625 44.09375 L 33.90625 31.0625 C 36.460938 28.085938 38 24.222656 38 20 C 38 10.621094 30.378906 3 21 3 Z M 21 5 C 29.296875 5 36 11.703125 36 20 C 36 28.296875 29.296875 35 21 35 C 12.703125 35 6 28.296875 6 20 C 6 11.703125 12.703125 5 21 5 Z\'%3E%3C/path%3E%3C/svg%3E")',
     backgroundPosition: '96% center',
     backgroundRepeat: 'no-repeat',
-    backgroundSize: '20px 20px',
+    backgroundSize: '26px 26px',
+    border: "1px black solid",
 }
 
 const OccupantPaymentDash = () => {
@@ -82,13 +83,17 @@ const OccupantPaymentDash = () => {
     const [expireDate, setexpireDate] = useState('');
     const [cvvF, setcvvF] = useState('');
     const [toDoPayment, setToDoPayment] = useState([]);
+    const [toDoPaymentOld, setToDoPaymentOld] = useState();
+    const [searchQ, setsearchQ] = useState();
+
+    const [myReserve, setMyReserve] = useState([]);
     //tabViews
     const [value, setValue] = useState('1');
-    let bId;
-    if (payments.length > 0) {
-        //console.log(payments[0].boarding._id);
-        bId = payments[0].boarding._id;
+    let bId
+    if (myReserve) {
+        bId = myReserve.boardingId
     }
+
 
 
 
@@ -103,6 +108,8 @@ const OccupantPaymentDash = () => {
     const [deleteCard] = useDeleteCardMutation();
     const [updateCard] = useUpdateCardMutation();
     const [getToDoPayment] = useGetToDoPaymentMutation();
+    const [getReserv] = useGetMyResMutation();
+    const [getToDoPaymentOld] = useGetToDoPaymentOldMutation();
 
 
 
@@ -141,24 +148,41 @@ const OccupantPaymentDash = () => {
         }
         try {
 
-            const resGetPay = await getPayment({ _id: userInfo._id }).unwrap();
+            const resGetPay = await getPayment({ userInfo_id: userInfo._id, oId: searchQ }).unwrap();
             setPayments(resGetPay.payments);
 
         } catch (error) {
 
             console.error('Error getting payments', error);
         }
-        
+
         try {
 
-            console.log( userInfo._id);
             const resGetToDOPay = await getToDoPayment({ userInfo_id: userInfo._id }).unwrap();
             setToDoPayment(resGetToDOPay);
-            
+
         } catch (error) {
 
             console.error('Error getting To Do payments', error);
 
+        }
+        try {
+
+            const userInfo_id = userInfo._id
+            const myReserv = await getReserv({ _id: userInfo_id }).unwrap();
+            setMyReserve(myReserv)
+
+        } catch (error) {
+            console.log("Error in my reservration", error)
+        }
+
+        try {
+
+            const myOldPay = await getToDoPaymentOld({ userInfo_id: userInfo._id }).unwrap();
+            setToDoPaymentOld(myOldPay[0])
+
+        } catch (error) {
+            console.log(error)
         }
 
 
@@ -166,7 +190,7 @@ const OccupantPaymentDash = () => {
 
     useEffect(() => {
         loadData();
-    }, [deleteC, updateC]);
+    }, [deleteC, updateC, searchQ]);
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -203,7 +227,15 @@ const OccupantPaymentDash = () => {
     }
 
     const navigateToPay = () => {
-        navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPayment.length>0&&toDoPayment[0].amount}`)
+        navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPayment.length > 0 && toDoPayment[0].amount}/${toDoPayment.length > 0 && toDoPayment[0]._id}`)
+    }
+
+    const navigateToPayOld = () => {
+        navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPaymentOld && toDoPaymentOld.amount}/${toDoPaymentOld && toDoPaymentOld._id}`)
+    }
+
+    const navigateToPayI = () => {
+        navigate(`/occupant/makePayment/${bId}`)
     }
 
     return (
@@ -217,7 +249,7 @@ const OccupantPaymentDash = () => {
                         <Col>
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
-                                <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : <></>)}</Link>,
+                                <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : userInfo.userType == 'kitchen' ? 'Kitchen' : <></>)}</Link>,
                                 <Link underline="hover" key="3" color="inherit" href="/occupant/payment/">Payments</Link>,
                                 <Link underline="hover" key="3" color="inherit" href="/occupant/payment/">View</Link>,
                             </Breadcrumbs>
@@ -236,44 +268,60 @@ const OccupantPaymentDash = () => {
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
                                         <Col>
-                                            <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
+                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
                                         </Col>
 
                                     </Row>
                                 </Col>
                             </Row>
-                                <Row style={{ paddingLeft: "2%", paddingRight: "2%" }}>
-                                    <Col style={{ backgroundColor: "#cfd8fa", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginRight: "2%" }}>
+                                {myReserve.paymentStatus == 'Pending'&& myReserve.paymentType == 'Online' ? (
+                                    <>
                                         <Row>
-                                            <h4 style={{ textAlign: " center" }}>This Month Fees </h4>
-                                            <hr style={{}}/>
+                                            <p>Payment is pending. Do your Initial payment in here</p>
+                                            <Button onClick={navigateToPayI}>Pay</Button>
                                         </Row>
-                                        <Row>
-                                            <h5>Total Fee {toDoPayment.length>0&&toDoPayment[0].amount}</h5>
-                                        </Row>
-                                        <Row style={{ marginLeft: "68%" }}>
 
-                                            <Button variant="contained" style={{}} onClick={() => navigateToPay()}>Pay your Fee</Button>
+                                    </>) : (
+                                    <><Row style={{ paddingLeft: "2%", paddingRight: "2%" }}>
+                                        <Col style={{ backgroundColor: "#cfd8fa", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginRight: "2%" }}>
+                                            <Row>
+                                                <h4 style={{ textAlign: " center" }}>This Month Fees </h4>
+                                                <hr style={{}} />
+                                            </Row>
+                                            {toDoPayment.length > 0 ? (<><Row>
+                                                <h5>Total Fee {toDoPayment.length > 0 && toDoPayment[0].amount}</h5>
+                                            </Row>
+                                                <Row style={{ marginLeft: "68%" }}>
 
-                                        </Row>
-                                    </Col>
-                                    <Col style={{ backgroundColor: "#cfd8fa", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginLeft: "2%" }}>
-                                        <Row>
-                                            <h4 style={{ textAlign: " center" }}>Previous Month Fees </h4>
-                                            <hr/>
-                                        </Row>
-                                        <Row style={{ marginLeft: "68%" }}>
+                                                    <Button variant="contained" style={{}} onClick={() => navigateToPay()}>Pay your Fee</Button>
 
-                                            <Button variant="contained" style={{}} onClick={() => navigateToPay()}>Pay your Fee</Button>
+                                                </Row></>) : (<>
+                                                    <p>You have done the payment</p>
+                                                </>)}
 
-                                        </Row>
-                                    </Col>
-                                </Row></TabPanel>
+                                        </Col>
+                                        <Col style={{ backgroundColor: "#ffcaca", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginLeft: "2%" }}>
+                                            <Row>
+                                                <h4 style={{ textAlign: " center" }}>Previous Month Fees </h4>
+                                                <hr />
+                                            </Row>
+                                            {toDoPaymentOld ? (<><Row>
+                                                <h5>Total Fee {toDoPaymentOld && toDoPaymentOld.amount}</h5>
+                                            </Row>
+                                                <Row style={{ marginLeft: "68%" }}>
+
+                                                    <Button variant="contained" style={{}} onClick={() => navigateToPayOld()}>Pay your Fee</Button>
+
+                                                </Row></>) : (<><p>You have done the payment</p></>)}
+
+                                        </Col></Row></>)}
+
+                            </TabPanel>
                             <TabPanel value="2"><Row>
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
                                         <Col>
-                                            <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
+                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
                                         </Col>
                                     </Row>
                                     {cards.length > 0 ? (
@@ -299,7 +347,6 @@ const OccupantPaymentDash = () => {
                                                         </Card>
                                                     </Box>
                                                 </Col>
-
                                             ))}
                                         </Row>
                                     ) : (
@@ -355,7 +402,7 @@ const OccupantPaymentDash = () => {
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
                                         <Col>
-                                            <h4 style={{ backgroundColor: "#6d6d6d", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Transactions</h4>
+                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Transactions</h4>
                                         </Col>
 
                                     </Row>
@@ -365,8 +412,10 @@ const OccupantPaymentDash = () => {
 
                                 <Row>
                                     <input
-                                        type="text"
-                                        placeholder="Search..." style={searchBar}
+                                        type="number"
+                                        value={searchQ}
+                                        placeholder="Search By Amount..." style={searchBar}
+                                        onChange={(e) => setsearchQ(e.target.value)}
                                     />
                                 </Row>
                                 <Row>
@@ -393,7 +442,7 @@ const OccupantPaymentDash = () => {
                                                             <StyledTableCell align="right" >{payment.description}</StyledTableCell>
 
                                                             <StyledTableCell align="right"> {new Date(payment.date).toDateString()}</StyledTableCell>
-                                                            
+
                                                             <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
                                                         </StyledTableRow>
                                                     ))) : (
@@ -408,11 +457,6 @@ const OccupantPaymentDash = () => {
                                 </Row></TabPanel>
                         </TabContext>
                     </Box>
-
-
-
-
-
                 </Container>
             </div>
         </>

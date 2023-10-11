@@ -16,7 +16,7 @@ export const reservationHistoryApiSlice = apiSlice.injectEndpoints({
 
         myHistory: builder.mutation({
             query: (data) => ({
-                url: `${RESERVATIONHIST_URL}/BoardingHistory`,
+                url: `${RESERVATIONHIST_URL}/myHistory`,
                 method: 'POST',
                 body: data,
             }),

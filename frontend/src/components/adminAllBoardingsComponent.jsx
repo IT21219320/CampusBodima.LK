@@ -34,7 +34,7 @@ const AdminAllBoardings = () => {
     const [food, setFood] = useState('All')
     const [utilityBills, setUtilityBills] = useState('All')
     const [noOfRooms, setNoOfRooms] = useState(0)
-    const [boardingType, setBoardingType] = useState('Hostel')
+    const [boardingType, setBoardingType] = useState('Annex')
     const [gender, setGender] = useState('All')
     const [rentRange, setRentRange] = useState([0, 50000])
     const [rent, setRent] = useState('All')
@@ -125,33 +125,32 @@ const AdminAllBoardings = () => {
         // Create a new jsPDF instance
         const doc = new jsPDF();
     
-        let headers;
-        // Define the table headers
-        if(boardingType=="Hostel"){
-            headers = [["Boarding Name", "Boarding Type", "City", "Status", "Food", "Utility Bills", "No Of Rooms", "Gender", "Date"]];
-        }
-        else{
-            headers = [["Boarding Name", "Boarding Type", "City", "Status", "Food", "Utility Bills", "No Of Rooms", "Gender", "Rent", "Date"]];
-        }
+        let headers = [["Boarding Name", "Boarding Type", "City", "Status", "Food", "Utility Bills", "No Of Rooms", "Gender", "Rent", "Date Created"]];
     
         // Map the admin data to table rows
     
-        const data = boardings.map((boarding) => [
-            boarding.boardingName,
-            boarding.boardingType,
-            boarding.city,
-            boarding.status,
-            boarding.food ? "Yes" : "No",
-            boarding.utilityBills ? "Yes" : "No",
-            boarding.boardingType=='Annex' ? boarding.noOfRooms : boarding.room.length,
-            boarding.gender,
-            boardingType === 'Annex' ? (
-                boarding.rent,
+        const data = boardings.map((boarding) => {
+            let roomRent = "";
+            if (boarding.boardingType === 'Annex') {
+                roomRent = boarding.rent;
+            } else {
+                roomRent = boarding.room.map(room => `Room ${room.roomNo}: ${room.rent}`).join('\n\n');
+            }
+        
+            return [
+                boarding.boardingName,
+                boarding.boardingType,
+                boarding.city,
+                boarding.status,
+                boarding.food ? "Yes" : "No",
+                boarding.utilityBills ? "Yes" : "No",
+                boarding.boardingType === 'Annex' ? boarding.noOfRooms : boarding.room.length,
+                boarding.gender,
+                roomRent, // Assign roomRent here
                 new Date(boarding.createdAt).toLocaleString('en-GB')
-            ) 
-            :
-            new Date(boarding.createdAt).toLocaleString('en-GB')
-        ]);
+            ];
+        });
+        
     
         // Set the table styles
         const styles = {
@@ -272,7 +271,6 @@ const AdminAllBoardings = () => {
                         </Select>
                     </FormControl>
                 </Col>
-                {boardingType=='Annex' ? 
                 <Col>
                     <FormControl fullWidth>
                         <InputLabel>Rent</InputLabel>
@@ -297,7 +295,6 @@ const AdminAllBoardings = () => {
                         </Select>
                     </FormControl>
                 </Col>
-                : ""}
                 <Col>
                     <FormControl fullWidth>
                         <InputLabel>Date</InputLabel>
@@ -331,7 +328,7 @@ const AdminAllBoardings = () => {
                                 <th style={{cursor:'pointer'}} onClick={() => handleSortClick('utilityBills')}>Utility Bills {sortBy=="utilityBills" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
                                 <th style={{cursor:'pointer'}} onClick={() => handleSortClick('noOfRooms')}>No Of Rooms {sortBy=="noOfRooms" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
                                 <th style={{cursor:'pointer'}} onClick={() => handleSortClick('gender')}>Gender {sortBy=="gender" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
-                                {boardingType === 'Annex' ? <th style={{cursor:'pointer'}} onClick={() => handleSortClick('rent')}>Rent {sortBy=="rent" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th> : ''}
+                                <th style={{cursor:'pointer'}} onClick={() => handleSortClick('rent')}>Rent {sortBy=="rent" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
                                 <th style={{cursor:'pointer'}} onClick={() => handleSortClick('createdAt')}>Date {sortBy=="createdAt" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
                             </tr>
                         </thead>
@@ -354,14 +351,22 @@ const AdminAllBoardings = () => {
                                                     <td>
                                                         {boarding.rent}
                                                     </td>
-                                                    : ''}
+                                                    : 
+                                                    <td>
+                                                        {boarding.room.map((room,index) => (
+                                                            room.rent >= rentRange[0] && room.rent <= rentRange[1]? 
+                                                                <span key={index}>Room {room.roomNo}: {room.rent}<br /></span>
+                                                            : ''
+                                                        ))}
+                                                    </td>
+                                                    }
                                                     <td>{new Date(boarding.createdAt).toLocaleDateString('en-GB')}</td>
                                                 </tr>
                                             
                                     ))
                                 :
                                     <tr style={{width:'100%',height:'100%',textAlign: 'center', color:'dimgrey'}}>
-                                        <td colSpan={11}></td>
+                                        <td colSpan={11}>No Boardings available</td>
                                     </tr>
                             }
                         </tbody>
