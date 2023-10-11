@@ -12,6 +12,8 @@ import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css'
 import jsPDF from 'jspdf';
 import { GetAppRounded, GridViewRounded } from '@mui/icons-material';
 
+import Modal from 'react-bootstrap/Modal';
+
 
 
 const AllFeedbacks = () => {
@@ -38,9 +40,14 @@ const AllFeedbacks = () => {
     }
   };
 
+  
+  const [show, setShow] = useState(false)
+
   useEffect(() => {
     loadFeedbackData();
   }, [searchQuery,deleteFeedbacks]);
+
+  const handleClose = () => setShow(false);
 
   useEffect(() => {
     filterFeedbacksByCategory();
@@ -55,8 +62,10 @@ const AllFeedbacks = () => {
     }
   };
 
+  const handleShow = () => setShow(true);
 
-  const handleDeleteFeedback = async (feedbackId) => {
+
+  const handleDeleteFeedback = async (feedbackId) => {setShow(false)
     try {
         const resDelete = await deleteFeedback({ feedbackId}).unwrap();
         console.log(resDelete.message);
@@ -221,14 +230,27 @@ const AllFeedbacks = () => {
                         <td>
                         
                         
-                          <Button
+                        <Button
                             className="mt-4 mb-4 me-3" style={{ float: 'right' ,
                              background: 'red', color: 'black', marginLeft: '10px',variant:"contained" }}
-
-                            onClick={() => handleDeleteFeedback(feedback._id)}
+                            onClick={handleShow }
                           >
                             <DeleteIcon /> Delete
                           </Button>
+                              <Modal show={show} onHide={handleClose}>
+                                <Modal.Header closeButton>
+                                  <Modal.Title>Delete</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>Do you won't to conform</Modal.Body>
+                                <Modal.Footer>
+                                  <Button variant="secondary" onClick={handleClose}>
+                                    Cancel
+                                  </Button>
+                                  <Button variant="primary" onClick={() => handleDeleteFeedback(feedback._id)}>
+                                    Delete
+                                  </Button>
+                                </Modal.Footer>
+                              </Modal>
                         </td>
                       </tr>
                     ))

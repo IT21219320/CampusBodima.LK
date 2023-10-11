@@ -11,7 +11,10 @@ import { NavigateNext, Search, BrowserUpdated as BrowserUpdatedIcon, Delete as D
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
 import jsPDF from 'jspdf';
 import { GetAppRounded, GridViewRounded } from '@mui/icons-material';
-import StarRating from "./StarRating";
+
+
+
+import Modal from 'react-bootstrap/Modal';
 
 const OccupantFeedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -25,6 +28,7 @@ const OccupantFeedback = () => {
   const [deleteFeedback, { isLoading2 }] = useDeleteFeedbackMutation();
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [show, setShow] = useState(false);
 
   const loadFeedbackData = async () => {
     try {
@@ -35,7 +39,8 @@ const OccupantFeedback = () => {
       console.error('Error getting feedbacks', error);
     }
   };
-
+  const handleClose = () => setShow(false);
+ 
   useEffect(() => {
     loadFeedbackData();
   }, [ userInfo._id,searchQuery,deleteFeedbacks]);
@@ -43,6 +48,7 @@ const OccupantFeedback = () => {
   useEffect(() => {
     filterFeedbacksByCategory();
   }, [category]);
+  const handleShow = () => setShow(true);
 
   const filterFeedbacksByCategory = () => {
     if (category === 'all') {
@@ -68,7 +74,9 @@ const OccupantFeedback = () => {
     }
   };*/
 
-  const handleDeleteFeedback = async (feedbackId) => {
+ 
+
+  const handleDeleteFeedback = async (feedbackId) => {setShow(false)
     try {
         const resDelete = await deleteFeedback({ feedbackId}).unwrap();
         console.log(resDelete.message);
@@ -79,6 +87,8 @@ const OccupantFeedback = () => {
       toast.error(err.data?.message || err.error);
     }
 };
+
+
   const handleSearch=(event) =>{
     setSearchQuery(event.target.value);
   };
@@ -235,14 +245,32 @@ const OccupantFeedback = () => {
                         <Button type="button" onClick={() => navigate(`/occupant/feedback/update/${feedback._id}`)} className="mt-4 mb-4 me-3" style={{ float: 'right' }} variant="contained">
                           <BrowserUpdatedIcon/>Update
                         </Button>
+
+
+
                         
                           <Button
                             className="mt-4 mb-4 me-3" style={{ float: 'right' ,
                              background: 'red', color: 'black', marginLeft: '10px',variant:"contained" }}
-                            onClick={() => handleDeleteFeedback(feedback._id)}
+                            onClick={handleShow }
                           >
                             <DeleteIcon /> Delete
                           </Button>
+                              <Modal show={show} onHide={handleClose}>
+                                <Modal.Header closeButton>
+                                  <Modal.Title>Delete</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>Do you won't to conform</Modal.Body>
+                                <Modal.Footer>
+                                  <Button variant="secondary" onClick={handleClose}>
+                                    Cancel
+                                  </Button>
+                                  <Button variant="primary" onClick={() => handleDeleteFeedback(feedback._id)}>
+                                    Delete
+                                  </Button>
+                                </Modal.Footer>
+                              </Modal> 
+
                         </td>
                       </tr>
                     ))

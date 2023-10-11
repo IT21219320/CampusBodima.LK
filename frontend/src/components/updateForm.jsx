@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import {  useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Container, Form, Button, Row, Col, InputGroup,Image} from 'react-bootstrap';
-import {  Card, CardContent,  InputLabel, Select, MenuItem, FormControl,Backdrop,CircularProgress,List,ListItem,Divider,ListItemText,ListItemAvatar,Avatar,Typography,Badge,Link} from '@mui/material';
+import {  Card, CardContent,  InputLabel, Select, MenuItem, FormControl,Backdrop,CircularProgress,List,ListItem,Divider,ListItemText,ListItemAvatar,Avatar,Typography,Badge,Link,Checkbox} from '@mui/material';
 import { NavigateNext, HelpOutlineRounded , Close, AddPhotoAlternate} from '@mui/icons-material';
 import CreateBoardingStyles from '../styles/createBoardingStyles.module.css';
 import  BillStyles from '../styles/billStyles.module.css';
 import { toast } from 'react-toastify';
-import { useUpdateUtilityMutation,useGetUpdateUtilityMutation} from '../slices/utilitiesApiSlice';
+import { useUpdateUtilityMutation,useGetUpdateUtilityMutation,useGetOccupantMutation} from '../slices/utilitiesApiSlice';
 import Tooltip from '@mui/material/Tooltip';
 import { ImageToBase64 } from "../utils/ImageToBase64";
 import billStyles from '../styles/billStyles.module.css';
@@ -38,7 +38,9 @@ const UpdateUtilitiesPage = ({}) =>{
     const { boardingId,utilityType,utilityId} = useParams();
     const [boardingNames, setBoardingNames] = useState([]);
     const [ newAmount, setAmount] = useState('');
-    const [newDate, setDate] = useState('');
+    const[newPerCost,setPerCost]=useState('');
+    const [newMonth, setMonth] = useState('');
+    const[newOccupant,setOccupant]=useState([]);
     const [newDescription, setDescription] = useState('');
     const [newUtilityImage,setNewUtilityImage] = useState([]);
     const [utilityPreviewImage, setUtilityPreviewImage] = useState([]);
@@ -54,8 +56,22 @@ const UpdateUtilitiesPage = ({}) =>{
      
     const[updateUtility,{isLoading}] =useUpdateUtilityMutation();
     const[getUpdateUtility,{isLoading1}] = useGetUpdateUtilityMutation();
+    const[getOccupant,{isLoading2}]=useGetOccupantMutation();
+
+    const fetchOccupantsForBoarding = async (boardingId) => {
+      try {
+        const response = await getOccupant(boardingId).unwrap();
+        const occupantsData = response.occupants;
     
-     
+        return occupantsData;
+      } catch (err) {
+        toast.error(err.data?.message || err.error);
+        return [];
+      }
+    };
+
+    const [occupantData ,setOccupantData] =useState([]);
+    const [selectedOccupant, setSelectedOccupant] = useState(['occupant_id_1', 'occupant_id_2']);
     
     const loadData = async () => {
         try {
@@ -67,11 +83,17 @@ const UpdateUtilitiesPage = ({}) =>{
             console.log(res);
              
             setAmount(res.utility.amount);
-            setDate(res.utility.date);
+            setMonth(res.utility.month);
             setDescription(res.utility.description);
             setUtilityImages(res.utility.utilityImage);
             setBoardingNames(res.boarding.boardingName);
-           
+            setOccupantData(res.utility.occupant)
+            const occupantsData = await fetchOccupantsForBoarding(boardingId);
+            setOccupantData(occupantsData);
+
+            const selectedOccupants = res.utility.occupant.map(occupant => occupant._id);
+            setSelectedOccupant(selectedOccupants);
+
           
              // Create an array of promises for image retrieval
                 const updatedImages = await Promise.all(res.utility.utilityImage.map(async (image, index) => {
@@ -103,6 +125,7 @@ const UpdateUtilitiesPage = ({}) =>{
         }
       
       };
+     
     
       useEffect(() => {
         loadData();     
@@ -160,7 +183,8 @@ const removeImage = (imageToRemove) => {
 const handleUtilityFormSubmit = async (event) => {
   event.preventDefault();
   console.log('Update button clicked');
-   
+  
+      const finalPerCost= newAmount/selectedOccupant.length;
         
         
      
@@ -215,9 +239,11 @@ const handleUtilityFormSubmit = async (event) => {
         utilityType: utilityType,
         utilityId: utilityId,
         newAmount,
-        newDate,
+        newMonth,
         newDescription,
         newUtilityImage: finalUtlityImages,
+        newOccupant:selectedOccupant,
+        newPerCost:finalPerCost,
       };
   
       const res = await updateUtility(data).unwrap();
@@ -232,7 +258,17 @@ const handleUtilityFormSubmit = async (event) => {
       toast.error(err.data?.message || err.error || err);
     }
   };
-
+ 
+ 
+  const handleOccupantSelection = (occupantId) => {
+    if (selectedOccupant.includes(occupantId)) {
+      // If occupant is already selected, remove them from the selectedOccupant array
+      setSelectedOccupant((prevSelected) => prevSelected.filter((id) => id !== occupantId));
+    } else {
+      // If occupant is not selected, add them to the selectedOccupant array
+      setSelectedOccupant((prevSelected) => [...prevSelected, occupantId]);
+    }
+  };
  return(
     <>
       <div className={dashboardStyles.mainDiv}>
@@ -266,7 +302,7 @@ const handleUtilityFormSubmit = async (event) => {
                           </Col>
                          </Row>
                                          <Row className="mt-3" >
-                                             <Col xs={6} md={2}>
+                                            
                                                    <Form.Label>Amount : <span style={{color:'red'}}>*</span> 
                                                    <Tooltip title="Give your bill's amount" 
                                                    placement="top" 
@@ -275,41 +311,40 @@ const handleUtilityFormSubmit = async (event) => {
                                                    <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
                                                    </Tooltip>
                                                    </Form.Label>
-                                             </Col>
-                                             <Col   xs={6} md={14}>
+                                             
+                                          
                                                 <InputGroup style={{width:'60%'}}>
                                                 <InputGroup.Text>Rs.</InputGroup.Text>
                                                 <Form.Control type="Number" placeholder="Amount" value={newAmount} onChange={ (e) => setAmount(e.target.value)} required style={{width:'40%'}}/>
                                                 <InputGroup.Text>.00</InputGroup.Text>
                                                 </InputGroup>
-                                             </Col> 
+                                             
                                          </Row>
                           <Row className="mt-3" >
-                              <Col xs={6} md={2}>
-                                  <Form.Label>Date : <span style={{color:'red'}}>*</span></Form.Label>
-                              </Col>
-                              <Col   xs={6} md={10}>
-                                  <Form.Control type="date" placeholder="Date" value={newDate} onChange={ (e) => setDate(e.target.value)} required style={{width:'30%'}}/>
-                              </Col> 
+                              
+                                  <Form.Label>Month : <span style={{color:'red'}}>*</span></Form.Label>
+                              
+                          
+                                  <Form.Control type="month" placeholder="Month" value={newMonth} onChange={ (e) => setMonth(e.target.value)} required style={{width:'50%'}} disabled/>
+                              
                           </Row>
                                            <Row className="mt-3" >
-                                                 <Col xs={6} md={2}>
+                                                
                                                      <Form.Label>Description :</Form.Label>
-                                                 </Col>
-                                                 <Col   xs={6} md={10}>
-                                                     <Form.Control as="textarea" type="text" rows={3} placeholder="Description" value={newDescription} onChange={ (e) => setDescription(e.target.value)} required style={{width:'50%'}}/>
-                                                 </Col> 
+                                                
+                                                     <Form.Control as="textarea" type="text" rows={3} placeholder="Description" value={newDescription} onChange={ (e) => setDescription(e.target.value)} required style={{width:'70%'}}/>
+                                                 
                                            </Row>   
                         
                                                     <Row style={{marginTop:'20px'}}>
-                                                        <Col style={{height:'100%'}} xs={12} md={4}>
+                                                        <Col style={{height:'100%'}} xs={12} md={6}>
                                                             <Form.Label style={{margin:0}}>Bill Images<span style={{color:'red'}}>*</span></Form.Label>
                                                             <Tooltip title="Add a few photos of the *outside* of the boarding." placement="top" arrow>
                                                                 <HelpOutlineRounded style={{color:'#707676', fontSize:'large'}} />
                                                             </Tooltip>
                                                             <p>({utilityImages.length+newUtilityImage.length}/2)</p>
                                                         </Col>
-                                                        <Col style={{height:'100%'}} xs={12} md={8}>
+                                                        <Col style={{height:'100%'}} xs={12} md={6}>
                                                             <Row>
                                                                 <Col>
                                                                     {(utilityImages.length+newUtilityImage.length) < 2 ?
@@ -336,8 +371,35 @@ const handleUtilityFormSubmit = async (event) => {
                                                             </Row>
                                                         </Col>
                                                     </Row>
-                                                      
-                            <Row style={{textAlign:'center', marginBottom:'20px' }}>
+
+                   </CardContent>
+                 </Card>
+                </Col>
+                <Col md={6}>
+                    <Card className={CreateBoardingStyles.card}>
+                      <CardContent style={{ padding: '25px' }}>
+                        <div>
+                          <Form.Label>Select Occupants:</Form.Label>
+                          <div style={{ display: 'flex', flexDirection: 'column', height: '100px', overflow: 'auto' }}>
+                            {occupantData.map((occupant) => (
+                              <div key={occupant._id} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
+                                <label style={{ flex: 1 }}>
+                                  {console.log(occupant)}
+                                  <Checkbox
+                                    checked={selectedOccupant.includes(occupant._id)}
+                                    onChange={() => handleOccupantSelection(occupant._id)}
+                                  />
+                                  {occupant.firstName}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Col>
+              </Row> 
+              <Row style={{textAlign:'center', marginBottom:'20px' }}>
                                                <Col>
                                               
                                                <Button type="submit" className={billStyles.custombutton} >
@@ -345,12 +407,7 @@ const handleUtilityFormSubmit = async (event) => {
                                                       </Button>
                                                         
                                                </Col>
-                                             </Row>
-
-                   </CardContent>
-                 </Card>
-                </Col>
-              </Row>    
+                                             </Row>   
             </form>  
         </div>                                                        
                 </Col>

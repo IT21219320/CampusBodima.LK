@@ -14,5 +14,5 @@ router.get(  '/owner/:ownerId',getUtilityBoarding);
 router.get('/boarding/:boardingId',getOccupant);
 router.get('/owner/:owneId/:facilities',getFacilitiesBoarding);
 router.get('/utility/:ownerId',getBoarding);
-router.get('/occupant/:occupantID',getOccupantName);
+router.get('/occupant/:occupantIDs',getOccupantName);
 export default router;

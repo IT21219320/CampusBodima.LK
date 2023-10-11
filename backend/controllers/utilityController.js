@@ -14,23 +14,26 @@ const addUtilities = asyncHandler(async (req, res) => {
         boardingId,
         utilityType,
         amount,
-        date,
+        month,
         description,
         utilityImage,
-        occupantID,
+        occupantIDs,
+        perCost,
      } = req.body;
 
     const boarding = await Boarding.findById(boardingId);
-    const occupant = await User.findById(occupantID)
+    const occupants = await User.find({ _id: { $in: occupantIDs } });
+
 
     const utility = await Utility.create({
        utilityType,
        amount,
-       date,
+       month,
        description,
        boarding,
        utilityImage,
-       occupant,
+       occupant:occupants,
+       perCost,
     });
 
     if(utility){
@@ -49,41 +52,47 @@ const addUtilities = asyncHandler(async (req, res) => {
 // route    GET /api/utilities/owner/:boardingId/:utilityType
 // @access  Private - Owner
 
+
 const getUtilitiesForBoarding = asyncHandler(async (req, res) =>{
-    const boardingId = req.body. boardingId;
+    const boardingId = req.body.boardingId;
     const utilityType = req.body.utilityType;
+    const occupant = req.body.occupant; // Add this line to get occupantId
     const page = req.body.page || 1;
     const searchQuery = req.body.searchQuery;
     const pageSize = 10
     
     const skipCount = (page - 1) * pageSize;
 
-    try{
-        const utilities = await Utility.find({
-            boarding:boardingId,
-            utilityType:utilityType,
+    try {
+        const utilityQuery = {
+            boarding: boardingId,
+            utilityType: utilityType,
             description: { $regex: searchQuery, $options: 'i' }
-        })
-        .populate('occupant')
-        .skip(skipCount)
-        .limit(pageSize)
+        };
 
+        // Check if occupantId is provided and add it to the query
+        if (occupant) {
+            utilityQuery.occupant = occupant;
+        }
 
-        const totalDescription =await Utility.countDocuments({
-            boarding:boardingId,
-            descrotion: { $regex: searchQuery, $options: 'i' }
-        })
+        const utilities = await Utility.find(utilityQuery)
+            .populate('occupant')
+            .skip(skipCount)
+            .limit(pageSize);
 
-        const  totalPages = Math.ceil(parseInt(totalDescription)/pageSize);
+        const totalDescription = await Utility.countDocuments(utilityQuery);
+
+        const totalPages = Math.ceil(parseInt(totalDescription) / pageSize);
             
         res.status(200).json({
-            utility:utilities,
-            totalPages:totalPages,
+            utility: utilities,
+            totalPages: totalPages,
         });
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
 });
+
 
 
 // @desc    Get all Utilities for a boarding
@@ -131,7 +140,7 @@ const getUtilitiesForOccupant = asyncHandler (async(req, res) => {
 
 const updateUtility = asyncHandler(async (req, res) => {
     
-    const { boardingId,utilityType,utilityId,newAmount, newDate, newDescription, newUtilityImage } = req.body;
+    const { boardingId,utilityType,utilityId,newAmount, newMonth, newDescription, newUtilityImage,newOccupant,newPerCost} = req.body;
 
     try {
         const utility = await Utility.findOne({boarding:boardingId,utilityType:utilityType, _id:utilityId});
@@ -141,9 +150,11 @@ const updateUtility = asyncHandler(async (req, res) => {
         }
 
         utility.amount = newAmount || utility.amount ;
-        utility.date = newDate || utility.date;
+        utility.month = newMonth || utility.month;
         utility.description = newDescription || utility.description;
         utility.utilityImage = newUtilityImage || utility.utilityImage;
+        utility.occupant = newOccupant || utility.occupant;
+        utility.perCost= newPerCost || utility.perCost;
 
         const updatedUtility = await utility.save();
 
@@ -168,7 +179,7 @@ const getUpdateUtility = asyncHandler(async (req, res) => {
         _id:utilityId,
         boarding: boardingId,
         utilityType:utilityType,
-      });
+      }).populate('occupant');
   
       if (utility) {
          
@@ -325,22 +336,22 @@ const getFacilitiesBoarding = asyncHandler(async (req, res) => {
 // route    GET /api/utilities/occupant/:occupantID
 // @access  Private - Owner
 const getOccupantName = asyncHandler(async (req, res) => {
-    const occupantID = req.params.occupantID;
+    const occupantIDs = req.params.occupantID;
 
     try {
         // Step 1: Get occupant's name from User table using occupantID
-        const occupant = await User.findById(occupantID);
+        const occupants = await User.findById(occupantIDs);
 
-        if (!occupant) {
+        if (!occupants) {
             res.status(404).json({ message: 'Occupant not found' });
             return;
         }
 
         // Extract the occupant's name
-        const occupantName = occupant.firstName;
+        const occupantNames = occupants.firstName;
 
         res.status(200).json({
-            occupantName,
+            occupantNames,
         });
     } catch (error) {
         res.status(500).json({

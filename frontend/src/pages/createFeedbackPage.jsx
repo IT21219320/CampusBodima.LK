@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Container, Form, Row, Col } from 'react-bootstrap';
 import { Breadcrumbs, Typography, Card, CardContent, Link, FormControl, TextField,Select,MenuItem } from '@mui/material';
@@ -15,10 +15,11 @@ import Sidebar from '../components/sideBar';
 const CreateFeedback = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
+  const {boardingId, boardingName} = useParams();
+
   const [occupantId] = useState(userInfo._id);
   const [occupantName] = useState(userInfo.firstName + ' ' + userInfo.lastName);
   const [occupantEmail] = useState(userInfo.email);
-  const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState(0);
   const [descriptionError, setDescriptionError] = useState('');
@@ -40,7 +41,7 @@ const CreateFeedback = () => {
     }
 
     try {
-      const res = await createFeedback({ senderId: occupantId, description, rating, category }).unwrap();
+      const res = await createFeedback({ senderId: occupantId, description, rating }).unwrap();
       console.log("value", res);
       if (res) {
         toast.success('Feedback submitted successfully');
@@ -117,23 +118,18 @@ const CreateFeedback = () => {
                         </label>
                       </Col>
                       <Col lg={9} xs={6} className="mt-3">
-                        <TextField id="outlined-read-only-input" sx={{ width: '30%', height: '78px' }} value={occupantEmail} InputProps={{ readOnly: true }} />
+                        <TextField id="outlined-read-only-input" sx={{  height: '78px' }} value={occupantEmail} InputProps={{ readOnly: true }} />
                       </Col>
                     </Row>
 
                     <Row className={`mt-4 ${CreateFeedbackStyles.formGroup}`}>
                       <Col lg={3} xs={6}>
-                        <label htmlFor="category" className={CreateFeedbackStyles.lbl}>
-                          Category<span className={CreateFeedbackStyles.require}><b>*</b></span>
+                        <label htmlFor="boardingname" className={CreateFeedbackStyles.lbl}>
+                          Boarding Name
                         </label>
                       </Col>
-                      <Col lg={9} xs={6} className={`mt-3 ${CreateFeedbackStyles.formControl}`}>
-                        <FormControl sx={{ minWidth: 120 }}>
-                          <Select value={category} onChange={(e) => setCategory(e.target.value)} required>
-                            <MenuItem value={'hostel'}>Hostel</MenuItem>
-                            <MenuItem value={'anex'}>Anex</MenuItem>
-                          </Select>
-                        </FormControl>
+                        <Col lg={9} xs={6} className={`mt-3 ${CreateFeedbackStyles.formControl}`}>
+                        <TextField id="outlined-read-only-input" sx={{ height: '78px' }} value={boardingName} InputProps={{ readOnly: true }} />
                       </Col>
                     </Row>
 

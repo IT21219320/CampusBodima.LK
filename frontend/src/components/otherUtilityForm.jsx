@@ -29,13 +29,20 @@ const MenuProps = {
 
 const AddUtilitiesPage = () =>{
 
+  const getCurrentMonthValue = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Ensure two digits for month
+    return `${year}-${month}`;
+  };
+
   const { userInfo } = useSelector((state) => state.auth); 
 
 
     const [boardingData, setBoardingData] = useState([]);
     const [utilityType,setUtilityType] = useState('');
     const [ amount, setAmount] = useState('');
-    const [date, setDate] = useState('');
+    const [month,setMonth] = useState(getCurrentMonthValue());
     const [description, setDescription] = useState('');
     const [utilityImage,setUtilityImage] = useState([]);
     const [utilityPreviewImage, setUtilityPreviewImage] = useState([]);
@@ -103,7 +110,7 @@ const handleUtilityFormSubmit = async (event) => {
     boardingId:selectedBoardingId,
     utilityType:'Other',
     amount,
-    date,
+    month,
     description,
     utilityImage,
     occupantID:selectedOccupant,
@@ -175,14 +182,6 @@ const removeImage = (imageToRemove) => {
   
 };
    
-const getCurrentDate = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
 const handleAmountChange = (e) => {
   const enteredAmount = e.target.value;
 
@@ -267,11 +266,20 @@ const handleAmountChange = (e) => {
                             </Row>
                                         <Row className="mt-3" >
                                         <Col xs={6} md={2}>
-                                              <Form.Label>Date : <span style={{color:'red'}}>*</span>
+                                              <Form.Label>Month : <span style={{color:'red'}}>*</span>
                                               </Form.Label>
                                               </Col>
                                         <Col   xs={6} md={10}>
-                                               <Form.Control type="Date" placeholder="Date" value={date} onChange={ (e) => setDate(e.target.value)} required style={{width:'30%'}}  min={getCurrentDate()} max={getCurrentDate()}/>
+                                        <Form.Control
+                              type="month"
+                              placeholder="Month"
+                              value={month} // Display the selected month
+                              readOnly // Make the input read-only
+                              required
+                              style={{ width: '30%' }}
+                              min={getCurrentMonthValue()}
+                              max={getCurrentMonthValue()}
+                            ></Form.Control>
                                         </Col> 
                                         </Row>
                            <Row className="mt-3" >
