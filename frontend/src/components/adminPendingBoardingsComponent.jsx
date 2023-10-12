@@ -217,14 +217,17 @@ const AdminPendingBoardings = () => {
             setApprovalLoading(true);
 
             const res = await rejectRooms({roomId:tempRoomDeleteId}).unwrap();
-
+            
             const updatedTempBoarding = { ...tempBoarding }; 
             if (updatedTempBoarding.room) {
-                updatedTempBoarding.room = updatedTempBoarding.room.filter(room => room._id !== id);
+                updatedTempBoarding.room = updatedTempBoarding.room.filter(room => room._id !== tempRoomDeleteId);
+                if(updatedTempBoarding.room.length == 0 && updatedTempBoarding.status=="Approved"){
+                    setShowBoarding(false);
+                    setTempBoarding('')
+                }
             }
             setTempBoarding(updatedTempBoarding);
 
-            console.log(res);
             loadData();
             toast.success('Room rejected successfully!');
             setApprovalLoading(false);

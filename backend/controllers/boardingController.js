@@ -156,14 +156,27 @@ const addRoom = asyncHandler(async (req, res) => {
     //If there aren't any approved rooms for the boarding after creating the new room, mark the boarding as PendingApproval
     if(approvedRooms.length == 0){
         status = "PendingApproval"
-}
+    }
+
+    let boardingRent;
+    if(boarding.rent){
+        if(boarding.rent > rent){
+            boardingRent = rent;
+        }
+        else{
+            boardingRent = boarding.rent;
+        }
+    }
+    else{
+        boardingRent = rent;
+    }
     
 
     const updatedBoarding = await Boarding.findOneAndUpdate(
         { _id: boardingId },
         { 
             $push: { room: room._id },
-            $set: { status }
+            $set: { status, rent: boardingRent}
         },
         { new: true }
     ).populate('room').populate('owner');
@@ -641,14 +654,39 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
     const noOfRooms = req.body.noOfRooms;
     const boardingType = req.body.boardingType;
     const gender = req.body.gender;
+    const city = req.body.city;
     const rentRange = req.body.rentRange;
     const rent = req.body.rent;
     const startDate = new Date(req.body.startDate);
     const endDate = new Date(req.body.endDate);
     const date = req.body.date;
     const search = req.body.search;
-    const sortBy = req.body.sortBy;
-    const order = req.body.order;
+    let facilities = req.body.facilities;
+    let sortBy = req.body.sortBy;
+    let order = req.body.order;
+
+    if(facilities.length == 0){
+        facilities = "Any"
+    }
+
+    if(sortBy == 'updatedAtDesc'){
+        sortBy = 'updatedAt'
+        order = -1
+    }
+    else if(sortBy == 'updatedAtAsc'){
+        sortBy = 'updatedAt'
+        order = 1
+    }
+    else if(sortBy == 'rentDesc'){
+        sortBy = 'rent'
+        order = -1
+    }
+    else if(sortBy == 'rentAsc'){
+        sortBy = 'rent'
+        order = 1
+    }
+
+
 
     const startRent = rentRange[0];
     const endRent = rentRange[1];
@@ -659,17 +697,20 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
     
     let totalRows;
     let boardings;
+    const cities = await Boarding.distinct('city');
     if(boardingType == 'Annex'){
 
         totalRows = await Boarding.countDocuments({
             boardingType,
             visibility: true,
             status: 'Approved',
+            ...(facilities !== 'Any' ? { facilities: {$all: facilities} } : {}),
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms > 0 ? (noOfRooms > 10 ? {noOfRooms: "10+"} : { noOfRooms })  : {}),
             ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(city !== 'All' ? { city } : {}),
             ...(gender !== 'All' ? { 
                 $and: [{
                     $or: [
@@ -695,11 +736,13 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
             boardingType,
             visibility: true,
             status: 'Approved',
+            ...(facilities !== 'Any' ? { facilities: {$all: facilities} } : {}),
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms > 0 ? (noOfRooms > 10 ? {noOfRooms: "10+"} : { noOfRooms })  : {}),
             ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), 
             ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+            ...(city !== 'All' ? { city } : {}),
             ...(gender !== 'All' ? { 
                 $and: [{
                     $or: [
@@ -732,7 +775,6 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
         const rooms = await Room.find({
             status: 'Approved',
             visibility: true,
-            ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), 
         });
 
 
@@ -741,11 +783,13 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
             visibility: true,
             status: 'Approved',
             room: { $in: rooms},
+            ...(facilities !== 'Any' ? { facilities: {$all: facilities} } : {}),
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
-            //...(rent !== 'All' ? (roomConditions.length>0 ? { $and: [{$or: roomConditions }]} : {}) : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(city !== 'All' ? { city } : {}),
             ...(gender !== 'All' ? { 
                 $and: [{
                     $or: [
@@ -773,11 +817,13 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
             visibility: true,
             status: 'Approved',
             room: { $in: rooms},
+            ...(facilities !== 'Any' ? { facilities: {$all: facilities} } : {}),
             ...(food !== 'All' ? { food } : {}),
             ...(utilityBills !== 'All' ? { utilityBills } : {}),
             ...(noOfRooms !== 0 ? { $expr: { $eq: [{ $size: '$room' }, noOfRooms] } } : noOfRooms > 10 ? {$expr: { $gt: [{ $size: '$room' }, 10] }} : {}),
-            //...(rent !== 'All' ? (roomConditions.length>0 ? { $or: roomConditions } : {}) : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(rent !== 'All' ? { rent: { $gte: startRent, $lte: endRent } } : {}), //gte is greater than or eqal and lte is less than or equal
             ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(city !== 'All' ? { city } : {}),
             ...(gender !== 'All' ? { 
                 $and: [{
                     $or: [
@@ -788,6 +834,7 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
                         { boardingName: { $regex: search, $options: "i" } },
                         { address: { $regex: search, $options: "i" } },
                         { city: { $regex: search, $options: "i" } },
+                        { description: { $regex: search, $options: "i" } },
                     ]
                 }]
             } : {
@@ -795,6 +842,7 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
                     { boardingName: { $regex: search, $options: "i" } },
                     { address: { $regex: search, $options: "i" } },
                     { city: { $regex: search, $options: "i" } },
+                    { description: { $regex: search, $options: "i" } },
                 ]
             }), 
         }).populate({
@@ -810,7 +858,8 @@ const getAllPublicBoardings = asyncHandler(async (req, res) => {
     if(boardings){
         res.status(200).json({
             boardings,
-            totalRows
+            totalRows,
+            cities
         })
     }
     else{
@@ -1168,11 +1217,17 @@ const rejectRoom = asyncHandler(async (req, res) => {
                 }        
             }
 
-            let boarding = Boarding.findById(room.boardingId);
+            let boarding = await Boarding.findById(room.boardingId);
+            console.log(boarding);
             boarding.room.pull(room._id);
-            await boarding.save()
+            boarding = await boarding.save()
 
             await Room.findByIdAndDelete(room._id); // deleting the room
+
+            if(boarding.room.length == 0){
+                boarding.status = "PendingRoom"
+                await boarding.save();
+            }
 
             message = `Dear ${room.boardingId.owner.firstName},<br><br>
             We regret to inform you that your room in ${room.boardingId.boardingName} does not meet our listing criteria at this time, and your registration has been declined.<br>
@@ -1338,6 +1393,20 @@ const updateRoom = asyncHandler(async (req, res) => {
         room.keyMoney = keyMoney || room.keyMoney;
         room.rent = rent || room.rent;
 
+        const boarding = await Boarding.findById(room.boardingId)
+        if(boarding.rent){
+            if(rent < boarding.rent){
+                boarding.rent = rent
+            }
+            else{
+                boarding.rent = boarding.rent
+            }
+        }
+        else{
+            boarding.rent = rent
+        }
+        await boarding.save()
+
         room = await room.save();
 
         if(room){
@@ -1447,6 +1516,11 @@ const deleteRoom = asyncHandler(async (req, res) => {
 
             if(boarding.room.length == 0){
                 boarding.status = "PendingRoom";
+                boarding.rent = null
+            }
+            if(boarding.room.length > 0){
+                boarding.room.sort((a, b) => a.rent - b.rent);
+                boarding.rent = boarding.room[0].rent;
             }
             
             boarding = await boarding.save();

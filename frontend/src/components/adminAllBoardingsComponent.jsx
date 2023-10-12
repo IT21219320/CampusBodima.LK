@@ -82,17 +82,6 @@ const AdminAllBoardings = () => {
 
     },[page, pageSize, status, food, utilityBills, noOfRooms, boardingType, gender, rentRange, rent, startDate, endDate, date, search, sortBy, order]);
 
-    const handleDialogOpen = (e, id) => {
-        e.preventDefault();
-        setTempDeleteId(id);
-        setConfirmDialog(true);
-    }
-
-    const handleDialogClose = () => {
-        setTempDeleteId('');
-        setConfirmDialog(false);
-    }
-
     const handleDateRangeSelect = (ranges) =>{
         setStartDate(ranges.selection.startDate);
         setEndDate(ranges.selection.endDate);
@@ -354,7 +343,7 @@ const AdminAllBoardings = () => {
                                                     : 
                                                     <td>
                                                         {boarding.room.map((room,index) => (
-                                                            room.rent >= rentRange[0] && room.rent <= rentRange[1]? 
+                                                            (room.rent >= rentRange[0] && room.rent <= rentRange[1]) || rent == "All"? 
                                                                 <span key={index}>Room {room.roomNo}: {room.rent}<br /></span>
                                                             : ''
                                                         ))}
@@ -388,28 +377,6 @@ const AdminAllBoardings = () => {
                     />
                 </Col>
             </Row>
-            <Dialog
-                fullScreen={fullScreen}
-                open={confirmDialog}
-                onClose={handleDialogClose}
-                aria-labelledby="responsive-dialog-title"
-                style={{padding:'15px'}}
-            >
-                <DialogContent className={ownerStyles.confirmIcon}>
-                    <Warning style={{fontSize:'100px'}} />
-                </DialogContent>
-                <DialogTitle id="responsive-dialog-title">
-                    {"Are you sure you want to delete this boarding?"}
-                </DialogTitle>
-                <DialogActions>
-                    <Button autoFocus onClick={handleDialogClose}>
-                        Cancel
-                    </Button>
-                    <Button onClick={'deleteBoarding'} autoFocus variant="danger">
-                        Confirm
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </> 
     )
 };
