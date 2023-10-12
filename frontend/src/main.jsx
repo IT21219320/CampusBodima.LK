@@ -163,7 +163,7 @@ const router = createBrowserRouter(
           
           <Route path='/occupant/feedback' element={<OccupantFeedback />} />
           <Route path='/occupant/feedback/create/:boardingId/:boardingName' element={<CreateFeedback />} />
-          <Route path='/occupant/feedback/update/:feedbackId' element={<UpdateFeedbackpage />} />
+          <Route path='/occupant/feedback/update/:feedbackId/:boardingName' element={<UpdateFeedbackpage />} />
           
         </Route>
       </Route>
