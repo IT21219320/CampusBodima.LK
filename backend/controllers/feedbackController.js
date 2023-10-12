@@ -1,7 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Feedback from '../models/feedbackModel.js';
 import User from '../models/userModel.js';
-import Reservation from '../models/reservationModel.js'
 import Boarding from '../models/boardingModel.js';
 import bodyParser from 'body-parser';
 import ReservationHistory from '../models/reservationHistory.js';
@@ -16,9 +15,9 @@ import ReservationHistory from '../models/reservationHistory.js';
 
 
 const createFeedback = asyncHandler(async (req, res) => {
-    const {senderId,category, description, rating,boardingId } = req.body;
-    
-    const reservationHistory = await ReservationHistory.findOne({boardingId,'occupantID._id':senderId});
+    const {senderId, description, rating,boardingId } = req.body;
+
+    const reservationHistory = await ReservationHistory.findOne({'boarding._id':boardingId,'occupant._id':senderId});
 
     if(reservationHistory){
 
@@ -50,7 +49,6 @@ const createFeedback = asyncHandler(async (req, res) => {
         feedbackId,
         senderId: sender,
         boardingId: boarding,
-        category,
         description,
         rating,
         
@@ -126,7 +124,7 @@ const getFeedbackByUserId = asyncHandler(async (req, res) => {
   const searchQuery = req.body.searchQuery;
 
   try {
-    const feedback = await Feedback.find({ 'senderId._id': userId,description: { $regex: searchQuery, $options: 'i' } });
+    const feedback = await Feedback.find({ 'senderId._id': userId,description: { $regex: searchQuery, $options: 'i' } }).populate('boardingId');
     
    
 
@@ -179,7 +177,7 @@ const getFeedbackByUserId = asyncHandler(async (req, res) => {
 
   const updateFeedback = asyncHandler(async (req, res) => {
     //const { _id } = req.qu;
-    const { feedbackId,newcategory, newdescription, newrating } = req.body;
+    const { feedbackId, newdescription, newrating } = req.body;
   
     try {
       const feedback = await Feedback.findById(feedbackId);
@@ -190,7 +188,7 @@ const getFeedbackByUserId = asyncHandler(async (req, res) => {
        }
   
       
-        feedback.category = newcategory || feedback.category;
+        
         feedback.description = newdescription || feedback.description;
         feedback.rating = newrating || feedback.rating;
   
@@ -214,14 +212,14 @@ const getFeedbackByUserId = asyncHandler(async (req, res) => {
 // route    GET /api/ingredient/owner/update/:boardingId/:ingredientId
 // @access  Private - Owner
 const getUpdateFeedback = asyncHandler(async (req, res) => {
-  const {feedbackId} = req.params;
+  const {feedbackId,} = req.params;
   
   
   
   try {
     const feedback = await Feedback.findById(feedbackId);
     
-    console.log(feedback);
+    
     
 
     if (feedback) {
@@ -244,7 +242,7 @@ const deleteFeedback = asyncHandler(async (req, res) => {
   try {
     const feedback = await Feedback.findByIdAndDelete(feedbackId );
 
-    console.log({feedbackId});
+    
 
     if (!feedback) {
       res.status(404);

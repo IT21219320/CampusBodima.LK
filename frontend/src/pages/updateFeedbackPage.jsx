@@ -20,8 +20,9 @@ const UpdateFeedback = () => {
   const [occupantId, setOccupantId] = useState(userInfo._id);
   const [occupantName, setOccupantName] = useState(userInfo.firstName + ' ' + userInfo.lastName);
   const [occupantEmail, setOccupantEmail] = useState(userInfo.email);
+  const {boardingId, boardingName} = useParams();
 
-  const [newcategory, setCategory] = useState('');
+ 
   const [newdescription, setDescription] = useState('');
   const [newrating, setRating] = useState(0);
 
@@ -31,8 +32,7 @@ const UpdateFeedback = () => {
   const loadData = async() => {
     try {
       const res = await getUpdateFeedback(feedbackId).unwrap()
-      console.log(res);
-      setCategory(res.feedback.category)
+      
       setDescription(res.feedback.description)
       setRating(res.feedback.rating)
     } catch (error) {
@@ -50,7 +50,6 @@ const UpdateFeedback = () => {
     try {
       const res = await updateFeedback({
         feedbackId,
-        newcategory,
         newdescription,
         newrating,
       });
@@ -129,25 +128,20 @@ const UpdateFeedback = () => {
                           </label>
                         </Col>
                         <Col lg={9} xs={6} className="mt-3">
-                          <TextField id="outlined-read-only-input" size="small" sx={{ width: '30%', height: '78px' }} value={occupantEmail} InputProps={{ readOnly: true }} />
+                          <TextField id="outlined-read-only-input" size="small" sx={{ height: '78px' }} value={occupantEmail} InputProps={{ readOnly: true }} />
                         </Col>
                       </Row>
 
-                      <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
-                        <Col lg={3} xs={6}>
-                          <label htmlFor="category" className={CreateFeedbackStyles.lbl}>
-                            Category<span className={CreateFeedbackStyles.require}><b>*</b></span>
-                          </label>
-                        </Col>
-                        <Col lg={9} xs={6} className="mt-3">
-                          <FormControl sx={{ m: 0, minWidth: 120 }} size="small">
-                            <Select value={newcategory} onChange={(e) => setCategory(e.target.value)} required>
-                              <MenuItem value={'boarding'}>Boarding</MenuItem>
-                              <MenuItem value={'anex'}>Anex</MenuItem>
-                            </Select>
-                          </FormControl>
-                        </Col>
-                      </Row>
+                      <Row className={`mt-4 ${CreateFeedbackStyles.formGroup}`}>
+                      <Col lg={3} xs={6}>
+                        <label htmlFor="boardingname" className={CreateFeedbackStyles.lbl}>
+                          Boarding Name
+                        </label>
+                      </Col>
+                        <Col lg={9} xs={6} className={`mt-3 ${CreateFeedbackStyles.formControl}`}>
+                        <TextField id="outlined-read-only-input" sx={{ height: '78px' }} value={boardingName} InputProps={{ readOnly: true }} />
+                      </Col>
+                    </Row>
 
                       <Row style={{ alignItems: 'flex-start', marginTop: '10px' }}>
                         <Col lg={3} xs={6}>

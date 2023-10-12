@@ -17,13 +17,6 @@ const feedbackSchema = mongoose.Schema({
         ref: 'Boarding',
         required: true
     },
-    
-    
-    category:{
-      type:String,
-      required:true,  
-    },
-
 
     description:{
         type:String,

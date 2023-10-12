@@ -17,6 +17,7 @@ const CreateFeedback = () => {
 
   const {boardingId, boardingName} = useParams();
 
+  const [viewUserInfo, setViewUserInfo] = useState();
   const [occupantId] = useState(userInfo._id);
   const [occupantName] = useState(userInfo.firstName + ' ' + userInfo.lastName);
   const [occupantEmail] = useState(userInfo.email);
@@ -29,8 +30,8 @@ const CreateFeedback = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // You can remove this line if it's not needed.
-    // setViewUserInfo(true);
+    
+     setViewUserInfo(true);
   }, []);
 
   const submitHandler = async (e) => {
@@ -41,8 +42,8 @@ const CreateFeedback = () => {
     }
 
     try {
-      const res = await createFeedback({ senderId: occupantId, description, rating }).unwrap();
-      console.log("value", res);
+      const res = await createFeedback({ senderId: occupantId, description, rating, boardingId}).unwrap();
+      //console.log("value", res);
       if (res) {
         toast.success('Feedback submitted successfully');
         navigate('/occupant/feedback');

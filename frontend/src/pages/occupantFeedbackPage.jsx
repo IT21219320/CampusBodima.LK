@@ -224,7 +224,7 @@ const OccupantFeedback = () => {
             <Table striped bordered hover>
                 <thead>
                   <tr style={{ textAlign: 'center', backgroundColor: 'black' }}>
-                    <th>Category</th>
+                    <th>Boarding Name</th>
                     <th>Feedback Details</th>
                     <th>Number of Star Rating</th>
                     <th>Options</th>
@@ -238,11 +238,11 @@ const OccupantFeedback = () => {
                   ) : filteredFeedbacks && filteredFeedbacks.length > 0 ? (
                     filteredFeedbacks.map((feedback, index) => (
                       <tr key={index}>
-                        <td>{feedback.category}</td>
+                        <td>{feedback.boardingId.boardingName}</td>
                         <td>{feedback.description}</td>
                         <td><Rating name="read-only" value={parseInt(feedback.rating)} readOnly /></td>
                         <td>
-                        <Button type="button" onClick={() => navigate(`/occupant/feedback/update/${feedback._id}`)} className="mt-4 mb-4 me-3" style={{ float: 'right' }} variant="contained">
+                        <Button type="button" onClick={() => navigate(`/occupant/feedback/update/${feedback._id}/${feedback.boardingId.boardingName}`)} className="mt-4 mb-4 me-3" style={{ float: 'right' }} variant="contained">
                           <BrowserUpdatedIcon/>Update
                         </Button>
 
