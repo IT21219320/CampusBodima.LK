@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import User from "../models/userModel.js";
+import Boarding from "../models/boardingModel.js";
 
 const replySchema = mongoose.Schema({
     ticketId:{
@@ -63,6 +64,11 @@ const ticketSchema = mongoose.Schema({
 
     recieverId:{
         type:User.schema,
+        required:true,
+    },
+
+    boardingId:{
+        type:Boarding.schema,
         required:true,
     },
 

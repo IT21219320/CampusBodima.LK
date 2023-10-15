@@ -78,7 +78,7 @@ const UpdateMainTicketPage = () =>{
             try {
                     setBackDropOpen(true);
                     const res = await updateTicket({ ticketId:ticket._id, replyTktId:ticket._id, subject, category, subCategory ,description, attachment }).unwrap();
-console.log(res);
+
                     toast.success("ticket updated successfully");
                     navigate(`/occupant/ticket/${ticket._id}`);  //should navigate to mytickets    
                     setBackDropOpen(false);            

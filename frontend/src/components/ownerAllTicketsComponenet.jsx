@@ -23,6 +23,8 @@ const OwnerAllTickets = ({search}) =>{
     const [category, setCategory] = useState('all');
     const [subCategory, setSubCategory] = useState('all');
     const [status, setStatus] = useState('all');
+    const [boardingNames, setBoardingNames] = useState([]);
+    const [boardingId, setBoardingId] = useState('all');
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [date, setDate] = useState('all');
@@ -43,11 +45,15 @@ const OwnerAllTickets = ({search}) =>{
     
     const loadData = async () => {
         try{
-            const res = await getOwnerTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status, startDate, endDate, date, search} ).unwrap();
+            const res = await getOwnerTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status, startDate, endDate, date, search, boardingId} ).unwrap();
             setTickets(res.tickets);
             setTotalRows(res.totalRows);
+            setBoardingNames(res.ownerBoardings);
         } catch(err){
             toast.error(err.data?.message || err.error);
+            if(err.data?.message == 'Please create a boarding to view tickets' || err.error == 'Please create a boarding to view tickets'){
+                navigate('/')
+            }
         }
     }
 
@@ -66,7 +72,7 @@ const OwnerAllTickets = ({search}) =>{
             loadData();
         }*/
 
-    },[page,rowsPerPage,category, subCategory, status, startDate, endDate, date, search]);  //when the values that are inside the box brackets change,each time loadData function runs
+    },[page,rowsPerPage,category, subCategory, status, startDate, endDate, date, search, boardingId]);  //when the values that are inside the box brackets change,each time loadData function runs
 
     const handleDateRangeSelect = (ranges) =>{
         console.log(ranges);
@@ -104,11 +110,17 @@ const OwnerAllTickets = ({search}) =>{
 
    }
 
+   //function to handle when a boarding is selected
+   const handleBoardingSelect = () =>{
+    
+   }
+
+
    const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
    }
-
+        
    const exportToPDF = () => {;
                
     // Create a new jsPDF instance
@@ -165,6 +177,23 @@ const OwnerAllTickets = ({search}) =>{
             </Row>
             <Row style={{marginTop:'20px'}}>
                 <Col><div style={{border: '1px solid #00000066', padding:'12px'}}>Filter Ticket By: </div></Col>
+                <Col> {/*Boarding name*/}
+                    <Box sx={{ minWidth: 120, minHeight:50 }}>
+                            <FormControl fullWidth>
+                                <InputLabel>Boarding Name</InputLabel>
+                                <Select
+                                    value={boardingId}
+                                    label="Boarding Name"
+                                    onChange={(event) => setBoardingId(event.target.value)}
+                                >
+                                    <MenuItem value={'all'}>All</MenuItem>
+                                    {boardingNames.map((boarding,index) => (
+                                        <MenuItem key={index} value={boarding._id}>{boarding.boardingName}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                    </Box>
+                </Col>
                 <Col>
                     <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth>
@@ -272,7 +301,7 @@ const OwnerAllTickets = ({search}) =>{
                                 </tr>
                         </thead>
                         <tbody>
-                            {isLoading ? <tr style={{width:'100%',height:'100%',textAlign: 'center'}}><td colSpan={3}><CircularProgress /></td></tr> : 
+                            {isLoading ? <tr style={{width:'100%',height:'100%',textAlign: 'center'}}><td colSpan={4}><CircularProgress /></td></tr> : 
                                 tickets.length > 0 ?
                                     tickets.map((ticket, index) => (
                                         <tr key={index}>
@@ -311,7 +340,7 @@ const OwnerAllTickets = ({search}) =>{
                                     ))
                                 :
                                 <tr style={{height:'100%', width:'100%',textAlign:'center',color:'dimgrey'}}>
-                                    <td colSpan={3}><h2>You don't have any tickets!</h2></td>
+                                    <td colSpan={4}><h2>You don't have any tickets!</h2></td>
                                 </tr>
                             }
                         </tbody>

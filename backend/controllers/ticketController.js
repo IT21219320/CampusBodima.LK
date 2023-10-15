@@ -12,7 +12,7 @@ import Boarding from '../models/boardingModel.js';
 const createTicket = asyncHandler(async (req,res) =>{
     const{ senderId, subject, category, subCategory ,description, attachment } = req.body;
 
-    const reservation = await Reservation.findOne({occupantID: senderId});
+    const reservation = await Reservation.findOne({occupantID: senderId, status:"Approved"});
     if(!reservation){
         res.status(400);
         throw new Error('Please join a boarding to raise ticket')
@@ -41,6 +41,7 @@ const createTicket = asyncHandler(async (req,res) =>{
         ticketId,
         senderId: sender,
         recieverId: owner,
+        boardingId: boarding,
         subject,
         category,
         subCategory,
@@ -62,7 +63,7 @@ const createTicket = asyncHandler(async (req,res) =>{
 //getTicket by userId   occupant ta adala tiket tika
 
 const getUserTickets = asyncHandler(async (req,res) => {
-    const id = req.body.id;
+    const id = req.body.id;   //userid
     const page = req.body.page || 0;
     const pageSize = req.body.rowsPerPage;
     const category = req.body.category;
@@ -79,8 +80,15 @@ const getUserTickets = asyncHandler(async (req,res) => {
     
     endDate.setHours(23, 59, 59, 999); // Set to just before midnight of the following day
 
+    const reservation = await Reservation.findOne({occupantID: id, status: "Approved"});
+    if(!reservation){
+        res.status(400);
+        throw new Error('Please join a boarding to raise ticket')
+    }
+
     var totalRows = await Ticket.countDocuments({
         'senderId._id': id,
+        'boardingId._id': reservation.boardingId,
         ...(category !== 'all' ? { category } : {}),
         ...(subCategory !== 'all' ? { subCategory } : {}),
         ...(status !== 'all' ? { status } : {}),
@@ -91,6 +99,7 @@ const getUserTickets = asyncHandler(async (req,res) => {
     try{
         const tickets = await Ticket.find({
             'senderId._id': id,
+            'boardingId._id': reservation.boardingId,
             ...(category !== 'all' ? { category } : {}),
             ...(subCategory !== 'all' ? { subCategory } : {}),
             ...(status !== 'all' ? { status } : {}),
@@ -113,7 +122,7 @@ const getUserTickets = asyncHandler(async (req,res) => {
     }
 });
 
-// search
+// search handler
 const search = asyncHandler(async (req,res) => {
     const id = req.body.id;
     const page = req.body.page || 0;
@@ -190,7 +199,7 @@ const replyTicket = asyncHandler(async (req, res) => {
 
         var latestReplyId;
         if(ticket.reply.length == 0){
-            latestReplyId = 1.1;
+            latestReplyId = parseInt(ticket.ticketId)+0.1;
         }
         else{
              latestReplyId = parseFloat(ticket.reply[ticket.reply.length - 1].ticketId)+0.1;
@@ -341,13 +350,24 @@ const getOwnerTickets = asyncHandler(async (req,res) => {
     const endDate = new Date(req.body.endDate);
     const date = req.body.date;
     const search = req.body.search;
-
+    let boardingId = req.body.boardingId;
+console.log(boardingId);
     const skip = (page) * pageSize;
     
     endDate.setHours(23, 59, 59, 999); // Set to just before midnight of the following day
 
+    const boarding = await Boarding.findOne({owner: id, status:"Approved"});
+    if(!boarding){
+        res.status(400);
+        throw new Error('Please create a boarding to view tickets')
+    }
+
+    
+    var ownerBoardings = await Boarding.find({owner: id, status:"Approved"}).select('boardingName');
+
     var totalRows = await Ticket.countDocuments({
         'recieverId._id': id,
+        ...(boardingId !== 'all' ? { 'boardingId._id': boardingId } : {}),
         ...(category !== 'all' ? { category } : {}),
         ...(subCategory !== 'all' ? { subCategory } : {}),
         ...(status !== 'all' ? { status } : {}),
@@ -358,6 +378,7 @@ const getOwnerTickets = asyncHandler(async (req,res) => {
     try{
         const tickets = await Ticket.find({
             'recieverId._id': id,
+            ...(boardingId !== 'all' ? { 'boardingId._id': boardingId } : {}),
             ...(category !== 'all' ? { category } : {}),
             ...(subCategory !== 'all' ? { subCategory } : {}),
             ...(status !== 'all' ? { status } : {}),
@@ -368,7 +389,7 @@ const getOwnerTickets = asyncHandler(async (req,res) => {
         .limit(pageSize);
 
         if(tickets){
-            res.status(201).json({tickets,totalRows});
+            res.status(201).json({tickets,totalRows,ownerBoardings});
         }
          else{
             res.status(400);

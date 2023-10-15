@@ -33,7 +33,7 @@ const OccupantTicketThreadPage = () => {
     const [updateAttachment, setUpdateAttachment] = useState('');
 
     const currentTime = new Date();
-    const fifteenMinutesAgo = new Date(currentTime - 15 * 60 * 1000);
+    const fifteenMinutesAgo = new Date(currentTime - 15 * 60 * 1000); //1second=1000ms
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -164,7 +164,7 @@ const OccupantTicketThreadPage = () => {
     //delete last ticket
     const handleDialogOpen = (e, id) => {
         e.preventDefault();
-        if(new Date(ticket.updatedAt) > new Date(new Date() - 15 * 60 * 1000)){
+        if(new Date(ticket.updatedAt) > new Date(new Date() - 15 * 60  * 1000)){
             setTempDeleteId(id);
             setConfirmDialog(true);
         }
