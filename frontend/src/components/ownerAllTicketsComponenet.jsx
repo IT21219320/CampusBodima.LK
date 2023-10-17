@@ -28,6 +28,9 @@ const OwnerAllTickets = ({search}) =>{
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [date, setDate] = useState('all');
+    const [sortBy, setSortBy] = useState('statusAsc'); // value of drop down
+    const [sortColumn, setSortColumn] = useState('status'); // actual sort column
+    const [order, setOrder] = useState(1);  //ascending:1, descending:-1
     const [newSearch, setNewSearch] = useState('');
 
     const TimeAgo = ( date ) => {
@@ -45,7 +48,7 @@ const OwnerAllTickets = ({search}) =>{
     
     const loadData = async () => {
         try{
-            const res = await getOwnerTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status, startDate, endDate, date, search, boardingId} ).unwrap();
+            const res = await getOwnerTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status, startDate, endDate, date, search, boardingId, sortColumn, order} ).unwrap();
             setTickets(res.tickets);
             setTotalRows(res.totalRows);
             setBoardingNames(res.ownerBoardings);
@@ -72,7 +75,7 @@ const OwnerAllTickets = ({search}) =>{
             loadData();
         }*/
 
-    },[page,rowsPerPage,category, subCategory, status, startDate, endDate, date, search, boardingId]);  //when the values that are inside the box brackets change,each time loadData function runs
+    },[page,rowsPerPage,category, subCategory, status, startDate, endDate, date, search, boardingId,sortColumn, order]);  //when the values that are inside the box brackets change,each time loadData function runs
 
     const handleDateRangeSelect = (ranges) =>{
         console.log(ranges);
@@ -110,16 +113,40 @@ const OwnerAllTickets = ({search}) =>{
 
    }
 
-   //function to handle when a boarding is selected
-   const handleBoardingSelect = () =>{
-    
-   }
-
-
    const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
    }
+
+   const handleSort = (e) => {
+    const column = e.target.value;
+    setSortBy(column)
+    if(column == 'statusAsc') {
+        setSortColumn('status');
+        setOrder(1);
+    }   
+    else if(column == 'statusDesc') {
+        setSortColumn('status');
+        setOrder(-1);
+    }  
+    else if(column == 'updatedAtAsc') {
+        setSortColumn('updatedAt');
+        setOrder(1);
+    }    
+    else if(column == 'updatedAtDesc') {
+        setSortColumn('updatedAt');
+        setOrder(-1);
+    }    
+    else if(column == 'subjectAsc') {
+        setSortColumn('subject');
+        setOrder(1);
+    }    
+    else if(column == 'subjectDesc') {
+        setSortColumn('subject');
+        setOrder(-1);
+    }     
+}
+
         
    const exportToPDF = () => {;
                
@@ -130,7 +157,12 @@ const OwnerAllTickets = ({search}) =>{
     const headers = [["Reference Id", "Subject", "Description", "Category", "Sub Category","Occupant Name" ,"Status", "Date"]];
 
     // Map the admin data to table rows
-
+    let boardingName = 'All'
+    if(boardingId != 'all'){
+        const selectedboarding = boardingNames.find(boarding => boarding._id === boardingId);
+        boardingName = selectedboarding.boardingName;
+    }
+    
     const data = tickets.map((ticket) => [
       ticket.ticketId,
       ticket.subject,
@@ -155,15 +187,19 @@ const OwnerAllTickets = ({search}) =>{
       body: data,
       styles,
       margin: { top: 70 },
-      startY: 20
+      startY: 50
     });
 
     
 
     doc.text("Tickets List", 90, 10);
     doc.setFontSize(9);
+    doc.text(`Report of Ticket List`, 20, 20)
+    doc.text(`Date: ${new Date().toDateString()}`, 20, 24)
+    doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 28)
+    doc.text(`Boarding: ${boardingName}`, 20, 32)
 
-    doc.save("Tiickets.pdf");
+    doc.save("Tickets.pdf");
 
 };
 
@@ -283,6 +319,25 @@ const OwnerAllTickets = ({search}) =>{
                                     ranges={[selectionRange]}
                                     onChange={handleDateRangeSelect}
                                 />
+                            </Select>
+                        </FormControl>
+                    </Box>                               
+                </Col>
+                <Col>
+                    <Box sx={{ minWidth: 120, minHeight:50 }}>
+                        <FormControl fullWidth>
+                            <InputLabel>Sort By</InputLabel>
+                            <Select
+                                label="Sort By"
+                                value={sortBy}
+                                onChange={handleSort}
+                            >
+                                <MenuItem value={'statusAsc'} style={{marginBottom:'10px'}}>Status (Asc)</MenuItem>
+                                <MenuItem value={'statusDesc'} style={{marginBottom:'10px'}}>Status (Desc)</MenuItem>
+                                <MenuItem value={'updatedAtAsc'} style={{marginBottom:'10px'}}>Date (Asc)</MenuItem>
+                                <MenuItem value={'updatedAtDesc'} style={{marginBottom:'10px'}}>Date (Desc)</MenuItem>
+                                <MenuItem value={'subjectAsc'} style={{marginBottom:'10px'}}>Subject (Asc)</MenuItem>
+                                <MenuItem value={'subjectDesc'} style={{marginBottom:'10px'}}>Subject (Desc)</MenuItem>
                             </Select>
                         </FormControl>
                     </Box>                               

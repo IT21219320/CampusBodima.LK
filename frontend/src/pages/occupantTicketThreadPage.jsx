@@ -31,6 +31,7 @@ const OccupantTicketThreadPage = () => {
     const [update, setUpdate] = useState(false);
     const [updateDescription, setUpdateDescription] = useState('');
     const [updateAttachment, setUpdateAttachment] = useState('');
+    const [updateAttachmentLink, setUpdateAttachmentLink] = useState('');
 
     const currentTime = new Date();
     const fifteenMinutesAgo = new Date(currentTime - 15 * 60 * 1000); //1second=1000ms
@@ -63,7 +64,7 @@ const OccupantTicketThreadPage = () => {
             if (ticket.attachment) {
                 try {
                     const Url = await getDownloadURL(ref(storage, ticket.attachment));
-                    ticket = { ...ticket, attachment: Url }; // Create a new object with the updated attachment
+                    ticket = { ...ticket, attachmentLink: Url }; // Create a new object with the updated attachment
                 } catch (error) {
                     console.log(error);
                 }
@@ -77,7 +78,7 @@ const OccupantTicketThreadPage = () => {
                     if (reply.attachment) {
                         try {
                             const Url2 = await getDownloadURL(ref(storage, reply.attachment));
-                            const updatedReply = { ...reply, attachment: Url2 }; // Create a new object with the updated attachment
+                            const updatedReply = { ...reply, attachmentLink: Url2 }; // Create a new object with the updated attachment
                             updatedReplies.push(updatedReply);
                         } catch (error) {
                             console.log(error);
@@ -201,15 +202,29 @@ const OccupantTicketThreadPage = () => {
     const handleEditBtn = (ticket) => {
         setUpdateDescription(ticket.description);
         setUpdateAttachment(ticket.attachment);
+        setUpdateAttachmentLink(ticket.attachmentLink);
         setUpdate(true);
     }
 
     //updateButton
     const handleUpdateBtn = async(replyTktId) => {
         if(new Date(ticket.updatedAt) > new Date(new Date() - 15 * 60 * 1000)){
+            var uniqueName;
+            if(updateAttachment != ''){
+                const timestamp = new Date().getTime();
+                const random = Math.floor(Math.random() * 1000) + 1;
+                uniqueName = `${timestamp}_${random}.${updateAttachment.name.split('.').pop()}`;
+            
+                const storageRef = ref(storage, `${uniqueName}`);
+                const uploadTask = uploadBytesResumable(storageRef, updateAttachment);
+
+                await uploadTask;
+            }
+
             try{
-                const res = await updateTicket({ticketId:ticket._id, replyTktId, description:updateDescription, attachment:updateAttachment});
+                const res = await updateTicket({ticketId:ticket._id, replyTktId, description:updateDescription, attachment:uniqueName});
                 setUpdateAttachment('');
+                setUpdateAttachmentLink('');
                 setUpdateDescription('')
                 setUpdate(false);
                 toast.success('Ticket updated successfully');
@@ -292,7 +307,7 @@ const OccupantTicketThreadPage = () => {
                                             <Row>
                                                 <Col>
                                                     <pre className={ticketThreadPageStyles.description}>{ticket.description}</pre>
-                                                    {ticket.attachment ? <ReactLink to={ticket.attachment} target="_blank" download>Download Attatchment</ReactLink> : ''}
+                                                    {ticket.attachmentLink ? <ReactLink to={ticket.attachmentLink} target="_blank" download>Download Attatchment</ReactLink> : ''}
                                                 </Col>
                                             </Row>
                                         </CardContent>
@@ -324,7 +339,7 @@ const OccupantTicketThreadPage = () => {
                                                                         <BiTimeFive style={{marginBottom:"2px"}} /> {TimeAgo(new Date(tkt.createdAt))}
                                                                     </Col>
                                                                     <Col lg={1}>
-                                                                        <Button style={{float:"right"}} onClick={(e) => {setUpdate(false); setUpdateAttachment(''); setUpdateDescription('')}}><Close style={{color:"#f73b54"}}/></Button>
+                                                                        <Button style={{float:"right"}} onClick={(e) => {setUpdate(false); setUpdateAttachment(''); setUpdateAttachmentLink(''); setUpdateDescription('')}}><Close style={{color:"#f73b54"}}/></Button>
                                                                     </Col>
                                                                 </Row>
                                                                 <Row>
@@ -345,12 +360,12 @@ const OccupantTicketThreadPage = () => {
                                                                     <Col lg={9} xs={6} className='mt-3'>
                                                                         {updateAttachment ? 
                                                                                 <>
-                                                                                    <ReactLink to={updateAttachment} target="_blank" download>Attachment</ReactLink>
-                                                                                    <Close onClick={() => setUpdateAttachment('')} style={{cursor:'pointer'}} /> 
+                                                                                    <ReactLink to={updateAttachmentLink} target="_blank" download>Attachment</ReactLink>
+                                                                                    <Close onClick={() => {setUpdateAttachmentLink('');setUpdateAttachment('');}} style={{cursor:'pointer'}} /> 
                                                                                 </>
                                                                             : 
                                                                             <Form.Group controlId="formFileMultiple" className="mb-3" style={{maxWidth:'40%'}}>
-                                                                                <Form.Control type="file" onChange={(e) => setUpdateAttachment(e.target.files[0])} />
+                                                                                <Form.Control type="file" onChange={(e) => {setUpdateAttachment(e.target.files[0]);setUpdateAttachmentLink(e.target.files[0])}} />
                                                                             </Form.Group>
                                                                         }
                                                                     </Col>
@@ -397,7 +412,7 @@ const OccupantTicketThreadPage = () => {
                                                                 <Row>
                                                                     <Col>
                                                                         <pre className={ticketThreadPageStyles.description}>{tkt.description}</pre>
-                                                                        {tkt.attachment ? <ReactLink to={tkt.attachment} target="_blank" download>Download Attatchment</ReactLink> : ''}
+                                                                        {tkt.attachmentLink ? <ReactLink to={tkt.attachmentLink} target="_blank" download>Download Attatchment</ReactLink> : ''}
                                                                     </Col>
                                                                     
                                                                 </Row>

@@ -75,6 +75,7 @@ const getUserTickets = asyncHandler(async (req,res) => {
     const search = req.body.search;
     const sortColumn = req.body.sortColumn;
     const order = req.body.order;
+    
 
     const skip = (page) * pageSize;
     
@@ -93,7 +94,11 @@ const getUserTickets = asyncHandler(async (req,res) => {
         ...(subCategory !== 'all' ? { subCategory } : {}),
         ...(status !== 'all' ? { status } : {}),
         ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
-        subject: { $regex: search, $options: "i" } 
+        $or: [
+            {subject: { $regex: search, $options: "i" } },
+            //{description: { $regex: search, $options: "i" } },
+        ]
+        
     });
 
     try{
@@ -104,7 +109,10 @@ const getUserTickets = asyncHandler(async (req,res) => {
             ...(subCategory !== 'all' ? { subCategory } : {}),
             ...(status !== 'all' ? { status } : {}),
             ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
-            subject: { $regex: search, $options: "i" } 
+            $or: [
+                {subject: { $regex: search, $options: "i" } },
+                //{description: { $regex: search, $options: "i" } },
+            ]
         })
         .collation({locale: "en"}).sort({ [sortColumn]: order})
         .skip(skip)
@@ -277,7 +285,7 @@ const updateTicket = asyncHandler(async (req,res) => {
             ticket.subCategory = subCategory || ticket.subCategory;
             ticket.description = description || ticket.description;
             ticket.status = status || ticket.status;
-            ticket.attachment = attachment || ticket.attachment;
+            ticket.attachment = attachment;
             ticket = await ticket.save();
         }
         else{
@@ -288,7 +296,7 @@ const updateTicket = asyncHandler(async (req,res) => {
                     ticket.reply[i].subCategory = subCategory || ticket.reply[i].subCategory;
                     ticket.reply[i].description = description || ticket.reply[i].description;
                     ticket.reply[i].status = status || ticket.reply[i].status;
-                    ticket.reply[i].attachment = attachment || ticket.reply[i].attachment;
+                    ticket.reply[i].attachment = attachment;
                     
                     ticket = await ticket.save();
                 }
@@ -351,7 +359,9 @@ const getOwnerTickets = asyncHandler(async (req,res) => {
     const date = req.body.date;
     const search = req.body.search;
     let boardingId = req.body.boardingId;
-console.log(boardingId);
+    const sortColumn = req.body.sortColumn;
+    const order = req.body.order;
+
     const skip = (page) * pageSize;
     
     endDate.setHours(23, 59, 59, 999); // Set to just before midnight of the following day
@@ -385,6 +395,7 @@ console.log(boardingId);
             ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
             subject: { $regex: search, $options: "i" } 
         })
+        .collation({locale: "en"}).sort({ [sortColumn]: order})
         .skip(skip)
         .limit(pageSize);
 

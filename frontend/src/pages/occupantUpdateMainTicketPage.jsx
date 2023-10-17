@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import {  useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import {Link as ReactLink} from "react-router-dom";
 import { Container, Form, Button, Row, Col, FloatingLabel} from 'react-bootstrap';
 import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, InputLabel, Select, MenuItem, FormControl, TextField, Backdrop, CircularProgress} from '@mui/material';
-import { NavigateNext } from '@mui/icons-material';
+import { Close, NavigateNext } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { toast } from 'react-toastify';
 import { useCreateTicketMutation, useGetTicketByUniqueIdMutation, useUpdateTicketMutation } from '../slices/ticketsApiSlices';
 import { useParams } from 'react-router';
 
 import storage from '../utils/firebaseConfig';
-import {ref, uploadBytesResumable} from 'firebase/storage'
+import {ref, uploadBytesResumable, getDownloadURL} from 'firebase/storage'
 
 import CreateTicketStyles from '../styles/createTicketStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
@@ -34,6 +35,7 @@ const UpdateMainTicketPage = () =>{
     const [subCategory, setSubCategory] = useState('');
     const [description, setDescription] = useState('');
     const [attachment, setAttachment] = useState('');
+    const [attachmentLink, setAttachmentLink] = useState('');
     const [backDropOpen, setBackDropOpen] = useState(false);
 
     const[createTicket, { isLoading2 }] =  useCreateTicketMutation();
@@ -44,6 +46,16 @@ const UpdateMainTicketPage = () =>{
         try{
             console.log(ticketId);
             const res = await getTicketByUniqueId( ticketId).unwrap();
+
+            if (res.ticket.attachment) {
+                try {
+                    const Url = await getDownloadURL(ref(storage, res.ticket.attachment));
+                    setAttachmentLink(Url); // Create a new object with the updated attachment
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
             setTicket(res.ticket);
             setSubject(res.ticket.subject);
             setCategory(res.ticket.category);
@@ -77,7 +89,18 @@ const UpdateMainTicketPage = () =>{
         if(new Date(ticket.updatedAt) > new Date(new Date() - 15 * 60 * 1000)){
             try {
                     setBackDropOpen(true);
-                    const res = await updateTicket({ ticketId:ticket._id, replyTktId:ticket._id, subject, category, subCategory ,description, attachment }).unwrap();
+                    var uniqueName;
+                    if(attachment != ''){
+                        const timestamp = new Date().getTime();
+                        const random = Math.floor(Math.random() * 1000) + 1;
+                        uniqueName = `${timestamp}_${random}.${attachment.name.split('.').pop()}`;
+                    
+                        const storageRef = ref(storage, `${uniqueName}`);
+                        const uploadTask = uploadBytesResumable(storageRef, attachment);
+        
+                        await uploadTask;
+                    }
+                    const res = await updateTicket({ ticketId:ticket._id, replyTktId:ticket._id, subject, category, subCategory ,description, attachment:uniqueName }).unwrap();
 
                     toast.success("ticket updated successfully");
                     navigate(`/occupant/ticket/${ticket._id}`);  //should navigate to mytickets    
@@ -187,9 +210,16 @@ const UpdateMainTicketPage = () =>{
                                                 <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
                                                     <Col lg={3} xs={6}><label htmlFor="image" className={CreateTicketStyles.lbl}>Add Attachment</label></Col>
                                                     <Col lg={9} xs={6} className='mt-3'>
-                                                        <Form.Group controlId="formFileMultiple" className="mb-3" style={{maxWidth:'35%'}}>
-                                                            <Form.Control type="file" onChange={(e) => setAttachment(e.target.files[0])} />
-                                                        </Form.Group>
+                                                        {attachment ? 
+                                                                <>
+                                                                    <ReactLink to={attachmentLink} target="_blank" download>Attachment</ReactLink>
+                                                                    <Close onClick={() => {setAttachmentLink('');setAttachment('');}} style={{cursor:'pointer'}} /> 
+                                                                </>
+                                                            : 
+                                                            <Form.Group controlId="formFileMultiple" className="mb-3" style={{maxWidth:'40%'}}>
+                                                                <Form.Control type="file" onChange={(e) => {setAttachment(e.target.files[0]);setAttachmentLink(e.target.files[0])}} />
+                                                            </Form.Group>
+                                                        }
                                                     </Col>
                                                 </Row>
                                             </Row>

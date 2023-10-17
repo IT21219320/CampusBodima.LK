@@ -161,7 +161,7 @@ const OccupantAllTickets = ({search}) =>{
              ticket.category,
              ticket.subCategory,
              ticket.status,
-             new Date(ticket.createdAt).toLocaleString('en-GB')
+             new Date(ticket.createdAt).toLocaleString('en-GB'),
            ]);
        
            // Set the table styles
@@ -177,13 +177,17 @@ const OccupantAllTickets = ({search}) =>{
              body: data,
              styles,
              margin: { top: 70 },
-             startY: 20
+             startY: 50
            });
        
            
        
            doc.text("Tickets List", 90, 10);
            doc.setFontSize(9);
+           doc.text(`Report of Ticket List`, 20, 20)
+           doc.text(`Date: ${new Date().toDateString()}`, 20, 24)
+           doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 28)
+           doc.text(`Boarding: ${tickets[0].boardingId?.boardingName}`, 20, 32)
        
            doc.save("Tiickets.pdf");
        
