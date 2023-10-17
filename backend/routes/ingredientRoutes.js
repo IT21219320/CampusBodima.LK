@@ -1,5 +1,5 @@
 import express from 'express';
-import {addIngredient,getBoardingIngredient,getBoardingIngredientNames,getOwnerBoarding,updateIngredient,getUpdateIngredients,deleteIngredient,increaseIngredientQuantity,reduceIngredientQuantity,getIngredientHistoy,getKitchenUsersEmails,addKitchenUser} from '../controllers/ingredientController.js'; 
+import {addIngredient,getBoardingIngredient,getBoardingIngredientNames,getOwnerBoarding,updateIngredient,getUpdateIngredients,deleteIngredient,increaseIngredientQuantity,reduceIngredientQuantity,getIngredientHistoy,getKitchenUsersEmails,addKitchenUser,getManagerBoarding} from '../controllers/ingredientController.js'; 
 
 const router = express.Router();
 
@@ -11,6 +11,7 @@ router.post('/owner/ingredients/reduce', reduceIngredientQuantity);
 router.post('/owner/ingredients/names', getBoardingIngredientNames);
 router.post('/manager/ingredients/emails', getKitchenUsersEmails);
 router.get('/owner/:ownerId', getOwnerBoarding);
+router.get('/manager/:managerId', getManagerBoarding);
 router.put('/owner', updateIngredient);
 router.get('/owner/update/:boardingId/:ingredientId', getUpdateIngredients);
 router.delete('/owner/:boardingId/:ingredientId', deleteIngredient);
