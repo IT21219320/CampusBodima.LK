@@ -14,6 +14,9 @@ const paymentSchema = mongoose.Schema({
     description: {
         type: String
     },
+    payableMonth: {
+        type : String
+    },
     boarding : {
         type : Boarding.schema,
     },

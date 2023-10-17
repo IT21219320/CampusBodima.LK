@@ -1,5 +1,5 @@
 import express from 'express';
-import {getIntent, getPath, getPublichkey, getWebHook, makePayment,getPaymentsByUserID, getPaymentsByOwnerID,calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser, getMyReservation, changeStatus, changeReservationPaidStatus} from "../controllers/paymentContollers.js";
+import {getIntent, getPath, getPublichkey, getWebHook, makePayment,getPaymentsByUserID, getPaymentsByOwnerID,calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser, getMyReservation, changeStatus, changeReservationPaidStatus, getToDoPaymentById} from "../controllers/paymentContollers.js";
 
 const router = express.Router();
 
@@ -13,6 +13,8 @@ router.post('/getToDoPaymentsByUserCMonth', getToDoPaymentsByUserCMonth);
 router.post('/getToDoPaymentsByUser', getToDoPaymentsByUser);
 router.post('/changeStatus', changeStatus);
 router.post('/changeReservationPaidStatus', changeReservationPaidStatus);
+router.post('/getToDoPaymentById', getToDoPaymentById);
+
 
 router.post('/getMyRe', getMyReservation);
 router.route('/create-payment-intent').post(getIntent);

@@ -7,7 +7,7 @@ import paymentFormStyle from "../styles/paymentFormStyle.module.css";
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { useMakePaymentMutation, useChangeStatusMutation } from "../slices/paymentApiSlice";
+import { useMakePaymentMutation, useChangeStatusMutation, useGetToDoPaymentByIdMutation } from "../slices/paymentApiSlice";
 import { useAddCardMutation,useGetCardByUserMutation } from "../slices/cardApiSlice";
 import { toast } from 'react-toastify';
 import * as React from 'react';
@@ -30,17 +30,32 @@ const PaymentForm = ({ des, amount, payId }) => {
     const userID = userInfo._id;
     const [cards, setCards] = useState([]);
     const [cardId, setCardId] = useState('');
+    const [toDo, setToDo] = useState();
+
+    const months = ["January", "February", "March","April", "May", "June", "July", "August", "September", "Octomber", "Novenmer", "December" ]
 
     
     const [makePayment] = useMakePaymentMutation();
     const [addCard] = useAddCardMutation();
     const [getCards] = useGetCardByUserMutation();
     const [change] = useChangeStatusMutation();
-
+    const [getToDoPaymentById] = useGetToDoPaymentByIdMutation();
+    if(toDo){
+      console.log(months[(toDo.data.month)-1]);
+    }
+    
 
     const navigate = useNavigate();
 
     const loadData = async()=>{
+      try {
+        const resM = await getToDoPaymentById({id:payId})
+        setToDo(resM)
+        
+      } catch (error) {
+        console.log("error");
+      }
+      
         try {
             const resCards = await getCards({ userInfo_id: userInfo._id }).unwrap();
             setCards(resCards);
@@ -93,7 +108,9 @@ const PaymentForm = ({ des, amount, payId }) => {
     const submitHandler = async (e) => {
 
         e.preventDefault();
-        const resPay = await makePayment({ userInfo_id: userID, bId: bId, des: des, amount:amount })
+        
+
+        const resPay = await makePayment({ userInfo_id: userID, bId: bId, des: des, amount:amount, month:months[(toDo.data.month)-1] })
         if (isChecked) {
             try {
                 console.log({ des });
