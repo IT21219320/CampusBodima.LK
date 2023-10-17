@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Row, Col, Image, Button, Table} from 'react-bootstrap';
 import { Card, CardContent, Pagination, CircularProgress, Box, Collapse, IconButton, Alert, Switch, Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, TablePagination, Paper, InputBase, TextField, FormControl, InputLabel, Select, MenuItem, Slider, Button as MuiButton } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
-import { Close, Search, Warning } from '@mui/icons-material';
+import { Close, FileDownload, Search, Summarize, Warning } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetAllBoardingsMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
@@ -109,15 +109,50 @@ const AdminAllBoardings = () => {
         }
     }
 
-    const exportToPDF = () => {;
-               
-        // Create a new jsPDF instance
+    const exportToPDF = () => {
         const doc = new jsPDF();
     
-        let headers = [["Boarding Name", "Boarding Type", "City", "Status", "Food", "Utility Bills", "No Of Rooms", "Gender", "Rent", "Date Created"]];
+        // company details
+        const companyDetails = {
+            name: "CampusBodima",
+            address: "138/K, Ihala Yagoda, Gampaha",
+            phone: "071-588-6675",
+            email: "info.campusbodima@gmail.com",
+            website: "www.campusbodima.com"
+        };
     
-        // Map the admin data to table rows
+        // logo
+        doc.addImage("/logo2.png", "PNG", 10, 10, 50, 30);
     
+        // Show company details
+        doc.setFontSize(15);
+        doc.setFont("helvetica", "bold");
+        doc.text(`${companyDetails.name}`, 200, 20, { align: "right", style: "bold" });
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${companyDetails.address}`, 200, 25, { align: "right" });
+        doc.text(`${companyDetails.phone}`, 200, 29, { align: "right" });
+        doc.text(`${companyDetails.email}`, 200, 33, { align: "right" });
+        doc.text(`${companyDetails.website}`, 200, 37, { align: "right" });
+    
+        // horizontal line
+        doc.setLineWidth(0.5);
+        doc.line(10, 45, 200, 45);
+
+        // Report details
+        doc.setFontSize(8);
+        doc.text(`Report of Boardings List`, 20, 55);
+        doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
+        doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
+
+        // Add report title
+        doc.setFontSize(12);
+        doc.text("Boardings List", 85, 65);
+    
+        // table headers
+        let headers = ["Boarding Name", "Boarding Type", "City", "Status", "Food", "Utility Bills", "No Of Rooms", "Gender", "Rent", "Date Created"];
+        
+        //table data
         const data = boardings.map((boarding) => {
             let roomRent = "";
             if (boarding.boardingType === 'Annex') {
@@ -139,35 +174,27 @@ const AdminAllBoardings = () => {
                 new Date(boarding.createdAt).toLocaleString('en-GB')
             ];
         });
-        
     
-        // Set the table styles
+        // table styles
         const styles = {
-          halign: "center",
-          valign: "middle",
-          fontSize: 9,
+            halign: "center",
+            valign: "middle",
+            fontSize: 9,
         };
     
         // Add the table to the PDF document
         doc.autoTable({
-          head: headers,
-          body: data,
-          styles,
-          margin: { top: 70 },
-          startY: 50
+            head: [headers],
+            body: data,
+            styles,
+            margin: { top: 90 },
+            startY: 75
         });
     
-        
-    
-        doc.text("Boardings List", 85, 40);
-        doc.setFontSize(8);
-        doc.text(`Report of Boardings List`, 20, 20)
-        doc.text(`Date: ${new Date().toDateString()}`, 20, 24)
-        doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 28)
-    
+        // Save the PDF
         doc.save("Boardings.pdf");
-    
     };
+    
 
     return (
         <>
@@ -189,7 +216,7 @@ const AdminAllBoardings = () => {
                     </Paper>
                 </Col>
                 <Col style={{textAlign:'right'}}>
-                    <MuiButton variant="contained" onClick={exportToPDF}>Export</MuiButton>
+                    <MuiButton variant="contained" onClick={exportToPDF}>Report &nbsp; <FileDownload /></MuiButton>
                 </Col>
             </Row>
             <Row style={{marginBottom:'10px', marginTop: '10px'}}>
