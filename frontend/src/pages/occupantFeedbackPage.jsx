@@ -37,7 +37,7 @@ const OccupantFeedback = () => {
       setFilteredFeedbacks(res.feedback);
     } catch (error) {
       console.error('Error getting feedbacks', error);
-    }
+      }
   };
   const handleClose = () => setShow(false);
  
@@ -58,23 +58,6 @@ const OccupantFeedback = () => {
       setFilteredFeedbacks(filtered);
     }
   };
-
-  /*const handleDeleteFeedback = async (feedbackId) => {
-    try {
-      //const data = `${feedbackId}`;
-      const res = await deleteFeedback(data).unwrap();
-      if (res.message === "Feedback deleted successfully") {
-        toast.success("Feedback deleted successfully");
-        loadFeedbackData();
-      } else {
-        toast.error("Failed to delete Feedback");
-      }
-    } catch (err) {
-      toast.error(err.data?.message || err.error);
-    }
-  };*/
-
- 
 
   const handleDeleteFeedback = async (feedbackId) => {setShow(false)
     try {
@@ -191,9 +174,7 @@ const OccupantFeedback = () => {
   </IconButton>
 </Paper>
             </Col>
-            <Col style={{ textAlign: 'right' }}>
-              <Button variant="contained" onClick={() => navigate('/occupant/feedback/create')}>New Feedback</Button>
-            </Col>
+            
           </Row>
           <Row>
                 <Col style={{textAlign:'right'}}>

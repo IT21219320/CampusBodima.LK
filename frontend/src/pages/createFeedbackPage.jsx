@@ -61,22 +61,11 @@ const CreateFeedback = () => {
         <Container>
           <Row>
             <Col>
-              <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className={`py-2 ps-3 mt-4 ${CreateFeedbackStyles.bgPrimarySubtle}`}>
-                <Link underline="hover" key="1" color="inherit" href="/">
-                  Home
-                </Link>
-                ,
-                <Link underline="hover" key="2" color="inherit" href="/profile">
-                  {userInfo.userType === 'owner' ? 'Owner' : userInfo.userType === 'occupant' ? 'Occupant' : userInfo.userType === 'admin' ? 'Admin' : <></>}
-                </Link>
-                ,
-                <Link underline="hover" key="3" color="inherit" href="#">
-                  Feedback
-                </Link>
-                ,
-                <Typography key="4" color="text.primary">
-                  Create
-                </Typography>
+              <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
+                <Typography color="text.primary">Home</Typography>,
+                <Typography color="text.primary">{userInfo.userType === 'owner' ? 'Owner' : (userInfo.userType === 'occupant' ? 'Occupant' : userInfo.userType === 'admin' ? 'Admin' : '')}</Typography>,
+                <Typography color="text.primary">Feedbacks</Typography>
+                <Typography color="text.primary">Create</Typography>
               </Breadcrumbs>
             </Col>
           </Row>
@@ -91,7 +80,7 @@ const CreateFeedback = () => {
                 </Card>
               </Col>
             </Row>
-            <Col>
+            <Col >
               <Card variant="outlined" className={CreateFeedbackStyles.card}>
                 <CardContent>
                   <Row id={CreateFeedbackStyles.newFeedback}>
