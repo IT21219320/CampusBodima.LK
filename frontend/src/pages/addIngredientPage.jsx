@@ -5,7 +5,7 @@ import { Breadcrumbs, Typography, Button, Link, CircularProgress, Box, Collapse,
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from "../slices/authSlice";
-import { useAddIngredientMutation,useGetOwnerBoardingMutation } from '../slices/ingredientsApiSlice';
+import { useAddIngredientMutation,useGetOwnerBoardingMutation,useGetManagerBoardingMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
 import LoadingButton from '@mui/lab/LoadingButton';
 import FormContainer from "../components/formContainer";
@@ -33,19 +33,33 @@ const AddIngredientPage = () => {
    
   const [addIngredient, {isLoading}] = useAddIngredientMutation();
   const [getOwnerBoarding,{isLoading2}] = useGetOwnerBoardingMutation();
+  const [getManagerBoarding,{isLoading3}] = useGetManagerBoardingMutation();
+
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const loadData = async () => {
     try {
-      const ownerId = userInfo._id;
-      const res = await getOwnerBoarding(ownerId).unwrap();
-      setBoardingNames(res.boardings);
-      if (res.boardings.length > 0) {
-        // Set the default selected boarding ID to the first one in the list
-        setBoardingId(res.boardings[0]._id);
+
+      if(userInfo.userType=='owner'){
+        const ownerId = userInfo._id;
+        const res = await getOwnerBoarding(ownerId).unwrap();
+        setBoardingNames(res.boardings);
+        if (res.boardings.length > 0) {
+          // Set the default selected boarding ID to the first one in the list
+          setBoardingId(res.boardings[0]._id);
+        }
+      }else{
+        const managerId = userInfo._id;
+        const res = await getManagerBoarding(managerId).unwrap();
+        setBoardingNames(res.boardings);
+        if (res.boardings.length > 0) {
+          // Set the default selected boarding ID to the first one in the list
+          setBoardingId(res.boardings[0]._id);
+        }
       }
+      
     } catch (error) {
       console.error('Error fetching boarding names:', error);
     }
@@ -72,7 +86,7 @@ const AddIngredientPage = () => {
         if (res && res.ingredient) {
 
           toast.success('Ingredient added successfully');
-          navigate('/owner/ingredient');  
+          navigate(`/${userInfo.userType}/ingredient`);  
 
         } else {
           toast.error('Failed to add ingredient');
