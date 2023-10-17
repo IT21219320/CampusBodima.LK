@@ -35,6 +35,7 @@ const AllIngredients = ({ boardingId }) => {
     const [deleteBoardingIngredient, { isLoading2 }] = useDeleteIngredientsMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
+    console.log("Value is",userInfo);
 
     const loadData = async (pageNo) => {
         try {
@@ -100,7 +101,7 @@ const AllIngredients = ({ boardingId }) => {
                         </div>
                     </Form.Group>
                 </Col>
-                <Col><Link href='/owner/ingredient/add'><Button className="mt-4" style={{background: '#685DD8'}}><KitchenIcon/> Add New Ingredient</Button></Link></Col>
+                <Col><Link href={`/${userInfo.userType}/ingredient/add`}><Button className="mt-4" style={{background: '#685DD8'}}><KitchenIcon/> Add New Ingredient</Button></Link></Col>
             </Row>
             <Row style={{minHeight:'calc(100vh - 240px)'}}>
                 <Col>
@@ -127,7 +128,7 @@ const AllIngredients = ({ boardingId }) => {
                                 <td>{ingredient.measurement}</td>
                                 <td>{ingredient.purchaseDate}</td>
                                 <td className={ingredientStyles.nohover}> 
-                                    <CustomLink to={`/owner/ingredient/update/${boardingId}/${ingredient._id}`}>
+                                    <CustomLink to={`/${userInfo.userType}/ingredient/update/${boardingId}/${ingredient._id}`}>
                                         <Button  className={CreateBoardingStyles.submitBtn} style={{ marginRight: '10px' }}>
                                         <BrowserUpdatedIcon /> Update
                                         </Button>
