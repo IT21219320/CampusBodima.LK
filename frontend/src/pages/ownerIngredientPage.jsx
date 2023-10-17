@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Form, Container, Row, Col, Table, Button, Tabs, Tab,Modal } from 'react-bootstrap';
-import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, Pagination, CircularProgress, Box, FormControl,  InputLabel, MenuItem, Select  } from "@mui/material";
+import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, Pagination, CircularProgress, Box, FormControl,  InputLabel, MenuItem, Select,Autocomplete,TextField  } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import { NavigateNext,} from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetOwnerBoardingMutation } from '../slices/ingredientsApiSlice';
+import { useGetOwnerBoardingMutation,useGetKitchenUsersEmailsMutation,useAddKitchenUserMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
  
  
@@ -30,14 +30,19 @@ const OwnerIngredientPage = () => {
 
     const { userInfo } = useSelector((state) => state.auth); 
     const [boardingId, setBoardingId] = useState('');
+    const [sBoardingId, selectedBoardingId] = useState('');
     const [boardingNames, setBoardingNames] = useState([]);
     const [activeTab, setActiveTab] = useState("Ingredients");
     const [showModal, setShowModal] = useState(false);
+    const [managersEmails, setManagersEmails] = useState([]);
+    const [ManagerId, setManagerId] = useState('');
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const [getOwnerBoarding, { isLoading }] = useGetOwnerBoardingMutation();
+    const [getManagersEmails,{isLoading2}] = useGetKitchenUsersEmailsMutation();
+    const [addKitchenUser,{isLoading3}] = useAddKitchenUserMutation();
 
     // Function to fetch boarding names from the API
     const loadData = async () => {
@@ -59,14 +64,30 @@ const OwnerIngredientPage = () => {
         }
     };
 
+    // Function to fetch managers' emails
+    const loadManagersEmails = async () => {
+        try {
+            const res = await getManagersEmails().unwrap();
+            console.log(res)
+            setManagersEmails(res.user);
+        } catch (error) {
+            console.error('Error fetching managers\' emails:', error);
+        }
+    };
+
+
     useEffect(() => {
-        loadData(); // Fetch boarding names when the component mounts
+        loadData();  
     }, []);
 
+    
     // Function to handle when a boarding is selected
     const handleBoardingSelect = (event) => {
         const boarding = boardingNames.find(item => item._id === event.target.value);
+
         if(!boarding.inventoryManager){
+            selectedBoardingId(event.target.value);
+            loadManagersEmails();
             setShowModal(true);
         }
         else{
@@ -77,6 +98,34 @@ const OwnerIngredientPage = () => {
     const handleCloseModal = () => {
         setShowModal(false);
     };
+
+    const submitHandler = async (e) => {
+        e.preventDefault();
+        
+        console.log("bId",sBoardingId);
+        try {
+          const data = {
+            boardingId: sBoardingId,
+            ManagerId,
+          };
+          
+          console.log("data",data);
+          const res = await addKitchenUser(data).unwrap();
+          console.log("Res",res);
+          if (res && res.user) {
+            console.log(res);
+            toast.success('Manager added successfully');
+          } else {
+            toast.error('Failed to add Manager');
+          }
+        } catch (err) {
+          console.error('Error adding Manager:', err);
+          toast.error(err.data?.error || err.data?.message || err.error || err);
+        } finally {
+          handleCloseModal();
+        }
+      };
+    
 
 
     return (
@@ -152,14 +201,28 @@ const OwnerIngredientPage = () => {
                     <Modal.Title>Select Manager</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Please select a boarding with an inventory manager.
+                      
+                    <Typography variant="subtitle1" sx={{ marginBottom: 1}}>
+                        Managers Emails
+                    </Typography>
+                             
+                    <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={managersEmails}
+                        sx={{ width: 300}}
+                        getOptionLabel={(option) => option.email} // Use a label from your ingredient object
+                        renderInput={(params) => <TextField {...params} label="Search..." />}
+                        onChange={(e, selectedManager) => setManagerId(selectedManager ? selectedManager._id : '')} // Set the selected ingredient's ID
+                        value={managersEmails.find((user) => user._id === ManagerId) || null} // Find the ingredient object by ID and set it as the value
+                    />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleCloseModal}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleCloseModal}>
-                        Understood
+                    <Button type="submit" variant="primary" onClick={submitHandler}>
+                        Add
                     </Button>
                 </Modal.Footer>
             </Modal>
