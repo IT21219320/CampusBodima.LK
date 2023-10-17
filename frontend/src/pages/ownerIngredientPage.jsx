@@ -102,19 +102,18 @@ const OwnerIngredientPage = () => {
     const submitHandler = async (e) => {
         e.preventDefault();
         
-        console.log("bId",sBoardingId);
         try {
           const data = {
             boardingId: sBoardingId,
             ManagerId,
           };
           
-          console.log("data",data);
           const res = await addKitchenUser(data).unwrap();
-          console.log("Res",res);
+
           if (res && res.user) {
             console.log(res);
             toast.success('Manager added successfully');
+
           } else {
             toast.error('Failed to add Manager');
           }
@@ -176,12 +175,6 @@ const OwnerIngredientPage = () => {
                                         <Tabs defaultActiveKey="Ingredients"  id="uncontrolled-tab-example" className="mb-3" onSelect={(k) => setActiveTab(k)}>
                                             <Tab eventKey="Ingredients" title="Ingredients">
                                                 {activeTab=="Ingredients" ? <AllIngredients boardingId={boardingId} /> :''}
-                                            </Tab>
-                                            <Tab eventKey="Central Inventory" title="Central Inventory">
-                                                {activeTab=="Central Inventory" ? <CentralinventoryPage boardingId={boardingId} /> :''}
-                                            </Tab>
-                                            <Tab eventKey="Reduce Inventory" title="Reduce Inventory">
-                                                {activeTab=="Reduce Inventory" ? <ReduceinventoryPage boardingId={boardingId} /> :''}
                                             </Tab>
                                             <Tab eventKey="Report" title="Inventory Report">
                                                 {activeTab=="Report" ? <IngredientReport boardingId={boardingId} /> :''}
