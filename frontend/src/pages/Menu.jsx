@@ -6,9 +6,8 @@ import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import ViewMenu from "../components/menuView";
 import orderStyles from '../styles/orderStyles.module.css';
-import { TextField, InputLabel, MenuItem, Select, Button } from '@mui/material';
-import { useAddMenuMutation } from '../slices/menuesApiSlice'; // Assuming you have a menu API slice
-import { alignPropType } from 'react-bootstrap/esm/types';
+import { TextField, InputLabel, Button } from '@mui/material';
+import { useAddMenuMutation } from '../slices/menuesApiSlice';
 
 const MenuForm = () => {
   const [menuName, setMenuName] = useState('');
@@ -88,6 +87,55 @@ const MenuForm = () => {
   
     return true;
   };
+  const formContainer = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  };
+  const formBorder = {
+    border: '1px solid #ccc', // Border around the form
+    borderRadius: '4px',
+    padding: '15px',
+  };
+  
+  const gridContainer = {
+    display: 'grid',
+    gridTemplateColumns: '1fr 2fr',
+    gridGap: '10px',
+    marginBottom: '15px',
+  };
+  
+  const labelStyle = {
+    fontSize: '16px',
+    color: 'rgb(25, 25, 112)',
+    alignSelf: 'center',
+  };
+  
+  const inputStyle = {
+    width: '100%',
+   
+    borderRadius: '4px',
+    fontSize: '12px',
+    fontFamily: 'Arial, sans-serif',
+  };
+  
+  const buttonStyle = {
+    backgroundColor: 'rgb(25, 25, 112)',
+    color: 'white',
+    fontSize: '14px',
+    padding: '8px 16px',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+    marginLeft:'110px'
+  };
+  
+  const errorStyle = {
+    color: 'red',
+    marginTop: '10px',
+    fontSize: '12px',
+  };
   
   return (
     <>
@@ -107,53 +155,78 @@ const MenuForm = () => {
                               <Container style={containerStyle} maxWidth="md">
                               <Row>
                                       <Col>
-                                          <form onSubmit={submitHandler}>
-                                              <InputLabel>Menu Name</InputLabel>
-                                              <TextField
-                                                  type="text"
-                                                  value={menuName}
-                                                  onChange={(e) => setMenuName(e.target.value)}
-                                                  required />
-                                              <InputLabel>Product Name</InputLabel>
-                                              <TextField
-                                                  type="text"
-                                                  value={product}
-                                                  onChange={(e) => setProduct(e.target.value)}
-                                                  required />
-                                              <InputLabel>Boarding Name</InputLabel>
-                                              <TextField
-                                                  type="text"
-                                                  value={boarding}
-                                                  onChange={(e) => setBoarding(e.target.value)}
-                                                  required />
-                                              <InputLabel>Cost</InputLabel>
-                                              <TextField
-                                                  type="number"
-                                                  value={cost}
-                                                  onChange={(e) => setCost(e.target.value)}
-                                                  required />
-                                              <InputLabel>Food Type</InputLabel>
-                                              <TextField
-                                                  type="text"
-                                                  value={foodType}
-                                                  onChange={(e) => setFoodType(e.target.value)}
-                                                  required />
-                                              <InputLabel>Price</InputLabel>
-                                              <TextField
-                                                  type="number"
-                                                  value={price}
-                                                  onChange={(e) => setPrice(e.target.value)}
-                                                  required /><p></p>
-                                              <Button
-                                                  type="submit"
-                                                  variant="contained"
-                                                  color="primary"
-                                                  disabled={isLoading}
-                                              >
-                                                  {isLoading ? 'Creating Menu...' : 'Create Menu'}
-                                              </Button>
-                                              {isError && <div>Error: {error.message}</div>}
-                                          </form>
+                                      <form onSubmit={submitHandler} style={formContainer}>
+                                      <div style={formBorder}>
+                                          <div style={gridContainer}>
+                                            <div style={labelStyle}>Menu Name</div>
+                                            <TextField
+                                              type="text"
+                                              value={menuName}
+                                              onChange={(e) => setMenuName(e.target.value)}
+                                              required
+                                              style={inputStyle}
+                                            />
+                                            
+                                            <div style={labelStyle}>Product Name</div>
+                                            <TextField
+                                              type="text"
+                                              value={product}
+                                              onChange={(e) => setProduct(e.target.value)}
+                                              required
+                                              style={inputStyle}
+                                            />
+                                            
+                                            <div style={labelStyle}>Boarding Name</div>
+                                            <TextField
+                                              type="text"
+                                              value={boarding}
+                                              onChange={(e) => setBoarding(e.target.value)}
+                                              required
+                                              style={inputStyle}
+                                            />
+                                            
+                                            <div style={labelStyle}>Cost</div>
+                                            <TextField
+                                              type="number"
+                                              value={cost}
+                                              onChange={(e) => setCost(e.target.value)}
+                                              required
+                                              style={inputStyle}
+                                            />
+                                            
+                                            <div style={labelStyle}>Food Type</div>
+                                            <TextField
+                                              type="text"
+                                              value={foodType}
+                                              onChange={(e) => setFoodType(e.target.value)}
+                                              required
+                                              style={inputStyle}
+                                            />
+                                            
+                                            <div style={labelStyle}>Price</div>
+                                            <TextField
+                                              type="number"
+                                              value={price}
+                                              onChange={(e) => setPrice(e.target.value)}
+                                              required
+                                              style={inputStyle}
+                                            />
+                                          </div>
+                                          
+                                          <Button
+                                            type="submit"
+                                            variant="contained"
+                                            color="primary"
+                                            disabled={isLoading}
+                                            style={buttonStyle}
+                                          >
+                                            {isLoading ? 'Creating Menu...' : 'Create Menu'}
+                                          </Button>
+                                          
+                                          {isError && <div style={errorStyle}>Error: {error.message}</div>}
+                                          </div>
+                                        </form>
+
                                       </Col>
                                   </Row>
                                   </Container>

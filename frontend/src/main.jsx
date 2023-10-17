@@ -123,10 +123,6 @@ const router = createBrowserRouter(
           <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
           <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
-          
-          <Route path='/owner/menu/' element={<MenuForm />} />
-
-          <Route path='/owner/orders/' element={<OwnerOrderList />} />
 
           <Route path='/owner/ticket' element={<OwnerTicketsPage />} />
           <Route path='/owner/ticket/:ticketId' element={<OwnerTicketThreadPage />} />
@@ -141,6 +137,10 @@ const router = createBrowserRouter(
           <Route path='/kitchen/ingredient' element={ <ManagerIngredientPage /> } />
           <Route path='/kitchen/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/kitchen/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
+          
+          <Route path='/kitchen/menu/' element={<MenuForm />} />
+
+          <Route path='/kitchen/orders/' element={<OwnerOrderList />} />
         </Route>
 
         {/* Occupant Routes */}

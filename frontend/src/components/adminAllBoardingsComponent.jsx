@@ -1,30 +1,21 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from 'react-router-dom';
-import { Row, Col, Image, Button, Table} from 'react-bootstrap';
-import { Card, CardContent, Pagination, CircularProgress, Box, Collapse, IconButton, Alert, Switch, Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, TablePagination, Paper, InputBase, TextField, FormControl, InputLabel, Select, MenuItem, Slider, Button as MuiButton } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
+import { Row, Col, Table} from 'react-bootstrap';
+import { CircularProgress, Box, IconButton, useMediaQuery, TablePagination, Paper, InputBase, TextField, FormControl, InputLabel, Select, MenuItem, Slider, Button as MuiButton } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
-import { Close, FileDownload, Search, Summarize, Warning } from '@mui/icons-material';
-import { useDispatch, useSelector } from 'react-redux';
+import { FileDownload, Search } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
 import { useGetAllBoardingsMutation } from '../slices/boardingsApiSlice';
 import { toast } from 'react-toastify';
-import { RiDeleteBinLine } from "react-icons/ri";
 import { BiSortAlt2 } from "react-icons/bi";
 import { ImSortAmountAsc, ImSortAmountDesc } from "react-icons/im";
-import LoadingButton from '@mui/lab/LoadingButton';
-import storage from "../utils/firebaseConfig";
-import { ref, getDownloadURL } from "firebase/storage";
 import { DateRange } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import jsPDF from 'jspdf';
 
-import ownerStyles from '../styles/ownerStyles.module.css';
-
-import defaultImage from '/images/defaultImage.png';
-
 const AdminAllBoardings = () => {
 
-    const [noticeStatus, setNoticeStatus] = useState(true);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10)
@@ -44,12 +35,6 @@ const AdminAllBoardings = () => {
     const [search, setSearch] = useState('')
     const [sortBy, setSortBy] = useState('createdAt')
     const [order, setOrder] = useState(1)
-    const [confirmDialog, setConfirmDialog] = useState(false);
-
-    let roomRentRange = [];
-    let x;
-
-
     
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));

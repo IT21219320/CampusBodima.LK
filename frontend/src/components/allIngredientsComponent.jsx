@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Row, Col, Table, Button, Form } from 'react-bootstrap';
-import { Link, Pagination, CircularProgress,IconButton } from "@mui/material";
+import { Link, Pagination, CircularProgress,IconButton,Paper,InputBase } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
 import KitchenIcon from '@mui/icons-material/Kitchen';
 import { BrowserUpdated as BrowserUpdatedIcon } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Search } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetBoardingIngredientsMutation, useDeleteIngredientsMutation } from '../slices/ingredientsApiSlice';
 import { toast } from 'react-toastify';
@@ -77,29 +78,25 @@ const AllIngredients = ({ boardingId }) => {
         }
       };
 
-    // Function to handle search query change
-    const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
-    };  
-
+    
     return(
         <>
             <Row style={{textAlign:'right', marginBottom:'20px'}}>
                 <Col className="mt-4">
-                    {/* This is where the search bar will be placed */}
-                    <Form.Group controlId="searchQuery" style={{ maxWidth: '300px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <Form.Control
-                                type="text"
-                                placeholder="Search…"
-                                value={searchQuery}
-                                onChange={handleSearchChange} // Handle search query change
-                            />
-                            <IconButton>
-                                <SearchIcon />
-                            </IconButton>
-                        </div>
-                    </Form.Group>
+                <Paper
+                    component="form"
+                    sx={{ p: '2px 4px', mb:'10px', display: 'flex', alignItems: 'center', width: 400 }}
+                >
+                    <InputBase
+                        sx={{ ml: 1, pl:'10px', flex: 1 }}
+                        placeholder="Search Ingredients"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                        <Search />
+                    </IconButton>
+                </Paper>
                 </Col>
                 <Col><Link href={`/${userInfo.userType}/ingredient/add`}><Button className="mt-4" style={{background: '#685DD8'}}><KitchenIcon/> Add New Ingredient</Button></Link></Col>
             </Row>
