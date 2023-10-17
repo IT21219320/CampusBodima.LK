@@ -11,7 +11,9 @@ import { useCreateOrderMutation } from '../slices/orderApiSlice';
 import orderStyles from '../styles/orderStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import formStyle from '../styles/formStyle.module.css';
-import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
+import ViewMenu from "../components/menuView";
+import MenuView from './menuoccupant';
+
 
 const OrderForm = () => {
   const [product, setProduct]=useState('')
@@ -244,7 +246,7 @@ const OrderForm = () => {
       <div className={orderStyles.card}>
        <h3>Food Menu</h3>
       </div>
-      <FoodMenu />
+      <MenuView />
     </div>
       </Col>
       

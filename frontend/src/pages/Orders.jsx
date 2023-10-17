@@ -18,6 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from "@emotion/react";
 import DeleteOrder from "./DeleteOrder";
 import OrderForm from "../components/orderForm";
+import OrderHistory from "../components/orderHistory";
 import orderStyles from '../styles/orderStyles.module.css';
 
 
@@ -87,7 +88,9 @@ const OrderList = () =>{
         loadOrderData();
       }, []); // Empty dependency array to trigger the effect on component mount
 
-      const filteredOrders = product.filter((order) => {
+      const filteredOrders = product
+      .filter((order) => order.status === "Ready"||order.status ==="Pending") 
+      .filter((order) => {
         return (
           order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
           order.foodType.toLowerCase().includes(searchQuery.toLowerCase())
@@ -120,8 +123,8 @@ const OrderList = () =>{
                             <OrderForm />
                         : ''}
                     </Tab>
-                    <Tab eventKey="Order History" title="Order History">
-                        {activeTab=="Order History" ?
+                    <Tab eventKey="My Orders" title="My Orders">
+                        {activeTab=="My Orders" ?
                             <>
                                 <Row>
                                     <Col>
@@ -226,6 +229,11 @@ const OrderList = () =>{
                                     </Col>
                                 </Row>
                             </>
+                        : ''}
+                    </Tab>
+                    <Tab eventKey="Order History" title="Order History">
+                        {activeTab=="Order History" ?
+                            <OrderHistory />
                         : ''}
                     </Tab>
                 </Tabs>
