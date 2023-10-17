@@ -15,7 +15,12 @@ import { useEffect, useState } from "react"
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import { Container, Row, Col, } from 'react-bootstrap';
 import { Breadcrumbs, Typography, Link, CircularProgress, Box, Collapse, IconButton, Alert, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { useGetPendingReservationsMutation, useApprovePendingStatusMutation, useDeletePendingStatusMutation } from '../slices/reservationsApiSlice';
+import {
+  useGetPendingReservationsMutation,
+  useApprovePendingStatusMutation,
+  useDeletePendingStatusMutation,
+  useGetBoardingBybIdMutation
+} from '../slices/reservationsApiSlice';
 
 
 const PendingReservations = ({ bId }) => {
@@ -25,15 +30,21 @@ const PendingReservations = ({ bId }) => {
   const [getPending] = useGetPendingReservationsMutation();
   const [approvePending] = useApprovePendingStatusMutation();
   const [deletePending] = useDeletePendingStatusMutation();
+  const [getBoarding] = useGetBoardingBybIdMutation();
 
   const [pendings, setPendings] = useState([]);
   const [delPending, setDelPending] = useState('');
   const [ApprPending, setApprPending] = useState('');
+  const [boardingID, setBoardingId] = useState('');
 
   const loadData = async () => {
     try {
       const res = await getPending({ boardingId: bId }).unwrap();
+      const resbor = await getBoarding({ bId: bId }).unwrap();
       setPendings(res);
+
+      console.log(resbor.selectedBoarding.boardingType)
+      setBoardingId(resbor.selectedBoarding.boardingType);
 
     } catch (error) {
       console.error('Error getting pending', error);
@@ -88,7 +99,9 @@ const PendingReservations = ({ bId }) => {
                 <TableCell style={{ color: "#ffffff" }}>First Name</TableCell>
                 <TableCell style={{ color: "#ffffff" }}>Reserved Date</TableCell>
                 <TableCell style={{ color: "#ffffff" }}>Duration</TableCell>
-                <TableCell style={{ color: "#ffffff" }}>Room No</TableCell>
+                {boardingID === 'Hostel' && (<>
+                  <TableCell align="right" style={{ color: "#ffffff" }}>Room Number</TableCell></>)}
+
                 <TableCell style={{ color: "#ffffff" }}>Approve</TableCell>
                 <TableCell style={{ color: "#ffffff" }} align="left">Delete</TableCell>
 
@@ -107,10 +120,11 @@ const PendingReservations = ({ bId }) => {
                       {pending.Id}
                     </TableCell>
                     <TableCell align="left">{pending.Name}</TableCell>
-                    <TableCell align="left">{pending.Date}</TableCell>
+                    <TableCell align="left">{new Date(pending.Date).toDateString()}</TableCell>
                     <TableCell align="left">{pending.Duration}</TableCell>
-                    <TableCell align="left">{pending.RoomNo}</TableCell>
-
+                    {pending.bType === 'Hostel' &&
+                      (<><TableCell align="left">{pending.RoomNo}</TableCell></>)
+                    }
 
                     <TableCell align="left">
                       <Button variant="outlined" size="small" onClick={() => handleUpdate(pending.Id)} style={{ color: '#44a97a', borderColor: '#44a97a' }}>
@@ -128,11 +142,10 @@ const PendingReservations = ({ bId }) => {
 
                 )) : (
                 <>
-                  <TableRow>
+                  <TableRow style={{ backgroundColor: 'rgb(248 247 250)' }}>
                     <TableCell align="left">   </TableCell>
                     <TableCell align="left">   </TableCell>
                     <TableCell align="right" style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No pendig resrevations to display</TableCell>
-                    <TableCell align="left">   </TableCell>
                     <TableCell align="left">   </TableCell>
                     <TableCell align="left">   </TableCell>
                     <TableCell align="left">   </TableCell>

@@ -35,8 +35,8 @@ const MyReservationHistoryComponent = () => {
     const [myHistoryDetails, setMyHistoryDetails] = useState([]);
     const [word, setWord] = useState();
 
-    const feedbackHandler = () => {
-        navigate(`/occupant/feedback/create`)
+    const feedbackHandler = (Id,BName) => {
+        navigate(`/occupant/feedback/create/${Id}/${BName}`)
     }
 
     const loadData = async () => {
@@ -93,10 +93,12 @@ const MyReservationHistoryComponent = () => {
                                             {myHis.boarding.boardingName}
                                         </TableCell>
                                         <TableCell align="right">{myHis.boarding.boardingType}</TableCell>
-                                        <TableCell align="right">{myHis.room.roomNo}</TableCell>
+                                        {myHis.boarding.boardingType === 'Hostel' ? (<>
+                                            <TableCell align="right">{myHis.room.roomNo}</TableCell>
+                                        </>):(<><TableCell align="right"> - </TableCell></>)}
                                         <TableCell align="right">{new Date(myHis.ReservedDate).toDateString()}</TableCell>
                                         <TableCell align="right">{new Date(myHis.cancelledDate).toDateString()}</TableCell>
-                                        <TableCell align="right"><Button variant="contained" size="small" onClick={feedbackHandler}>give FeedBack</Button></TableCell>
+                                        <TableCell align="right"><Button variant="contained" size="small" onClick={() =>feedbackHandler(myHis.boarding._id,myHis.boarding.boardingName)}>give FeedBack</Button></TableCell>
                                     </TableRow>
 
                                 ))}

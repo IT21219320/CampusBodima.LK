@@ -10,13 +10,15 @@ import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, FormControl, In
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { NavigateNext, Try } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
+import ownerStyles from '../styles/ownerStyles.module.css';
+import dashboardStyles from '../styles/dashboardStyles.module.css';
+
 import { useGetBoardingsByIdMutation } from '../slices/reservationsApiSlice.js';
+
 import PendingReservations from '../components/pendingReservationsComponent';
 import ViewAllReservations from '../components/viewAllReservationsComponent';
 import BoardingReservationHistory from '../components/BoardingReservationHistoryComponent';
 
-import ownerStyles from '../styles/ownerStyles.module.css';
-import dashboardStyles from '../styles/dashboardStyles.module.css';
 
 const OwnerAllReservations = () => {
 
@@ -25,10 +27,8 @@ const OwnerAllReservations = () => {
     const [boarding, setBoarding] = useState([]);
     const [boardingID, setBoardingID] = useState('');
 
-    
-    
-
     const [getOwnerBoarding] = useGetBoardingsByIdMutation();
+    
 
     const [value, setValue] = useState('1');
 

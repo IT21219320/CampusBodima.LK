@@ -320,6 +320,7 @@ const getPendingReservations = asyncHandler(async (req, res) => {
                     Name: occName.firstName,
                     Date: reserveI.createdAt,
                     Duration: reserveI.Duration,
+                    bType:boarding.boardingType,
 
                 });
 
@@ -334,6 +335,7 @@ const getPendingReservations = asyncHandler(async (req, res) => {
                     Date: reserveI.createdAt,
                     Duration: reserveI.Duration,
                     RoomNo: room.roomNo,
+                    bType:boarding.boardingType,
                 });
 
             }

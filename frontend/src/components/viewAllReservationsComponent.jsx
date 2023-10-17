@@ -54,7 +54,7 @@ const ViewAllReservations = ({ bId }) => {
   const [getBording] = useGetBoardingBybIdMutation();
 
   const [reservations, setReservations] = useState([]);
-  const [boardingId , setBoardingId] = useState([]);
+  const [boardingId , setBoardingId] = useState('');
 
   const loadData = async () => {
     try {
@@ -115,9 +115,9 @@ const ViewAllReservations = ({ bId }) => {
                     <TableCell align="right">{reservation.Name}</TableCell>
                     <TableCell align="right">{new Date(reservation.Date).toDateString()}</TableCell>
                     <TableCell align="right">{reservation.Duration}</TableCell>
-                    {reservation.bType === 'Hostel'?(
+                    {reservation.bType === 'Hostel'&&(
                     <TableCell align="right">{reservation.RoomNo}</TableCell>
-                    ):(<></>)}
+                    )}
 
                   </TableRow>
                 ))
@@ -127,7 +127,7 @@ const ViewAllReservations = ({ bId }) => {
                     <TableCell align="right">   </TableCell>
                     <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No Reservations to display</TableCell>
                     <TableCell align="right">   </TableCell>
-                    <TableCell align="right">   </TableCell>
+                    
                   </TableRow>
 
                 </>)}
