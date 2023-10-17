@@ -78,7 +78,7 @@ const updateIngredientPage = () => {
         if (res) {
            
           toast.success('Ingredient Updated successfully');
-          navigate('/owner/ingredient');  
+          navigate(`/${userInfo.userType}/ingredient`);  
 
         } else {
           toast.error('Failed to update ingredient');
