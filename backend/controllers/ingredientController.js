@@ -117,6 +117,27 @@ const getBoardingIngredientNames = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Search all Kitchen Users Emails 
+// route    Post /api/ingredient/manager/emails
+// @access  Private - Owner
+const getKitchenUsersEmails = asyncHandler(async (req, res) => {
+     
+  try {
+      // Query to find ingredients based on boardingId and ingredientName, sorted alphabetically
+      const Users = await User.find({
+          userType: 'kitchen',
+            
+      })
+      .sort({ email: 1 }) // Sort in ascending alphabetical order by ingredientName
+       
+      res.status(200).json({
+        user: Users, 
+      });
+  } catch (err) {
+      res.status(400).json({ message: err.message });
+  }
+});
+
 
  
 // @desc    Get all Boardings of particular owner if they selected Food
@@ -487,17 +508,60 @@ const getIngredientHistoy = asyncHandler(async (req, res) => {
   }
 });
 
+const addKitchenUser = asyncHandler(async (req, res) => {
+  const { boardingId, ManagerId } = req.body;
+
+  try {
+      // Check if the managerId exists
+      const manager = await User.findById(ManagerId);
+      if (!manager) {
+          res.status(400);
+          throw new Error('Manager not found');
+      }
+
+      // Check if the manager is already assigned to a Boarding
+      const managerExists = await Boarding.findOne({
+          inventoryManager: ManagerId,
+      });
+      if (managerExists) {
+          res.status(400);
+          throw new Error('This Manager is Already Assigned to a Boarding');
+      }
+
+      // Add the managerId to the boarding
+      const updatedBoarding = await Boarding.findByIdAndUpdate(
+          boardingId,
+          { inventoryManager: ManagerId },
+          { new: true } // Return the updated document
+      );
+
+      if (updatedBoarding) {
+          res.status(201).json({
+              user: updatedBoarding,
+          });
+      } else {
+          res.status(400);
+          throw new Error('Invalid Boarding ID');
+      }
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+
 
 
 export { 
     addIngredient,
     getBoardingIngredient,
     getBoardingIngredientNames,
+    getKitchenUsersEmails,
     getOwnerBoarding,
     updateIngredient,
     getUpdateIngredients,
     deleteIngredient,
     increaseIngredientQuantity,
     reduceIngredientQuantity,
-    getIngredientHistoy    
+    getIngredientHistoy,
+    addKitchenUser    
 };
