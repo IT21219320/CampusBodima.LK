@@ -3,18 +3,15 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useGetTodayOrderMutation } from "../slices/orderApiSlice";
 import { toast } from "react-toastify";
-import Sidebar from '../components/sideBar';
-import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { Container, Row, Col, Table, Tabs, Tab} from 'react-bootstrap';
+import { Row, Col, Table,} from 'react-bootstrap';
 import { Button, TextField ,CircularProgress} from '@mui/material';
 import { GetAppRounded} from '@mui/icons-material';
 
 import orderStyles from '../styles/orderStyles.module.css';
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
+import 'react-date-range/dist/styles.css'; 
+import 'react-date-range/dist/theme/default.css'; 
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useTheme } from "@emotion/react";
 import DeleteOrder from "../pages/DeleteOrder";
 import formStyle from '../styles/formStyle.module.css';
 import jsPDF from 'jspdf';
@@ -23,7 +20,6 @@ const OrderHistory = () =>{
 
 
     const [product, setOrder] = useState([]);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     
     const [searchQuery, setSearchQuery] = useState(''); 
@@ -99,17 +95,13 @@ const OrderHistory = () =>{
             doc.text(`${companyDetails.email}`, 200, 33, { align: "right" });
             doc.text(`${companyDetails.website}`, 200, 37, { align: "right" });
             doc.setLineWidth(0.5);
-        doc.line(10, 45, 200, 45);
+            doc.line(10, 45, 200, 45);
 
-        // Report details
-        doc.setFontSize(8);
-        doc.text(`Report of Boardings List`, 20, 55);
-        doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
-        doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
+            
 
-        // Add report title
-        doc.setFontSize(12);
-        doc.text("Boardings List", 85, 65);
+            // Add report title
+            doc.setFontSize(12);
+            doc.text("Order History List", 85, 65);
             const headers = [[ "Date","Time","Order Number","Product","Food Type","Qty","Price","Total"]];
         
             // Map the admin data to table rows
@@ -137,17 +129,13 @@ const OrderHistory = () =>{
               body: data,
               styles,
               margin: { top: 70 },
-              startY: 50
+              startY: 70
             });
         
-            
-            
-            
-            doc.text("Order History List", 95, 40);
             doc.setFontSize(8);
-            doc.text(`Report of Order List`, 60, 30)
-            doc.text(`Date: ${new Date().toDateString()}`, 60, 34)
-            doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 60, 38)
+            doc.text(`Report of Order List`, 20, 50)
+            doc.text(`Date: ${new Date().toDateString()}`, 20, 54)
+            doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 58)
             doc.save("OrderHistory.pdf");
         
         };

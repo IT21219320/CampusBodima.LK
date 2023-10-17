@@ -6,9 +6,8 @@ import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import ViewMenu from "../components/menuView";
 import orderStyles from '../styles/orderStyles.module.css';
-import { TextField, InputLabel, MenuItem, Select, Button } from '@mui/material';
-import { useAddMenuMutation } from '../slices/menuesApiSlice'; // Assuming you have a menu API slice
-import { alignPropType } from 'react-bootstrap/esm/types';
+import { TextField, InputLabel, Button } from '@mui/material';
+import { useAddMenuMutation } from '../slices/menuesApiSlice';
 
 const MenuForm = () => {
   const [menuName, setMenuName] = useState('');

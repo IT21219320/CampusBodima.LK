@@ -67,13 +67,7 @@ const MenuView = () => {
 
   return (
     <>
-      <Row>
-        <Col>
-        <div className={orderStyles.card}>
-                            <h3>Menu</h3>
-                        </div>
-        </Col>
-        </Row>
+      
         <Row>
             <Col>
             <TextField

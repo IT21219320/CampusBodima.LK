@@ -3,9 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useGetTodayOrderMutation } from "../slices/orderApiSlice";
 import { toast } from "react-toastify";
-import Sidebar from '../components/sideBar';
-import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { Container, Row, Col, Table, Tabs, Tab} from 'react-bootstrap';
+import { Row, Col, Table,} from 'react-bootstrap';
 import { Button, TextField ,CircularProgress} from '@mui/material';
 import { GetAppRounded} from '@mui/icons-material';
 
@@ -20,27 +18,13 @@ import formStyle from '../styles/formStyle.module.css';
 import jsPDF from 'jspdf';
 const OrderComplete = () =>{
 
-    const theme = useTheme();
+    
 
     const [product, setOrder] = useState([]);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [activeTab, setActiveTab] = useState('Place Order');
     const [searchQuery, setSearchQuery] = useState(''); 
     
-    const generateReportData = () => {
-        return product.map((order) => ({
-            Date: new Date(order.date).toLocaleDateString(),
-            Time: `${new Date(order.date).getHours()}:${new Date(order.date).getMinutes()}`,
-            OrderNumber: order.orderNo,
-            Product: order.product,
-            FoodType: order.foodType,
-            Quantity: order.quantity,
-            Price: order.price,
-            Total: order.total,
-            Status: order.status,
-        }));
-    };
+    
     
     const openDeleteModal = (order) => {
         setSelectedOrder(order);
@@ -59,7 +43,7 @@ const OrderComplete = () =>{
 
     
 
-    const navigate = useNavigate();
+    
 
     const [getTodayOrder, { isLoading }] = useGetTodayOrderMutation();
     const userID = userInfo._id
@@ -93,10 +77,34 @@ const OrderComplete = () =>{
             const completedOrders = product.filter((order) => order.status === 'Completed');
 
             const doc = new jsPDF();
+            const companyDetails = {
+                name: "CampusBodima",
+                address: "138/K, Ihala Yagoda, Gampaha",
+                phone: "071-588-6675",
+                email: "info.campusbodima@gmail.com",
+                website: "www.campusbodima.com"
+            };
+            doc.addImage("/logo2.png", "PNG", 10, 10, 50, 30);
+            doc.setFontSize(15);
+            doc.setFont("helvetica", "bold");
+            doc.text(`${companyDetails.name}`, 200, 20, { align: "right", style: "bold" });
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${companyDetails.address}`, 200, 25, { align: "right" });
+            doc.text(`${companyDetails.phone}`, 200, 29, { align: "right" });
+            doc.text(`${companyDetails.email}`, 200, 33, { align: "right" });
+            doc.text(`${companyDetails.website}`, 200, 37, { align: "right" });
+            doc.setLineWidth(0.5);
+            doc.line(10, 45, 200, 45);
+
         
+
+            
+            doc.setFontSize(12);
+            doc.text("Completed Orders", 85, 65);
             const headers = [[ "Date","Time","Order Number","Product","Food Type","Qty","Price","Total"]];
         
-            // Map the admin data to table rows
+            
         
             const data = completedOrders.map((order) => [
                 new Date(order.date).toLocaleDateString(),
@@ -121,17 +129,13 @@ const OrderComplete = () =>{
               body: data,
               styles,
               margin: { top: 70 },
-              startY: 50
+              startY: 70
             });
         
-            
-            
-            
-            doc.text("Order History List", 85, 40);
             doc.setFontSize(8);
-            doc.text(`Report of Order List`, 20, 20)
-            doc.text(`Date: ${new Date().toDateString()}`, 20, 24)
-            doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 28)
+            doc.text(`Report of Order List`, 20, 50)
+            doc.text(`Date: ${new Date().toDateString()}`, 20, 54)
+            doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 58)
             doc.save("OrderHistory.pdf");
         
         };
