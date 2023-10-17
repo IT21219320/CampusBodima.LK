@@ -284,12 +284,12 @@ const AllFeedbacks = () => {
                         <td>{feedback.boardingId.boardingName}</td>
                         <td>{feedback.description}</td>
                         <td><Rating name="read-only" value={parseInt(feedback.rating)} readOnly /></td>
-                        <td> 
+                        <td style={{ textAlign: 'center' }}> 
                         
                         
                         <Button
-                            className="mt-4 mb-4 me-3" style={{ float: 'Center' ,
-                             background: 'red', color: 'black', marginLeft: '10px',variant:"contained" }}
+                            className="mt-4 mb-4 me-3" style={{ float: 'center' ,
+                             background: 'red', color: 'black', variant:"contained" }}
                             onClick={handleShow }
                           >
                             <DeleteIcon /> Delete

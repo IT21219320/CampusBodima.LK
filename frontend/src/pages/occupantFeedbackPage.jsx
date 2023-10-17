@@ -289,7 +289,7 @@ const OccupantFeedback = () => {
 
                         
                           <Button
-                            className="mt-4 mb-4 me-3" style={{ float: 'Center' ,
+                            className="mt-4 mb-4 me-3" style={{ float: 'center' ,
                              background: 'red', color: 'black', marginLeft: '10px',variant:"contained" }}
                             onClick={handleShow }
                           >
