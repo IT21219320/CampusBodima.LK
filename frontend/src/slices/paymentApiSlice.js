@@ -55,6 +55,13 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        getAllToDoPaymentById: builder.mutation({
+            query:(data) => ({
+                url: `${PAYMENT_URL}/getAllToDoPaymentsByUser`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
         changeStatus: builder.mutation({
             query:(data) => ({
                 url: `${PAYMENT_URL}/changeStatus`,
@@ -81,4 +88,4 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useGetPaymentByUserMutation, useMakePaymentMutation, useGetPaymentByOwnerMutation,useSearchPayMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation, useChangeStatusMutation, useChangePaidStatusMutation, useGetToDoPaymentByIdMutation } = paymentApiSlice;
+export const { useGetPaymentByUserMutation, useMakePaymentMutation, useGetPaymentByOwnerMutation,useSearchPayMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation, useChangeStatusMutation, useChangePaidStatusMutation, useGetToDoPaymentByIdMutation, useGetAllToDoPaymentByIdMutation } = paymentApiSlice;

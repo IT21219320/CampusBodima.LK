@@ -7,7 +7,7 @@ import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Form } from 'react-bootstrap';
 import { useGetCardByUserMutation, useDeleteCardMutation, useUpdateCardMutation } from "../slices/cardApiSlice";
-import { useGetPaymentByUserMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation } from "../slices/paymentApiSlice";
+import { useGetPaymentByUserMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation, useGetAllToDoPaymentByIdMutation } from "../slices/paymentApiSlice";
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css";
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -28,6 +28,8 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+
+import { BarChart } from '@mui/x-charts/BarChart';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -83,8 +85,9 @@ const OccupantPaymentDash = () => {
     const [expireDate, setexpireDate] = useState('');
     const [cvvF, setcvvF] = useState('');
     const [toDoPayment, setToDoPayment] = useState([]);
-    const [toDoPaymentOld, setToDoPaymentOld] = useState();
-    const [searchQ, setsearchQ] = useState();
+    const [toDoPaymentOld, setToDoPaymentOld] = useState([]);
+    const [allToDoPaymentOld, setAllToDoPaymentOld] = useState([]);
+    const [searchQ, setsearchQ] = useState('');
     const [monthQ, setMonthQ] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
@@ -95,6 +98,20 @@ const OccupantPaymentDash = () => {
     if (myReserve) {
         bId = myReserve.boardingId
     }
+    //Chart
+    const xAxisData = []
+    const mpData = []
+    
+    if(allToDoPaymentOld.length>0){
+        
+        for(const i of allToDoPaymentOld){
+            console.log(i.amount);
+            xAxisData.push(i.month)
+            mpData.push(parseInt(i.amount))
+        }
+        console.log(mpData);
+    }
+    
 
 
 
@@ -112,6 +129,7 @@ const OccupantPaymentDash = () => {
     const [getToDoPayment] = useGetToDoPaymentMutation();
     const [getReserv] = useGetMyResMutation();
     const [getToDoPaymentOld] = useGetToDoPaymentOldMutation();
+    const [getAllToDoPayments] = useGetAllToDoPaymentByIdMutation();
 
 
 
@@ -150,8 +168,8 @@ const OccupantPaymentDash = () => {
 
         }
         try {
-
-            const resGetPay = await getPayment({ userInfo_id: userInfo._id, oId: searchQ, month:monthQ }).unwrap();
+            setIsLoading(true)
+            const resGetPay = await getPayment({ userInfo_id: userInfo._id, oId: searchQ, month: monthQ }).unwrap();
             setPayments(resGetPay.payments);
             setIsLoading(false)
 
@@ -169,6 +187,17 @@ const OccupantPaymentDash = () => {
         } catch (error) {
 
             console.error('Error getting To Do payments', error);
+
+        }
+        try {
+
+            const resGetAllToDOPay = await getAllToDoPayments({ userInfo_id: userInfo._id }).unwrap();
+            setAllToDoPaymentOld(resGetAllToDOPay);
+            setIsLoading(false)
+
+        } catch (error) {
+
+            console.error('Error getting All To Do payments', error);
 
         }
         try {
@@ -192,10 +221,10 @@ const OccupantPaymentDash = () => {
             console.log(error)
         }
 
-
     }
 
     useEffect(() => {
+
         loadData();
     }, [deleteC, updateC, searchQ, monthQ]);
 
@@ -332,8 +361,16 @@ const OccupantPaymentDash = () => {
 
                                                                 </Row></>) : (<><p>You have done the payment</p></>)}
 
-                                                        </Col></Row></>)}</>) : (<>
-                                                            No Reservation</>)}</>)}
+                                                        </Col></Row></>)}
+                                                        {mpData.length>0 ? (<><BarChart
+                                                    xAxis={[{ scaleType: 'band', data: xAxisData, paddingInner: 0, paddingOuter: 0 }]}
+                                                    series={[{ data: mpData }]}
+                                                    width={500}
+                                                    height={300}
+                                                /></>):(<></>)}
+                                                
+                                            </>) : (<>
+                                                No Reservation</>)}</>)}
 
 
 
@@ -450,6 +487,7 @@ const OccupantPaymentDash = () => {
                                                 label="Month"
                                                 onChange={(e) => setMonthQ(e.target.value)}
                                             >
+                                                <MenuItem value={""}>All</MenuItem>
                                                 <MenuItem value={"January"}>January</MenuItem>
                                                 <MenuItem value={"February"}>February</MenuItem>
                                                 <MenuItem value={"March"}>March</MenuItem>
@@ -467,42 +505,47 @@ const OccupantPaymentDash = () => {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <TableContainer component={Paper} style={{ marginTop: '20px' }}>
-                                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <StyledTableCell>Transaction ID</StyledTableCell>
-                                                    <StyledTableCell align="right">Amount</StyledTableCell>
-                                                    <StyledTableCell align="right">Description</StyledTableCell>
-                                                    <StyledTableCell align="right">For</StyledTableCell>
-                                                    <StyledTableCell align="right">Transaction Date</StyledTableCell>
-                                                    <StyledTableCell align="right">Method</StyledTableCell>
-                                                </TableRow>
-                                            </TableHead>
+                                    {isLoading ? (<>
+                                        <Box sx={{ margin: '10% 50%' }}>
+                                            <CircularProgress />
+                                        </Box></>) : (<>
+                                            <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+                                                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <StyledTableCell>Transaction ID</StyledTableCell>
+                                                            <StyledTableCell align="right">Amount</StyledTableCell>
+                                                            <StyledTableCell align="right">Description</StyledTableCell>
+                                                            <StyledTableCell align="right">For</StyledTableCell>
+                                                            <StyledTableCell align="right">Transaction Date</StyledTableCell>
+                                                            <StyledTableCell align="right">Method</StyledTableCell>
+                                                        </TableRow>
+                                                    </TableHead>
 
-                                            <TableBody>
-                                                {payments.length > 0 ? (
-                                                    payments.map((payment) => (
-                                                        <StyledTableRow key={payment._id}>
-                                                            <StyledTableCell component="th" scope="row">
-                                                                {payment._id}
-                                                            </StyledTableCell>
-                                                            <StyledTableCell align="right" >LKR {payment.amount}</StyledTableCell>
-                                                            <StyledTableCell align="right" >{payment.description}</StyledTableCell>
-                                                            <StyledTableCell align="right" >{payment.payableMonth}</StyledTableCell>
-                                                            <StyledTableCell align="right"> {new Date(payment.date).toDateString()}</StyledTableCell>
+                                                    <TableBody>
+                                                        {payments.length > 0 ? (
+                                                            payments.map((payment) => (
+                                                                <StyledTableRow key={payment._id}>
+                                                                    <StyledTableCell component="th" scope="row">
+                                                                        {payment._id}
+                                                                    </StyledTableCell>
+                                                                    <StyledTableCell align="right" >LKR {payment.amount}</StyledTableCell>
+                                                                    <StyledTableCell align="right" >{payment.description}</StyledTableCell>
+                                                                    <StyledTableCell align="right" >{payment.payableMonth}</StyledTableCell>
+                                                                    <StyledTableCell align="right"> {new Date(payment.date).toDateString()}</StyledTableCell>
 
-                                                            <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
-                                                        </StyledTableRow>
-                                                    ))) : (
-                                                    <StyledTableRow >
-                                                        <StyledTableCell component="th" scope="row">
-                                                            No data
-                                                        </StyledTableCell>
-                                                    </StyledTableRow>)}
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
+                                                                    <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
+                                                                </StyledTableRow>
+                                                            ))) : (
+                                                            <StyledTableRow >
+                                                                <StyledTableCell component="th" scope="row">
+                                                                    No data
+                                                                </StyledTableCell>
+                                                            </StyledTableRow>)}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer></>)}
+
                                 </Row></TabPanel>
                         </TabContext>
                     </Box>

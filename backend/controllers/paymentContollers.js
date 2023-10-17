@@ -290,6 +290,22 @@ const getToDoPaymentsByUser = expressAsyncHandler(async (req, res) => {
 
 })
 
+const getAllToDoPaymentsByUser = expressAsyncHandler(async (req, res) => {
+  const { userInfo_id } = req.body;
+  try {
+    const response = await toDoPayment.find({ occupant: userInfo_id });
+    if (response) {
+      res.status(200).json(
+        response
+      )
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+
+})
+
 const getToDoPaymentById = expressAsyncHandler(async (req, res) => {
   const { id } = req.body;
   
@@ -419,4 +435,4 @@ const getWebHook = expressAsyncHandler(async (req, res) => {
 })
 
 
-export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser, getMyReservation, changeStatus, changeReservationPaidStatus, getToDoPaymentById };
+export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser, getMyReservation, changeStatus, changeReservationPaidStatus, getToDoPaymentById, getAllToDoPaymentsByUser };
