@@ -251,9 +251,8 @@ const SearchPage = () => {
                                 <Col style={{height:'100%'}}>
                                     <Row style={{margin:'10px 25px'}}>
                                         {availableFacilities.map((facility) => (
-                                        <Col lg={12}>
+                                        <Col key={facility} lg={12}>
                                             <FormControlLabel
-                                                key={facility}
                                                 control={<Checkbox style={{paddingTop:0, paddingBottom:0}} checked={facilities.includes(facility)} onChange={() => handleFacilitySelection(facility)} />}
                                                 label={facility}
                                                 style={{whiteSpace:'nowrap'}}

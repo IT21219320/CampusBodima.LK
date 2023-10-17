@@ -32,7 +32,8 @@ import OwnerBoardingRoomOccupants from './pages/ownerBoardingRoomOccupants.jsx';
 import AdminVerifyBoardingPage from './pages/adminVerifyBoardingPage.jsx';
 import VerifyOccupantEmailPage from './pages/verifyOccupantEmailPage.jsx';
 
-import OwnerIngredientPage from './pages/OwnerIngredientPage.jsx';
+import OwnerIngredientPage from './pages/ownerIngredientPage.jsx';
+import ManagerIngredientPage from './pages/managerIngredientPage.jsx';
 import AddIngredientPage from './pages/addIngredientPage.jsx';
 import UpdateIngredientPage from './pages/updateIngredientPage.jsx';
 
@@ -77,6 +78,7 @@ import OccupantRoute from './components/occupantRoute';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
+import Loading from './components/loadingComponent.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -136,7 +138,7 @@ const router = createBrowserRouter(
 
         {/* Inventory Manager Routes */}
         <Route path='' element={<KitchenRoute />}>
-          <Route path='/kitchen/ingredient' element={ <OwnerIngredientPage /> } />
+          <Route path='/kitchen/ingredient' element={ <ManagerIngredientPage /> } />
           <Route path='/kitchen/ingredient/add' element={ <AddIngredientPage /> } />
           <Route path='/kitchen/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
         </Route>
@@ -176,7 +178,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store = {store}>
     <React.StrictMode>
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} loadingElement={<div></div>}>
+        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} loadingElement={<Loading />}>
           <RouterProvider router={ router } />
         </LoadScript>
       </GoogleOAuthProvider>

@@ -382,7 +382,7 @@ const getOwnerBoardings = asyncHandler(async (req, res) => {
 const getBoardingById = asyncHandler(async (req, res) => {
     const boardingId = req.params.boardingId;
    
-    const boarding = await Boarding.findById(boardingId).populate('room');
+    const boarding = await Boarding.findById(boardingId).populate(['room','owner']);
 
     boarding.room.sort((a, b) => a.roomNo - b.roomNo);
     
