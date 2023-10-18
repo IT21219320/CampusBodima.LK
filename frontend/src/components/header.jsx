@@ -1,5 +1,10 @@
 import {useState, useEffect} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem } from '@mui/material';
+import { useLogoutMutation } from '../slices/usersApiSlice';
+import { clearUserInfo } from "../slices/authSlice";
+import { toast } from 'react-toastify';
 import MenuIcon from '@mui/icons-material/Menu';
 import AdbIcon from '@mui/icons-material/Adb';
 
@@ -12,6 +17,25 @@ const Header = () => {
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [isSticky, setIsSticky] = useState(false);
+
+    const { userInfo } = useSelector((state) => state.auth);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const [ logout ] = useLogoutMutation();
+
+    const logoutHandler = async () => {
+        try {
+            await logout().unwrap();
+            dispatch(clearUserInfo());
+            toast.success("Logged Out");
+            navigate('/');
+        } catch (err) {
+            toast.error(err);
+        }
+    }
+
     
         
     let timeout;
@@ -21,7 +45,7 @@ const Header = () => {
         }
   
         timeout = setTimeout(() => {
-          if (document.getElementById('main').scrollTop > 50) {
+          if (document.getElementById('main').scrollTop > 10) {
             setIsSticky(true);
           } else {
             setIsSticky(false);
