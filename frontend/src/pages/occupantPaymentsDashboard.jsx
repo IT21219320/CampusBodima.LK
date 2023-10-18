@@ -5,7 +5,7 @@ import Sidebar from '../components/sideBar';
 import { Breadcrumbs, Typography, Card, CircularProgress, Box, Collapse, IconButton, Alert, FormControl, InputLabel, MenuItem, Select, Link } from "@mui/material";
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { Container, Row, Col, Form } from 'react-bootstrap';
+import { Container, Row, Col, Form, Toast } from 'react-bootstrap';
 import { useGetCardByUserMutation, useDeleteCardMutation, useUpdateCardMutation } from "../slices/cardApiSlice";
 import { useGetPaymentByUserMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation, useGetAllToDoPaymentByIdMutation } from "../slices/paymentApiSlice";
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css";
@@ -28,6 +28,7 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import "jspdf-autotable";
 
 import { BarChart } from '@mui/x-charts/BarChart';
 
@@ -98,20 +99,21 @@ const OccupantPaymentDash = () => {
     if (myReserve) {
         bId = myReserve.boardingId
     }
+
     //Chart
     const xAxisData = []
     const mpData = []
-    
-    if(allToDoPaymentOld.length>0){
-        
-        for(const i of allToDoPaymentOld){
+
+    if (allToDoPaymentOld.length > 0) {
+
+        for (const i of allToDoPaymentOld) {
             console.log(i.amount);
             xAxisData.push(i.month)
             mpData.push(parseInt(i.amount))
         }
         console.log(mpData);
     }
-    
+
 
 
 
@@ -157,10 +159,10 @@ const OccupantPaymentDash = () => {
 
     const loadData = async () => {
         try {
-
+            
             const res = await getCard({ userInfo_id: userInfo._id }).unwrap();
             setCards(res);
-            setIsLoading(false)
+            
 
         } catch (error) {
 
@@ -168,10 +170,10 @@ const OccupantPaymentDash = () => {
 
         }
         try {
-            setIsLoading(true)
+            
             const resGetPay = await getPayment({ userInfo_id: userInfo._id, oId: searchQ, month: monthQ }).unwrap();
             setPayments(resGetPay.payments);
-            setIsLoading(false)
+            
 
         } catch (error) {
 
@@ -179,10 +181,9 @@ const OccupantPaymentDash = () => {
         }
 
         try {
-
+            
             const resGetToDOPay = await getToDoPayment({ userInfo_id: userInfo._id }).unwrap();
             setToDoPayment(resGetToDOPay);
-            setIsLoading(false)
 
         } catch (error) {
 
@@ -190,10 +191,10 @@ const OccupantPaymentDash = () => {
 
         }
         try {
-
+            
             const resGetAllToDOPay = await getAllToDoPayments({ userInfo_id: userInfo._id }).unwrap();
             setAllToDoPaymentOld(resGetAllToDOPay);
-            setIsLoading(false)
+            
 
         } catch (error) {
 
@@ -201,18 +202,17 @@ const OccupantPaymentDash = () => {
 
         }
         try {
-
+            
             const userInfo_id = userInfo._id
             const myReserv = await getReserv({ _id: userInfo_id }).unwrap();
             setMyReserve(myReserv)
-            setIsLoading(false)
 
         } catch (error) {
             console.log("Error in my reservration", error)
         }
 
         try {
-
+            
             const myOldPay = await getToDoPaymentOld({ userInfo_id: userInfo._id }).unwrap();
             setToDoPaymentOld(myOldPay[0])
             setIsLoading(false)
@@ -263,8 +263,13 @@ const OccupantPaymentDash = () => {
     }
 
     const navigateToPay = () => {
-        navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPayment.length > 0 && toDoPayment[0].amount}/${toDoPayment.length > 0 && toDoPayment[0]._id}`)
-    }
+        if(toDoPaymentOld){
+            window.toast("Do your previous payments")
+        }
+        else{
+            navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPayment.length > 0 && toDoPayment[0].amount}/${toDoPayment.length > 0 && toDoPayment[0]._id}`)
+        }
+         }
 
     const navigateToPayOld = () => {
         navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPaymentOld && toDoPaymentOld.amount}/${toDoPaymentOld && toDoPaymentOld._id}`)
@@ -362,13 +367,16 @@ const OccupantPaymentDash = () => {
                                                                 </Row></>) : (<><p>You have done the payment</p></>)}
 
                                                         </Col></Row></>)}
-                                                        {mpData.length>0 ? (<><BarChart
-                                                    xAxis={[{ scaleType: 'band', data: xAxisData, paddingInner: 0, paddingOuter: 0 }]}
-                                                    series={[{ data: mpData }]}
-                                                    width={500}
-                                                    height={300}
-                                                /></>):(<></>)}
-                                                
+                                                <Row>
+                                                    <center><p style={{fontSize:'30px',fontWeight:'bold', margin:'8% 0px 0px 0px '}}>Monthly Payment analyse</p>{mpData.length > 0 ? (<><BarChart
+                                                        xAxis={[{ scaleType: 'band', data: xAxisData, label: 'Month' }]}
+                                                        yAxis={[{ label: 'Amount' }]}
+                                                        series={[{ data: mpData }]}
+                                                        width={800}
+                                                        height={300}
+                                                    /></>) : (<></>)}</center>
+                                                </Row>
+
                                             </>) : (<>
                                                 No Reservation</>)}</>)}
 
