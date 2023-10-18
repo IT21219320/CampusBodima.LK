@@ -26,6 +26,8 @@ const Header = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    
+    const activeRoute = location.pathname;
 
     const [logout] = useLogoutMutation();
 
@@ -56,19 +58,16 @@ const Header = () => {
     };
 
     useEffect(() => {
-        document.getElementById("main").addEventListener("scroll", handleScroll);
+        if(activeRoute == '/'){
+            document.getElementById("main").addEventListener("scroll", handleScroll);
+        }
+        else{
+            setIsSticky(true)
+        }
     }, []);
-
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
 
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
     };
 
     const handleCloseUserMenu = () => {
@@ -77,7 +76,7 @@ const Header = () => {
 
     return (
         <AppBar id="header" className={`${headerStyles.header} ${isSticky ? headerStyles.sticky : ""}`} >
-            <Container maxWidth="xl">
+            <Container maxWidth="lg">
                 <Toolbar disableGutters>
                     <Box sx={{display: { xs: "none", md: "flex" }}}>
                         <img src="/logo3.png" width='100px' />
@@ -98,19 +97,19 @@ const Header = () => {
                             <Offcanvas.Body>
                             <Button
                                 onClick={() => navigate('/')}
-                                sx={{ my: 2, px: 3, mx: 2, color: "white", display: "block" }}
+                                sx={{ my: 2, px: 1, mx: 1, color: "white", display: "block" }}
                             >
                                 Home
                             </Button>
                             <Button
                                 onClick={() => navigate('/')}
-                                sx={{ my: 2, px: 3, mx: 2, color: "white", display: "block" }}
+                                sx={{ my: 2, px: 1, mx: 1, color: "white", display: "block" }}
                             >
                                 About Us
                             </Button>
                             <Button
                                 onClick={() => navigate('/')}
-                                sx={{ my: 2, px: 3, mx: 2, color: "white", display: "block" }}
+                                sx={{ my: 2, px: 1, mx: 1, color: "white", display: "block" }}
                             >
                                 Contact Us
                             </Button>
@@ -144,10 +143,10 @@ const Header = () => {
                     <Box sx={{ flexGrow: 0 }}>
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                             {userInfo.image ? 
-                                <Avatar alt={userInfo.firstName+" "+userInfo.lastName} src={userInfo.image} sx={{ width: 40, height: 40, cursor:'pointer' }} /> 
+                                <Avatar alt={userInfo.firstName+" "+userInfo.lastName} src={userInfo.image} sx={{ width: 40, height: 40, cursor:'pointer' }} style={{border: '1px solid #0000002e'}} /> 
                                 : 
                                 <Typography component="div">
-                                    <Avatar alt={userInfo.firstName+" "+userInfo.lastName} {...StringToAvatar(userInfo.firstName+" "+userInfo.lastName)} style={{ width: 40, height:40, fontSize: 20, cursor:'pointer' }} />
+                                    <Avatar alt={userInfo.firstName+" "+userInfo.lastName} {...StringToAvatar(userInfo.firstName+" "+userInfo.lastName)} style={{ width: 40, height:40, fontSize: 20, cursor:'pointer', border: '1px solid #0000002e' }} />
                                 </Typography> 
                             }
                         </IconButton>
