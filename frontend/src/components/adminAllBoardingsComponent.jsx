@@ -125,14 +125,14 @@ const AdminAllBoardings = () => {
         doc.line(10, 45, 200, 45);
 
         // Report details
-        doc.setFontSize(8);
+        doc.setFontSize(10);
         doc.text(`Report of Boardings List`, 20, 55);
         doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
         doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
 
         // Add report title
         doc.setFontSize(12);
-        doc.text("Boardings List", 85, 65);
+        doc.text("Boardings List", 85, 70);
     
         // table headers
         let headers = ["Boarding Name", "Boarding Type", "City", "Status", "Food", "Utility Bills", "No Of Rooms", "Gender", "Rent", "Date Created"];
