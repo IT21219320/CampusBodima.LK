@@ -5,7 +5,7 @@ import Sidebar from '../components/sideBar';
 import { Breadcrumbs, Typography, Card, CircularProgress, Box, Collapse, IconButton, Alert, FormControl, InputLabel, MenuItem, Select, Link } from "@mui/material";
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { Container, Row, Col, Form } from 'react-bootstrap';
+import { Container, Row, Col, Form, Toast } from 'react-bootstrap';
 import { useGetCardByUserMutation, useDeleteCardMutation, useUpdateCardMutation } from "../slices/cardApiSlice";
 import { useGetPaymentByUserMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation, useGetAllToDoPaymentByIdMutation } from "../slices/paymentApiSlice";
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css";
@@ -28,6 +28,7 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import "jspdf-autotable";
 
 import { BarChart } from '@mui/x-charts/BarChart';
 
@@ -161,7 +162,7 @@ const OccupantPaymentDash = () => {
             
             const res = await getCard({ userInfo_id: userInfo._id }).unwrap();
             setCards(res);
-            setIsLoading(false)
+            
 
         } catch (error) {
 
@@ -183,7 +184,6 @@ const OccupantPaymentDash = () => {
             
             const resGetToDOPay = await getToDoPayment({ userInfo_id: userInfo._id }).unwrap();
             setToDoPayment(resGetToDOPay);
-            setIsLoading(false)
 
         } catch (error) {
 
@@ -194,7 +194,7 @@ const OccupantPaymentDash = () => {
             
             const resGetAllToDOPay = await getAllToDoPayments({ userInfo_id: userInfo._id }).unwrap();
             setAllToDoPaymentOld(resGetAllToDOPay);
-            setIsLoading(false)
+            
 
         } catch (error) {
 
@@ -206,7 +206,6 @@ const OccupantPaymentDash = () => {
             const userInfo_id = userInfo._id
             const myReserv = await getReserv({ _id: userInfo_id }).unwrap();
             setMyReserve(myReserv)
-            setIsLoading(false)
 
         } catch (error) {
             console.log("Error in my reservration", error)
@@ -216,7 +215,7 @@ const OccupantPaymentDash = () => {
             
             const myOldPay = await getToDoPaymentOld({ userInfo_id: userInfo._id }).unwrap();
             setToDoPaymentOld(myOldPay[0])
-            
+            setIsLoading(false)
 
         } catch (error) {
             console.log(error)
@@ -264,8 +263,13 @@ const OccupantPaymentDash = () => {
     }
 
     const navigateToPay = () => {
-        navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPayment.length > 0 && toDoPayment[0].amount}/${toDoPayment.length > 0 && toDoPayment[0]._id}`)
-    }
+        if(toDoPaymentOld){
+            window.toast("Do your previous payments")
+        }
+        else{
+            navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPayment.length > 0 && toDoPayment[0].amount}/${toDoPayment.length > 0 && toDoPayment[0]._id}`)
+        }
+         }
 
     const navigateToPayOld = () => {
         navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPaymentOld && toDoPaymentOld.amount}/${toDoPaymentOld && toDoPaymentOld._id}`)
@@ -364,13 +368,13 @@ const OccupantPaymentDash = () => {
 
                                                         </Col></Row></>)}
                                                 <Row>
-                                                    {mpData.length > 0 ? (<><BarChart
+                                                    <center><p style={{fontSize:'30px',fontWeight:'bold', margin:'8% 0px 0px 0px '}}>Monthly Payment analyse</p>{mpData.length > 0 ? (<><BarChart
                                                         xAxis={[{ scaleType: 'band', data: xAxisData, label: 'Month' }]}
                                                         yAxis={[{ label: 'Amount' }]}
                                                         series={[{ data: mpData }]}
-                                                        width={1000}
+                                                        width={800}
                                                         height={300}
-                                                    /></>) : (<></>)}
+                                                    /></>) : (<></>)}</center>
                                                 </Row>
 
                                             </>) : (<>
