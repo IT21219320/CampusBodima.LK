@@ -4,9 +4,9 @@ import homeStyles from '../styles/homePageStyles.module.css'
 const HomePage = () => {
     return (
         <>
-            <div style={{width:'100%' , position:'absolute'}}>
+            <div style={{width:'100%'}}>
                 <Header />
-                <div style={{minHeight:'100vh'}}>
+                <div style={{minHeight:'100vh', height:'200vh'}}>
                     <div className={homeStyles.homeBackDiv}>
                         <img src={'homePageBackground.jpg'} width={"100%"} height={'600px'}/>
                     </div>
