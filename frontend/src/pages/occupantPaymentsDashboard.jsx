@@ -98,20 +98,21 @@ const OccupantPaymentDash = () => {
     if (myReserve) {
         bId = myReserve.boardingId
     }
+
     //Chart
     const xAxisData = []
     const mpData = []
-    
-    if(allToDoPaymentOld.length>0){
-        
-        for(const i of allToDoPaymentOld){
+
+    if (allToDoPaymentOld.length > 0) {
+
+        for (const i of allToDoPaymentOld) {
             console.log(i.amount);
             xAxisData.push(i.month)
             mpData.push(parseInt(i.amount))
         }
         console.log(mpData);
     }
-    
+
 
 
 
@@ -157,7 +158,7 @@ const OccupantPaymentDash = () => {
 
     const loadData = async () => {
         try {
-
+            
             const res = await getCard({ userInfo_id: userInfo._id }).unwrap();
             setCards(res);
             setIsLoading(false)
@@ -168,10 +169,10 @@ const OccupantPaymentDash = () => {
 
         }
         try {
-            setIsLoading(true)
+            
             const resGetPay = await getPayment({ userInfo_id: userInfo._id, oId: searchQ, month: monthQ }).unwrap();
             setPayments(resGetPay.payments);
-            setIsLoading(false)
+            
 
         } catch (error) {
 
@@ -179,7 +180,7 @@ const OccupantPaymentDash = () => {
         }
 
         try {
-
+            
             const resGetToDOPay = await getToDoPayment({ userInfo_id: userInfo._id }).unwrap();
             setToDoPayment(resGetToDOPay);
             setIsLoading(false)
@@ -190,7 +191,7 @@ const OccupantPaymentDash = () => {
 
         }
         try {
-
+            
             const resGetAllToDOPay = await getAllToDoPayments({ userInfo_id: userInfo._id }).unwrap();
             setAllToDoPaymentOld(resGetAllToDOPay);
             setIsLoading(false)
@@ -201,7 +202,7 @@ const OccupantPaymentDash = () => {
 
         }
         try {
-
+            
             const userInfo_id = userInfo._id
             const myReserv = await getReserv({ _id: userInfo_id }).unwrap();
             setMyReserve(myReserv)
@@ -212,10 +213,10 @@ const OccupantPaymentDash = () => {
         }
 
         try {
-
+            
             const myOldPay = await getToDoPaymentOld({ userInfo_id: userInfo._id }).unwrap();
             setToDoPaymentOld(myOldPay[0])
-            setIsLoading(false)
+            
 
         } catch (error) {
             console.log(error)
@@ -362,13 +363,16 @@ const OccupantPaymentDash = () => {
                                                                 </Row></>) : (<><p>You have done the payment</p></>)}
 
                                                         </Col></Row></>)}
-                                                        {mpData.length>0 ? (<><BarChart
-                                                    xAxis={[{ scaleType: 'band', data: xAxisData, paddingInner: 0, paddingOuter: 0 }]}
-                                                    series={[{ data: mpData }]}
-                                                    width={500}
-                                                    height={300}
-                                                /></>):(<></>)}
-                                                
+                                                <Row>
+                                                    {mpData.length > 0 ? (<><BarChart
+                                                        xAxis={[{ scaleType: 'band', data: xAxisData, label: 'Month' }]}
+                                                        yAxis={[{ label: 'Amount' }]}
+                                                        series={[{ data: mpData }]}
+                                                        width={1000}
+                                                        height={300}
+                                                    /></>) : (<></>)}
+                                                </Row>
+
                                             </>) : (<>
                                                 No Reservation</>)}</>)}
 
