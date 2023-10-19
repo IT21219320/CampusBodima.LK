@@ -114,9 +114,46 @@ const ingredientReport = ({ boardingId }) => {
                 
         // Create a new jsPDF instance
         const doc = new jsPDF();
+
+        // company details
+        const companyDetails = {
+            name: "CampusBodima",
+            address: "138/K, Ihala Yagoda, Gampaha",
+            phone: "071-588-6675",
+            email: "info.campusbodima@gmail.com",
+            website: "www.campusbodima.com"
+        };
+    
+        // logo
+        doc.addImage("/logo2.png", "PNG", 10, 10, 50, 30);
+    
+        // Show company details
+        doc.setFontSize(15);
+        doc.setFont("helvetica", "bold");
+        doc.text(`${companyDetails.name}`, 200, 20, { align: "right", style: "bold" });
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${companyDetails.address}`, 200, 25, { align: "right" });
+        doc.text(`${companyDetails.phone}`, 200, 29, { align: "right" });
+        doc.text(`${companyDetails.email}`, 200, 33, { align: "right" });
+        doc.text(`${companyDetails.website}`, 200, 37, { align: "right" });
+    
+        // horizontal line
+        doc.setLineWidth(0.5);
+        doc.line(10, 45, 200, 45);
+
+        // Report details
+        doc.setFontSize(8);
+        doc.text(`Report of Ingredient Usage`, 20, 55);
+        doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
+        doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
+
+        // Add report title
+        doc.setFontSize(12);
+        doc.text(`${type} Ingredient List`, 85, 65);
     
         // Define the table headers
-        let headers = [["Ingredient Name", "Quantity", "Type", "Date"]];
+        let headers = ["Ingredient Name", "Quantity", "Type", "Date"];
 
          // Map IngredientHistory data to table rows
          const data = ingredients.map((ingredient) => [
@@ -135,18 +172,14 @@ const ingredientReport = ({ boardingId }) => {
 
       // Add the table to the PDF document
       doc.autoTable({
-          head: headers,
+          head: [headers],
           body: data,
           styles,
-          margin: { top: 70 },
-          startY: 50
+          margin: { top: 90 },
+          startY: 75
       });
 
-      doc.text("Ingredient Usage List", 85, 40);
-      doc.setFontSize(8);
-      doc.text(`Report of Ingredient Usage List`, 20, 20)
-      doc.text(`Date: ${new Date().toDateString()}`, 20, 24)
-      doc.text(`Owner: ${userInfo.firstName} ${userInfo.lastName}`, 20, 28)
+      
 
       doc.save("Ingredient_Usage.pdf");
           
