@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Container, Form, Button, Row, Col, InputGroup,Image} from 'react-bootstrap';
 import {  Card, CardContent,  InputLabel, Select, MenuItem, FormControl,Backdrop,CircularProgress,List,ListItem,Divider,ListItemText,ListItemAvatar,Avatar,Typography,Badge,Link,Checkbox} from '@mui/material';
 import { NavigateNext, HelpOutlineRounded , Close, AddPhotoAlternate} from '@mui/icons-material';
-import CreateBoardingStyles from '../styles/createBoardingStyles.module.css';
+import CreateBoardingStyles from '../styles/addUtlityStyles.module.css';
 import  BillStyles from '../styles/billStyles.module.css';
 import { toast } from 'react-toastify';
 import { useAddUtilitiesMutation,useGetBoardingMutation,useGetOccupantMutation} from '../slices/utilitiesApiSlice';
@@ -242,8 +242,8 @@ const handleOccupantSelection = (occupantId) => {
               <form onSubmit={handleUtilityFormSubmit}>
                 <Row className='mt-4'>
                   <Col md={6} >
-                    <Card className={CreateBoardingStyles.card}>
-                      <CardContent style={{ padding: '25px' }}>
+                    <Card className={CreateBoardingStyles.card} >
+                      <CardContent style={{ padding: '25px',width:'100%'}} >
                         <div>
                           <Form.Label>Select Boarding Name</Form.Label>
                           <FormControl sx={{ m: 1, width: 300 }}>
@@ -311,7 +311,7 @@ const handleOccupantSelection = (occupantId) => {
                             placeholder="Description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            style={{ width: '50%' }}
+                            style={{ width: '70%' }}
                           />
                         </div>
 
@@ -352,8 +352,8 @@ const handleOccupantSelection = (occupantId) => {
                     </Card>
                   </Col>
                   <Col md={6}>
-                    <Card className={CreateBoardingStyles.card}>
-                      <CardContent style={{ padding: '25px' }}>
+                    <Card className={CreateBoardingStyles.card} style ={{width:'70%'}}>
+                      <CardContent style={{ padding: '15px' }}>
                         <div>
                           <Form.Label>Select Occupants:</Form.Label>
                           <div style={{ display: 'flex', flexDirection: 'column', height: '100px', overflow: 'auto' }}>
@@ -375,7 +375,7 @@ const handleOccupantSelection = (occupantId) => {
                   </Col>
                 </Row>
                 <Row style={{ marginTop: '20px' }}>
-                  <Col>
+                  <Col >
                     <Button type="submit" className={CreateBoardingStyles.submitBtn} variant="contained">
                       Submit
                     </Button>
