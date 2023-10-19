@@ -376,7 +376,7 @@ const handleUtilityFormSubmit = async (event) => {
                  </Card>
                 </Col>
                 <Col md={6}>
-                    <Card className={CreateBoardingStyles.card}>
+                    <Card className={CreateBoardingStyles.card}  style={{ width: '70%' }}>
                       <CardContent style={{ padding: '25px' }}>
                         <div>
                           <Form.Label>Select Occupants:</Form.Label>
