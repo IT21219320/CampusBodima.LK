@@ -331,7 +331,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email, userType: req.body.userType});
 
     if(user){
-        user.image = req.body.image || user.image;
+        user.image = req.body.image;
         user.firstName = req.body.firstName || user.firstName;
         user.lastName = req.body.lastName || user.lastName;
         user.phoneNo = req.body.phoneNo || user.phoneNo;
