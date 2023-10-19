@@ -11,8 +11,9 @@ import storage from "../utils/firebaseConfig";
 import { ref, getDownloadURL } from "firebase/storage";
 import defaultImage from '/images/defaultImage.png';
 import { Link as CustomLink } from "react-router-dom";
-import ownerStyles from '../styles/ownerStyles.module.css';
+import ownerStyles from '../styles/billStyles.module.css';
 import BillStyles from '../styles/billStyles.module.css';
+import { AlignHorizontalCenter } from "@mui/icons-material";
 
 
 
@@ -126,8 +127,8 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
     };
     return (
         <>
-            <Row className="d-flex justify-content-center">
-                <Row style={{ minHeight: 'calc(100vh - 240px)' }}>
+            <Row className="d-flex justify-content-center"style={{ minHeight: 'calc(100vh - 240px)' }}>
+               
                     <Row>
                         <Col>
                                             <div style={{ marginBottom: '10px', textAlign: 'left', color:'darkslategray' }}>
@@ -139,8 +140,8 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                             </div>
                             </Col>
                             <Col>
-                            <Form.Group controlId="searchQuery" style={{ maxWidth: '300px' }}>
-                             <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Form.Group controlId="searchQuery" style={{ maxWidth: '300px',alignSelf:'right' }}>
+                             <div style={{ display: 'flex', alignItems: 'right' }}>
                             <Form.Control
                                 type="text"
                                 placeholder="Search…"
@@ -155,17 +156,19 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                             </Col>
                             
                             </Row>
-                    <Col>
+                    
+                          <Row className="justify-content-center">
                         {isLoading || loading ? (
                             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <CircularProgress />
                             </div>
                         ) : (utilities && utilities.length !== 0 ? (
                             utilities.map((utility, index) => (
-                                <Card className={`${ownerStyles.card} mt-4`} key={utility._id} >
+                                <Card className={`${ownerStyles.card} mt-4`} key={utility._id}  >
                                     <CardContent className={ownerStyles.cardContent}>
+                                        <Col lg={12}>
                                         <Row>
-                                            <Col lg={4}>
+                                            <Col lg={3}>
                                                 <Image
                                                     src={utility.utilityImage[0] || defaultImage}
                                                     onError={(e) => { e.target.src = defaultImage }}
@@ -173,7 +176,11 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                                     fluid
                                                 />
                                             </Col>
-                                            <Col lg={8}>
+                                            
+                                            <Col>
+                                            <Row>
+                                            <Col lg={4}>
+                                        
                                                 <Row>
                                                     <p><b>Amount:</b> Rs. {utility.amount} .00</p>
                                                 </Row>
@@ -182,17 +189,28 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                                     <p><b>Month:</b> {utility.month}</p>
                                                 
                                                 </Row>
+                                                <Row lg={4}>
+                                                    <Col lg={4}>
+                                                <p><b>Description:</b> {utility.description}</p>
+                                                </Col>
+                                                </Row>
+                                                </Col>
+                                                <Col lg={5}>
 
                                                 {utility.occupant ? 
                                                 <Row>
-                                                    <p><b>Occupant: </b>
-                                                {utility.occupant.map((occup,index) => (
-                                                        <span key={index}>{occup.firstName}{index != utility.occupant.length - 1 ? ', ' : ''}</span>
-                                                ))}
+                                                <p><b>Occupant: </b>
+                                                    {utility.occupant.length === 0 ? "No occupants" : (
+                                                        utility.occupant.map((occup, index) => (
+                                                            <span key={index}>{occup.firstName}{index !== utility.occupant.length - 1 ? ', ' : ''}</span>
+                                                        ))
+                                                    )}
+                                                    {console.log('Utility.occupant:', utility.occupant)}
                                                 </p>
-                                                </Row>
+                                            </Row>
+                                            
                                                 : ''}
-                                                <Row>
+                                                
                                                 <Row>
                                                                 <p>
                                                                     <b>No of occupants:</b> {utility.occupant.length}{" "}
@@ -201,17 +219,19 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                                             </Row>
 
                                                                                                                                     <Row>
-                                                                            {utility.perCost !== null && (
+                                                                            {utility.perCost !== null && typeof utility.perCost !== 'undefined' &&(
                                                                                 <p><b>Per Occupant Cost:</b> Rs. {utility.perCost.toFixed(2)}</p>
                                                                             )}
                                                                         </Row>
-
+                                                                        </Col>
+                                                                        
+                                                                        </Row>
 
                                                             
 
-                                                    <Col>
-                                                        <p><b>Description:</b> {utility.description}</p>
-                                                    </Col>
+                                                    
+                                                        
+                                                    <Row>
                                                     <Col>
                                                         <Row>
                                                             <Col>
@@ -231,17 +251,21 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                                             </Col>
                                                         </Row>
                                                     </Col>
+                                                    </Row>
+                                                    </Col>
                                                 </Row>
-                                            </Col>
-                                        </Row>
+                                               </Col>
+                                            
+                                        
                                     </CardContent>
                                 </Card>
                             ))
                         ) : <div style={{height:'100%', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
                         <h2>You don't have any Bills!</h2>
                     </div>)}
-                    </Col>
-                </Row>
+                    
+                </Row>                    
+                
                 {totalPages > 1 && (
                     <Row>
                         <Col className="mt-3">
@@ -249,7 +273,11 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                         </Col>
                     </Row>
                 )}
-            </Row>
+                
+                </Row>
+        
+        
+            
         </>
     );
 };
