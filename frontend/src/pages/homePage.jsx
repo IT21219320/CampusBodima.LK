@@ -4,18 +4,23 @@ import homeStyles from '../styles/homePageStyles.module.css'
 const HomePage = () => {
     return (
         <>
-            <div style={{width:'100%'}}>
+            <div style={{ width: '100%' }}>
                 <Header />
-                <div style={{minHeight:'100vh', height:'200vh'}}>
+                <div style={{ minHeight: '100vh', height: '200vh' }}>
                     <div className={homeStyles.homeBackDiv}>
-                        <img src={'homePageBackground.jpg'} width={"100%"} height={'600px'}/>
+                        <img src={'homePageBackground.jpg'} width={"100%"} height={'600px'} />
                     </div>
-                    <div style={{backgroundColor:'black', opacity:'50%'}}>
+                    <div className={homeStyles.homeDarkDiv}>
 
                     </div>
-                    <Col >
-                        <h1>Welcome</h1>
-                    </Col>
+                    <div style={{height:'600px',width: "100%",position: 'absolute'}}>
+                        <Col className={homeStyles.homeWelcText}>
+                            <h1>Welcome to <span style={{ fontFamily: 'Papyrus' }}>CampusBodima.LK</span></h1>
+                        </Col>
+                    </div>
+                    <div  className={homeStyles.servicesDiv}>
+
+                    </div>
                 </div>
             </div>
         </>
