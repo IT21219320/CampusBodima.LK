@@ -20,21 +20,24 @@ const AllFeedbacks = () => {
 
 
   const [feedbacks, setFeedbacks] = useState([]);
-  const [filteredFeedbacks, setFilteredFeedbacks] = useState([]);
-  const [category, setCategory] = useState('all');
+  //const [filteredFeedbacks, setFilteredFeedbacks] = useState([]);
+  //const [category, setCategory] = useState('all');
+  const [rating, setRating] = useState('all');
   const { userInfo } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [deleteFeedbacks, setDeleteFeedbacks] = useState('');
   const [getAllFeedbacks, { isLoading }] = useGetAllFeedbacksMutation();
   const [deleteFeedback, { isLoading2 }] = useDeleteFeedbackMutation();
   const [searchQuery, setSearchQuery] = useState('');
+  const ratings = ['all', '0', '1', '2', '3', '4','5'];
+
 
 
   const loadFeedbackData = async () => {
     try {
       const res = await getAllFeedbacks().unwrap();
       setFeedbacks(res.feedback);
-      setFilteredFeedbacks(res.feedback);
+      filteredFeedbacks(res.feedback);
     } catch (error) {
       console.error(error);
     }
@@ -45,24 +48,24 @@ const AllFeedbacks = () => {
 
   useEffect(() => {
     loadFeedbackData();
-  }, [searchQuery,deleteFeedbacks]);
+  }, [ userInfo._id,searchQuery,deleteFeedbacks]);
 
   const handleClose = () => setShow(false);
 
-  useEffect(() => {
-    filterFeedbacksByCategory();
-  }, [category]);
+ 
 
-  const filterFeedbacksByCategory = () => {
-    if (category === 'all') {
-      setFilteredFeedbacks(feedbacks);
-    } else {
-      const filtered = feedbacks.filter((feedback) => feedback.category === category);
-      setFilteredFeedbacks(filtered);
-    }
-  };
+  
 
   const handleShow = () => setShow(true);
+
+
+  const filteredFeedbacks = feedbacks.filter((feedback) => {
+    if (rating === 'all') {
+      return true; // Show all feedbacks
+    } else {
+      return parseInt(feedback.rating) === parseInt(rating);
+    }
+  });
 
 
   const handleDeleteFeedback = async (feedbackId) => {setShow(false)
@@ -86,41 +89,82 @@ const AllFeedbacks = () => {
     // Create a new jsPDF instance
     const doc = new jsPDF();
 
-    // Define the table headers
-    const headers = [[ "Ticket Id","Category","Description","Ratings"]];
+    // company details
+    const companyDetails = {
+      name: "CampusBodima",
+      address: "138/K, Ihala Yagoda, Gampaha",
+      phone: "071-588-6675",
+      email: "info.campusbodima@gmail.com",
+      website: "www.campusbodima.com"
+    };
+
+    // logo
+    doc.addImage("/logo2.png", "PNG", 10, 10, 50, 30);
+
+    // Show company details
+    doc.setFontSize(15);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${companyDetails.name}`, 200, 20, { align: "right", style: "bold" });
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${companyDetails.address}`, 200, 25, { align: "right" });
+    doc.text(`${companyDetails.phone}`, 200, 29, { align: "right" });
+    doc.text(`${companyDetails.email}`, 200, 33, { align: "right" });
+    doc.text(`${companyDetails.website}`, 200, 37, { align: "right" });
+
+    // horizontal line
+    doc.setLineWidth(0.5);
+    doc.line(10, 45, 200, 45);
+
+    // Report details
+    doc.setFontSize(8);
+    doc.text(`Report of Feedbacks List`, 20, 55);
+    doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
+    doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
+
+
+    // Add report title
+    doc.setFontSize(12);
+    doc.text("Feedbacks List", 85, 65);
+
+
+    // table headers
+    let headers = ["Boarding Name","Discription","Number of Rating"];
 
     // Map the admin data to table rows
 
     const data = feedbacks.map((feedback) => [
-      feedback.ticketId,
-      feedback.category,
+      feedback.boardingId.boardingName,
       feedback.description,
       feedback.rating,
      
       new Date(feedback.createdAt).toLocaleString('en-GB')
     ]);
 
-    // Set the table styles
+
+    // table styles
     const styles = {
       halign: "center",
       valign: "middle",
-      fontSize: 10,
+      fontSize: 9,
     };
 
     // Add the table to the PDF document
-    doc.autoTable({
-      head: headers,
-      body: data,
-      styles,
-      margin: { top: 70 },
-      startY: 20
-    });
+        doc.autoTable({
+            head: [headers],
+            body: data,
+            styles,
+            margin: { top: 90 },
+            startY: 75
+        });
+    
 
     
 
-    doc.text("Feedback List", 90, 10);
-    doc.setFontSize(9);
+    
 
+    
+    // Save the PDF
     doc.save("Feedbacks.pdf");
 
 };
@@ -181,25 +225,38 @@ const AllFeedbacks = () => {
 
           <Row>
                 <Col style={{textAlign:'right'}}>
-                    <Button variant="contained" style={{marginRight:'10px', background:'#4c4c4cb5'}} onClick={exportToPDF}>Export<GetAppRounded /></Button>
+                    <Button variant="contained" style={{marginRight:'10px', background:'#4c4c4cb5'}} onClick={exportToPDF}>Report<GetAppRounded /></Button>
                 </Col>
           </Row>
 
           <Row style={{ marginTop: '30px' }}>
             <Col>
             <form  className={occupantFeedbackStyles.form}>
-              <FormControl  style={{Width:'20px'}}>
-                <InputLabel>Short by</InputLabel>
-                <Select
-                  value={category}
-                  label="category"
-                  onChange={(event) => setCategory(event.target.value)}
-                >
-                  <MenuItem value={'all'}>All</MenuItem>
-                  <MenuItem value={'hostal'}>Hostal</MenuItem>
-                  <MenuItem value={'anex'}>Anex</MenuItem>
-                </Select>
-              </FormControl>
+            <FormControl  style={{Width:'20px'}}>
+
+<Row style={{marginTop:'20px'}}>
+  <Col><div style={{border: '1px solid #00000066', padding:'15px'}}>Short By: </div></Col>
+  <Col>
+      <Box sx={{ minWidth: 120 }}>
+          <FormControl fullWidth>
+               <InputLabel >Rating</InputLabel>
+                  <Select
+                    value={rating}
+                    label="Rating"
+                    onChange={(event) => setRating(event.target.value)}
+                    >
+                    {ratings.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option === 'all' ? 'All' : option}
+                      </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+              </Box>
+          </Col>
+          
+          </Row>
+        </FormControl>
             </form>
             </Col>
           </Row>
@@ -210,10 +267,10 @@ const AllFeedbacks = () => {
             <Table striped bordered hover>
                 <thead>
                   <tr style={{ textAlign: 'center', backgroundColor: 'black' }}>
-                    <th>Category</th>
-                    <th>Feedback Details</th>
-                    <th>Number of Star Rating</th>
-                    <th>Options</th>
+                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Boarding Name</th>
+                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Feedback Details</th>
+                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Number of Star Rating</th>
+                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Options</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -224,15 +281,15 @@ const AllFeedbacks = () => {
                   ) : filteredFeedbacks && filteredFeedbacks.length > 0 ? (
                     filteredFeedbacks.map((feedback, index) => (
                       <tr key={index}>
-                        <td>{feedback.category}</td>
+                        <td>{feedback.boardingId.boardingName}</td>
                         <td>{feedback.description}</td>
                         <td><Rating name="read-only" value={parseInt(feedback.rating)} readOnly /></td>
-                        <td>
+                        <td style={{ textAlign: 'center' }}> 
                         
                         
                         <Button
-                            className="mt-4 mb-4 me-3" style={{ float: 'right' ,
-                             background: 'red', color: 'black', marginLeft: '10px',variant:"contained" }}
+                            className="mt-4 mb-4 me-3" style={{ float: 'center' ,
+                             background: 'red', color: 'black', variant:"contained" }}
                             onClick={handleShow }
                           >
                             <DeleteIcon /> Delete

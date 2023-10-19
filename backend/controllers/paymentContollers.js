@@ -30,7 +30,7 @@ const getPublichkey = expressAsyncHandler(async (req, res) => {
 
 const makePayment = expressAsyncHandler(async (req, res) => {
 
-  const { userInfo_id, bId, des, amount } = req.body;
+  const { userInfo_id, bId, des, amount, month } = req.body;
 
   const user = await User.findById(userInfo_id);
 
@@ -48,6 +48,7 @@ const makePayment = expressAsyncHandler(async (req, res) => {
       paymentType: "Card",
       amount: amount,
       description: des,
+      payableMonth:  month,
       boarding: boarding,
       credited: amount,
     })
@@ -71,6 +72,7 @@ const makePayment = expressAsyncHandler(async (req, res) => {
       paymentType: "Card",
       amount: amount,
       description: des,
+      payableMonth:  month,
       boarding: boarding,
       room: roomT,
       credited: amount,
@@ -90,16 +92,24 @@ const makePayment = expressAsyncHandler(async (req, res) => {
 })
 
 const getPaymentsByUserID = expressAsyncHandler(async (req, res) => {
-  const {userInfo_id, oId} = req.body;
+  const {userInfo_id, oId, month} = req.body;
   const user = await User.findById(userInfo_id);
   
   
   let payments
   if(oId){
-    payments = await payment.find({ "occupant._id": userInfo_id,amount:{ $regex: oId } });
-  }else{
+    if(month){
+      payments = await payment.find({ "occupant._id": userInfo_id,amount:{ $regex: oId }, payableMonth:month });
+    }else{
+      payments = await payment.find({ "occupant._id": userInfo_id,amount:{ $regex: oId } });
+    }
+    }else{
+      if(month){
+        payments = await payment.find({ "occupant._id": userInfo_id, payableMonth:month });
+      }else{
+        payments = await payment.find({ "occupant._id": userInfo_id });
+      }
     
-    payments = await payment.find({ "occupant._id": userInfo_id });
     
   }
   
@@ -280,10 +290,44 @@ const getToDoPaymentsByUser = expressAsyncHandler(async (req, res) => {
 
 })
 
+const getAllToDoPaymentsByUser = expressAsyncHandler(async (req, res) => {
+  const { userInfo_id } = req.body;
+  try {
+    const response = await toDoPayment.find({ occupant: userInfo_id });
+    if (response) {
+      res.status(200).json(
+        response
+      )
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+
+})
+
+const getToDoPaymentById = expressAsyncHandler(async (req, res) => {
+  const { id } = req.body;
+  
+  try {
+    const response = await toDoPayment.findById(id);
+    if (response) {
+      res.status(200).json(
+        response
+      )
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+
+})
+
 const changeStatus = expressAsyncHandler(async (req, res) => {
   const payId = req.body.payId;
-  
+  console.log(payId);
   const payRes = await toDoPayment.findById(payId);
+  console.log(payRes);
   payRes.status = 'paid';
   await payRes.save();
   if(payRes){
@@ -391,4 +435,4 @@ const getWebHook = expressAsyncHandler(async (req, res) => {
 })
 
 
-export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser, getMyReservation, changeStatus, changeReservationPaidStatus };
+export { getIntent, getPath, getPublichkey, getWebHook, makePayment, getPaymentsByUserID, getPaymentsByOwnerID, calcMonthlyPayment, getToDoPaymentsByUserCMonth, getToDoPaymentsByUser, getMyReservation, changeStatus, changeReservationPaidStatus, getToDoPaymentById, getAllToDoPaymentsByUser };

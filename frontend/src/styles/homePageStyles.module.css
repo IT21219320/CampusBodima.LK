@@ -1,0 +1,33 @@
+.homeBackDiv{
+    
+    background-repeat: no-repeat;
+    width: calc(100% - 6px);
+    position: absolute;
+    /*top: 84px;*/
+    position: fixed;
+}
+
+.homeDarkDiv{
+    background-color: black;
+    opacity: 0.5;
+    height: 600px;
+    position: absolute;
+    width: 100%;
+    /*top: 85px;*/
+    position: fixed;
+}
+
+.homeWelcText{
+    position: absolute;
+    top: 209px;
+    color: white;
+    margin-left: 10%;
+}
+
+.servicesDiv{
+    height: 500px;
+    background-color: white;
+    position: absolute;
+    top: 600px;
+    width: 100%;
+}

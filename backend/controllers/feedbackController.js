@@ -152,23 +152,36 @@ const getFeedbackByUserId = asyncHandler(async (req, res) => {
 
 
   const getAllFeedbacks = asyncHandler(async (req, res) => {
-
-    const { } = req.query;
+    const { searchQuery } = req.query;
     
-  
     try {
-      const feedback = await Feedback.find({});
-  
-      if (feedback) {
-        res.status(200).json({ feedback });
-      } else {
-        res.status(404).json({ error: 'Feedback not found' });
-      }
+        let feedback;
+
+        if (searchQuery) {
+            // If search query is provided, perform a search based on it
+            feedback = await Feedback.find({
+                $or: [
+                    { field1: { $regex: new RegExp(searchQuery, 'i') } }, // Replace field1 with the actual field you want to search
+                    { field2: { $regex: new RegExp(searchQuery, 'i') } }, // Replace field2 with another field if needed
+                    // Add more fields as necessary for your search
+                ]
+            }).populate('boardingId');
+        } else {
+            // If no search query, fetch all feedbacks
+            feedback = await Feedback.find({}).populate('boardingId');
+        }
+
+        if (feedback && feedback.length > 0) {
+            res.status(200).json({ feedback });
+        } else {
+            res.status(404).json({ error: 'Feedback not found' });
+        }
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Failed to fetch feedback.' });
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch feedback.' });
     }
-  });
+});
+
 
  
   

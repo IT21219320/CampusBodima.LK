@@ -159,6 +159,25 @@ const getOwnerBoarding = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Get  Boardings of particular Manager
+// route    GET /api/ingredient/manager/:managerId
+// @access  Private - Manager
+const getManagerBoarding = asyncHandler(async (req, res) => {
+  const managerId = req.params.managerId;
+  
+  const boardings = await Boarding.find({ inventoryManager: managerId});
+  
+  if(boardings){
+      res.status(200).json({
+          boardings, 
+      })
+  }
+  else{
+      res.status(400);
+      throw new Error("No Boardings Available")
+  }
+});
+
 // @desc    Get Ingredients for Update
 // route    GET /api/ingredient/owner/update/:boardingId/:ingredientId
 // @access  Private - Owner
@@ -563,5 +582,6 @@ export {
     increaseIngredientQuantity,
     reduceIngredientQuantity,
     getIngredientHistoy,
-    addKitchenUser    
+    addKitchenUser,
+    getManagerBoarding    
 };

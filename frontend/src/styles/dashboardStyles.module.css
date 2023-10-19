@@ -22,3 +22,7 @@
     flex-direction: column;
     padding: 50px 50px 30px 50px !important;
 }
+
+.compact{
+    padding: 22px 50px 22px 50px !important;
+}

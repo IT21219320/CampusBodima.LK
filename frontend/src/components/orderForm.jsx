@@ -11,7 +11,9 @@ import { useCreateOrderMutation } from '../slices/orderApiSlice';
 import orderStyles from '../styles/orderStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import formStyle from '../styles/formStyle.module.css';
-import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
+import ViewMenu from "../components/menuView";
+import MenuView from './menuoccupant';
+
 
 const OrderForm = () => {
   const [product, setProduct]=useState('')
@@ -143,7 +145,33 @@ const OrderForm = () => {
       </div>
     );
   };
-  
+  const renderProductDropdown =()=>{
+    return(
+      <Row>
+      <InputLabel id="demo-simple-select-standard-label">
+      Product
+    </InputLabel>
+              <Select
+                labelId="demo-simple-select-standard-label"
+                value={product}
+                onChange={(e) => setProduct(e.target.value)}
+                required
+                style={{border: '1px solid #ccc',
+                  borderRadius: '5px',
+                  marginTop: '10px',
+                }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value="3">Fried Rice</MenuItem>
+                <MenuItem value="6">Rice & Curry</MenuItem>
+                <MenuItem value="12">Noodles</MenuItem>
+                <MenuItem value="24">Hoppers</MenuItem>
+              </Select>
+              </Row>
+    )
+  }
   
   const renderFoodTypeDropdown = () => {
     if (product === '3' || product === '6') {
@@ -158,8 +186,6 @@ const OrderForm = () => {
               onChange={(e) => setFoodType(e.target.value )}
               required
               style={{
-                width: '100%',
-                padding: '10px',
                 border: '1px solid #ccc',
                 borderRadius: '5px',
                 marginTop: '10px',
@@ -187,8 +213,6 @@ const OrderForm = () => {
               onChange={(e) => setFoodType(e.target.value )}
               required
               style={{
-                width: '100%',
-                padding: '10px',
                 border: '1px solid #ccc',
                 borderRadius: '5px',
                 marginTop: '10px',
@@ -215,8 +239,6 @@ const OrderForm = () => {
               onChange={(e) => setFoodType(e.target.value )}
               required
               style={{
-                width: '97%',
-                padding: '10px',
                 border: '1px solid #ccc',
                 borderRadius: '5px',
                 marginTop: '10px',
@@ -236,120 +258,102 @@ const OrderForm = () => {
 
   
 
-  return (<>
-    
-    <Row>
-      <Col>
-      <div>
-      <div className={orderStyles.card}>
-       <h3>Food Menu</h3>
-      </div>
-      <FoodMenu />
-    </div>
-      </Col>
-      
-      <Col>
-      <div className={orderStyles.card}>
-        <h3>Place Order</h3>
-        </div>
-    <div className="order-box">
-      <div className="order-form-container">
-      
-    <form onSubmit={submitHandler} className={formStyle.form} >
-      <Row className={dashboardStyles.durationRaw}>
-        
-      <InputLabel
-  id="demo-simple-select-standard-label"
-  style={{
-    fontSize: '16px',
-    fontWeight: 'bold',
-  }}
->
-  Product
-</InputLabel>
-<Select
-  labelId="demo-simple-select-standard-label"
-  value={product}
-  onChange={(e) => setProduct(e.target.value)}
-  required
-  style={{
-    width: '94%',
-    padding: '10px',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-    marginTop: '10px',
-  }}
->
-  <MenuItem value="">
-    <em>None</em>
-  </MenuItem>
-  <MenuItem value="3">Fried Rice</MenuItem>
-  <MenuItem value="6">Rice & Curry</MenuItem>
-  <MenuItem value="12">Noodles</MenuItem>
-  <MenuItem value="24">Hoppers</MenuItem>
-</Select>
+  return (
+    <>
+      <Row>
+        <Col>
+          <div>
+            <div className={orderStyles.card}>
+              <h3>Food Menu</h3>
+            </div>
+            <MenuView />
+          </div>
+        </Col>
+        <Col>
+          <div className={orderStyles.card}>
+            <h3>Place Order</h3>
+          </div>
+          <div className="order-box">
+            <div className="order-form-container">
+              <form onSubmit={submitHandler} className={formStyle.form}>
+                <Row className={dashboardStyles.durationRaw}>
+                  {/* Left side with InputLabels */}
+                  <Col md={4}>
+                    
+                    {renderProductDropdown()}
+                    {renderFoodTypeDropdown()}
+                  </Col>
 
-        
-      
-
-      {renderFoodTypeDropdown()}
+                  {/* Right side with other form elements */}
+                  <Col md={8}>
+                    <input
+                      type="number"
+                      placeholder="Quantity"
+                      value={quantity}
+                      style={{
+                        padding: '5px',
+                        width: '100px',
+                        border: '1px solid #ccc',
+                        borderRadius: '5px',
+                        margin: '10px 170px auto',
+                      }}
+                      onChange={handleQuantityChange}
+                      required
+                    />
+                    {/* Display the calculated price */}
+                    <div
+                      style={{
+                        padding: '5px',
+                        width: '100px',
+                        border: '1px solid #ccc',
+                        borderRadius: '5px',
+                        margin: '10px auto',
+                      }}
+                    >
+                      Unit Price: {calculatePrice()}
+                    </div>
+                    {/* Display the total by multiplying quantity by price */}
+                    <div
+                      style={{
+                        padding: '5px',
+                        width: '100px',
+                        border: '1px solid #ccc',
+                        borderRadius: '5px',
+                        margin: '10px auto',
+                      }}
+                    >
+                      Total: {total}
+                    </div>
+                    <div
+                      style={{
+                        padding: '5px',
+                        width: '100px',
+                        border: '1px solid #ccc',
+                        borderRadius: '5px',
+                        margin: '10px auto',
+                      }}
+                    >
+                      Order No: {orderNo}
+                    </div>
+                    <LoadingButton
+                      type="submit"
+                      loading={isLoading}
+                      variant="contained"
+                      color="primary"
+                      style={{ width: '70%' }}
+                    >
+                      {isLoading ? 'Creating Order...' : 'Create Order'}
+                    </LoadingButton>
+                    {isError && <div>Error: {error.message}</div>}
+                  </Col>
+                </Row>
+              </form>
+            </div>
+          </div>
+        </Col>
       </Row>
-      <p></p>
-      <input
-        type="number"
-        placeholder="Quantity"
-        value={quantity}
-        style={{
-          padding: '5px',
-          width: '15%',
-          border: '1px solid #ccc',
-          borderRadius: '5px',
-          margin: '10px auto',
-        }}
-        onChange={handleQuantityChange}
-        required
-      />
-      {/* Display the calculated price */}
-      <div style={{
-          padding: '5px',
-          width: '15%',
-          border: '1px solid #ccc',
-          borderRadius: '5px',
-          margin: '10px auto',
-        }}>Unit Price: {calculatePrice()}</div>
-      
-      {/* Display the total by multiplying quantity by price */}
-      <div style={{
-          padding: '5px',
-          width: '15%',
-          border: '1px solid #ccc',
-          borderRadius: '5px',
-          margin: '10px auto',
-        }}>Total: {total}</div>
-      <div style={{
-          padding: '5px',
-          width: '15%',
-          border: '1px solid #ccc',
-          borderRadius: '5px',
-          margin: '10px auto',
-        }}>Order No: {orderNo}</div>
-      <LoadingButton 
-      type="submit" 
-      loading={isLoading} 
-      variant="contained"
-      color="primary"
-      >
-        {isLoading ? 'Creating Order...' : 'Create Order'}
-      </LoadingButton>
-      {isError && <div>Error: {error.message}</div>}
-    </form>
-    </div>
-    </div>
-    </Col>
-    </Row>
     </>
   );
-  
 };
 
 export default OrderForm; 

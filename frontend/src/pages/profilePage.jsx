@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo, clearUserInfo } from "../slices/authSlice";
-import { useLogoutMutation, useUpdateUserMutation } from '../slices/usersApiSlice';
+import { useGenerateSMSOTPMutation, useLogoutMutation, useUpdateUserMutation, useVerifySMSOTPMutation } from '../slices/usersApiSlice';
 import { ImageToBase64 } from "../utils/ImageToBase64";
 import { StringToAvatar } from "../utils/StringToAvatar";
 import { toast } from 'react-toastify';
-import { Breadcrumbs, Typography, Link, Grid, Card, CardContent, Avatar, Badge, Fade, Button, Stack, List, Divider } from '@mui/material';
-import { Container, Form, Row, Col } from 'react-bootstrap';
+import { Breadcrumbs, Typography, Link, Grid, Card, CardContent, Avatar, Badge, Fade, Button, Stack, List, Divider, IconButton, Modal, Box } from '@mui/material';
+import { MuiOtpInput } from 'mui-one-time-password-input'
+import { Container, Form, Row, Col, InputGroup } from 'react-bootstrap';
+import { Check, Sync, Close} from '@mui/icons-material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
@@ -20,6 +22,8 @@ import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 
 const ProfilePage = () => {
+    const { userInfo } = useSelector((state) => state.auth);
+
     const [email, setEmail] = useState('');
     const [accType, setAccType] = useState('');
     const [imagePath, setImagePath] = useState('');
@@ -32,18 +36,35 @@ const ProfilePage = () => {
     const [updateUserInfo, setUpdateUserInfo] = useState();
     const [userType, setUserType] = useState('');
     const [gender, setGender] = useState('');
-    const [phoneNo, setPhoneNo] = useState('');
     const [totalPayable, setTotalPayable] = useState('');
+    const [phoneNo, setPhoneNo] = useState(userInfo.phoneNo ? userInfo.phoneNo : '');
+    const [bankAccNo, setBankAccNo] = useState(userInfo.bankAccNo ? userInfo.bankAccNo : '');
+    const [bankAccName, setBankAccName] = useState(userInfo.bankAccName ? userInfo.bankAccName : '');
+    const [bankName, setBankName] = useState(userInfo.bankName ? userInfo.bankName : '');
+    const [bankBranch, setBankBranch] = useState(userInfo.bankBranch ? userInfo.bankBranch : '');    
+    const [modalOpen, setModalOpen] = useState(false);        
+    const [otp, setOTP] = useState('');    
     
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const [update, {isLoading}] = useUpdateUserMutation();
     const [ logout ] = useLogoutMutation();
+    const [generateSMSOTP, {isLoading1}] = useGenerateSMSOTPMutation();
+    const [verifySMSOTP, {isLoading2}] = useVerifySMSOTPMutation();
 
-    const { userInfo } = useSelector((state) => state.auth);
-
-    console.log(userInfo);
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 500,
+        bgcolor: 'background.paper',
+        borderRadius: '5px',
+        boxShadow: 24,
+        p: 4,
+        textAlign:'center'
+    };
 
     useEffect(() => {
         setEmail(userInfo.email);
@@ -82,6 +103,21 @@ const ProfilePage = () => {
 
     const viewProfile = () => {
         setViewUserInfo(true);
+        setEmail(userInfo.email);
+        setAccType(userInfo.accType);
+        setImage(userInfo.image);
+        setImagePath(userInfo.image);
+        setFirstName(userInfo.firstName);
+        setLastName(userInfo.lastName);
+        setUserType(userInfo.userType);
+        setPhoneNo(userInfo.phoneNo);
+        setGender(userInfo.gender);
+        setTotalPayable(userInfo.totalPayable);
+        setPhoneNo(userInfo.phoneNo ? userInfo.phoneNo : '');
+        setBankAccNo(userInfo.bankAccNo ? userInfo.bankAccNo : '');
+        setBankAccName(userInfo.bankAccName ? userInfo.bankAccName : '');
+        setBankName(userInfo.bankName ? userInfo.bankName : '');
+        setBankBranch(userInfo.bankBranch ? userInfo.bankBranch : '');
         document.getElementById('viewUser').style.display = 'flex';
         document.getElementById('updateUser').style.display = 'none';
         setUpdateUserInfo(false);
@@ -93,6 +129,37 @@ const ProfilePage = () => {
         const data = await ImageToBase64(e.target.files[0]);
         setImage(data);
 
+    }
+
+    const sendOTP = async() => {
+        const _id = userInfo._id;
+        if(phoneNo == null || phoneNo == ''){
+            toast.error("Enter Phone Number to Verify")
+        } 
+        else if(phoneNo.length != 9){
+            toast.error("Enter a valid Phone Number")
+        }
+        else{
+            try {
+                const res = await generateSMSOTP({ _id, phoneNo }).unwrap();
+                toast.success("OTP Sent");
+                setModalOpen(true);
+            } catch (err) {
+                toast.error(err);
+            }       
+        }
+    }
+
+    const verifyOTP = async() => {
+        const _id = userInfo._id;
+        try {
+            const res = await verifySMSOTP({ _id, otp, phoneNo }).unwrap();
+            dispatch(setUserInfo({...res})); 
+            toast.success('Your phone number is verified!');
+            setModalOpen(false);
+        } catch (err) {
+            toast.error(err.data?.message || err.error);
+        }
     }
     
     const submitHandler = async (e) => {
@@ -107,7 +174,7 @@ const ProfilePage = () => {
                 setPassword(userInfo.password);
             }
             try {
-                const res = await update({ email, image, firstName, lastName, password, userType, phoneNo, gender }).unwrap();
+                const res = await update({ email, image, firstName, lastName, password, userType, phoneNo, gender, bankAccNo, bankAccName, bankName, bankBranch }).unwrap();
                 dispatch(setUserInfo({...res}));
                 toast.success('Profile Updated');
                 navigate('/profile');
@@ -179,7 +246,7 @@ const ProfilePage = () => {
                             </Col>
                             <Col className="mb-3" xs={12} md={8}>
                                 <Card>
-                                    <CardContent className={dashboardStyles.cardContent}>
+                                    <CardContent className={`${dashboardStyles.cardContent} ${dashboardStyles.compact}`}>
                                         <List sx={{width:'100%'}} component="nav">
                                             <Row className='py-3'>
                                                 <Col>
@@ -226,15 +293,105 @@ const ProfilePage = () => {
                                                 </Col>
                                             </Row>
                                             <Divider sx={{borderColor:'initial'}}/>
-                                            <Row className='py-3'>
+                                        </List>
+                                    </CardContent>
+                                </Card>
+                            </Col>
+                            
+                            <Col className="mb-3" xs={12} md={12}>
+                                <Card>
+                                    <CardContent className={`${dashboardStyles.cardContent} ${dashboardStyles.compact}`}>                                        
+                                        <List sx={{width:'100%'}} component="nav">
+                                            <Row style={{marginTop:'20px'}}>
                                                 <Col>
-                                                    <b>Phone No</b>
-                                                </Col>
-                                                <Col>
-                                                    {phoneNo}
+                                                    <p>
+                                                        <b>Bank Details</b>
+                                                    </p>
                                                 </Col>
                                             </Row>
-                                            <Divider sx={{borderColor:'initial'}}/>
+                                            <Row style={{marginBottom:'10px'}}>
+                                                <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
+                                                    <Row>
+                                                        <Col style={{height:'100%'}} xs={12} md={4}>
+                                                            <Form.Label style={{margin:0}}>Bank Account No.<span style={{color:'red'}}>*</span></Form.Label>
+                                                        </Col>
+                                                        <Col style={{height:'100%'}} xs={12} md={8}>
+                                                            <Form.Control type="string" minLength={6} maxLength={16} pattern="^[0-9]*$" placeholder="01234565345" value={bankAccNo} onChange={ (e) => setBankAccNo(e.target.value)} required disabled={userInfo.bankAccNo ? true : false} style={{width:'95%'}} />
+                                                        </Col>
+                                                    </Row>
+                                                    <Row style={{marginTop:'10px'}}>
+                                                        <Col style={{height:'100%'}} xs={12} md={4}>
+                                                            <Form.Label style={{margin:0}}>
+                                                                Account Holder Name<span style={{color:'red'}}>*</span> 
+                                                            </Form.Label>
+                                                        </Col>
+                                                        <Col style={{height:'100%'}} xs={12} md={8}>
+                                                            <Form.Control type="text" placeholder="James Bond" value={bankAccName} onChange={ (e) => setBankAccName(e.target.value)} required disabled={userInfo.bankAccName ? true : false} style={{width:'95%'}} />
+                                                        </Col>
+                                                    </Row>
+                                                </Col>
+                                                <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
+                                                    <Row>
+                                                        <Col style={{height:'100%'}} xs={12} md={4}>
+                                                            <Form.Label style={{margin:0}}>Bank Name<span style={{color:'red'}}>*</span></Form.Label>
+                                                        </Col>
+                                                        <Col style={{height:'100%'}} xs={12} md={8}>
+                                                            <Form.Control type="text" placeholder="BOC" value={bankName} onChange={ (e) => setBankName(e.target.value)} required disabled={userInfo.bankName ? true : false} style={{width:'95%'}} />
+                                                        </Col>
+                                                    </Row>
+                                                    <Row style={{marginTop:'10px'}}>
+                                                        <Col style={{height:'100%'}} xs={12} md={4}>
+                                                            <Form.Label style={{margin:0}}>
+                                                                Branch Name<span style={{color:'red'}}>*</span> 
+                                                            </Form.Label>
+                                                        </Col>
+                                                        <Col style={{height:'100%'}} xs={12} md={8}>
+                                                            <Form.Control type="text" placeholder="Gampaha Branch" value={bankBranch} onChange={ (e) => setBankBranch(e.target.value)} required disabled={userInfo.bankBranch ? true : false} style={{width:'95%'}} />
+                                                        </Col>
+                                                    </Row>
+                                                </Col>
+                                            </Row>
+                                            <hr />
+                                            <Row style={{marginTop:'20px'}}>
+                                                <Col>
+                                                    <Row>
+                                                        <Col style={{height:'100%'}} xs={12} md={4} lg={2}>
+                                                            <Form.Label style={{margin:0}}>Phone Number<span style={{color:'red'}}>*</span></Form.Label>
+                                                        </Col>
+                                                        <Col style={{height:'100%'}} xs={12} md={8} ls={10}>
+                                                            {userInfo.phoneNo ?
+                                                                <InputGroup style={{width:'fit-content'}}>
+                                                                    <InputGroup.Text style={{color:'green'}}><Check /></InputGroup.Text>
+                                                                    <Form.Control type="text" placeholder="PhoneNo" value={phoneNo} required readOnly style={{width:'fit-content'}}/>
+                                                                </InputGroup>
+                                                            :
+                                                            <InputGroup style={{width:'fit-content'}}>
+                                                                <InputGroup.Text>(+94)</InputGroup.Text>
+                                                                <Form.Control placeholder="715447792" type="text" maxLength={9} value={phoneNo} onChange={(e) => setPhoneNo(e.target.value.replace(/\D/g, ''))}/>
+                                                                <LoadingButton loading={isLoading1} variant="contained" className="ms-2" onClick={sendOTP}>Add</LoadingButton>
+                                                            </InputGroup>
+                                                            }
+                                                            <Modal
+                                                                open={modalOpen}
+                                                                onClose={() => setModalOpen(false)}
+                                                                aria-labelledby="OTP Modal"
+                                                                aria-describedby="OTP Modal"
+                                                            >
+                                                                <Box sx={style}>
+                                                                    
+                                                                    <h1>OTP Verification</h1>
+                                                                    <br />
+                                                                    <p className="text-start">The OTP code has being sent to +94{phoneNo}. Please enter the code below to verify.</p>
+                                                                    <MuiOtpInput value={otp} length={6} onChange={ (e) => setOTP(e)} />
+                                                                    <LoadingButton loading={isLoading2} onClick={ verifyOTP } color="primary" variant="contained" className="mt-3">Verify OTP</LoadingButton>
+                                                                    <LoadingButton loading={isLoading1} onClick={ sendOTP } color="primary" variant="contained" className="mt-3 ms-3"><Sync /> Resend</LoadingButton>
+                                                                    
+                                                                </Box>
+                                                            </Modal>
+                                                        </Col>
+                                                    </Row>
+                                                </Col>
+                                            </Row>
                                         </List>
                                     </CardContent>
                                 </Card>
@@ -278,7 +435,7 @@ const ProfilePage = () => {
                                 </Grid>
                                 <Grid item xs={8}>
                                     <Card>
-                                        <CardContent style={{display:"flex", alignItems:"center", flexDirection:"column", padding:"10px 50px 30px 50px"}}>
+                                        <CardContent style={{display:"flex", alignItems:"center", flexDirection:"column", padding:"10px 50px 30px 50px", height:'342px', overflow:'auto'}}>
                                             <List sx={{width:'100%'}} component="nav">
                                                 <Form.Group controlId="fName">
                                                     <Row className='py-3'>
@@ -347,6 +504,32 @@ const ProfilePage = () => {
                                                     </Row>
                                                 </Form.Group>
                                                 <Divider sx={{borderColor:'initial'}}/>
+                                                <Form.Group controlId="gender">
+                                                    <Row className='py-3'>
+                                                        <Col>
+                                                            <Form.Label><b>Gender</b></Form.Label>
+                                                        </Col>
+                                                        <Col style={{display:'inline-flex', justifyContent:'space-around'}}>
+                                                            <Form.Check
+                                                                type='radio'
+                                                                id={`Male`}
+                                                                label={`Male`}
+                                                                name='gender'
+                                                                checked={gender=="Male"? true : false}
+                                                                onChange={(e) => setGender(e.target.id)}
+                                                            />
+                                                            <Form.Check
+                                                                type='radio'
+                                                                id={`Female`}
+                                                                label={`Female`}
+                                                                name='gender'
+                                                                checked={gender=="Female"? true : false}
+                                                                onChange={(e) => setGender(e.target.id)}
+                                                            />
+                                                        </Col>
+                                                    </Row>
+                                                </Form.Group>
+                                                <Divider sx={{borderColor:'initial'}}/>
                                                 {accType === 'google'? <></> : <>
                                                 <Form.Group controlId="pwd">
                                                     <Row className='py-3'>
@@ -379,6 +562,104 @@ const ProfilePage = () => {
                                                 </Form.Group>
                                                 <Divider sx={{borderColor:'initial'}}/>
                                                     </>}
+                                            </List>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Card>
+                                        <CardContent style={{display:"flex", alignItems:"center", flexDirection:"column", padding:"10px 50px 30px 50px"}}>
+                                            <List sx={{width:'100%'}} component="nav">
+                                                <Row style={{marginTop:'20px'}}>
+                                                    <Col>
+                                                        <p>
+                                                            <b>Bank Details</b>
+                                                        </p>
+                                                    </Col>
+                                                </Row>
+                                                <Row style={{marginBottom:'10px'}}>
+                                                    <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
+                                                        <Row>
+                                                            <Col style={{height:'100%'}} xs={12} md={4}>
+                                                                <Form.Label style={{margin:0}}>Bank Account No.<span style={{color:'red'}}>*</span></Form.Label>
+                                                            </Col>
+                                                            <Col style={{height:'100%'}} xs={12} md={8}>
+                                                                <Form.Control type="string" minLength={6} maxLength={16} pattern="^[0-9]*$" placeholder="01234565345" value={bankAccNo} onChange={ (e) => setBankAccNo(e.target.value)} required style={{width:'95%'}} />
+                                                            </Col>
+                                                        </Row>
+                                                        <Row style={{marginTop:'10px'}}>
+                                                            <Col style={{height:'100%'}} xs={12} md={4}>
+                                                                <Form.Label style={{margin:0}}>
+                                                                    Account Holder Name<span style={{color:'red'}}>*</span> 
+                                                                </Form.Label>
+                                                            </Col>
+                                                            <Col style={{height:'100%'}} xs={12} md={8}>
+                                                                <Form.Control type="text" placeholder="James Bond" value={bankAccName} onChange={ (e) => setBankAccName(e.target.value)} required style={{width:'95%'}} />
+                                                            </Col>
+                                                        </Row>
+                                                    </Col>
+                                                    <Col xs={12} md={6} style={{marginBottom:'10px',paddingRight: '20px'}}>
+                                                        <Row>
+                                                            <Col style={{height:'100%'}} xs={12} md={4}>
+                                                                <Form.Label style={{margin:0}}>Bank Name<span style={{color:'red'}}>*</span></Form.Label>
+                                                            </Col>
+                                                            <Col style={{height:'100%'}} xs={12} md={8}>
+                                                                <Form.Control type="text" placeholder="BOC" value={bankName} onChange={ (e) => setBankName(e.target.value)} required style={{width:'95%'}} />
+                                                            </Col>
+                                                        </Row>
+                                                        <Row style={{marginTop:'10px'}}>
+                                                            <Col style={{height:'100%'}} xs={12} md={4}>
+                                                                <Form.Label style={{margin:0}}>
+                                                                    Branch Name<span style={{color:'red'}}>*</span> 
+                                                                </Form.Label>
+                                                            </Col>
+                                                            <Col style={{height:'100%'}} xs={12} md={8}>
+                                                                <Form.Control type="text" placeholder="Gampaha Branch" value={bankBranch} onChange={ (e) => setBankBranch(e.target.value)} required style={{width:'95%'}} />
+                                                            </Col>
+                                                        </Row>
+                                                    </Col>
+                                                </Row>
+                                                <hr />
+                                                <Row style={{marginTop:'20px'}}>
+                                                    <Col>
+                                                        <Row>
+                                                            <Col style={{height:'100%'}} xs={12} md={4} lg={2}>
+                                                                <Form.Label style={{margin:0}}>Phone Number<span style={{color:'red'}}>*</span></Form.Label>
+                                                            </Col>
+                                                            <Col style={{height:'100%'}} xs={12} md={8} ls={10}>
+                                                                {phoneNo==userInfo.phoneNo ?
+                                                                    <InputGroup style={{width:'fit-content'}}>
+                                                                        <InputGroup.Text style={{color:'green'}}><Check /></InputGroup.Text>
+                                                                        <Form.Control type="text" placeholder="PhoneNo" value={phoneNo} required readOnly style={{width:'fit-content'}}/><IconButton onClick={() => setPhoneNo('')}><Close /></IconButton>
+                                                                    </InputGroup>
+                                                                :
+                                                                <InputGroup style={{width:'fit-content'}}>
+                                                                    <InputGroup.Text>(+94)</InputGroup.Text>
+                                                                    <Form.Control placeholder="715447792" type="text" maxLength={9} value={phoneNo} onChange={(e) => setPhoneNo(e.target.value.replace(/\D/g, ''))}/>
+                                                                    <LoadingButton loading={isLoading1} variant="contained" className="ms-2" onClick={sendOTP}>Add</LoadingButton>
+                                                                </InputGroup>
+                                                                }
+                                                                <Modal
+                                                                    open={modalOpen}
+                                                                    onClose={() => setModalOpen(false)}
+                                                                    aria-labelledby="OTP Modal"
+                                                                    aria-describedby="OTP Modal"
+                                                                >
+                                                                    <Box sx={style}>
+                                                                        
+                                                                        <h1>OTP Verification</h1>
+                                                                        <br />
+                                                                        <p className="text-start">The OTP code has being sent to +94{phoneNo}. Please enter the code below to verify.</p>
+                                                                        <MuiOtpInput value={otp} length={6} onChange={ (e) => setOTP(e)} />
+                                                                        <LoadingButton loading={isLoading2} onClick={ verifyOTP } color="primary" variant="contained" className="mt-3">Verify OTP</LoadingButton>
+                                                                        <LoadingButton loading={isLoading1} onClick={ sendOTP } color="primary" variant="contained" className="mt-3 ms-3"><Sync /> Resend</LoadingButton>
+                                                                        
+                                                                    </Box>
+                                                                </Modal>
+                                                            </Col>
+                                                        </Row>
+                                                    </Col>
+                                                </Row>
                                             </List>
                                         </CardContent>
                                     </Card>

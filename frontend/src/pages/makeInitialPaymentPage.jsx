@@ -14,6 +14,7 @@ function MakeInitialPaymentPage() {
 
   const [activeStep, setActiveStep] = useState(2);
   const [boardingDetails, setBoardingDetails] = useState();
+  const des = "Initial payment";
   
   const { bId } = useParams();
   const [getBoardingById] = useGetBoardingByIdMutation();
@@ -112,7 +113,7 @@ function MakeInitialPaymentPage() {
               <Col>
                 <h3 className={paymentScreenStyles.h3Topic}>Enter card details</h3>
                 <div className={paymentScreenStyles.paymentForm}>
-                  <PaymentFormI amount={am} />
+                  <PaymentFormI amount={am} des={des}/>
                 </div>
               </Col>
             </Row>

@@ -8,20 +8,20 @@ import { Button, TextField ,CircularProgress} from '@mui/material';
 import { GetAppRounded} from '@mui/icons-material';
 
 import orderStyles from '../styles/orderStyles.module.css';
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
+import 'react-date-range/dist/styles.css'; 
+import 'react-date-range/dist/theme/default.css'; 
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useTheme } from "@emotion/react";
 import DeleteOrder from "../pages/DeleteOrder";
 import formStyle from '../styles/formStyle.module.css';
 import jsPDF from 'jspdf';
-const OrderComplete = () =>{
 
-    
+const OrderHistory = () =>{
+
 
     const [product, setOrder] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    
     const [searchQuery, setSearchQuery] = useState(''); 
     
     
@@ -43,7 +43,7 @@ const OrderComplete = () =>{
 
     
 
-    
+    const navigate = useNavigate();
 
     const [getTodayOrder, { isLoading }] = useGetTodayOrderMutation();
     const userID = userInfo._id
@@ -97,14 +97,14 @@ const OrderComplete = () =>{
             doc.setLineWidth(0.5);
             doc.line(10, 45, 200, 45);
 
-        
-
             
+
+            // Add report title
             doc.setFontSize(12);
-            doc.text("Completed Orders", 85, 65);
+            doc.text("Order History List", 85, 65);
             const headers = [[ "Date","Time","Order Number","Product","Food Type","Qty","Price","Total"]];
         
-            
+            // Map the admin data to table rows
         
             const data = completedOrders.map((order) => [
                 new Date(order.date).toLocaleDateString(),
@@ -241,4 +241,5 @@ const OrderComplete = () =>{
         
     )
 }
-export default OrderComplete;
+
+export default OrderHistory;

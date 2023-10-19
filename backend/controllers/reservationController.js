@@ -262,7 +262,9 @@ const getBoardingReservations = asyncHandler(async (req, res) => {
 
                 detailsArry.push({
                     Id: reserveI._id,
-                    Name: occName.firstName,
+                    firstName: occName.firstName,
+                    lastName: occName.lastName,
+                    email: occName.email,
                     Date: reserveI.createdAt,
                     Duration: reserveI.Duration,
                     bType: boarding.boardingType,
@@ -276,7 +278,9 @@ const getBoardingReservations = asyncHandler(async (req, res) => {
 
                 detailsArry.push({
                     Id: reserveI._id,
-                    Name: occName.firstName,
+                    firstName: occName.firstName,
+                    lastName: occName.lastName,
+                    email: occName.email,
                     Date: reserveI.createdAt,
                     Duration: reserveI.Duration,
                     RoomNo: room.roomNo,
@@ -306,7 +310,7 @@ const getPendingReservations = asyncHandler(async (req, res) => {
 
     const reserve = await Reservation.find({ boardingId: boardingId, status: 'Pending' });
     console.log(reserve.length);
-    if (reserve.length>0) {
+    if (reserve.length > 0) {
 
         const detailsArry = [];
         for (const reserveI of reserve) {
@@ -320,6 +324,7 @@ const getPendingReservations = asyncHandler(async (req, res) => {
                     Name: occName.firstName,
                     Date: reserveI.createdAt,
                     Duration: reserveI.Duration,
+                    bType: boarding.boardingType,
 
                 });
 
@@ -334,6 +339,7 @@ const getPendingReservations = asyncHandler(async (req, res) => {
                     Date: reserveI.createdAt,
                     Duration: reserveI.Duration,
                     RoomNo: room.roomNo,
+                    bType: boarding.boardingType,
                 });
 
             }
@@ -342,8 +348,8 @@ const getPendingReservations = asyncHandler(async (req, res) => {
 
     }
     else {
-        
-        res.status(200).json({message:"No Pendings"});
+
+        res.status(200).json({ message: "No Pendings" });
     }
 
 });

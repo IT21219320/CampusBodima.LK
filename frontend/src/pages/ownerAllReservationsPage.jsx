@@ -8,15 +8,18 @@ import TabPanel from '@mui/lab/TabPanel';
 import Sidebar from '../components/sideBar';
 import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { Container, Row, Col, Button } from 'react-bootstrap';
+import CircularProgress from '@mui/material/CircularProgress';
 import { NavigateNext, Try } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
+import ownerStyles from '../styles/ownerStyles.module.css';
+import dashboardStyles from '../styles/dashboardStyles.module.css';
+
 import { useGetBoardingsByIdMutation } from '../slices/reservationsApiSlice.js';
+
 import PendingReservations from '../components/pendingReservationsComponent';
 import ViewAllReservations from '../components/viewAllReservationsComponent';
 import BoardingReservationHistory from '../components/BoardingReservationHistoryComponent';
 
-import ownerStyles from '../styles/ownerStyles.module.css';
-import dashboardStyles from '../styles/dashboardStyles.module.css';
 
 const OwnerAllReservations = () => {
 
@@ -24,11 +27,10 @@ const OwnerAllReservations = () => {
 
     const [boarding, setBoarding] = useState([]);
     const [boardingID, setBoardingID] = useState('');
-
-    
-    
+    const [loading, setLoading] = useState(true);
 
     const [getOwnerBoarding] = useGetBoardingsByIdMutation();
+
 
     const [value, setValue] = useState('1');
 
@@ -38,22 +40,24 @@ const OwnerAllReservations = () => {
 
     const loadData = async () => {
         try {
+            setLoading(true)
             const resBoardings = await getOwnerBoarding({ ownerId: userInfo._id }).unwrap();
             if (resBoardings) {
                 setBoarding(resBoardings.ownerBoardings);
-               
+
                 setBoardingID(resBoardings.ownerBoardings[0]._id)
             }
+            setLoading(false)
         } catch (error) {
             console.log(error);
         }
     }
 
     useEffect(() => {
-        
+
         loadData();
-        
-        
+
+
     }, []);
 
     return (
@@ -72,51 +76,62 @@ const OwnerAllReservations = () => {
                     </Row>
 
                     <Row style={{ marginTop: '33px', marginLeft: '2px', width: '25%' }}>
-                    <FormControl >
-                        <InputLabel id="demo-simple-select-standard-label" >Boarding</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-standard-label"
-                            size="small"
-                            id="demo-simple-select-standard"
-                            value={boardingID}
-                            onChange={(e) => setBoardingID(e.target.value)}
-                            label="Boardings"
+                        <FormControl >
+                            <InputLabel id="demo-simple-select-standard-label" >Boarding</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-standard-label"
+                                size="small"
+                                id="demo-simple-select-standard"
+                                value={boardingID}
+                                onChange={(e) => setBoardingID(e.target.value)}
+                                label="Boardings"
 
-                        >
-                            
-                            {boarding.length > 0 ? (
-                                boarding.map((boarding) => (
-                                    <MenuItem key={boarding._id} value={boarding._id}>
-                                        <em>{boarding.boardingName}</em>
-                                    </MenuItem>
+                            >
 
-                                ))
+                                {boarding.length > 0 ? (
+                                    boarding.map((boarding) => (
+                                        <MenuItem key={boarding._id} value={boarding._id}>
+                                            <em>{boarding.boardingName}</em>
+                                        </MenuItem>
 
-                            ) : (
-                                <MenuItem value="">
-                                    <em>No reservation</em>
-                                </MenuItem>)}
+                                    ))
 
-                        </Select>
-                    </FormControl>
+                                ) : (
+                                    <MenuItem value="">
+                                        <em>No reservation</em>
+                                    </MenuItem>)}
+
+                            </Select>
+                        </FormControl>
 
                     </Row>
-                    <Row style={{ marginTop: '25px' }}>
-                        <Box sx={{ width: '100%', typography: 'body1' }}>
-                            <TabContext value={value}>
-                                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                                    <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                        <Tab label="Pendings" value="1" />
-                                        <Tab label="All Reservations" value="2" />
-                                        <Tab label="History" value="3" />
-                                    </TabList>
+
+                    {loading ? (
+                        <>
+                            <div style={{ width: '100%', height: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <CircularProgress />
+                            </div>
+                        </>) : (
+                        <>
+                            <Row style={{ marginTop: '25px' }}>
+                                <Box sx={{ width: '100%', typography: 'body1' }}>
+                                    <TabContext value={value}>
+                                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                            <TabList onChange={handleChange} aria-label="lab API tabs example">
+                                                <Tab label="Pendings" value="1" />
+                                                <Tab label="All Reservations" value="2" />
+                                                <Tab label="History" value="3" />
+                                            </TabList>
+                                        </Box>
+                                        <TabPanel value="1"><PendingReservations bId={boardingID} /></TabPanel>
+                                        <TabPanel value="2"><ViewAllReservations bId={boardingID} /></TabPanel>
+                                        <TabPanel value="3"><BoardingReservationHistory bId={boardingID} /></TabPanel>
+                                    </TabContext>
                                 </Box>
-                                <TabPanel value="1"><PendingReservations bId={boardingID} /></TabPanel>
-                                <TabPanel value="2"><ViewAllReservations bId={boardingID} /></TabPanel>
-                                <TabPanel value="3"><BoardingReservationHistory bId={boardingID} /></TabPanel>
-                            </TabContext>
-                        </Box>
-                    </Row>
+                            </Row>
+                        </>
+                    )}
+
 
                 </Container>
             </div>
