@@ -139,12 +139,12 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                 </select>
                             </div>
                             </Col>
-                            <Col>
-                            <Form.Group controlId="searchQuery" style={{ maxWidth: '300px',alignSelf:'right' }}>
-                             <div style={{ display: 'flex', alignItems: 'right' }}>
+                            <Col className="d-flex justify-content-end">
+                            <Form.Group controlId="searchQuery" style={{ maxWidth: '300px'}}>
+                             <div style={{ display: 'flex'}}>
                             <Form.Control
                                 type="text"
-                                placeholder="Search…"
+                                placeholder="Search Description...."
                                 value={searchQuery}
                                 onChange={handleSearch} // Handle search query change
                             />
@@ -164,7 +164,7 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                             </div>
                         ) : (utilities && utilities.length !== 0 ? (
                             utilities.map((utility, index) => (
-                                <Card className={`${ownerStyles.card} mt-4`} key={utility._id}  >
+                                <Card className={`${ownerStyles.card} mt-4`} key={utility._id} style={{ height: 'auto' } } >
                                     <CardContent className={ownerStyles.cardContent}>
                                         <Col lg={12}>
                                         <Row>
@@ -179,7 +179,7 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                             
                                             <Col>
                                             <Row>
-                                            <Col lg={4}>
+                                            <Col lg={5}>
                                         
                                                 <Row>
                                                     <p><b>Amount:</b> Rs. {utility.amount} .00</p>
@@ -189,10 +189,9 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                                     <p><b>Month:</b> {utility.month}</p>
                                                 
                                                 </Row>
-                                                <Row lg={4}>
-                                                    <Col lg={4}>
-                                                <p><b>Description:</b> {utility.description}</p>
-                                                </Col>
+                                                <Row >
+                                                <p style={{ marginRight: '60px' }}><b>Description:</b> {utility.description}</p>
+                                                
                                                 </Row>
                                                 </Col>
                                                 <Col lg={5}>
@@ -232,25 +231,35 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                                     
                                                         
                                                     <Row>
-                                                    <Col>
-                                                        <Row>
-                                                            <Col>
-                                                                <Button
-                                                                    type="button"
-                                                                    onClick={() => handleDeleteUtility(utility._id)}
-                                                                >
-                                                                    <DeleteIcon /> Delete
-                                                                </Button>
-                                                            </Col>
-                                                            <Col>
-                                                                <CustomLink to={`/owner/utility/update/${boardingId}/${utilityType}/${utility._id}`}>
-                                                                    <Button type="button">
-                                                                        <EditOutlinedIcon /> Edit
+                                                    <Col className="d-flex justify-content-end">
+                                                            <Row>    
+                                                                <Col>
+                                                                    <Button
+                                                                        type="button"
+                                                                        onClick={() => handleDeleteUtility(utility._id)}
+                                                                        variant="outline-danger"
+                                                                        className="btn" // Add the 'btn' class to both buttons
+                                                                        style={{ width: '120px' }} // Set a specific width for both buttons
+                                                                    >
+                                                                        <DeleteIcon /> Delete
                                                                     </Button>
-                                                                </CustomLink>
-                                                            </Col>
-                                                        </Row>
-                                                    </Col>
+                                                                </Col>
+                                                                <Col>
+                                                                    <CustomLink to={`/owner/utility/update/${boardingId}/${utilityType}/${utility._id}`}>
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant="outline-primary"
+                                                                            className="btn" // Add the 'btn' class to both buttons
+                                                                            style={{ width: '120px' }} // Set a specific width for both buttons
+                                                                        >
+                                                                            <EditOutlinedIcon /> Edit
+                                                                        </Button>
+                                                                    </CustomLink>
+                                                                </Col>
+                                                            </Row>
+                                                        </Col>
+
+
                                                     </Row>
                                                     </Col>
                                                 </Row>
