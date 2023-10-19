@@ -47,6 +47,7 @@ import OwnerTicketThreadPage from './pages/ownerTicketThreadPage.jsx';
 import AddUtilitiesPage from './pages/addUtilityPage.jsx';
 import AllUtilitiesPage from './pages/allUtilitiesPage.jsx';
 import UpdateUtilitiesPage from './pages/updateUtilityPage';
+import AllOccupantUtilitiesPage from './pages/allUtilitiesForOccupantPage.jsx';
 
 import CreateFeedback from './pages/createFeedbackPage.jsx';
 import OccupantFeedback from './pages/occupantFeedbackPage.jsx';
@@ -163,9 +164,12 @@ const router = createBrowserRouter(
           <Route path='/occupant/boarding' element={<MyReservationPage />} />
           <Route path='/occupant/boarding/join/:tokenHeader/:tokenPayload/:tokenSecret' element={ <VerifyOccupantEmailPage /> } />
           
+          <Route path='/occupant/utility' element={<AllOccupantUtilitiesPage />} />
+
           <Route path='/occupant/feedback' element={<OccupantFeedback />} />
           <Route path='/occupant/feedback/create/:boardingId/:boardingName' element={<CreateFeedback />} />
           <Route path='/occupant/feedback/update/:feedbackId/:boardingName' element={<UpdateFeedbackpage />} />
+          
           
         </Route>
       </Route>
