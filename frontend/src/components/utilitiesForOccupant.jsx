@@ -121,7 +121,7 @@ const AllUtilitiesForOccupants = ({  utilityType }) => {
                                 </select>
                             </div>
                             </Col>
-                            <Col>
+                            <Col className="d-flex justify-content-end">
                             <Form.Group controlId="searchQuery" style={{ maxWidth: '300px',alignSelf:'right' }}>
                              <div style={{ display: 'flex', alignItems: 'right' }}>
                             <Form.Control
@@ -146,7 +146,7 @@ const AllUtilitiesForOccupants = ({  utilityType }) => {
                             </div>
                         ) : (utilities && utilities.length !== 0 ? (
                             utilities.map((utility, index) => (
-                                <Card className={`${ownerStyles.card} mt-4`} key={utility._id}  >
+                                <Card className={`${ownerStyles.card} mt-4`} key={utility._id} style={{ height: 'auto' } } >
                                     <CardContent className={ownerStyles.cardContent}>
                                         <Col lg={12}>
                                         <Row>
@@ -161,7 +161,7 @@ const AllUtilitiesForOccupants = ({  utilityType }) => {
                                             
                                             <Col>
                                             <Row>
-                                            <Col lg={4}>
+                                            <Col lg={5}>
                                         
                                                 <Row>
                                                     <p><b>Amount:</b> Rs. {utility.amount} .00</p>
@@ -171,10 +171,10 @@ const AllUtilitiesForOccupants = ({  utilityType }) => {
                                                     <p><b>Month:</b> {utility.month}</p>
                                                 
                                                 </Row>
-                                                <Row lg={4}>
-                                                    <Col lg={4}>
+                                                <Row>
+                                                    
                                                 <p><b>Description:</b> {utility.description}</p>
-                                                </Col>
+                                                
                                                 </Row>
                                                 </Col>
                                                 <Col lg={5}>
