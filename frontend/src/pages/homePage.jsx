@@ -1,5 +1,6 @@
 import Header from '../components/header';
 import { Container, Row, Col, Form, Toast } from 'react-bootstrap';
+import Button from '@mui/material/Button';
 import homeStyles from '../styles/homePageStyles.module.css'
 const HomePage = () => {
     return (
@@ -16,6 +17,8 @@ const HomePage = () => {
                     <div style={{height:'600px',width: "100%",position: 'absolute'}}>
                         <Col className={homeStyles.homeWelcText}>
                             <h1>Welcome to <span style={{ fontFamily: 'Papyrus' }}>CampusBodima.LK</span></h1>
+                            <p style={{fontFamily:'Lucida Console', fontSize:'font-size: larger'}}>Find your virtual home with easy steps</p>
+                            <Button variant="outlined" size='large' className={homeStyles.getStartBtn}>Get start</Button>
                         </Col>
                     </div>
                     <div  className={homeStyles.servicesDiv}>
