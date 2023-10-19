@@ -311,7 +311,7 @@ const handleOccupantSelection = (occupantId) => {
                             placeholder="Description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            style={{ width: '50%' }}
+                            style={{ width: '70%' }}
                           />
                         </div>
 
@@ -352,8 +352,8 @@ const handleOccupantSelection = (occupantId) => {
                     </Card>
                   </Col>
                   <Col md={6}>
-                    <Card className={CreateBoardingStyles.card}>
-                      <CardContent style={{ padding: '25px' }}>
+                    <Card className={CreateBoardingStyles.card} style ={{width:'70%'}}>
+                      <CardContent style={{ padding: '25px'}} >
                         <div>
                           <Form.Label>Select Occupants:</Form.Label>
                           <div style={{ display: 'flex', flexDirection: 'column', height: '100px', overflow: 'auto' }}>
