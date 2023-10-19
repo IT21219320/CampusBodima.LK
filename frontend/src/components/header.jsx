@@ -151,7 +151,7 @@ const Header = () => {
                             }
                         </IconButton>
                         <Menu
-                            sx={{ mt: "45px" }}
+                            sx={{ mt: "45px", textAlign:'center' }}
                             id="menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
@@ -166,10 +166,11 @@ const Header = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            <MenuItem onClick={() => navigate('/profile')}>
+                            <span style={{margin:'10px 20px', fontSize:'20px'}}>{userInfo.firstName}</span>
+                            <MenuItem onClick={() => navigate('/profile')} style={{justifyContent:'center', marginTop:'5px'}}>
                                 <Typography textAlign="center">Profile</Typography>
                             </MenuItem>
-                            <MenuItem onClick={logoutHandler}>
+                            <MenuItem onClick={logoutHandler} style={{justifyContent:'center'}}>
                                 <Typography textAlign="center">Logout</Typography>
                             </MenuItem>
                         </Menu>
