@@ -2,8 +2,6 @@
     
     background-repeat: no-repeat;
     width: calc(100% - 6px);
-    position: absolute;
-    /*top: 84px;*/
     position: fixed;
 }
 
@@ -11,23 +9,32 @@
     background-color: black;
     opacity: 0.5;
     height: 600px;
-    position: absolute;
-    width: 100%;
-    /*top: 85px;*/
+    width: calc(100% - 6px);
     position: fixed;
 }
 
 .homeWelcText{
     position: absolute;
-    top: 209px;
+    top: 420px;
     color: white;
     margin-left: 10%;
+    text-align: center;
 }
 
 .servicesDiv{
-    height: 500px;
+    height: 880px;
     background-color: white;
     position: absolute;
     top: 600px;
     width: 100%;
+}
+
+.getStartBtn{
+    color: white !important;
+    border: 1px solid white !important;
+}
+
+.getStartBtn:hover{
+    color: rgb(192, 192, 192) !important;
+    border: 1px solid rgb(192, 192, 192) !important;
 }
