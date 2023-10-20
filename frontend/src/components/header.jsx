@@ -1,78 +1,73 @@
-import {useState, useEffect} from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem } from '@mui/material';
-import { useLogoutMutation } from '../slices/usersApiSlice';
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem, } from "@mui/material";
+import {Offcanvas} from 'react-bootstrap';
+import { FaSignInAlt, FaSignOutAlt } from 'react-icons/fa';
+import { useLogoutMutation } from "../slices/usersApiSlice";
 import { clearUserInfo } from "../slices/authSlice";
-import { toast } from 'react-toastify';
-import MenuIcon from '@mui/icons-material/Menu';
-import AdbIcon from '@mui/icons-material/Adb';
+import { toast } from "react-toastify";
+import { StringToAvatar } from "../utils/StringToAvatar";
+import MenuIcon from "@mui/icons-material/Menu";
+import AdbIcon from "@mui/icons-material/Adb";
 
-import headerStyles from '../styles/headerStyles.module.css';
+import headerStyles from "../styles/headerStyles.module.css";
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ["Products", "Pricing", "Blog"];
+const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 const Header = () => {
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [isSticky, setIsSticky] = useState(false);
+    const [showDrawer, setShowDrawer] = useState(false);
 
     const { userInfo } = useSelector((state) => state.auth);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    
+    const activeRoute = location.pathname;
 
-    const [ logout ] = useLogoutMutation();
+    const [logout] = useLogoutMutation();
 
     const logoutHandler = async () => {
         try {
             await logout().unwrap();
             dispatch(clearUserInfo());
             toast.success("Logged Out");
-            navigate('/');
+            navigate("/");
         } catch (err) {
             toast.error(err);
         }
-    }
+    };
 
-    
-        
     let timeout;
     const handleScroll = () => {
         if (timeout) {
-          clearTimeout(timeout);
+            clearTimeout(timeout);
         }
-  
-        timeout = setTimeout(() => {
-          if (document.getElementById('main').scrollTop > 10) {
-            setIsSticky(true);
-          } else {
-            setIsSticky(false);
-          }
-        }, 10);
-      };
-  
-    
-    useEffect(() => {
-        document.getElementById('main').addEventListener('scroll', handleScroll);
-    
-        // Cleanup function to remove the event listener when the component unmounts
-        return () => {
-            document.getElementById('main').removeEventListener('scroll', handleScroll);
-        };
-    }, []);
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
+        timeout = setTimeout(() => {
+            if (document.getElementById("main").scrollTop > 10) {
+                setIsSticky(true);
+            } else {
+                setIsSticky(false);
+            }
+        }, 10);
     };
+
+    useEffect(() => {
+        if(activeRoute == '/'){
+            document.getElementById("main").addEventListener("scroll", handleScroll);
+        }
+        else{
+            setIsSticky(true)
+        }
+    }, []);
 
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
     };
 
     const handleCloseUserMenu = () => {
@@ -80,125 +75,117 @@ const Header = () => {
     };
 
     return (
-        <AppBar id="header" className={`${headerStyles.header} ${isSticky ? headerStyles.sticky : ''}`}>
-            <Container maxWidth="xl">
-            <Toolbar disableGutters>
-                <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-                <Typography
-                variant="h6"
-                noWrap
-                component="a"
-                href="#app-bar-with-responsive-menu"
-                sx={{
-                    mr: 2,
-                    display: { xs: 'none', md: 'flex' },
-                    fontFamily: 'monospace',
-                    fontWeight: 700,
-                    letterSpacing: '.3rem',
-                    color: 'inherit',
-                    textDecoration: 'none',
-                }}
-                >
-                LOGO
-                </Typography>
+        <AppBar id="header" className={`${headerStyles.header} ${isSticky ? headerStyles.sticky : ""}`} >
+            <Container maxWidth="lg">
+                <Toolbar disableGutters>
+                    <Box sx={{display: { xs: "none", md: "flex" }}}>
+                        <img src="/logo3.png" width='100px' />
+                    </Box>
 
-                <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                <IconButton
-                    size="large"
-                    aria-label="account of current user"
-                    aria-controls="menu-appbar"
-                    aria-haspopup="true"
-                    onClick={handleOpenNavMenu}
-                    color="inherit"
-                >
-                    <MenuIcon />
-                </IconButton>
-                <Menu
-                    id="menu-appbar"
-                    anchorEl={anchorElNav}
-                    anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                    }}
-                    open={Boolean(anchorElNav)}
-                    onClose={handleCloseNavMenu}
-                    sx={{
-                    display: { xs: 'block', md: 'none' },
-                    }}
-                >
-                    {pages.map((page) => (
-                    <MenuItem key={page} onClick={handleCloseNavMenu}>
-                        <Typography textAlign="center">{page}</Typography>
-                    </MenuItem>
-                    ))}
-                </Menu>
-                </Box>
-                <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                <Typography
-                variant="h5"
-                noWrap
-                component="a"
-                href="#app-bar-with-responsive-menu"
-                sx={{
-                    mr: 2,
-                    display: { xs: 'flex', md: 'none' },
-                    flexGrow: 1,
-                    fontFamily: 'monospace',
-                    fontWeight: 700,
-                    letterSpacing: '.3rem',
-                    color: 'inherit',
-                    textDecoration: 'none',
-                }}
-                >
-                LOGO
-                </Typography>
-                <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                {pages.map((page) => (
-                    <Button
-                    key={page}
-                    onClick={handleCloseNavMenu}
-                    sx={{ my: 2, color: 'white', display: 'block' }}
-                    >
-                    {page}
-                    </Button>
-                ))}
-                </Box>
-
-                <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
-                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                    </IconButton>
-                </Tooltip>
-                <Menu
-                    sx={{ mt: '45px' }}
-                    id="menu-appbar"
-                    anchorEl={anchorElUser}
-                    anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                    }}
-                    open={Boolean(anchorElUser)}
-                    onClose={handleCloseUserMenu}
-                >
-                    {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                        <Typography textAlign="center">{setting}</Typography>
-                    </MenuItem>
-                    ))}
-                </Menu>
-                </Box>
-            </Toolbar>
+                    <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+                        <IconButton
+                            size="large"
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={() => setShowDrawer(true)}
+                            color="inherit"
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Offcanvas show={showDrawer} onHide={() => setShowDrawer(false)} style={{width:'200px'}}>
+                            <Offcanvas.Body>
+                            <Button
+                                onClick={() => navigate('/')}
+                                sx={{ my: 2, px: 1, mx: 1, color: "white", display: "block" }}
+                            >
+                                Home
+                            </Button>
+                            <Button
+                                onClick={() => navigate('/')}
+                                sx={{ my: 2, px: 1, mx: 1, color: "white", display: "block" }}
+                            >
+                                About Us
+                            </Button>
+                            <Button
+                                onClick={() => navigate('/')}
+                                sx={{ my: 2, px: 1, mx: 1, color: "white", display: "block" }}
+                            >
+                                Contact Us
+                            </Button>
+                            </Offcanvas.Body>
+                        </Offcanvas>
+                    </Box>
+                    <Box sx={{display: { xs: "flex", md: "none" }}} style={{width:'100%', justifyContent:'center'}}>
+                        <img src="/logoBig2.png" width='200px' />
+                    </Box>
+                    <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent:'center' }}>
+                            <Button
+                                onClick={() => navigate('/')}
+                                sx={{ my: 2, px: 3, mx: 2, color: "white", display: "block" }}
+                            >
+                                Home
+                            </Button>
+                            <Button
+                                onClick={() => navigate('/')}
+                                sx={{ my: 2, px: 3, mx: 2, color: "white", display: "block" }}
+                            >
+                                About Us
+                            </Button>
+                            <Button
+                                onClick={() => navigate('/')}
+                                sx={{ my: 2, px: 3, mx: 2, color: "white", display: "block" }}
+                            >
+                                Contact Us
+                            </Button>
+                    </Box>
+                    {userInfo ? 
+                    <Box sx={{ flexGrow: 0 }}>
+                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                            {userInfo.image ? 
+                                <Avatar alt={userInfo.firstName+" "+userInfo.lastName} src={userInfo.image} sx={{ width: 40, height: 40, cursor:'pointer' }} style={{border: '1px solid #0000002e'}} /> 
+                                : 
+                                <Typography component="div">
+                                    <Avatar alt={userInfo.firstName+" "+userInfo.lastName} {...StringToAvatar(userInfo.firstName+" "+userInfo.lastName)} style={{ width: 40, height:40, fontSize: 20, cursor:'pointer', border: '1px solid #0000002e' }} />
+                                </Typography> 
+                            }
+                        </IconButton>
+                        <Menu
+                            sx={{ mt: "45px", textAlign:'center' }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseUserMenu}
+                        >
+                            <span style={{margin:'10px 20px', fontSize:'20px'}}>{userInfo.firstName}</span>
+                            <MenuItem onClick={() => navigate('/profile')} style={{justifyContent:'center', marginTop:'5px'}}>
+                                <Typography textAlign="center">Profile</Typography>
+                            </MenuItem>
+                            <MenuItem onClick={logoutHandler} style={{justifyContent:'center'}}>
+                                <Typography textAlign="center">Logout</Typography>
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                    :
+                    
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Button onClick={() => navigate('/login')} sx={{ p: 0, color:'white' }}>
+                            <FaSignInAlt /> Sign In &nbsp; &nbsp;
+                        </Button>
+                        <Button onClick={() => navigate('/register')} sx={{ p: 0, color:'white' }}>
+                            <FaSignOutAlt /> Sign Up
+                        </Button>
+                    </Box>}
+                </Toolbar>
             </Container>
         </AppBar>
     );

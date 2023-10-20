@@ -148,6 +148,9 @@ const AllUtilitiesPage = () =>{
                                       label="Occupant Name"
                                       onChange={(e) => handleOccupantNameChange(e)}// Update selectedOccupant state
                                     >
+                                      
+                                      <MenuItem value="">All</MenuItem>
+
                                       {occupantData.map((occupantName,index) => (
                                         <MenuItem key={index} value={occupantName._id}>
                                           {occupantName.firstName}
@@ -182,9 +185,9 @@ const AllUtilitiesPage = () =>{
                       </Tab>
                     </Tabs>
                     {utilityType === 'Electricity' && <AllUtility boardingId ={selectedBoardingId} utilityType={utilityType} occupant={selectedOccupant}/>  }
-                    {utilityType === 'Water'&& <AllUtility boardingId ={selectedBoardingId} utilityType={utilityType}/> }
-                    {utilityType === 'Other' &&<AllUtility boardingId ={selectedBoardingId} utilityType={utilityType}/>  }
-                    {utilityType ==='UtilityReport' && <UtilityReport boardingId={selectedBoardingId}/>}
+                    {utilityType === 'Water'&& <AllUtility boardingId ={selectedBoardingId} utilityType={utilityType} occupant={selectedOccupant}/> }
+                    {utilityType === 'Other' &&<AllUtility boardingId ={selectedBoardingId} utilityType={utilityType} occupant={selectedOccupant}/>}
+                    {utilityType ==='UtilityReport' && <UtilityReport boardingId={selectedBoardingId} occupant={selectedOccupant}/>}
                   </Box> 
                 
                 </Col>

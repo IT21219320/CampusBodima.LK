@@ -5,7 +5,7 @@ import { addUtilities, deleteUtility, getBoarding, getOccupant, getUtilityBoardi
 const router = express.Router();
 router.post('/addUtility',addUtilities);
 router.post('/owner/utilities',getUtilitiesForBoarding);
-router.post('occupants/',getUtilitiesForOccupant);
+router.post('/occupants',getUtilitiesForOccupant);
 router.post('/owner/report',getUtilityReport);
 router.put('/owner/:utilityId',updateUtility);
 router.get('/owner/update/:boardingId/:utilityType/:utilityId',getUpdateUtility);

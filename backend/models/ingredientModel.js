@@ -22,6 +22,10 @@ const ingredientSchema = mongoose.Schema({
         ref: 'Boarding',
         required: true
     },
+    sortField: {
+        type: Number,
+        default: 0
+    }
 });
 
 const Ingredient = mongoose.model('Ingredient', ingredientSchema);

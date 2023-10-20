@@ -22,7 +22,7 @@ import ownerStyles from '../styles/ownerStyles.module.css';
 
 import defaultImage from '/images/defaultImage.png';
 
-const utilityReport = ({ boardingId }) => {
+const utilityReport = ({ boardingId ,occupant}) => {
 
     const [noticeStatus, setNoticeStatus] = useState(true);
     const [loading, setLoading] = useState(true);
@@ -52,7 +52,7 @@ const utilityReport = ({ boardingId }) => {
 
     const loadData = async () => {
       try {
-          const res = await getAllUtility( {boardingId,page, pageSize, UtilityType, startDate, endDate, date, search, sortBy, order} ).unwrap();
+          const res = await getAllUtility( {boardingId,occupant,page, pageSize, UtilityType, startDate, endDate, date, search, sortBy, order} ).unwrap();
           setTotalRows(res.totalRows)
           setUtilities(res.utility)
       } catch (err) {
@@ -64,12 +64,13 @@ const utilityReport = ({ boardingId }) => {
    useEffect(() => {
         
     loadData(); 
+    console.log(Utilities);
 
     if(totalRows < pageSize){
         setPage(0);
     }    
 
-   },[boardingId,page, pageSize, UtilityType, startDate, endDate, date, search, sortBy, order]);
+   },[boardingId,occupant,page, pageSize, UtilityType, startDate, endDate, date, search, sortBy, order]);
 
    const handleDialogOpen = (e, id) => {
     e.preventDefault();
@@ -111,18 +112,58 @@ const utilityReport = ({ boardingId }) => {
 
   const exportToPDF = () => {;
                 
-        // Create a new jsPDF instance
-        const doc = new jsPDF();
+    const doc = new jsPDF();
     
-        // Define the table headers
-        let headers = [["Utility Type", "Amount", "Description", "Date"]];
+    // company details
+    const companyDetails = {
+        name: "CampusBodima",
+        address: "138/K, Ihala Yagoda, Gampaha",
+        phone: "071-588-6675",
+        email: "info.campusbodima@gmail.com",
+        website: "www.campusbodima.com"
+    };
 
-         // Map IngredientHistory data to table rows
+    // logo
+    doc.addImage("/logo2.png", "PNG", 10, 10, 50, 30);
+
+    // Show company details
+    doc.setFontSize(15);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${companyDetails.name}`, 200, 20, { align: "right", style: "bold" });
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${companyDetails.address}`, 200, 25, { align: "right" });
+    doc.text(`${companyDetails.phone}`, 200, 29, { align: "right" });
+    doc.text(`${companyDetails.email}`, 200, 33, { align: "right" });
+    doc.text(`${companyDetails.website}`, 200, 37, { align: "right" });
+
+    // horizontal line
+    doc.setLineWidth(0.5);
+    doc.line(10, 45, 200, 45);
+
+    // Report details
+    doc.setFontSize(8);
+    doc.text(`Report of Utility`, 20, 55);
+    doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
+    doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
+
+    // Add report title
+    doc.setFontSize(12);
+    doc.text(`${UtilityType} List`, 85, 65);
+
+
+    // Define the table headers
+     let headers = ["Utility Type", "Amount","Month","Occupants","Per Cost","Description", "Date"];
+
+    // Map IngredientHistory data to table rows
          const data = Utilities.map((Utility) => [
             Utility.utilityType,
             Utility.amount,
+            Utility.month,
+            Utility.occupant.map((occupant) => occupant.firstName).join(', '),
+            Utility.perCost,
             Utility.description,
-            Utility.date,
+            formatDate(Utility.createdAt),
       ]);
 
       // Set the table styles
@@ -134,22 +175,29 @@ const utilityReport = ({ boardingId }) => {
 
       // Add the table to the PDF document
       doc.autoTable({
-          head: headers,
+          head: [headers],
           body: data,
           styles,
-          margin: { top: 70 },
-          startY: 50
+          margin: { top: 90 },
+          startY: 75
       });
 
-      doc.text("Utility List", 85, 40);
-      doc.setFontSize(8);
-      doc.text(`Report of Utility List`, 20, 20)
-      doc.text(`Date: ${new Date().toDateString()}`, 20, 24)
-      doc.text(`Owner: ${userInfo.firstName} ${userInfo.lastName}`, 20, 28)
+      
 
       doc.save("Utility_Report.pdf");
           
   };
+  function formatDate(isoDate) {
+    const date = new Date(isoDate);
+    const options = {
+      year: "numeric",
+      month: "long", // You can change "long" to "short" for abbreviated month names.
+      day: "numeric",
+    };
+    return date.toLocaleDateString("en-US", options);
+  }
+  
+  
 
 
   return (
@@ -185,7 +233,7 @@ const utilityReport = ({ boardingId }) => {
                         <Select
                             value={UtilityType}
                             label="UtilityType"
-                            onChange={(e) => setType(e.target.value)}
+                            onChange={(e) =>setUtilityType(e.target.value)}
                         >
                             <MenuItem value={'Electricity'}>Electricity</MenuItem>
                             <MenuItem value={'Water'}>Water</MenuItem>
@@ -220,8 +268,12 @@ const utilityReport = ({ boardingId }) => {
                                 <th>#</th>
                                 <th style={{cursor:'pointer'}} onClick={() => handleSortClick('type')}>Type {sortBy=="type" ? (order==1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
                                 <th style={{cursor:'pointer'}}>Amount</th> 
+                                <th style={{cursor:'pointer'}}>Month</th> 
+                                <th style={{cursor:'pointer'}}>Occupants</th> 
+                                <th style={{cursor:'pointer'}}>Per Cost</th> 
                                 <th style={{cursor:'pointer'}}>Description</th>
-                                <th style={{cursor:'pointer'}}>Date</th>
+                                <th style={{cursor:'pointer'}} onClick={() => handleSortClick('createdAt')}>Date {sortBy==="createdAt" ? (order===1 ? <ImSortAmountAsc /> : <ImSortAmountDesc />) : <BiSortAlt2 />}</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -233,8 +285,22 @@ const utilityReport = ({ boardingId }) => {
                                                     <td>{index+1}</td>
                                                     <td>{Utility.utilityType}</td>
                                                     <td>{Utility.amount}</td>
+                                                    <td>{Utility.month}</td>
+                                                    
+                                                    <td>
+                                                        {Utility.occupant.map((occup, index) => (
+                                                            <span key={index}>{occup.firstName}{index !== Utility.occupant.length - 1 ? ', ' : ''}</span>
+                                                        ))}
+                                                        {console.log('Utility.occupant:', Utility.occupant)}
+                                                        </td>
+
+                                                  
+
+                                                    <td>{Utility.perCost}</td>
                                                     <td>{Utility.description}</td>
-                                                    <td>{Utility.date}</td>
+                                                    <td>{formatDate(Utility.createdAt)}</td>
+
+
                                                 </tr>
                                             
                                     ))

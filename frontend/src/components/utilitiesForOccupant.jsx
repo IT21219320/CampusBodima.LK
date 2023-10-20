@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { Row, Col, Image, Button,Form } from 'react-bootstrap';
 import { Card, CardContent, Pagination, CircularProgress,IconButton } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetUtilitiesForBoardingMutation, useDeleteUtilityMutation ,useGetUtilitiesForOccupantMutation,useGetOccupantNameMutation } from "../slices/utilitiesApiSlice";
+import {useGetUtilitiesForOccupantMutation,useGetOccupantNameMutation } from "../slices/utilitiesApiSlice";
 import { toast } from 'react-toastify';
 import SearchIcon from '@mui/icons-material/Search';
 import storage from "../utils/firebaseConfig";
@@ -17,7 +15,7 @@ import { AlignHorizontalCenter } from "@mui/icons-material";
 
 
 
-const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
+const AllUtilitiesForOccupants = ({  utilityType }) => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [utilities, setUtilities] = useState([]);
@@ -27,8 +25,7 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
 
     const dispatch = useDispatch();
 
-    const [getUtilitiesForBoarding, { isLoading }] = useGetUtilitiesForBoardingMutation();
-    const [deleteUtility,{isLoadings}] = useDeleteUtilityMutation();
+    const [getUtilitiesForOccupants, { isLoading }] = useGetUtilitiesForOccupantMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
     const [getOccupantName,{isLoadings3}] = useGetOccupantNameMutation();
@@ -50,8 +47,8 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
 
     const loadData = async (pageNo) => {
         try {
-            if (boardingId && utilityType || occupant) {
-                const res = await getUtilitiesForBoarding({boardingId,utilityType,occupant,pageNo,searchQuery }).unwrap();
+            if ( utilityType ) {
+                const res = await getUtilitiesForOccupants({occupantID: userInfo._id,utilityType,pageNo,searchQuery }).unwrap();
                 console.log(res);
                 
                 setUtilities(res.utility);
@@ -89,7 +86,7 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
 
     useEffect(() => {
         loadData(page);
-    }, [boardingId,utilityType,occupant,searchQuery]);
+    }, [userInfo,utilityType,searchQuery]);
 
     const handlePageChange = (event, value) => {
         setPage(value);
@@ -97,21 +94,6 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
         console.log(utilities);
     };
 
-    const handleDeleteUtility = async (utilityId) => {
-        try {
-            const data = `${utilityId}`;
-            const res = await deleteUtility(data).unwrap();
-            console.log(res);
-            if (res.message===" Utility deleted successfully") {
-                toast.success("Utility deleted successfully");
-                loadData(page);
-            } else {
-                toast.error("Failed to delete utility");
-            }
-        } catch (err) {
-            toast.error(err.data?.message || err.error);
-        }
-    };
     const handleSort = (order) => {
         const sortedUtilities = [...utilities];
         if (order === "asc") {
@@ -140,11 +122,11 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                             </div>
                             </Col>
                             <Col className="d-flex justify-content-end">
-                            <Form.Group controlId="searchQuery" style={{ maxWidth: '300px'}}>
-                             <div style={{ display: 'flex'}}>
+                            <Form.Group controlId="searchQuery" style={{ maxWidth: '300px',alignSelf:'right' }}>
+                             <div style={{ display: 'flex', alignItems: 'right' }}>
                             <Form.Control
                                 type="text"
-                                placeholder="Search Description...."
+                                placeholder="Search…"
                                 value={searchQuery}
                                 onChange={handleSearch} // Handle search query change
                             />
@@ -189,26 +171,16 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                                     <p><b>Month:</b> {utility.month}</p>
                                                 
                                                 </Row>
-                                                <Row >
-                                                <p style={{ marginRight: '60px' }}><b>Description:</b> {utility.description}</p>
+                                                <Row>
+                                                    
+                                                <p><b>Description:</b> {utility.description}</p>
                                                 
                                                 </Row>
                                                 </Col>
                                                 <Col lg={5}>
 
-                                                {utility.occupant ? 
-                                                <Row>
-                                                <p><b>Occupant: </b>
-                                                    {utility.occupant.length === 0 ? "No occupants" : (
-                                                        utility.occupant.map((occup, index) => (
-                                                            <span key={index}>{occup.firstName}{index !== utility.occupant.length - 1 ? ', ' : ''}</span>
-                                                        ))
-                                                    )}
-                                                    {console.log('Utility.occupant:', utility.occupant)}
-                                                </p>
-                                            </Row>
-                                            
-                                                : ''}
+                                                
+                                                
                                                 
                                                 <Row>
                                                                 <p>
@@ -230,37 +202,7 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
 
                                                     
                                                         
-                                                    <Row>
-                                                    <Col className="d-flex justify-content-end">
-                                                            <Row>    
-                                                                <Col>
-                                                                    <Button
-                                                                        type="button"
-                                                                        onClick={() => handleDeleteUtility(utility._id)}
-                                                                        variant="outline-danger"
-                                                                        className="btn" // Add the 'btn' class to both buttons
-                                                                        style={{ width: '120px' }} // Set a specific width for both buttons
-                                                                    >
-                                                                        <DeleteIcon /> Delete
-                                                                    </Button>
-                                                                </Col>
-                                                                <Col>
-                                                                    <CustomLink to={`/owner/utility/update/${boardingId}/${utilityType}/${utility._id}`}>
-                                                                        <Button
-                                                                            type="button"
-                                                                            variant="outline-primary"
-                                                                            className="btn" // Add the 'btn' class to both buttons
-                                                                            style={{ width: '120px' }} // Set a specific width for both buttons
-                                                                        >
-                                                                            <EditOutlinedIcon /> Edit
-                                                                        </Button>
-                                                                    </CustomLink>
-                                                                </Col>
-                                                            </Row>
-                                                        </Col>
-
-
-                                                    </Row>
+                                                    
                                                     </Col>
                                                 </Row>
                                                </Col>
@@ -291,4 +233,4 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
     );
 };
 
-export default AllUtilitiesForBoardings;
+export default AllUtilitiesForOccupants;

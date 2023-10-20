@@ -54,15 +54,29 @@ const ViewAllReservations = ({ bId }) => {
   const [getBording] = useGetBoardingBybIdMutation();
 
   const [reservations, setReservations] = useState([]);
-  const [boardingId , setBoardingId] = useState('');
+  const [boardingId, setBoardingId] = useState('');
+  const [searchWord, setSearchWord] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const handleSearch = (e) => {
+    setSearchWord(e.target.value);
+  }
+
+  const filteredReservations = reservations.filter(reservation => {
+    return reservation.firstName.toLowerCase().includes(searchWord.toLowerCase()) ||
+      reservation.lastName.toLowerCase().includes(searchWord.toLowerCase());
+  });
 
   const loadData = async () => {
     try {
+      setLoading(true)
+
       const res = await getReservation({ boardingId: bId }).unwrap();
-      const resbor = await getBording({ bId:bId })
+      const resbor = await getBording({ bId: bId })
       setReservations(res);
       setBoardingId(resbor.data.selectedBoarding);
       console.log(resbor.data.selectedBoarding);
+      setLoading(false)
 
     } catch (error) {
       console.error('Error getting boardings', error);
@@ -77,64 +91,99 @@ const ViewAllReservations = ({ bId }) => {
   return (
     <>
       <div style={{ marginTop: '17px' }}>
-        <input id="outlined-search" type="search" placeholder="Search occupant name..." style={searchStyle} onChange={(e) => setWord(e.target.value)} />
+        <input id="outlined-search"
+          type="search"
+          placeholder="Search occupant name..."
+          style={searchStyle}
+          value={searchWord}
+          onChange={handleSearch}
+        />
 
         <IconButton>
           <SearchIcon />
         </IconButton>
       </div>
+      {loading ? (
+        <>
+          <div style={{ width: '100%', height: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CircularProgress />
+          </div>
+        </>) : (
+        <>
+          <TableContainer component={Paper} style={{ marginTop: "30px" }}>
+            <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+              <TableHead style={{ backgroundColor: "#242745" }}>
+                <TableRow>
+                  <TableCell style={{ color: "#ffffff" }}>Reservation ID</TableCell>
+                  <TableCell align="right" style={{ color: "#ffffff" }}>First Name</TableCell>
+                  <TableCell align="right" style={{ color: "#ffffff" }}>Second Name</TableCell>
+                  <TableCell align="right" style={{ color: "#ffffff" }}>Email</TableCell>
+                  <TableCell align="right" style={{ color: "#ffffff" }}>Date</TableCell>
+                  <TableCell align="right" style={{ color: "#ffffff" }}>Duration</TableCell>
+                  {console.log(boardingId.boardingType)}
+                  {boardingId.boardingType === 'Hostel' ? (
+                    <TableCell align="right" style={{ color: "#ffffff" }}>Room Number</TableCell>
+                  ) : (
+                    <>
+                      <TableCell align="right" style={{ color: "#ffffff" }}>Duration</TableCell>
+                    </>)}
 
-      <TableContainer component={Paper} style={{ marginTop: "30px" }}>
-        <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-          <TableHead style={{ backgroundColor: "#242745" }}>
-            <TableRow>
-              <TableCell style={{ color: "#ffffff" }}>Reservation ID</TableCell>
-              <TableCell align="right" style={{ color: "#ffffff" }}>Name</TableCell>
-              <TableCell align="right" style={{ color: "#ffffff" }}>Date</TableCell>
-              <TableCell align="right" style={{ color: "#ffffff" }}>Duration</TableCell>
-              {console.log(boardingId.boardingType)}
-              {boardingId.boardingType === 'Hostel'? (
-                <TableCell align="right" style={{ color: "#ffffff" }}>Room Number</TableCell>
-              ):(<></>)}
-              
-            </TableRow>
-          </TableHead>
-          <TableBody style={{ backgroundColor: '#858bc72b' }}>
+                </TableRow>
+              </TableHead>
+              <TableBody style={{ backgroundColor: '#858bc72b' }}>
 
-            {reservations.length > 0 ? (
-              <>
-                {reservations.map((reservation) => (
-                  <TableRow
-                    key={reservation.Id}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {reservation.Id}
-                    </TableCell>
+                {reservations.length > 0 ? (
+                  <>
+                    {filteredReservations.length > 0 ? (<>{filteredReservations.map((reservation) => (
+                      <TableRow
+                        key={reservation.Id}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      >
+                        <TableCell component="th" scope="row">
+                          {reservation.Id}
+                        </TableCell>
 
-                    <TableCell align="right">{reservation.Name}</TableCell>
-                    <TableCell align="right">{new Date(reservation.Date).toDateString()}</TableCell>
-                    <TableCell align="right">{reservation.Duration}</TableCell>
-                    {reservation.bType === 'Hostel'&&(
-                    <TableCell align="right">{reservation.RoomNo}</TableCell>
-                    )}
+                        <TableCell align="right">{reservation.firstName}</TableCell>
+                        <TableCell align="right">{reservation.lastName}</TableCell>
+                        <TableCell align="right">{reservation.email}</TableCell>
+                        <TableCell align="right">{new Date(reservation.Date).toDateString()}</TableCell>
+                        <TableCell align="right">{reservation.Duration}</TableCell>
+                        {reservation.bType === 'Hostel' && (
+                          <TableCell align="right">{reservation.RoomNo}</TableCell>
+                        )}
 
-                  </TableRow>
-                ))
-                }</>) : (<>
-                  <TableRow>
-                    <TableCell align="right">   </TableCell>
-                    <TableCell align="right">   </TableCell>
-                    <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No Reservations to display</TableCell>
-                    <TableCell align="right">   </TableCell>
-                    
-                  </TableRow>
+                      </TableRow>
+                    ))
+                    }</>) : (<> <TableRow style={{ color: 'rgb(255, 255, 255)' }}>
+                      <TableCell align="right">   </TableCell>
+                      <TableCell align="right">   </TableCell>
+                      <TableCell align="right">   </TableCell>
+                      <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No Reservations to display</TableCell>
+                      <TableCell align="right">   </TableCell>
+                      <TableCell align="right">   </TableCell>
+                      <TableCell align="right">   </TableCell>
 
-                </>)}
+                    </TableRow>
+                    </>)}
+                  </>) : (<>
+                    <TableRow>
+                      <TableCell align="right">   </TableCell>
+                      <TableCell align="right">   </TableCell>
+                      <TableCell align="right">   </TableCell>
+                      <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No Reservations to display</TableCell>
+                      <TableCell align="right">   </TableCell>
+                      <TableCell align="right">   </TableCell>
+                      <TableCell align="right">   </TableCell>
 
-          </TableBody>
-        </Table>
-      </TableContainer>
+                    </TableRow>
+
+                  </>)}
+
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>)}
+
     </>
   )
 }

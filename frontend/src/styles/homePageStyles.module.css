@@ -1,6 +1,79 @@
 .homeBackDiv{
     
     background-repeat: no-repeat;
-    width:100%;
-    height:500px;
+    width: calc(100% - 6px);
+    position: fixed;
+}
+
+.homeDarkDiv{
+    background-color: black;
+    opacity: 0.5;
+    height: 600px;
+    width: calc(100% - 6px);
+    position: fixed;
+}
+
+.homeWelcText{
+    position: absolute;
+    top: 420px;
+    color: white;
+    margin-left: 10%;
+    text-align: center;
+}
+
+.servicesDiv{
+    height: 880px;
+    background-color: white;
+    position: absolute;
+    top: 600px;
+    width: 100%;
+}
+
+.getStartBtn{
+    color: white !important;
+    border: 1px solid white !important;
+}
+
+.getStartBtn:hover{
+    color: rgb(192, 192, 192) !important;
+    border: 1px solid rgb(192, 192, 192) !important;
+}
+
+.h1{
+    font-family: Verdana;
+    width: 0px !important;
+    overflow: hidden;
+    transition: all ease-in 1s;
+    text-wrap: nowrap;
+    display: flex;
+    justify-content: center;
+}
+
+.animH1{
+    width: 100% !important;
+}
+
+.doDivs{
+    padding: 10%;
+    height: 220px;
+    border-radius: 10px;
+    box-shadow: 3px 6px 24px 1px gray;
+    transition: transform 0.5s ease;
+}
+
+.doDivs:hover{
+    transform: scale(1.05);
+    
+}
+
+.doDivsimgDiv{
+    width:80%;
+    height:100px;
+}
+
+.doDivP{
+    color: red;
+    font-family: Georgia;
+    font-size: larger;
+    text-decoration: none;
 }
