@@ -243,10 +243,10 @@ console.log(res);
               <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                 <TableHead>
                   <TableRow>
-                  <TableCell align="center">Image</TableCell>
-                  <TableCell align="center">Product</TableCell>
-                  <TableCell align="center">Price</TableCell>
-                  <TableCell align="center">Action</TableCell>
+                  <TableCell align="center" ><b>Image</b></TableCell>
+                  <TableCell align="center"><b>Product</b></TableCell>
+                  <TableCell align="center"><b>Price</b></TableCell>
+                  <TableCell align="center"><b>Action</b></TableCell>
                   </TableRow>
                 </TableHead>
                 <tbody>
