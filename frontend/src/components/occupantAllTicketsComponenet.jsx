@@ -46,6 +46,8 @@ const OccupantAllTickets = ({search}) =>{
     
     const loadData = async () => {
         try{
+            
+            console.log(startDate);
             const res = await getUserTickets( {id:userInfo._id, page, rowsPerPage, category, subCategory, status, startDate, endDate, date, search, sortColumn, order} ).unwrap();
             setTickets(res.tickets);
             setTotalRows(res.totalRows);
@@ -75,9 +77,8 @@ const OccupantAllTickets = ({search}) =>{
     },[page,rowsPerPage,category, subCategory, status, startDate, endDate, date, search, sortColumn, order]);  //when the values that are inside the box brackets change,each time loadData function runs
 
     const handleDateRangeSelect = (ranges) =>{
-        console.log(ranges);
-        setStartDate(ranges.selection.startDate);
-        setEndDate(ranges.selection.endDate);
+        setStartDate(new Date(ranges.selection.startDate));
+        setEndDate(new Date(ranges.selection.endDate));
         setDate('range');
     }
 
@@ -148,6 +149,43 @@ const OccupantAllTickets = ({search}) =>{
                
            // Create a new jsPDF instance
            const doc = new jsPDF();
+
+            // company details
+            const companyDetails = {
+            name: "CampusBodima",
+            address: "138/K, Ihala Yagoda, Gampaha",
+            phone: "071-588-6675",
+            email: "info.campusbodima@gmail.com",
+            website: "www.campusbodima.com"
+            };
+    
+            // logo
+            doc.addImage("/logo2.png", "PNG", 10, 10, 50, 30);
+        
+            // Show company details
+            doc.setFontSize(15);
+            doc.setFont("helvetica", "bold");
+            doc.text(`${companyDetails.name}`, 200, 20, { align: "right", style: "bold" });
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${companyDetails.address}`, 200, 25, { align: "right" });
+            doc.text(`${companyDetails.phone}`, 200, 29, { align: "right" });
+            doc.text(`${companyDetails.email}`, 200, 33, { align: "right" });
+            doc.text(`${companyDetails.website}`, 200, 37, { align: "right" });
+        
+            // horizontal line
+            doc.setLineWidth(0.5);
+            doc.line(10, 45, 200, 45);
+
+            //Report details
+
+            doc.setFontSize(12)
+            doc.text(`Report of Ticket List`, 80, 70)
+            doc.setFontSize(10);
+            doc.text(`Date: ${new Date().toDateString()}`, 20, 59)
+            doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 55)
+            doc.text(`Boarding: ${tickets[0].boardingId?.boardingName}`, 20, 63)
+
        
            // Define the table headers
            const headers = [["Reference Id", "Subject", "Description", "Category", "Sub Category", "Status", "Date"]];
@@ -176,19 +214,10 @@ const OccupantAllTickets = ({search}) =>{
              head: headers,
              body: data,
              styles,
-             margin: { top: 70 },
-             startY: 50
+             margin: { top: 90 },
+             startY: 75
            });
-       
-           
-       
-           doc.text("Tickets List", 90, 10);
-           doc.setFontSize(9);
-           doc.text(`Report of Ticket List`, 20, 20)
-           doc.text(`Date: ${new Date().toDateString()}`, 20, 24)
-           doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 28)
-           doc.text(`Boarding: ${tickets[0].boardingId?.boardingName}`, 20, 32)
-       
+              
            doc.save("Tiickets.pdf");
        
    };
