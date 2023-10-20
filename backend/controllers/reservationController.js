@@ -193,9 +193,11 @@ const getMyReservation = asyncHandler(async (req, res) => {
 
     if (ViewMyReservation) {
 
-        if (ViewMyReservation.boardingType === "Annex" && ViewMyReservation.status === "Approved") {
+        if (ViewMyReservation.boardingType === "Annex" ) {
             const myDetails = {
                 Id: ViewMyReservation._id,
+                paymentStatus:ViewMyReservation.paymentStatus,
+                status: ViewMyReservation.status,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 bType: ViewMyReservation.boardingType,
@@ -217,10 +219,12 @@ const getMyReservation = asyncHandler(async (req, res) => {
                 myDetails,
             })
 
-        } else if (ViewMyReservation.boardingType === "Hostel" && ViewMyReservation.status === "Approved") {
+        } else if (ViewMyReservation.boardingType === "Hostel" ) {
 
             const myDetails = {
                 Id: ViewMyReservation._id,
+                paymentStatus:ViewMyReservation.paymentStatus,
+                status: ViewMyReservation.status,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 bType: ViewMyReservation.boardingType,

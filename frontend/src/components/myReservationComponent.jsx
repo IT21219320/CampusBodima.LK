@@ -57,7 +57,7 @@ const MyReservationComponent = () => {
   const [myReservation, setMyReservation] = useState();
   const [updateS, setUpdateS] = useState()
   const [deleteS, setDeleteS] = useState();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -67,10 +67,11 @@ const MyReservationComponent = () => {
 
       const res = await getMyReservation({ _id: userInfo._id }).unwrap();
       setMyReservation(res.myDetails);
-
+      console.log(res.myDetails);
       setLoading(false)
 
     } catch (error) {
+      setLoading(false)
       console.error('Error getting reservation', error);
     }
 
@@ -169,187 +170,212 @@ const MyReservationComponent = () => {
 
             {myReservation ? (
               <>
-                <Row>
-
-                  <Col style={{ marginLeft: '10px', marginRight: '10px' }}>
-
-                    <Row>
-                      <div style={myStyle}> </div>
-                    </Row>
-
-                    <Row>
-                      <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '35pxpx', marginTop: '20px' }}>
-
-                        <h5 style={{ marginBottom: '25px', marginTop: "10px", fontWeight: "bold" }}>Boarding Owner Details</h5>
-
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}><AccountCircleIcon fontSize="small" />Owner Name</p> <p >{myReservation.ownerFName + "  " + myReservation.ownerLName}</p>
-
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}><MailIcon fontSize="small" />Email</p> <p >{myReservation.ownerEmail}</p>
-
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}><LocalPhoneIcon fontSize="small" />Phone Number</p> <p >{myReservation.ownerPhone}</p>
-
-                      </div>
-
-                    </Row>
-
-                    <Row>
-                      <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '35pxpx', marginTop: '20px' }}>
-
-                        <h5 style={{ marginBottom: '25px', marginTop: "10px", fontWeight: "bold" }}>Owner Bank Details</h5>
-
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Account Number</p> <p >{myReservation.ownerAccNo}</p>
-
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Holder Name</p> <p >{myReservation.ownerHoldName}</p>
-
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Bank Name</p> <p >{myReservation.ownerBankName}</p>
-
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Branch Name</p> <p >{myReservation.ownerBranch}</p>
-
-                      </div>
-
-                    </Row>
-
-                  </Col>
-
-                  <Col>
-
+                {myReservation.paymentStatus === "Pending" && myReservation.status === "Pending" ? (
+                  <>
+                    <center>
+                      <h1 style={{ marginTop: '270px', fontFamily: 'cursive', color: '#afb5be' }}>
+                        <p>Thank yoy for choosing us</p>
+                        <p>Please wait until owner approves the boarding</p>
+                      </h1>
+                    </center>
+                  </>
+                ) : myReservation.paymentStatus === "Pending" && myReservation.status === "Approved" ? (
+                  <>
+                    <center>
+                      <h1 style={{ marginTop: '270px', fontFamily: 'cursive', color: '#afb5be' }}>
+                        <p>Your Reseravtion has Approved. </p>
+                        <p>Please make your initia payment as soon as posible</p>
+                      </h1>
+                    </center>
+                  </>
+                ) : myReservation.paymentStatus === "Paid" && myReservation.status === "Approved" && (
+                  <>
                     <Row>
 
-                      <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '25px', marginTop: '20px', borderRadius: '20px', height: '96%' }}>
-                        <h3 style={{ marginBottom: '30px', textAlign: "center" }}>My Reservation Details</h3>
+                      <Col style={{ marginLeft: '10px', marginRight: '10px' }}>
 
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Fisrt Name</p> <p >{myReservation.firstName}</p>
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Last Name</p> <p >{myReservation.lastName}</p>
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Type</p> <p >{myReservation.bType}</p>
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Name</p> <p >{myReservation.bName}</p>
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Address</p> <p >{myReservation.bAddress}</p>
+                        <Row>
+                          <div style={myStyle}> </div>
+                        </Row>
 
-                        {myReservation.bType === 'Hostel' && (
-                          <>
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Room Number</p> <p >{myReservation.rNo}</p>
+                        <Row>
+                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '35pxpx', marginTop: '20px' }}>
 
-                          </>)}
+                            <h5 style={{ marginBottom: '25px', marginTop: "10px", fontWeight: "bold" }}>Boarding Owner Details</h5>
 
-                        <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Monthly Rent</p> <p >{myReservation.rent}</p>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}><AccountCircleIcon fontSize="small" />Owner Name</p> <p >{myReservation.ownerFName + "  " + myReservation.ownerLName}</p>
 
-                      </div>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}><MailIcon fontSize="small" />Email</p> <p >{myReservation.ownerEmail}</p>
 
-                    </Row>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}><LocalPhoneIcon fontSize="small" />Phone Number</p> <p >{myReservation.ownerPhone}</p>
 
-                    <Row>
-
-                      <div style={myStyle}>
-
-                        <p style={{ float: "left", width: "55%", fontWeight: "bold" }}>Reserved Date</p> <p >{new Date(myReservation.reservedDt).toDateString()}</p>
-                        <p style={{ float: "left", width: "55%", fontWeight: "bold" }}>Reserved Duration</p> <p >{myReservation.Duration}</p>
-
-                        <Row style={{ marginTop: '20px' }}>
-
-                          <Col>
-
-                            <Button variant="contained" size="small" style={{ backgroundColor: '#0a9954', borderRadius: '20px', width: '195px' }} onClick={handleClickOpen}>Update</Button>
-
-                            <Dialog open={open} onClose={handleClose}>
-
-                              <DialogTitle>Upadte Reservation Period</DialogTitle>
-
-                              <DialogContent>
-
-                                <DialogContentText>
-                                  Choose the number of months to be extend, from the date you reserved the boarding.
-                                </DialogContentText>
-
-                                <FormControl sx={{ m: 1, minWidth: 80 }}>
-
-                                  <InputLabel id="demo-simple-select-autowidth-label">Duration</InputLabel>
-
-                                  <Select
-                                    labelId="demo-simple-select-autowidth-label"
-                                    id="demo-simple-select-autowidth"
-                                    value={duration}
-                                    onChange={(e) => setDuration(e.target.value)}
-                                    autoWidth
-                                    label="Duration"
-                                  >
-                                    <MenuItem value="">
-                                      <em>None</em>
-                                    </MenuItem>
-                                    <MenuItem value={3}>03 Months</MenuItem>
-                                    <MenuItem value={6}>06 Months</MenuItem>
-                                    <MenuItem value={12}>01 Year</MenuItem>
-                                    <MenuItem value={24}>02 Years</MenuItem>
-
-                                  </Select>
-
-                                </FormControl>
-
-                              </DialogContent>
-
-                              <DialogActions>
-                                <Button onClick={handleClose}>Cancel</Button>
-                                <Button onClick={handleClose}>Save</Button>
-                              </DialogActions>
-
-                            </Dialog>
-
-                          </Col>
-
-                          <Col>
-
-                            <Button variant="contained" size="small" style={{ backgroundColor: '#d86872', borderRadius: '20px', width: '195px' }} onClick={handleDltClickOpen}>Delete</Button>
-
-                            <Dialog open={dltOpen} onClose={handleDltClose}>
-
-                              <DialogTitle>Delete Reservation</DialogTitle>
-
-                              <DialogContent>
-
-                                <DialogContentText>
-
-                                  <p style={{ color: '#ff0000' }}>Are you sure you want to delete this reservation?</p>
-                                  <p>To delete your reservation, Enter the email that used to do the reservation above.</p>
-
-                                </DialogContentText>
-
-                                <TextField
-                                  autoFocus
-                                  margin="dense"
-                                  id="name"
-                                  label="Email Address"
-                                  type="email"
-                                  value={email}
-                                  onChange={(e) => setEmail(e.target.value)}
-                                  fullWidth
-                                  variant="standard"
-                                />
-
-                              </DialogContent>
-
-                              <DialogActions>
-                                <Button onClick={handleDltcancel}>Cancel</Button>
-                                <Button onClick={handleDltClose}>Delete</Button>
-                              </DialogActions>
-
-                            </Dialog>
-
-                          </Col>
+                          </div>
 
                         </Row>
 
-                      </div>
+                        <Row>
+                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '35pxpx', marginTop: '20px' }}>
+
+                            <h5 style={{ marginBottom: '25px', marginTop: "10px", fontWeight: "bold" }}>Owner Bank Details</h5>
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Account Number</p> <p >{myReservation.ownerAccNo}</p>
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Holder Name</p> <p >{myReservation.ownerHoldName}</p>
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Bank Name</p> <p >{myReservation.ownerBankName}</p>
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Branch Name</p> <p >{myReservation.ownerBranch}</p>
+
+                          </div>
+
+                        </Row>
+
+                      </Col>
+
+                      <Col>
+
+                        <Row>
+
+                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '25px', marginTop: '20px', borderRadius: '20px', height: '96%' }}>
+                            <h3 style={{ marginBottom: '30px', textAlign: "center" }}>My Reservation Details</h3>
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Fisrt Name</p> <p >{myReservation.firstName}</p>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Last Name</p> <p >{myReservation.lastName}</p>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Type</p> <p >{myReservation.bType}</p>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Name</p> <p >{myReservation.bName}</p>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Address</p> <p >{myReservation.bAddress}</p>
+
+                            {myReservation.bType === 'Hostel' && (
+                              <>
+                                <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Room Number</p> <p >{myReservation.rNo}</p>
+
+                              </>)}
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Monthly Rent</p> <p >{myReservation.rent}</p>
+
+                          </div>
+
+                        </Row>
+
+                        <Row>
+
+                          <div style={myStyle}>
+
+                            <p style={{ float: "left", width: "55%", fontWeight: "bold" }}>Reserved Date</p> <p >{new Date(myReservation.reservedDt).toDateString()}</p>
+                            <p style={{ float: "left", width: "55%", fontWeight: "bold" }}>Reserved Duration</p> <p >{myReservation.Duration}</p>
+
+                            <Row style={{ marginTop: '20px' }}>
+
+                              <Col>
+
+                                <Button variant="contained" size="small" style={{ backgroundColor: '#0a9954', borderRadius: '20px', width: '195px' }} onClick={handleClickOpen}>Update</Button>
+
+                                <Dialog open={open} onClose={handleClose}>
+
+                                  <DialogTitle>Upadte Reservation Period</DialogTitle>
+
+                                  <DialogContent>
+
+                                    <DialogContentText>
+                                      Choose the number of months to be extend, from the date you reserved the boarding.
+                                    </DialogContentText>
+
+                                    <FormControl sx={{ m: 1, minWidth: 80 }}>
+
+                                      <InputLabel id="demo-simple-select-autowidth-label">Duration</InputLabel>
+
+                                      <Select
+                                        labelId="demo-simple-select-autowidth-label"
+                                        id="demo-simple-select-autowidth"
+                                        value={duration}
+                                        onChange={(e) => setDuration(e.target.value)}
+                                        autoWidth
+                                        label="Duration"
+                                      >
+                                        <MenuItem value="">
+                                          <em>None</em>
+                                        </MenuItem>
+                                        <MenuItem value={3}>03 Months</MenuItem>
+                                        <MenuItem value={6}>06 Months</MenuItem>
+                                        <MenuItem value={12}>01 Year</MenuItem>
+                                        <MenuItem value={24}>02 Years</MenuItem>
+
+                                      </Select>
+
+                                    </FormControl>
+
+                                  </DialogContent>
+
+                                  <DialogActions>
+                                    <Button onClick={handleClose}>Cancel</Button>
+                                    <Button onClick={handleClose}>Save</Button>
+                                  </DialogActions>
+
+                                </Dialog>
+
+                              </Col>
+
+                              <Col>
+
+                                <Button variant="contained" size="small" style={{ backgroundColor: '#d86872', borderRadius: '20px', width: '195px' }} onClick={handleDltClickOpen}>Delete</Button>
+
+                                <Dialog open={dltOpen} onClose={handleDltClose}>
+
+                                  <DialogTitle>Delete Reservation</DialogTitle>
+
+                                  <DialogContent>
+
+                                    <DialogContentText>
+
+                                      <p style={{ color: '#ff0000' }}>Are you sure you want to delete this reservation?</p>
+                                      <p>To delete your reservation, Enter the email that used to do the reservation above.</p>
+
+                                    </DialogContentText>
+
+                                    <TextField
+                                      autoFocus
+                                      margin="dense"
+                                      id="name"
+                                      label="Email Address"
+                                      type="email"
+                                      value={email}
+                                      onChange={(e) => setEmail(e.target.value)}
+                                      fullWidth
+                                      variant="standard"
+                                    />
+
+                                  </DialogContent>
+
+                                  <DialogActions>
+                                    <Button onClick={handleDltcancel}>Cancel</Button>
+                                    <Button onClick={handleDltClose}>Delete</Button>
+                                  </DialogActions>
+
+                                </Dialog>
+
+                              </Col>
+
+                            </Row>
+
+                          </div>
+
+                        </Row>
+
+                      </Col>
 
                     </Row>
 
-                  </Col>
+                  </>
+                )}
 
-                </Row>
               </>) : (
               <>
                 <center><h1 style={{ marginTop: '270px', fontFamily: 'cursive', color: '#afb5be' }}>You haven't done any reservations</h1></center>
               </>
             )}
 
-          </>)}
+          </>
+        )}
 
       </Container>
     </>
