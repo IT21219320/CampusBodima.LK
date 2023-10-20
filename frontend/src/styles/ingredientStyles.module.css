@@ -29,6 +29,36 @@
     background: #fa2121 !important; /* Lighter red on hover */
 }
 
+.nohover{
+  text-align: center !important;
+}
+
+.alert td{
+  background-color: #f5e550 !important;
+}
+
+.lowAlert td{
+  background-color: rgb(248, 161, 0) !important;
+}
+
+.veryLowAlert td{
+  background-color:#f66257 !important;
+}
+
+.alert td:nth-child(5){
+  background-color: white !important;
+}
+
+.lowAlert td:nth-child(5){
+  background-color: white !important;
+}
+
+.veryLowAlert td:nth-child(5){
+  background-color: white !important;
+}
+
+
+
    
   
   

@@ -13,71 +13,71 @@ const addMenu = asyncHandler(async (req, res) => {
     foodImage,
   } = req.body;
 
-      
-      const existingItem = await Menu.findOne({boarding,owner:ownerId,product:product});
-      console.log(existingItem);
 
-      if(existingItem){
-        res.status(400);
-        throw new Error("You can't enter same product two times!!");
-      }else{
+  const existingItem = await Menu.findOne({ boarding, owner: ownerId, product: product });
+  console.log(existingItem);
 
-      const menu = await Menu.create({
-        product:product,
-        boarding:boarding,
-        price:price,
-        foodImage:foodImage,
-        owner:ownerId,
-      });
-      res.status(201).json(menu);
-    }
-    
-  });
-  
-  
+  if (existingItem) {
+    res.status(400);
+    throw new Error("You can't enter same product two times!!");
+  } else {
+
+    const menu = await Menu.create({
+      product: product,
+      boarding: boarding,
+      price: price,
+      foodImage: foodImage,
+      owner: ownerId,
+    });
+    res.status(201).json(menu);
+  }
+
+});
+
+
 
 
 
 const getOwnerMenu = asyncHandler(async (req, res) => {
-    
-    const ownerId = req.body.ownerId;
-    
-    //const .. ..df= ..d
-    let boardingId = req.body.boardingId;
-    console.log(boardingId);
-    if(!boardingId){
-      boardingId = await Boarding.findOne({ inventoryManager: ownerId });
-      boardingId = boardingId._id.toString();
-    }
-    //1.const boarding = get boardings that has inventoryManager as ownerId
-    const boarding = await Boarding.find({ inventoryManager: ownerId }).select('boardingName');
-    //if(boarding.lenght > 0){}else{thrw err no assigned boardings}
-    
-    if (boarding.length > 0) {
-      try {
-        const menu = await Menu.find({owner:ownerId, boarding:boardingId});
-        if (menu) {
-            res.status(200).json({
-              menu,
-              boarding,
-            });
-        } else {
-            res.status(404).json({
-                message: "No Menu Available",
-            });
-        }
-    } catch (error) {
-        res.status(500).json({
-            message: "Server error",
+
+  const ownerId = req.body.ownerId;
+
+  //const .. ..df= ..d
+  let boardingId = req.body.boardingId;
+  console.log(boardingId);
+  if (!boardingId) {
+    boardingId = await Boarding.findOne({ inventoryManager: ownerId });
+    boardingId = boardingId._id.toString();
+  }
+  //1.const boarding = get boardings that has inventoryManager as ownerId
+  const boarding = await Boarding.find({ inventoryManager: ownerId }).select('boardingName');
+  //if(boarding.lenght > 0){}else{thrw err no assigned boardings}
+
+  if (boarding.length > 0) {
+    try {
+      const menu = await Menu.find({ owner: ownerId, boarding: boardingId });
+      if (menu) {
+        res.status(200).json({
+          menu,
+          boarding,
         });
+      } else {
+        res.status(404).json({
+          message: "No Menu Available",
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: "Server error",
+      });
     }
   } else {
-      throw new Error("Sorry, No boardings assigned to you!!");
+    throw new Error("Sorry, No boardings assigned to you!!");
   }
-  
-    //if(bid == ''){}
 
- 
+  //if(bid == ''){}
+
+
 
 });
 
@@ -85,32 +85,32 @@ const getOwnerMenu = asyncHandler(async (req, res) => {
 // route    PUT /api/menues/owner
 // @access  Private - Owner
 const updateMenu = asyncHandler(async (req, res) => {
-    const menu = await Menu.findOne({_id:req.body._id});    
-    if (menu) {
-      menu.price = req.body.price||menu.price;
-      menu.cost = req.body.cost||menu.cost;
-      
-      const updateMenu = await menu.save();
+  const menu = await Menu.findOne({ _id: req.body._id });
+  if (menu) {
+    menu.price = req.body.price || menu.price;
+    menu.cost = req.body.cost || menu.cost;
+
+    const updateMenu = await menu.save();
 
     res.status(200).json({
-      
-      product:updateMenu.product,
-      price:updateMenu.price,
-      boarding:updateMenu.boarding,
-      ownerId:updateMenu.ownerId,
+
+      product: updateMenu.product,
+      price: updateMenu.price,
+      boarding: updateMenu.boarding,
+      ownerId: updateMenu.ownerId,
 
     });
-    }else{
-      res.status(404);
-      throw new Error('Menu not found');
-     }
+  } else {
+    res.status(404);
+    throw new Error('Menu not found');
+  }
 });
 
 // @desc    Delete Menu of particular owner
 // route    DELETE /api/menues/owner/:ownerId/:menuId
 // @access  Private - Owner
 const deleteMenu = asyncHandler(async (req, res) => {
-    const menuId = req.body._id;
+  const menuId = req.body._id;
   console.log(menuId);
   try {
     const menu = await Menu.findById(menuId);
@@ -120,7 +120,7 @@ const deleteMenu = asyncHandler(async (req, res) => {
       throw new Error("Item not found");
     }
 
-    await Menu.deleteOne({ _id:menuId });
+    await Menu.deleteOne({ _id: menuId });
     res.status(200).json({
       message: "Menu Item deleted successfully"
     });
@@ -132,9 +132,9 @@ const deleteMenu = asyncHandler(async (req, res) => {
   }
 });
 
-export { 
-    addMenu,
-    getOwnerMenu,
-    updateMenu,
-    deleteMenu    
+export {
+  addMenu,
+  getOwnerMenu,
+  updateMenu,
+  deleteMenu
 };

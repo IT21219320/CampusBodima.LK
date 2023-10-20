@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Row, Col, Table, Button, Form } from 'react-bootstrap';
+import { Row, Col, Table, Button, Form,Card } from 'react-bootstrap';
 import { Link, Pagination, CircularProgress,IconButton,Paper,InputBase } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
@@ -36,14 +36,14 @@ const AllIngredients = ({ boardingId }) => {
     const [deleteBoardingIngredient, { isLoading2 }] = useDeleteIngredientsMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
-    console.log("Value is",userInfo);
+     
 
     const loadData = async (pageNo) => {
         try {
             if (boardingId) {
     
                 const res = await getBoardingIngredient({boardingId,pageNo,searchQuery}).unwrap();
-                console.log(res);
+
                 setIngredients(res.ingredient);
                 setTotalPages(res.totalPages);
             }
@@ -59,7 +59,7 @@ const AllIngredients = ({ boardingId }) => {
     const handlePageChange = (event, value) => {
         setPage(value);
         loadData(value);    
-        console.log(ingredients);   
+            
     };
 
     const handleDeleteIngredient = async (boardingId, ingredientId) => {
@@ -101,7 +101,7 @@ const AllIngredients = ({ boardingId }) => {
                 <Col><Link href={`/${userInfo.userType}/ingredient/add`}><Button className="mt-4" style={{background: '#685DD8'}}><KitchenIcon/> Add New Ingredient</Button></Link></Col>
             </Row>
             <Row style={{minHeight:'calc(100vh - 240px)'}}>
-                <Col>
+                <Col lg={10}>
                     {isLoading ? (
                         <div style={{width:'100%',height:'100%',display: 'flex',alignItems: 'center',justifyContent: 'center'}}>
                             <CircularProgress />
@@ -119,7 +119,7 @@ const AllIngredients = ({ boardingId }) => {
                             </thead>
                             <tbody>
                             {ingredients.map((ingredient, index) => (
-                                <tr key={index}>
+                                <tr key={index} className={`${ingredient.sortField < 1 ? (ingredient.sortField <= 0.3 ? ingredientStyles.veryLowAlert : (ingredient.sortField <= 0.6 ? ingredientStyles.lowAlert : ingredientStyles.alert)) : ''}`}>
                                 <td>{ingredient.ingredientName}</td>
                                 <td>{ingredient.quantity}</td>
                                 <td>{ingredient.measurement}</td>
@@ -144,13 +144,35 @@ const AllIngredients = ({ boardingId }) => {
                             
                         ):(
                             <div style={{height:'100%', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
-                                {boardingId ? 
+                                {boardingId ? ( 
                                     <h2>You don't have any Ingredients!</h2>
-                                :
-                                    <h2>Please Select a boarding!</h2>
-                                }
+                                ) : (
+                                  <>
+                                    {userInfo.userType === 'owner' ? (
+                                      <h2>Please Select a boarding!</h2>
+                                    ) : (
+                                      <h2>You do not assign to any boarding!</h2>
+                                    )}
+                                  </>
+                                )}
                             </div>
                     )}
+                </Col>
+                <Col>
+                <Card>
+                <Card.Header>Legend !</Card.Header>
+                <Card.Body>
+                    <Row>
+                    <Col lg={1}><div style={{width:'20px', height:'20px', background:'#f66257', borderRadius:'5px'}}></div></Col> - <Col>{"Quantity <= 30% of Alert level"}</Col>
+                    </Row>
+                    <Row>
+                    <Col lg={1}><div style={{width:'20px', height:'20px', background:'rgb(248, 161, 0)', borderRadius:'5px'}}></div></Col> - <Col>{"Quantity <= 60% of Alert level"}</Col>
+                    </Row>
+                    <Row>
+                    <Col lg={1}><div style={{width:'20px', height:'20px', background:'#f5e550', borderRadius:'5px'}}></div></Col> - <Col>{"Quantity < 100% of Alert level"}</Col>
+                    </Row>
+                </Card.Body>
+                </Card>
                 </Col>
             </Row>
             {totalPages <= 1 ? <></> : 

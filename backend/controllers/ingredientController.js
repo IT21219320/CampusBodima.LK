@@ -68,12 +68,20 @@ const getBoardingIngredient = asyncHandler(async (req, res) => {
     const skipCount = (page - 1) * pageSize;
 
     try {
+        let ingredients = await Ingredient.find({});
+
+        ingredients.forEach(ingredient => {
+          ingredient.sortField = parseInt(ingredient.quantity)/parseInt(ingredient.measurement);
+        })
+
+        await Promise.all(ingredients.map(ingredient => ingredient.save()));
+
         // Query to find ingredients based on boardingId and ingredientName, sorted alphabetically
-        const ingredients = await Ingredient.find({
+        ingredients = await Ingredient.find({
             boarding: boardingId,
             ingredientName: { $regex: searchQuery, $options: 'i' } // Case-insensitive search
         })
-        .sort({ ingredientName: 1 }) // Sort in ascending alphabetical order by ingredientName
+        .sort({ sortField: 1 }) // Sort in ascending alphabetical order by ingredientName
         .skip(skipCount)
         .limit(pageSize);
 
@@ -567,6 +575,107 @@ const addKitchenUser = asyncHandler(async (req, res) => {
   }
 });
 
+const updateKitchenUser = asyncHandler(async (req, res) => {
+  const { boardingId, newManagerId } = req.body;
+
+  try {
+    // Check if the newManagerId exists
+    const newManager = await User.findById(newManagerId);
+    if (!newManager) {
+      res.status(400);
+      throw new Error('New Manager not found');
+    }
+
+    // Check if the new manager is already assigned to a Boarding
+    const managerExists = await Boarding.findOne({
+      inventoryManager: newManagerId,
+    });
+    if (managerExists) {
+      res.status(400);
+      throw new Error('This Manager is Already Assigned to a Boarding');
+    }
+
+    // Update the managerId for the boarding
+    const updatedBoarding = await Boarding.findByIdAndUpdate(
+      boardingId,
+      { inventoryManager: newManagerId },
+      { new: true } // Return the updated document
+    );
+
+    if (updatedBoarding) {
+      res.status(200).json({
+        user: updatedBoarding,
+      });
+    } else {
+      res.status(400);
+      throw new Error('Invalid Boarding ID');
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+const deleteKitchenUser = asyncHandler(async (req, res) => {
+  const { boardingId, managerId } = req.params;  
+console.log({ boardingId, managerId });
+  try {
+     
+    const boarding = await Boarding.findById(boardingId);
+
+    if (!boarding) {
+      res.status(404);
+      throw new Error('Boarding not found');
+    }
+
+    // Check if the managerId matches the current inventoryManager of the boarding
+    if (boarding.inventoryManager.toString() !== managerId) {
+      res.status(404);
+      throw new Error('Manager not found in the specified Boarding');
+    }
+
+    // Remove the assigned manager from the boarding
+    boarding.inventoryManager = null;
+
+    const updatedBoarding = await boarding.save();
+
+    res.status(200).json({
+      message: 'Manager removed from Boarding successfully',
+      user: updatedBoarding,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.message || 'Failed to delete Manager',
+    });
+  }
+});
+
+const getBoardingManager = asyncHandler(async (req, res) => {
+  const boardingId = req.params.boardingId;
+
+  console.log(boardingId);
+
+  const boarding = await Boarding.findById(boardingId);
+
+  if (boarding) {
+    const managerId = boarding.inventoryManager;
+
+    const manager = await User.findById(managerId);
+
+    if (manager) {
+      res.status(200).json({
+        manager,
+      });
+    } else {
+      res.status(404);
+      throw new Error('Manager not found');
+    }
+  } else {
+    res.status(404);
+    throw new Error('Boarding not found');
+  }
+});
+
+
 
 
 
@@ -583,5 +692,8 @@ export {
     reduceIngredientQuantity,
     getIngredientHistoy,
     addKitchenUser,
-    getManagerBoarding    
+    getManagerBoarding, 
+    updateKitchenUser,
+    deleteKitchenUser,
+    getBoardingManager    
 };

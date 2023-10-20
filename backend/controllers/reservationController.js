@@ -189,13 +189,15 @@ const getMyReservation = asyncHandler(async (req, res) => {
     const user = await User.findById(userInfo_id);
     const boarding = await Boarding.findById(ViewMyReservation.boardingId);
     const room = await Room.findById(ViewMyReservation.roomID);
-
+    const owner =await User.findById(boarding.owner);
 
     if (ViewMyReservation) {
 
-        if (ViewMyReservation.boardingType === "Annex" && ViewMyReservation.status === "Approved") {
+        if (ViewMyReservation.boardingType === "Annex" ) {
             const myDetails = {
                 Id: ViewMyReservation._id,
+                paymentStatus:ViewMyReservation.paymentStatus,
+                status: ViewMyReservation.status,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 bType: ViewMyReservation.boardingType,
@@ -203,16 +205,26 @@ const getMyReservation = asyncHandler(async (req, res) => {
                 bName: boarding.boardingName,
                 rent: boarding.rent,
                 Duration: ViewMyReservation.Duration,
-                reservedDt: ViewMyReservation.createdAt
+                reservedDt: ViewMyReservation.createdAt,
+                ownerName:owner.firstName,
+                ownerLName:owner.lastName,
+                ownerEmail:owner.email,
+                ownerPhone:owner.phoneNo,
+                ownerAccNo:owner.bankAccNo,
+                ownerHoldName: owner.bankAccName,
+                ownerBankName:owner.bankName ,
+                ownerBranch:owner.bankBranch ,
             }
             res.status(200).json({
                 myDetails,
             })
 
-        } else if (ViewMyReservation.boardingType === "Hostel" && ViewMyReservation.status === "Approved") {
+        } else if (ViewMyReservation.boardingType === "Hostel" ) {
 
             const myDetails = {
                 Id: ViewMyReservation._id,
+                paymentStatus:ViewMyReservation.paymentStatus,
+                status: ViewMyReservation.status,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 bType: ViewMyReservation.boardingType,
@@ -221,7 +233,15 @@ const getMyReservation = asyncHandler(async (req, res) => {
                 rNo: room.roomNo,
                 rent: room.rent,
                 Duration: ViewMyReservation.Duration,
-                reservedDt: ViewMyReservation.createdAt
+                reservedDt: ViewMyReservation.createdAt,
+                ownerFName:owner.firstName,
+                ownerLName:owner.lastName,
+                ownerEmail:owner.email,
+                ownerPhone:owner.phoneNo,
+                ownerAccNo:owner.bankAccNo,
+                ownerHoldName: owner.bankAccName,
+                ownerBankName:owner.bankName ,
+                ownerBranch:owner.bankBranch ,
             }
             res.status(200).json({
                 myDetails,

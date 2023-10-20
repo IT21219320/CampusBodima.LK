@@ -46,7 +46,7 @@ const addUtilities = asyncHandler(async (req, res) => {
                     <p><b>Month:</b> ${month}</p>
                     <p><b>Description:</b> ${description}</p>
                     <p><b>Per Occupant Cost:</b> Rs. ${perCost}</p>
-                    <p>For any inquiries or concerns, please contact us.</p>
+                    <p>For any inquiries or concerns, please contact owner.</p>
                     <p>Best regards,<br>
                     The Campus Bodim Team</p>`;
 
@@ -210,7 +210,7 @@ const updateUtility = asyncHandler(async (req, res) => {
                         <p><b>Month:</b> ${updatedUtility.month}</p>
                         <p><b>Description:</b> ${updatedUtility.description}</p>
                         <p><b>Per Occupant Cost:</b> Rs. ${updatedUtility.perCost}</p>
-                        <p>For any inquiries or concerns, please contact us.</p>
+                        <p>For any inquiries or concerns, please contact owner.</p>
                         <p>Best regards,<br>
                         The Campus Bodim Team</p>`;
 
