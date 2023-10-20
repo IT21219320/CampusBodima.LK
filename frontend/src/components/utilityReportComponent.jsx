@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Row, Col, Image, Button, Table} from 'react-bootstrap';
 import { Card, CardContent, Pagination, CircularProgress, Box, Collapse, IconButton, Alert, Switch, Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, TablePagination, Paper, InputBase, TextField, FormControl, InputLabel, Select, MenuItem, Slider, Button as MuiButton } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
-import { Close, Search, Warning } from '@mui/icons-material';
+import { Close, Padding, Search, Warning } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetUtilityReportMutation } from '../slices/utilitiesApiSlice';
 import { toast } from 'react-toastify';
@@ -202,6 +202,7 @@ const utilityReport = ({ boardingId ,occupant}) => {
 
   return (
      <>
+    <div style={{ padding: '20px' }}>
         <Row>
                 <Col>
                     <Paper
@@ -330,7 +331,8 @@ const utilityReport = ({ boardingId ,occupant}) => {
                 </Col>
             </Row>
             }
-             
+            
+            </div>     
      </>
   )
 }
