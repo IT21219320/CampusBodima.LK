@@ -12,8 +12,15 @@
     padding-left: 45px;
     padding-top: 10px;
 }
+.attachment{
+    font-size: 20px;
+    font-family: unset;
+    padding-left: 45px;
+    padding-top: 10px;
+}
 
-/*reply ticket description*/
+
+/*reply  create ticket description(new textarea)*/
 .rplyTktDesc{
     min-height: 100px !important;
     border: 1px solid !important;

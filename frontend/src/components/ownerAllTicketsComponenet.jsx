@@ -153,15 +153,51 @@ const OwnerAllTickets = ({search}) =>{
     // Create a new jsPDF instance
     const doc = new jsPDF();
 
-    // Define the table headers
-    const headers = [["Reference Id", "Subject", "Description", "Category", "Sub Category","Occupant Name" ,"Status", "Date"]];
+    // company details
+    const companyDetails = {
+        name: "CampusBodima",
+        address: "138/K, Ihala Yagoda, Gampaha",
+        phone: "071-588-6675",
+        email: "info.campusbodima@gmail.com",
+        website: "www.campusbodima.com"
+        };
 
-    // Map the admin data to table rows
+    // logo
+    doc.addImage("/logo2.png", "PNG", 10, 10, 50, 30);
+
+    // Show company details
+    doc.setFontSize(15);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${companyDetails.name}`, 200, 20, { align: "right", style: "bold" });
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${companyDetails.address}`, 200, 25, { align: "right" });
+    doc.text(`${companyDetails.phone}`, 200, 29, { align: "right" });
+    doc.text(`${companyDetails.email}`, 200, 33, { align: "right" });
+    doc.text(`${companyDetails.website}`, 200, 37, { align: "right" });
+    
+    // horizontal line
+    doc.setLineWidth(0.5);
+    doc.line(10, 45, 200, 45);
+
+    
     let boardingName = 'All'
     if(boardingId != 'all'){
         const selectedboarding = boardingNames.find(boarding => boarding._id === boardingId);
         boardingName = selectedboarding.boardingName;
     }
+    //Report details
+
+    doc.setFontSize(12);
+    doc.text(`Report of Ticket List`, 80, 70)
+    doc.setFontSize(10);
+    doc.text(`Date: ${new Date().toDateString()}`, 20, 59)
+    doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 55)
+    doc.text(`Boarding: ${boardingName}`, 20, 63)
+
+    // Define the table headers
+    const headers = [["Reference Id", "Subject", "Description", "Category", "Sub Category","Occupant Name" ,"Status", "Date"]];
+
     
     const data = tickets.map((ticket) => [
       ticket.ticketId,
@@ -187,17 +223,8 @@ const OwnerAllTickets = ({search}) =>{
       body: data,
       styles,
       margin: { top: 70 },
-      startY: 50
+      startY: 75
     });
-
-    
-
-    doc.text("Tickets List", 90, 10);
-    doc.setFontSize(9);
-    doc.text(`Report of Ticket List`, 20, 20)
-    doc.text(`Date: ${new Date().toDateString()}`, 20, 24)
-    doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 28)
-    doc.text(`Boarding: ${boardingName}`, 20, 32)
 
     doc.save("Tickets.pdf");
 
@@ -368,9 +395,9 @@ const OwnerAllTickets = ({search}) =>{
                                                     </Col>
                                                 </Row>
                                                 <Row style={{fontSize:'small', fontWeight:'200 !important', fontStyle:'normal', color:'dimgray'}}>
-                                                    <Col lg={3}>{new Date(ticket.createdAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', /*hour: '2-digit', minute: '2-digit', second: '2-digit' */})}</Col>
+                                                    <Col lg={3}>{new Date(ticket.updatedAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', /*hour: '2-digit', minute: '2-digit', second: '2-digit' */})}</Col>
                                                     <Col lg={3}><GridViewRounded fontSize="small" />&nbsp;{ticket.category}</Col>
-                                                    <Col lg={3}>{TimeAgo(new Date(ticket.createdAt))}</Col>
+                                                    <Col lg={3}>{TimeAgo(new Date(ticket.updatedAt))}</Col>
                                                 </Row>
                                             </td>
                                             <td style={{textAlign:"center"}}>
