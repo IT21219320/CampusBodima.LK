@@ -11,7 +11,7 @@ import { useAddUtilitiesMutation,useGetUtilityBoardingMutation,useGetOccupantMut
 import Tooltip from '@mui/material/Tooltip';
 import { ImageToBase64 } from "../utils/ImageToBase64";
 
-import dashboardStyles from '../styles/dashboardStyles.module.css';
+import dashboardStyles from '../styles/utilityFormStyle.module.css';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import storage from "../utils/firebaseConfig";
 
@@ -234,8 +234,8 @@ const handleOccupantSelection = (occupantId) => {
 };
             return (
   <>
-    <div className={dashboardStyles.mainDiv}>
-      <Container className={dashboardStyles.container}>
+    
+      <Container className={dashboardStyles.container} >
         <Row className="d-flex justify-content-center">
           <Col md={8}>
             <div>
@@ -352,7 +352,7 @@ const handleOccupantSelection = (occupantId) => {
                     </Card>
                   </Col>
                   <Col md={6}>
-                    <Card className={CreateBoardingStyles.card} style ={{width:'70%'}} >
+                    <Card className={CreateBoardingStyles.card} style ={{width:'70%',height: '35%'}} >
                       <CardContent style={{ padding: '25px' }}>
                         <div>
                           <Form.Label>Select Occupants:</Form.Label>
@@ -371,10 +371,10 @@ const handleOccupantSelection = (occupantId) => {
                           </div>
                         </div>
                       </CardContent>
+                      
                     </Card>
-                  </Col>
-                </Row>
-                <Row style={{ marginTop: '20px' }}>
+                    <Row style={{ marginTop: '20px' }}>
+                      <div className= {dashboardStyles.centeredContainer}>
                   <Col>
                     <Button type="submit" className={CreateBoardingStyles.submitBtn} variant="contained">
                       Submit
@@ -383,13 +383,18 @@ const handleOccupantSelection = (occupantId) => {
                       <CircularProgress color="inherit" />
                     </Backdrop>
                   </Col>
+                  </div>
                 </Row>
+                  </Col>
+                </Row>
+                
               </form>
             </div>
           </Col>
         </Row>
       </Container>
-    </div>
+     
+    
   </>
 );
 
