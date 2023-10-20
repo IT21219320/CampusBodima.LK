@@ -38,3 +38,42 @@
     color: rgb(192, 192, 192) !important;
     border: 1px solid rgb(192, 192, 192) !important;
 }
+
+.h1{
+    font-family: Verdana;
+    width: 0px !important;
+    overflow: hidden;
+    transition: all ease-in 1s;
+    text-wrap: nowrap;
+    display: flex;
+    justify-content: center;
+}
+
+.animH1{
+    width: 100% !important;
+}
+
+.doDivs{
+    padding: 10%;
+    height: 220px;
+    border-radius: 10px;
+    box-shadow: 3px 6px 24px 1px gray;
+    transition: transform 0.5s ease;
+}
+
+.doDivs:hover{
+    transform: scale(1.05);
+    
+}
+
+.doDivsimgDiv{
+    width:80%;
+    height:100px;
+}
+
+.doDivP{
+    color: red;
+    font-family: Georgia;
+    font-size: larger;
+    text-decoration: none;
+}
