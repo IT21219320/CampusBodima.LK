@@ -40,10 +40,10 @@ const HomePage = () => {
                             <Button variant="outlined" size='large' className={homeStyles.getStartBtn} onClick={scrollToAnimHeader}>Get start</Button>
                         </Col>
                     </div>
-                    <div className={homeStyles.servicesDiv}>
+                    <div className={homeStyles.servicesDiv}  id="animHeader">
                         <center style={{ marginTop: '2%' }}>
                             <Row style={{ margin: '5%' }}>
-                                <h1 className={homeStyles.h1} id="animHeader">What we do for you</h1>
+                                <h1 className={homeStyles.h1}>What we do for you</h1>
                             </Row>
                             <Row style={{ padding: '0px 8%' }}>
                                 <Col>
@@ -53,6 +53,7 @@ const HomePage = () => {
                                         </div>
                                         <div>
                                             <p className={homeStyles.doDivP}>Easy payments</p>
+                                            <p>Payment portal is easy to use and all transactions </p>
                                         </div>
                                     </div>
                                 </Col>
@@ -63,18 +64,20 @@ const HomePage = () => {
                                         </div>
                                         <div>
                                             <p className={homeStyles.doDivP}>Post boardings</p>
+                                            <p>Post your boarding to collect borders easily </p>
                                         </div>
                                     </div>
                                 </Col>
 
                                 <Col>
-                                    <Link to={'/search'}>
+                                    <Link to={'/search'} style={{textDecoration:'none'}}>
                                         <div className={homeStyles.doDivs}>
                                             <div className={homeStyles.doDivsimgDiv}>
                                                 <img src={'findBoading.svg'} width={'100%'} height={'100%'} />
                                             </div>
                                             <div>
                                                 <p className={homeStyles.doDivP}>Find boardings</p>
+                                                <p style={{color:'black'}}>Find boardings as your second home with calm in one place </p>
                                             </div>
                                         </div>
                                     </Link>
@@ -87,6 +90,7 @@ const HomePage = () => {
                                         </div>
                                         <div>
                                             <p className={homeStyles.doDivP}>Manage Boarding</p>
+                                            <p >Manage boarding is very smooth with the system functionalities </p>
                                         </div>
                                     </div>
                                 </Col>

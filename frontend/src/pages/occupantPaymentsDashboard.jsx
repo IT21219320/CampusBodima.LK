@@ -28,7 +28,9 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import "jspdf-autotable";
+import React, { useRef } from 'react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 import { BarChart } from '@mui/x-charts/BarChart';
 
@@ -159,10 +161,10 @@ const OccupantPaymentDash = () => {
 
     const loadData = async () => {
         try {
-            
+
             const res = await getCard({ userInfo_id: userInfo._id }).unwrap();
             setCards(res);
-            
+
 
         } catch (error) {
 
@@ -170,10 +172,10 @@ const OccupantPaymentDash = () => {
 
         }
         try {
-            
+
             const resGetPay = await getPayment({ userInfo_id: userInfo._id, oId: searchQ, month: monthQ }).unwrap();
             setPayments(resGetPay.payments);
-            
+
 
         } catch (error) {
 
@@ -181,7 +183,7 @@ const OccupantPaymentDash = () => {
         }
 
         try {
-            
+
             const resGetToDOPay = await getToDoPayment({ userInfo_id: userInfo._id }).unwrap();
             setToDoPayment(resGetToDOPay);
 
@@ -191,10 +193,10 @@ const OccupantPaymentDash = () => {
 
         }
         try {
-            
+
             const resGetAllToDOPay = await getAllToDoPayments({ userInfo_id: userInfo._id }).unwrap();
             setAllToDoPaymentOld(resGetAllToDOPay);
-            
+
 
         } catch (error) {
 
@@ -202,7 +204,7 @@ const OccupantPaymentDash = () => {
 
         }
         try {
-            
+
             const userInfo_id = userInfo._id
             const myReserv = await getReserv({ _id: userInfo_id }).unwrap();
             setMyReserve(myReserv)
@@ -212,7 +214,7 @@ const OccupantPaymentDash = () => {
         }
 
         try {
-            
+
             const myOldPay = await getToDoPaymentOld({ userInfo_id: userInfo._id }).unwrap();
             setToDoPaymentOld(myOldPay[0])
             setIsLoading(false)
@@ -263,13 +265,13 @@ const OccupantPaymentDash = () => {
     }
 
     const navigateToPay = () => {
-        if(toDoPaymentOld){
-            window.toast("Do your previous payments")
+        if (toDoPaymentOld) {
+            window.alert("Do your previous payments")
         }
-        else{
+        else {
             navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPayment.length > 0 && toDoPayment[0].amount}/${toDoPayment.length > 0 && toDoPayment[0]._id}`)
         }
-         }
+    }
 
     const navigateToPayOld = () => {
         navigate(`/occupant/makeMonthlyPayment/${bId}/${toDoPaymentOld && toDoPaymentOld.amount}/${toDoPaymentOld && toDoPaymentOld._id}`)
@@ -278,6 +280,47 @@ const OccupantPaymentDash = () => {
     const navigateToPayI = () => {
         navigate(`/occupant/makePayment/${bId}`)
     }
+
+    const chartRef = useRef();
+
+    const exportToPDFChart = () => {
+        // Convert the chart to an image
+        const chartElement = chartRef.current;
+        html2canvas(chartElement).then((canvas) => {
+            const chartImage = canvas.toDataURL('image/png');
+
+            // Create a new jsPDF instance
+            const doc = new jsPDF();
+            // Add the company details
+            doc.addImage('/logo2.png', 'PNG', 10, 10, 50, 30);
+            doc.setFontSize(15);
+            doc.setFont('helvetica', 'bold');
+            doc.text('CampusBodima', 200, 20, { align: 'right', style: 'bold' });
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text('138/K, Ihala Yagoda, Gampaha', 200, 25, { align: 'right' });
+            doc.text('071-588-6675', 200, 29, { align: 'right' });
+            doc.text('info.campusbodima@gmail.com', 200, 33, { align: 'right' });
+            doc.text('www.campusbodima.com', 200, 37, { align: 'right' });
+
+            // Add a horizontal line
+            doc.setLineWidth(0.5);
+            doc.line(10, 45, 200, 45);
+
+            // Add report details
+            doc.setFontSize(8);
+            doc.text('Report of Payment list', 20, 55);
+            doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
+            doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
+
+            // Add the chart image to the PDF
+            doc.addImage(chartImage, 'PNG', 10, 85, 190, 100); // Adjust the position and dimensions
+
+            // Save or download the PDF
+            doc.save('monthly_payment.pdf');
+            
+        });
+    };
 
     return (
         <>
@@ -324,7 +367,7 @@ const OccupantPaymentDash = () => {
                                     <>
                                         {myReserve ? (
                                             <>
-                                                {myReserve.paymentStatus == 'Pending' && myReserve.paymentType == 'Online' ? (
+                                                {myReserve.paymentStatus == 'Pending' && myReserve.paymentType == 'Online' && myReserve.status == 'Approved' ? (
                                                     <>
                                                         <Row>
                                                             <p>Payment is pending. Do your Initial payment in here</p>
@@ -332,49 +375,65 @@ const OccupantPaymentDash = () => {
                                                         </Row>
 
                                                     </>) : (
-                                                    <><Row style={{ paddingLeft: "2%", paddingRight: "2%" }}>
-                                                        <Col style={{ backgroundColor: "#cfd8fa", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginRight: "2%" }}>
-                                                            <Row>
-                                                                <h4 style={{ textAlign: " center" }}>This Month Fees </h4>
-                                                                <hr style={{}} />
-                                                            </Row>
-                                                            {toDoPayment.length > 0 ? (<><Row>
-                                                                <h5>Total Fee {toDoPayment.length > 0 && toDoPayment[0].amount}</h5>
-                                                            </Row>
-                                                                <Row style={{ marginLeft: "68%" }}>
+                                                    <>
+                                                        {myReserve.paymentStatus == 'Paid' && myReserve.status == 'Approved' ? (
+                                                            <>
+                                                                <Row style={{ paddingLeft: "2%", paddingRight: "2%" }}>
+                                                                    <Col style={{ backgroundColor: "#cfd8fa", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginRight: "2%" }}>
+                                                                        <Row>
+                                                                            <h4 style={{ textAlign: " center" }}>This Month Fees </h4>
+                                                                            <hr style={{}} />
+                                                                        </Row>
+                                                                        {toDoPayment.length > 0 ? (<><Row>
+                                                                            <h5>Total Fee {toDoPayment.length > 0 && toDoPayment[0].amount}</h5>
+                                                                        </Row>
+                                                                            <Row style={{ marginLeft: "68%" }}>
 
-                                                                    <Button variant="contained" style={{}} onClick={() => navigateToPay()}>Pay your Fee</Button>
+                                                                                <Button variant="contained" style={{width: "80px"}} onClick={() => navigateToPay()}>Pay</Button>
 
-                                                                </Row>
-                                                            </>) : (
-                                                                <>
-                                                                    <p>You have done the payment</p>
-                                                                </>)}
+                                                                            </Row>
+                                                                        </>) : (
+                                                                            <>
+                                                                                <p>You have done the payment</p>
+                                                                            </>)}
 
-                                                        </Col>
-                                                        <Col style={{ backgroundColor: "#ffcaca", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginLeft: "2%" }}>
-                                                            <Row>
-                                                                <h4 style={{ textAlign: " center" }}>Previous Month Fees </h4>
-                                                                <hr />
-                                                            </Row>
-                                                            {toDoPaymentOld ? (<><Row>
-                                                                <h5>Total Fee {toDoPaymentOld && toDoPaymentOld.amount}</h5>
-                                                            </Row>
-                                                                <Row style={{ marginLeft: "68%" }}>
+                                                                    </Col>
+                                                                    <Col style={{ backgroundColor: "#ffcaca", padding: "2%", borderRadius: "20px", boxShadow: "2px 2px 9px #b4b4b4", marginLeft: "2%" }}>
+                                                                        <Row>
+                                                                            <h4 style={{ textAlign: " center" }}>Previous Month Fees </h4>
+                                                                            <hr />
+                                                                        </Row>
+                                                                        {toDoPaymentOld ? (<><Row>
+                                                                            <h5>Total Fee {toDoPaymentOld && toDoPaymentOld.amount}</h5>
+                                                                        </Row>
+                                                                            <Row style={{ marginLeft: "68%" }}>
 
-                                                                    <Button variant="contained" style={{}} onClick={() => navigateToPayOld()}>Pay your Fee</Button>
+                                                                                <Button variant="contained" style={{width: "80px"}} onClick={() => navigateToPayOld()}>Pay</Button>
 
-                                                                </Row></>) : (<><p>You have done the payment</p></>)}
+                                                                            </Row></>) : (<><p>You have done the payment</p></>)}
 
-                                                        </Col></Row></>)}
+                                                                    </Col></Row>
+                                                            </>) : (<></>)}
+                                                    </>)}
                                                 <Row>
-                                                    <center><p style={{fontSize:'30px',fontWeight:'bold', margin:'8% 0px 0px 0px '}}>Monthly Payment analyse</p>{mpData.length > 0 ? (<><BarChart
-                                                        xAxis={[{ scaleType: 'band', data: xAxisData, label: 'Month' }]}
-                                                        yAxis={[{ label: 'Amount' }]}
-                                                        series={[{ data: mpData }]}
-                                                        width={800}
-                                                        height={300}
-                                                    /></>) : (<></>)}</center>
+                                                    <center>
+                                                        <div ref={chartRef} >
+                                                            <p style={{ fontSize: '30px', fontWeight: 'bold', margin: '8% 0px 0px 0px ' }}>Monthly Payment analyse</p>
+
+                                                            {mpData.length > 0 ? (
+                                                                <BarChart
+                                                                    xAxis={[{ scaleType: 'band', data: xAxisData, label: 'Month' }]}
+                                                                    yAxis={[{ label: 'Amount' }]}
+                                                                    series={[{ data: mpData }]}
+                                                                    style={{ width: '100%' }}
+                                                                    height={300}
+                                                                />
+                                                            ) : (
+                                                                <> </>
+                                                            )}
+                                                        </div>
+                                                    </center>
+                                                    <button onClick={exportToPDFChart} className={occupantDashboardPaymentStyles.exportBtn}>Export to PDF</button>
                                                 </Row>
 
                                             </>) : (<>
