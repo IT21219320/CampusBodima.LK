@@ -1552,17 +1552,14 @@ const deleteReservation = asyncHandler(async (req, res) => {
     
     if(reservation){
         const user = await User.findById(reservation.occupantID);
-
-        let boarding;
+        let boarding = await Boarding.findById(reservation.boardingId);
         if(reservation.boardingType == "Hostel"){
 
 
             const reservationHistory = new ReservationHistory({
 
-                boardingId: reservation.boardingId,
-                boardingType: reservation.boardingType,
-                roomID: reservation.roomID,
-                occupantID: user,
+                boarding: boarding,
+                occupant: user,
                 ReservedDate: reservation.createdAt,
     
             });
@@ -1603,10 +1600,8 @@ const deleteReservation = asyncHandler(async (req, res) => {
 
             const reservationHistory = new ReservationHistory({
 
-                boardingId: reservation.boardingId,
-                boardingType: reservation.boardingType,
-                roomID: reservation.roomID,
-                occupantID: user,
+                boarding: boarding,
+                occupant: user,
                 ReservedDate: reservation.createdAt,
     
             });
