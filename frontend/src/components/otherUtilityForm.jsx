@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import {  useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Container, Form, Button, Row, Col, InputGroup,Image} from 'react-bootstrap';
-import {  Card, CardContent,  InputLabel, Select, MenuItem, FormControl,Backdrop,CircularProgress,List,ListItem,Divider,ListItemText,ListItemAvatar,Avatar,Typography,Badge,Link,Checkbox} from '@mui/material';
+import {   CardContent,  InputLabel, Select, MenuItem, FormControl,Backdrop,CircularProgress,List,ListItem,Divider,ListItemText,ListItemAvatar,Avatar,Typography,Badge,Link,Checkbox} from '@mui/material';
 import { NavigateNext, HelpOutlineRounded , Close, AddPhotoAlternate} from '@mui/icons-material';
 import CreateBoardingStyles from '../styles/addUtlityStyles.module.css';
 import  BillStyles from '../styles/billStyles.module.css';
@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { useAddUtilitiesMutation,useGetBoardingMutation,useGetOccupantMutation} from '../slices/utilitiesApiSlice';
 import Tooltip from '@mui/material/Tooltip';
 import { ImageToBase64 } from "../utils/ImageToBase64";
+import Card from 'react-bootstrap/Card';
 
 import dashboardStyles from '../styles/utilityFormStyle.module.css';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -232,20 +233,24 @@ const handleOccupantSelection = (occupantId) => {
     setSelectedOccupant((prevSelected) => [...prevSelected, occupantId]);
   }
 };
-            return (
+return (
   <>
-   
-      <Container className={dashboardStyles.container}>
+
+    <br />
+    <Card style={{ boxShadow: '2px 2px 5px 0px rgb(0 0 0 / 27%', width: '64rem', margin: 'auto'}}>
+
+      <Card.Body>
         <Row className="d-flex justify-content-center">
-          <Col md={8}>
-            <div>
-              <form onSubmit={handleUtilityFormSubmit}>
-                <Row className='mt-4'>
-                  <Col md={6} >
-                    <Card className={CreateBoardingStyles.card} >
-                      <CardContent style={{ padding: '25px',width:'100%'}} >
-                        <div>
-                          <Form.Label>Select Boarding Name</Form.Label>
+          <Col md={12}>
+
+            <form onSubmit={handleUtilityFormSubmit}>
+              <Row className='mt-4'>
+                <Col md={7} >
+                  <Card className={CreateBoardingStyles.card}>
+                    <CardContent style={{ padding: '25px' }}>
+                      <div><Row>
+                        <Form.Label>Select Boarding Name</Form.Label>
+                      </Row><Row>
                           <FormControl sx={{ m: 1, width: 300 }}>
                             <InputLabel id="boarding-name-label">Boarding Name</InputLabel>
                             <Select
@@ -263,139 +268,159 @@ const handleOccupantSelection = (occupantId) => {
                               ))}
                             </Select>
                           </FormControl>
-                        </div>
+                        </Row>
+                      </div>
 
-                        <div className="mt-3">
-                          <Form.Label>
-                            Amount : <span style={{ color: 'red' }}>*</span>
-                            <Tooltip title="Give your bill's amount" placement="top" arrow>
-                              <HelpOutlineRounded style={{ color: '#707676', fontSize: 'large' }} />
-                            </Tooltip>
-                          </Form.Label>
-                          <InputGroup style={{ width: '60%' }}>
-                            <InputGroup.Text>Rs.</InputGroup.Text>
-                            <Form.Control
-                              type="Number"
-                              placeholder="Amount"
-                              value={amount}
-                              onChange={handleAmountChange}
-                              required
-                              style={{ width: '40%' }}
-                            />
-                            <InputGroup.Text>.00</InputGroup.Text>
-                          </InputGroup>
-                        </div>
-
-                        <div className="mt-3">
-                          <Form.Label>Month : <span style={{ color: 'red' }}>*</span></Form.Label>
+                      <div className="mt-3">
+                        <Form.Label>
+                          Amount : <span style={{ color: 'red' }}>*</span>
+                          <Tooltip title="Give your bill's amount" placement="top" arrow>
+                            <HelpOutlineRounded style={{ color: '#707676', fontSize: 'large' }} />
+                          </Tooltip>
+                        </Form.Label>
+                        <InputGroup style={{ width: '60%' }}>
+                          <InputGroup.Text>Rs.</InputGroup.Text>
                           <Form.Control
-                              type="month"
-                              placeholder="Month"
-                              value={month} // Display the selected month
-                              readOnly // Make the input read-only
-                              required
-                              style={{ width: '30%' }}
-                              min={getCurrentMonthValue()}
-                              max={getCurrentMonthValue()}
-                            ></Form.Control>
-
-                        </div>
-
-                        <div className="mt-3">
-                          <Form.Label>Description :</Form.Label>
-                          <Form.Control
-                            as="textarea"
-                            type="text"
-                            label="Enter Description"
-                            rows={3}
-                            placeholder="Description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            style={{ width: '70%' }}
+                            type="Number"
+                            placeholder="Amount"
+                            value={amount}
+                            onChange={handleAmountChange}
+                            required
+                            style={{ width: '40%' }}
                           />
-                        </div>
+                          <InputGroup.Text>.00</InputGroup.Text>
+                        </InputGroup>
+                      </div>
 
-                        <div className="mt-4">
-                          <Form.Label>Bill Image<span style={{ color: 'red' }}>*</span></Form.Label>
-                          <p>({utilityImage.length}/2)</p>
-                          <Row>
-                            <Col>
-                              {utilityImage.length < 2 ? (
-                                <Form.Group controlId="formFile" className="mb-0">
-                                  <Form.Label className={`${CreateBoardingStyles.addImgLabel}`}>
-                                    <AddPhotoAlternate /> Add a photo
-                                  </Form.Label>
-                                  <Form.Control type="file" accept="image/*" onChange={previewImage} hidden />
-                                </Form.Group>
-                              ) : (
-                                <></>
-                              )}
-                              {utilityPreviewImage.length > 0 ? (
-                                utilityPreviewImage.map((utilityPreviewImage, index) => (
-                                  <Badge
-                                    key={index}
-                                    color="error"
-                                    badgeContent={<Close style={{ fontSize: 'xx-small' }} />}
-                                    style={{ cursor: 'pointer', marginRight: '10px', marginBottom: '10px' }}
-                                    onClick={() => removeImage(utilityPreviewImage)}
-                                  >
-                                    <Image src={utilityPreviewImage} width={100} height={100} style={{ cursor: 'auto' }} />
-                                  </Badge>
-                                ))
-                              ) : (
-                                <></>
-                              )}
-                            </Col>
-                          </Row>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Col>
-                  <Col md={6}>
-                    <Card className={CreateBoardingStyles.card} style ={{width:'70%', height:'35%'}}>
-                      <CardContent style={{ padding: '15px' }}>
-                        <div>
-                          <Form.Label>Select Occupants:</Form.Label>
-                          <div style={{ display: 'flex', flexDirection: 'column', height: '100px', overflow: 'auto' }}>
-                            {occupantData.map((occupant) => (
-                              <div key={occupant._id} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-                                <label style={{ flex: 1 }}>
-                                  <Checkbox
-                                    checked={selectedOccupant.includes(occupant._id)}
-                                    onChange={() => handleOccupantSelection(occupant._id)}
-                                  />
-                                  {occupant.firstName}
-                                </label>
-                              </div>
-                            ))}
+                      <div className="mt-3">
+                        <Form.Label>Month : <span style={{ color: 'red' }}>*</span></Form.Label>
+                        <Form.Control
+                          type="month"
+                          placeholder="Month"
+                          value={month} // Display the selected month
+                          readOnly // Make the input read-only
+                          required
+                          style={{ width: '30%' }}
+                          min={getCurrentMonthValue()}
+                          max={getCurrentMonthValue()}
+                        ></Form.Control>
+
+                      </div>
+
+                      <div className="mt-3">
+                        <Form.Label>Description :</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          type="text"
+                          label="Enter Description"
+                          rows={3}
+                          placeholder="Description"
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          style={{ width: '70%' }}
+                        />
+                      </div>
+
+                      <div className="mt-4">
+                        <Form.Label>Bill Image<span style={{ color: 'red' }}>*</span></Form.Label>
+                        <p>({utilityImage.length}/2)</p>
+                        <Row>
+                          <Col>
+                            {utilityImage.length < 2 ? (
+                              <Form.Group controlId="formFile" className="mb-0">
+                                <Form.Label className={`${CreateBoardingStyles.addImgLabel}`}>
+                                  <AddPhotoAlternate /> Add a photo
+                                </Form.Label>
+                                <Form.Control type="file" accept="image/*" onChange={previewImage} hidden />
+                              </Form.Group>
+                            ) : (
+                              <></>
+                            )}
+                            {utilityPreviewImage.length > 0 ? (
+                              utilityPreviewImage.map((utilityPreviewImage, index) => (
+                                <Badge
+                                  key={index}
+                                  color="error"
+                                  badgeContent={<Close style={{ fontSize: 'xx-small' }} />}
+                                  style={{ cursor: 'pointer', marginRight: '10px', marginBottom: '10px' }}
+                                  onClick={() => removeImage(utilityPreviewImage)}
+                                >
+                                  <Image src={utilityPreviewImage} width={100} height={100} style={{ cursor: 'auto' }} />
+                                </Badge>
+                              ))
+                            ) : (
+                              <></>
+                            )}
+                          </Col>
+                        </Row>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Col>
+                <Col md={5}>
+                  <Card className={CreateBoardingStyles.card}  >
+                    <CardContent style={{ padding: '25px' }}>
+
+                      <Form.Label>Select Occupants:</Form.Label>
+                      <div style={{ display: 'flex', flexDirection: 'column', height: '100px', overflow: 'auto' }}>
+                        {occupantData.map((occupant) => (
+                          <div key={occupant._id} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
+                            <label style={{ flex: 1 }}>
+                              <Checkbox
+                                checked={selectedOccupant.includes(occupant._id)}
+                                onChange={() => handleOccupantSelection(occupant._id)}
+                              />
+                              {occupant.firstName}
+                            </label>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Row style={{ marginTop: '20px' }}>
-                    <div className= {dashboardStyles.centeredContainer}>
-                  <Col >
-                    <Button type="submit" className={CreateBoardingStyles.submitBtn} variant="contained">
+                        ))}
+                      </div>
+
+                    </CardContent>
+
+                  </Card>
+                </Col>
+                <Row style={{ marginTop: '20px' }}>
+
+
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      style={{
+                        backgroundColor: 'green',
+                        color: 'white',
+                        padding: '10px 20px',
+                        borderRadius: '5px',
+                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                        fontSize: '16px',
+                        cursor: 'pointer',
+                        width: '150px',
+                        height: '50px',
+                      }}
+                    >
                       Submit
                     </Button>
                     <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={backDropOpen}>
                       <CircularProgress color="inherit" />
                     </Backdrop>
-                  </Col>
                   </div>
+
                 </Row>
-                  </Col>
-                </Row>
-                
-              </form>
-            </div>
+
+              </Row>
+
+            </form>
+
           </Col>
         </Row>
-      </Container>
-  
+      </Card.Body>
+    </Card>
+
+
   </>
 );
 
-};
+};         
 
 export default AddUtilitiesPage;
