@@ -16,6 +16,7 @@ import Modal from 'react-bootstrap/Modal';
 
 
 
+
 const AllFeedbacks = () => {
 
 
@@ -31,26 +32,27 @@ const AllFeedbacks = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const ratings = ['all', '0', '1', '2', '3', '4','5'];
 
-
+  const [show, setShow] = useState(false)
 
   const loadFeedbackData = async () => {
     try {
       const res = await getAllFeedbacks().unwrap();
       setFeedbacks(res.feedback);
-      filteredFeedbacks(res.feedback);
+      
     } catch (error) {
       console.error(error);
     }
   };
 
   
-  const [show, setShow] = useState(false)
+  const handleClose = () => setShow(false);
 
   useEffect(() => {
     loadFeedbackData();
   }, [ userInfo._id,searchQuery,deleteFeedbacks]);
 
-  const handleClose = () => setShow(false);
+  
+
 
  
 
@@ -60,11 +62,10 @@ const AllFeedbacks = () => {
 
 
   const filteredFeedbacks = feedbacks.filter((feedback) => {
-    if (rating === 'all') {
-      return true; // Show all feedbacks
-    } else {
-      return parseInt(feedback.rating) === parseInt(rating);
-    }
+    const isRatingMatch = rating === 'all' || parseInt(feedback.rating) === parseInt(rating);
+    const isSearchMatch = searchQuery === '' || feedback.description.toLowerCase().includes(searchQuery.toLowerCase());
+  
+    return isRatingMatch && isSearchMatch;
   });
 
 
@@ -80,8 +81,9 @@ const AllFeedbacks = () => {
       }
   };
 
-  const handleSearch=(event) =>{
+  const handleSearch = (event) => {
     setSearchQuery(event.target.value);
+    console.log('Search Query:', event.target.value);
   };
 
   const exportToPDF = () => {;
@@ -133,7 +135,7 @@ const AllFeedbacks = () => {
 
     // Map the admin data to table rows
 
-    const data = feedbacks.map((feedback) => [
+    const data = filteredFeedbacks.map((feedback) => [
       feedback.boardingId.boardingName,
       feedback.description,
       feedback.rating,
@@ -235,7 +237,7 @@ const AllFeedbacks = () => {
             <FormControl  style={{Width:'20px'}}>
 
 <Row style={{marginTop:'20px'}}>
-  <Col><div style={{border: '1px solid #00000066', padding:'15px'}}>Short By: </div></Col>
+  <Col><div style={{border: '1px solid #00000066', padding:'15px'}}>Sort By: </div></Col>
   <Col>
       <Box sx={{ minWidth: 120 }}>
           <FormControl fullWidth>
@@ -267,10 +269,10 @@ const AllFeedbacks = () => {
             <Table striped bordered hover>
                 <thead>
                   <tr style={{ textAlign: 'center', backgroundColor: 'black' }}>
-                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Boarding Name</th>
-                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Feedback Details</th>
-                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Number of Star Rating</th>
-                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Options</th>
+                    <th style={{ backgroundColor: '#232a67', color: 'white' }}>Boarding Name</th>
+                    <th style={{ backgroundColor: '#232a67', color: 'white' }}>Feedback Details</th>
+                    <th style={{ backgroundColor: '#232a67', color: 'white' }}>Number of Star Rating</th>
+                    <th style={{ backgroundColor: '#232a67', color: 'white' }}>Options</th>
                   </tr>
                 </thead>
                 <tbody>

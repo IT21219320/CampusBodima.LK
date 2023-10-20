@@ -61,6 +61,10 @@ const MyReservationComponent = () => {
 
   const navigate = useNavigate();
 
+  const paymentHandle =() => {
+    navigate(`/occupant/payment/`)
+  }
+
   const loadData = async () => {
     try {
       setLoading(true)
@@ -173,8 +177,8 @@ const MyReservationComponent = () => {
                 {myReservation.paymentStatus === "Pending" && myReservation.status === "Pending" ? (
                   <>
                     <center>
-                      <h1 style={{ marginTop: '270px', fontFamily: 'cursive', color: '#afb5be' }}>
-                        <p>Thank yoy for choosing us</p>
+                      <h1 style={{ marginTop: '190px', fontFamily: 'cursive', color: '#afb5be' }}>
+                        <p>Thank you for choosing us !!!</p>
                         <p>Please wait until owner approves the boarding</p>
                       </h1>
                     </center>
@@ -182,10 +186,11 @@ const MyReservationComponent = () => {
                 ) : myReservation.paymentStatus === "Pending" && myReservation.status === "Approved" ? (
                   <>
                     <center>
-                      <h1 style={{ marginTop: '270px', fontFamily: 'cursive', color: '#afb5be' }}>
-                        <p>Your Reseravtion has Approved. </p>
-                        <p>Please make your initia payment as soon as posible</p>
-                      </h1>
+                      <h1 style={{ marginTop: '130px', fontFamily: 'cursive', color: '#afb5be' }}>
+                        <p>Your reservation has been approved. </p>
+                        </h1>
+                        <p>Please make your initial payment as soon as possible</p>
+                      <Button variant="contained" size="small" onClick={paymentHandle}> Go to Payments</Button>
                     </center>
                   </>
                 ) : myReservation.paymentStatus === "Paid" && myReservation.status === "Approved" && (
@@ -370,7 +375,7 @@ const MyReservationComponent = () => {
 
               </>) : (
               <>
-                <center><h1 style={{ marginTop: '270px', fontFamily: 'cursive', color: '#afb5be' }}>You haven't done any reservations</h1></center>
+                <center><h1 style={{ marginTop: '200px', fontFamily: 'cursive', color: '#afb5be' }}>You haven't done any reservations</h1></center>
               </>
             )}
 

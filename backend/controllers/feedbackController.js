@@ -140,6 +140,27 @@ const getFeedbackByUserId = asyncHandler(async (req, res) => {
 });
 
 
+const getFeedbackByBoardingId = asyncHandler(async (req, res) => {
+  const {boardingId } = req.body;
+  
+
+  try {
+    const feedback = await Feedback.find({ boardingId })
+    
+   
+
+    if (feedback) {
+      res.status(200).json({ feedback });
+    } else {
+      res.status(404).json({ error: 'No feedback found for the user.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch feedback.' });
+  }
+});
+
+
 
 
 
@@ -152,20 +173,16 @@ const getFeedbackByUserId = asyncHandler(async (req, res) => {
 
 
   const getAllFeedbacks = asyncHandler(async (req, res) => {
-    const { searchQuery } = req.query;
-    
     try {
+        // Extract the search query parameter from the request object
+        const { searchQuery } = req.query;
+        
         let feedback;
 
+        // If there is a search query, fetch feedbacks based on the 'description' field
         if (searchQuery) {
-            // If search query is provided, perform a search based on it
-            feedback = await Feedback.find({
-                $or: [
-                    { field1: { $regex: new RegExp(searchQuery, 'i') } }, // Replace field1 with the actual field you want to search
-                    { field2: { $regex: new RegExp(searchQuery, 'i') } }, // Replace field2 with another field if needed
-                    // Add more fields as necessary for your search
-                ]
-            }).populate('boardingId');
+            feedback = await Feedback.find({ description: { $regex: new RegExp(searchQuery, 'i') } })
+                .populate('boardingId');
         } else {
             // If no search query, fetch all feedbacks
             feedback = await Feedback.find({}).populate('boardingId');
@@ -181,6 +198,9 @@ const getFeedbackByUserId = asyncHandler(async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch feedback.' });
     }
 });
+
+
+
 
 
  
@@ -326,4 +346,5 @@ const deleteFeedback = asyncHandler(async (req, res) => {
     getUpdateFeedback,
     deleteFeedback,
     getFeedbackByUserId,
+    getFeedbackByBoardingId,
 };

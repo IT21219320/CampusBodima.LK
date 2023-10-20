@@ -11,6 +11,7 @@ import { StringToAvatar } from "../utils/StringToAvatar";
 import { ref, getDownloadURL } from "firebase/storage";
 import storage from "../utils/firebaseConfig";
 
+
 import Sidebar from '../components/sideBar';
 import Header from '../components/header'
 
@@ -22,6 +23,7 @@ import '../styles/overrideCss.css';
 import defaultImage from '/images/defaultImage.png';
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBinLine } from "react-icons/ri";
+import FeedbackBoarding from "../components/feedbackBoardingComponent";
 
 const ViewBoarding = () => {
     const theme = useTheme();
@@ -348,6 +350,13 @@ const ViewBoarding = () => {
                             </Row>
                             }
                         </Col>
+                    </Row>
+                    <Row style={{width:'100%'}}>
+                        
+                      <Col className={`mt-3 `}>
+                        <FeedbackBoarding boardingId={boardingId} />
+                      </Col>
+                     
                     </Row>
                 </Container>
                 
