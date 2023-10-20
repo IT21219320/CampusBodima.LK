@@ -15,9 +15,9 @@ const createOrder = async (req, res) => {
       owner,
       occupantId,
       status,
-
       total,
     } = req.body;
+
     const productNames = {
       '3': 'Fried Rice',
       '6': 'Rice & Curry',
@@ -37,7 +37,6 @@ const createOrder = async (req, res) => {
       quantity:quantity,
       price:price,
       orderNo:orderNo+orderNo,
-      
       owner:owner,
       occupant: occupantId,
       status:status,
@@ -80,16 +79,17 @@ const getTodayOrder = asyncHandler(async (req, res) => {
   
   const ownerId = req.body.ownerId;
   let boardingId = req.body.boardingId;
-  console.log(boardingId);
+  console.log(ownerId);
   if(!boardingId){
-    boardingId = await Boarding.findOne({ ownerId: ownerId });
+    console.log(boardingId);
+    boardingId = await Boarding.findOne({ inventoryManager: ownerId });
     boardingId = boardingId._id.toString();
   }
   //1.const boarding = get boardings that has inventoryManager as ownerId
-  const boarding = await Boarding.find({ ownerId: ownerId }).select('boardingName');
+  const boarding = await Boarding.find({ inventoryManager: ownerId }).select('boardingName');
   if(boarding.length>0){
   try {
-      const order = await Order.find({ boarding:boardingId});
+      const order = await Order.find({ ownerId:ownerId,boarding:boardingId});
 
       if (order) {
           res.status(200).json({

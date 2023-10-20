@@ -66,7 +66,7 @@ const OrderList = () => {
 
     const loadOrderData = async () => {
         try {
-            const res = await getTodayOrder({ occupantId: userID,boardingId }).unwrap();
+            const res = await getTodayOrder({ ownerId: userID,boardingId }).unwrap();
             setOrder(res.order);
             setBoardingNames(res.boarding)
             if(boardingId == ''){
@@ -117,6 +117,8 @@ const OrderList = () => {
                                     </div>
                                 </Col>
                             </Row>
+                            <Row>
+                            <Col>
                             <TextField
                                 id="search"
                                 label="Search Product"
@@ -125,15 +127,16 @@ const OrderList = () => {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className={formStyle.searchField}
                             /><p></p>
-                            <Row>
+                            </Col>
                                 <Col>
-                                    {/* Add a select input for boarding selection */}
+                                <div style={{ float: 'right', minWidth: '220px' }}>
                                     <FormControl fullWidth>
                                         <InputLabel id="boarding-label">Select Boarding</InputLabel>
                                         <Select
                                             labelId="boarding-label"
                                             id="boarding-select"
                                             value={boardingId}
+                                            label="Select Boarding"
                                             onChange={(e) => setBoardingId(e.target.value)}
                                         >
                                             {Array.isArray(boardingNames) && boardingNames.map((boarding) => (
@@ -143,6 +146,7 @@ const OrderList = () => {
                 ))}
                                         </Select>
                                     </FormControl>
+                                    </div>
                                 </Col>
                             </Row>
                             <Row>

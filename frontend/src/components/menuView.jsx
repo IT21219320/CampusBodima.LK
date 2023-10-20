@@ -26,6 +26,9 @@ import { useGetOwnerMenuesMutation } from '../slices/menuesApiSlice';
 import orderStyles from '../styles/orderStyles.module.css';
 import DeleteMenu from './deleteMenu';
 
+import storage from "../utils/firebaseConfig";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+
 const MenuView = () => {
   const [menuData, setMenuData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,6 +58,22 @@ const MenuView = () => {
         return;
       }
     try {
+
+      var uniqueName;
+      if(foodImage != ''){
+        const timestamp = new Date().getTime();
+        const random = Math.floor(Math.random() * 1000) + 1;
+        uniqueName = `${timestamp}_${random}.${foodImage.name.split('.').pop()}`;
+        
+        const storageRef = ref(storage, `${uniqueName}`);
+        
+            console.log(storageRef);
+            console.log(foodImage);
+            const uploadTask = uploadBytesResumable(storageRef, foodImage);
+
+            await uploadTask;
+            console.log(uploadTask);
+      }  
       
       const response = await createMenu({
         userInfo_id: ownerId,
@@ -62,9 +81,10 @@ const MenuView = () => {
         boarding: boardingId,
         price: price,
         ownerId: ownerId,
-        foodImage:foodImage,
+        foodImage:uniqueName,
       }).unwrap();
-console.log(response);
+
+
       if (response) {
         toast.success('Menu Created Successfully');
         setPrice('')
@@ -337,8 +357,6 @@ console.log(res);
                           required
                           style={inputStyle}
                         />
-
-                      {isError && <div style={errorStyle}>Error: {error.message}</div>}
                     </div>
                   </form>
 
