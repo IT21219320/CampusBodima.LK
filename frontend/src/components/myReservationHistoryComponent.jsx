@@ -9,6 +9,7 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CircularProgress} from "@mui/material";
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
@@ -34,19 +35,22 @@ const MyReservationHistoryComponent = () => {
 
     const [myHistoryDetails, setMyHistoryDetails] = useState([]);
     const [word, setWord] = useState();
+    const [loading, setLoading] = useState(true);
 
-    const feedbackHandler = (Id,BName) => {
+    const feedbackHandler = (Id, BName) => {
         navigate(`/occupant/feedback/create/${Id}/${BName}`)
     }
 
     const loadData = async () => {
         try {
-            const res = await myHistory({ userID: userInfo._id, word:word }).unwrap();
+            setLoading(true)
+            const res = await myHistory({ userID: userInfo._id, word: word }).unwrap();
             console.log(res)
             if (res) {
                 setMyHistoryDetails(res);
                 console.log(myHistoryDetails)
             }
+            setLoading(false)
         } catch (error) {
             console.error('error getting reservation history', error);
         }
@@ -60,66 +64,78 @@ const MyReservationHistoryComponent = () => {
 
     return (
         <>
-            <div style={{marginTop: '17px'}}>
-                <input id="outlined-search" type="search" placeholder="Search boarding name..." style={searchStyle} onChange={(e) => setWord(e.target.value)}/>
+
+            <div style={{ marginTop: '17px' }}>
+                <input id="outlined-search" type="search" placeholder="Search boarding name..." style={searchStyle} onChange={(e) => setWord(e.target.value)} />
 
                 <IconButton>
                     <SearchIcon />
                 </IconButton>
             </div>
 
+            {loading ? (
+                <>
 
-            <TableContainer component={Paper} style={{ marginTop: '35px' }}>
-                <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-                    <TableHead style={{ backgroundColor: "#242745" }}>
-                        <TableRow>
-                            <TableCell style={{ color: "#ffffff" }}>Boarding Name</TableCell>
-                            <TableCell style={{ color: "#ffffff" }} align="right">Boarding Type</TableCell>
-                            <TableCell style={{ color: "#ffffff" }} align="right">Room No</TableCell>
-                            <TableCell style={{ color: "#ffffff" }} align="right">Reserved Date</TableCell>
-                            <TableCell style={{ color: "#ffffff" }} align="right">Cancelled Date</TableCell>
-                            <TableCell style={{ color: "#ffffff" }} align="right">FeedBack</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody style={{ backgroundColor: '#858bc72b' }}>
-                        {myHistoryDetails.length > 0 ? (
-                            <>
-                                {myHistoryDetails.map((myHis) => (
-                                    <TableRow
-                                        key={myHis._id}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    >
-                                        <TableCell component="th" scope="row">
-                                            {myHis.boarding.boardingName}
-                                        </TableCell>
-                                        <TableCell align="right">{myHis.boarding.boardingType}</TableCell>
-                                        {myHis.boarding.boardingType === 'Hostel' ? (<>
-                                            <TableCell align="right">{myHis.room.roomNo}</TableCell>
-                                        </>):(<><TableCell align="right"> - </TableCell></>)}
-                                        <TableCell align="right">{new Date(myHis.ReservedDate).toDateString()}</TableCell>
-                                        <TableCell align="right">{new Date(myHis.cancelledDate).toDateString()}</TableCell>
-                                        <TableCell align="right"><Button variant="contained" size="small" onClick={() =>feedbackHandler(myHis.boarding._id,myHis.boarding.boardingName)}>give FeedBack</Button></TableCell>
-                                    </TableRow>
+                    <div style={{ width: '100%', height: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <CircularProgress />
+                    </div>
 
-                                ))}
-                            </>
-                        ) : (
-                            <>
+                </>
+            ) : (
+                <>
+                    <TableContainer component={Paper} style={{ marginTop: '35px' }}>
+                        <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                            <TableHead style={{ backgroundColor: "#242745" }}>
                                 <TableRow>
-                                    <TableCell></TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No reservations</TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell></TableCell>
+                                    <TableCell style={{ color: "#ffffff" }}>Boarding Name</TableCell>
+                                    <TableCell style={{ color: "#ffffff" }} align="right">Boarding Type</TableCell>
+                                    <TableCell style={{ color: "#ffffff" }} align="right">Room No</TableCell>
+                                    <TableCell style={{ color: "#ffffff" }} align="right">Reserved Date</TableCell>
+                                    <TableCell style={{ color: "#ffffff" }} align="right">Cancelled Date</TableCell>
+                                    <TableCell style={{ color: "#ffffff" }} align="right">FeedBack</TableCell>
                                 </TableRow>
+                            </TableHead>
+                            <TableBody style={{ backgroundColor: '#858bc72b' }}>
+                                {myHistoryDetails.length > 0 ? (
+                                    <>
+                                        {myHistoryDetails.map((myHis) => (
+                                            <TableRow
+                                                key={myHis._id}
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">
+                                                    {myHis.boarding.boardingName}
+                                                </TableCell>
+                                                <TableCell align="right">{myHis.boarding.boardingType}</TableCell>
+                                                {myHis.boarding.boardingType === 'Hostel' ? (<>
+                                                    <TableCell align="right">{myHis.room.roomNo}</TableCell>
+                                                </>) : (<><TableCell align="right"> - </TableCell></>)}
+                                                <TableCell align="right">{new Date(myHis.ReservedDate).toDateString()}</TableCell>
+                                                <TableCell align="right">{new Date(myHis.cancelledDate).toDateString()}</TableCell>
+                                                <TableCell align="right"><Button variant="contained" size="small" onClick={() => feedbackHandler(myHis.boarding._id, myHis.boarding.boardingName)}>give FeedBack</Button></TableCell>
+                                            </TableRow>
 
-                            </>
-                        )}
+                                        ))}
+                                    </>
+                                ) : (
+                                    <>
+                                        <TableRow>
+                                            <TableCell></TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No reservations</TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell></TableCell>
+                                        </TableRow>
 
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                                    </>
+                                )}
+
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </>)}
+
         </>
     );
 

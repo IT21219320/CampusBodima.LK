@@ -1,13 +1,27 @@
 import Header from '../components/header';
+import { useEffect, useState } from "react";
 import { Container, Row, Col, Form, Toast } from 'react-bootstrap';
+import { useNavigate, Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import homeStyles from '../styles/homePageStyles.module.css'
 
 
-const navigate = {
 
-}
 const HomePage = () => {
+
+    const scrollToAnimHeader = () => {
+        const animHeaderElement = document.getElementById('animHeader');
+        if (animHeaderElement) {
+            animHeaderElement.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    useEffect(() => {
+        setTimeout(() => {
+            document.getElementById('animHeader').classList.add(homeStyles.animH1);
+        }, 1);
+    }, []);
+
     return (
         <>
             <div style={{ width: '100%' }}>
@@ -19,15 +33,66 @@ const HomePage = () => {
                     <div className={homeStyles.homeDarkDiv}>
 
                     </div>
-                    <div style={{height:'600px',width: "100%",position: 'absolute'}}>
+                    <div style={{ height: '600px', width: "100%", position: 'absolute' }}>
                         <Col className={homeStyles.homeWelcText}>
                             <h1>Welcome to <span style={{ fontFamily: 'Papyrus' }}>CampusBodima.LK</span></h1>
-                            <p style={{fontFamily:'Lucida Console', fontSize:'font-size: larger'}}>Find your Second home with easy steps</p>
-                            <Button variant="outlined" size='large' className={homeStyles.getStartBtn} onClick={navigate}>Get start</Button>
+                            <p style={{ fontFamily: 'Lucida Console', fontSize: 'font-size: larger' }}>Find your Second home with easy steps</p>
+                            <Button variant="outlined" size='large' className={homeStyles.getStartBtn} onClick={scrollToAnimHeader}>Get start</Button>
                         </Col>
                     </div>
-                    <div  className={homeStyles.servicesDiv}>
+                    <div className={homeStyles.servicesDiv}>
+                        <center style={{ marginTop: '2%' }}>
+                            <Row style={{ margin: '5%' }}>
+                                <h1 className={homeStyles.h1} id="animHeader">What we do for you</h1>
+                            </Row>
+                            <Row style={{ padding: '0px 8%' }}>
+                                <Col>
+                                    <div className={homeStyles.doDivs}>
+                                        <div className={homeStyles.doDivsimgDiv}>
+                                            <img src={'paymentIco.png'} width={'70%'} height={'100%'} />
+                                        </div>
+                                        <div>
+                                            <p className={homeStyles.doDivP}>Easy payments</p>
+                                        </div>
+                                    </div>
+                                </Col>
+                                <Col>
+                                    <div className={homeStyles.doDivs}>
+                                        <div className={homeStyles.doDivsimgDiv}>
+                                            <img src={'postIco.jpg'} width={'70%'} height={'100%'} />
+                                        </div>
+                                        <div>
+                                            <p className={homeStyles.doDivP}>Post boardings</p>
+                                        </div>
+                                    </div>
+                                </Col>
 
+                                <Col>
+                                    <Link to={'/search'}>
+                                        <div className={homeStyles.doDivs}>
+                                            <div className={homeStyles.doDivsimgDiv}>
+                                                <img src={'findBoading.svg'} width={'100%'} height={'100%'} />
+                                            </div>
+                                            <div>
+                                                <p className={homeStyles.doDivP}>Find boardings</p>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </Col>
+
+                                <Col>
+                                    <div className={homeStyles.doDivs}>
+                                        <div className={homeStyles.doDivsimgDiv}>
+                                            <img src={'findBoading.svg'} width={'100%'} height={'100%'} />
+                                        </div>
+                                        <div>
+                                            <p className={homeStyles.doDivP}>Manage Boarding</p>
+                                        </div>
+                                    </div>
+                                </Col>
+
+                            </Row>
+                        </center>
                     </div>
                 </div>
             </div>
