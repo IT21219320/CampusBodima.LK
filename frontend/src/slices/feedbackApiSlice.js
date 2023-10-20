@@ -33,6 +33,17 @@ export const feedbackApiSlice = apiSlice.injectEndpoints({
         }),
 
 
+        getFeedbackByBoardingId: builder.mutation({
+            query: (data) => ({
+                url: `${FEEDBACKS_URL}/getfeedbackbyBoardingid`,
+                method: 'POST',
+                body:data,
+                
+                
+            }),
+        }),
+
+
         
         updateFeedback: builder.mutation({
             query: (data) => ({
@@ -75,5 +86,6 @@ export const {
     useDeleteFeedbackMutation, // Also fix the capitalization here
     useSearchFeedbackMutation,
     useGetUpdateFeedbackMutation,
+    useGetFeedbackByBoardingIdMutation,
   } = feedbackApiSlice;
 

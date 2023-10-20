@@ -128,7 +128,7 @@ const OccupantFeedback = () => {
 
     // Map the admin data to table rows
 
-    const data = feedbacks.map((feedback) => [
+    const data = filteredFeedbacks.map((feedback) => [
       feedback.boardingId.boardingName,
       feedback.description,
       feedback.rating,
@@ -232,7 +232,7 @@ const OccupantFeedback = () => {
               <FormControl  style={{Width:'20px'}}>
 
               <Row style={{marginTop:'20px'}}>
-                <Col><div style={{border: '1px solid #00000066', padding:'15px'}}>Short By: </div></Col>
+                <Col><div style={{border: '1px solid #00000066', padding:'15px'}}>Sort By: </div></Col>
                 <Col>
                     <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth>
@@ -263,10 +263,10 @@ const OccupantFeedback = () => {
             <Table striped bordered hover>
                 <thead>
                   <tr style={{ textAlign: 'center', backgroundColor: 'black', color: 'white ' }}>
-                  <th style={{ backgroundColor: 'blue', color: 'white' }}>Boarding Name</th>
-                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Feedback Details</th>
-                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Number of Star Rating</th>
-                    <th style={{ backgroundColor: 'blue', color: 'white' }}>Options</th>
+                  <th style={{ backgroundColor: '#232a67', color: 'white' }}>Boarding Name</th>
+                    <th style={{ backgroundColor: '#232a67', color: 'white' }}>Feedback Details</th>
+                    <th style={{ backgroundColor: '#232a67', color: 'white' }}>Number of Star Rating</th>
+                    <th style={{ backgroundColor: '#232a67', color: 'white' }}>Options</th>
                   </tr>
                 </thead>
                 <tbody>
