@@ -8,3 +8,16 @@ a{
     text-decoration: none;
     
 }
+
+.exportBtn{
+    width: 140px !important;;
+    padding: 10px;
+    border: 0px;
+    border-radius: 10px;
+    background-color: #9ad59a;
+    margin-left: 78%;
+    transition: background-color 0.5s;
+}
+.exportBtn:hover{
+    background-color: #67bb67;
+}
