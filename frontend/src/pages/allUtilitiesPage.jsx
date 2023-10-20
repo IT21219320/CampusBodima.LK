@@ -149,6 +149,8 @@ const AllUtilitiesPage = () =>{
                                       onChange={(e) => handleOccupantNameChange(e)}// Update selectedOccupant state
                                     >
                                       
+                                      <MenuItem value="">All</MenuItem>
+
                                       {occupantData.map((occupantName,index) => (
                                         <MenuItem key={index} value={occupantName._id}>
                                           {occupantName.firstName}
