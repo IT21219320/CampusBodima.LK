@@ -3,8 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useGetOrderMutation } from "../slices/orderApiSlice";
 import { toast } from "react-toastify";
-import Sidebar from '../components/sideBar';
-import dashboardStyles from '../styles/dashboardStyles.module.css';
+import formStyle from '../styles/formStyle.module.css';
 import { Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { Breadcrumbs, Typography, Fade, Card, CardContent, Link, Button, TextField, CircularProgress } from '@mui/material';
 import Table from '@mui/material/Table';
@@ -91,15 +90,16 @@ const MyOrders = () => {
                     </div>
                 </Col>
             </Row>
-            <Row><div className={orderStyles.search}><TextField
+            <Row><Col>
+                <TextField
                 id="search"
                 label="Search"
                 //variant="outlined"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={orderStyles.searchField}
-            />
-            </div>
+                className={formStyle.searchField}
+            /></Col>
+            
             </Row>
             <br/>
             <Row>
@@ -133,34 +133,35 @@ const MyOrders = () => {
                                         <TableCell align="center">{new Date(order.date).toDateString()}</TableCell>
                                         <TableCell align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</TableCell>
                                         <TableCell align="center">{order.orderNo}</TableCell>
-                                        <td align="center">
+                                        <TableCell><td align="center">
                                             {order.items.map((item,index) => (
                                                 <TableRow>
                                                     <TableCell align="center">{item.product}</TableCell>
                                                 </TableRow>
                                             ))}
-                                        </td>
+                                        </td></TableCell><TableCell>
                                         <td align="center">
                                             {order.items.map((item,index) => (
                                                 <TableRow>
                                                     <TableCell align="center">{item.quantity}</TableCell>
                                                 </TableRow>
                                             ))}
-                                        </td>
+                                        </td></TableCell><TableCell>
                                         <td align="center">
                                             {order.items.map((item,index) => (
                                                 <TableRow>
                                                     <TableCell align="center">{item.price}</TableCell>
                                                 </TableRow>
                                             ))}
-                                        </td>
+                                        </td></TableCell>
+                                        <TableCell>
                                         <td align="center">
                                             {order.items.map((item,index) => (
                                                 <TableRow>
                                                     <TableCell align="center">{item.total}</TableCell>
                                                 </TableRow>
                                             ))}
-                                        </td>
+                                        </td></TableCell>
                                         <TableCell align="center">{order.total}</TableCell>
                                         <TableCell align="center">{order.status}</TableCell>
                                         {/* Render additional feedback data as needed */}
@@ -168,7 +169,7 @@ const MyOrders = () => {
                                             <>
                                                 <TableCell align="center">
                                                     <Button
-                                                        style={{ background: '#FF0000', color: 'black' }}
+                                                        style={{ background: '#FF0000', color: 'white' }}
                                                         onClick={() => openDeleteModal(order)}
                                                     >
                                                         <DeleteIcon />

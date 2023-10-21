@@ -8,7 +8,7 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import { MenuItem, FormControl, InputLabel, Select, Button, TextField, CircularProgress } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { BrowserUpdated as BrowserUpdatedIcon, PlaylistAdd } from '@mui/icons-material';
-import UploadIcon from '@mui/icons-material/Upload';
+import UpdateIcon from '@mui/icons-material/Update';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -21,9 +21,6 @@ import { useAddMenuMutation, useUpdateMenuesMutation } from '../slices/menuesApi
 
 import { useGetOwnerMenuesMutation } from '../slices/menuesApiSlice';
 import DeleteMenu from './deleteMenu';
-
-import storage from "../utils/firebaseConfig";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const MenuView = () => {
   const [menuData, setMenuData] = useState([]);
@@ -290,7 +287,7 @@ const MenuView = () => {
                           <Button variant="text"  color="success"
                           className={orderStyles.updatebutton}
                             onClick={() => {setShowUpdateItm(true);setTempMenuData(menu)}}>
-                            <UploadIcon />
+                            <UpdateIcon />
                           </Button>
                           <Button variant="text" color="error"
                             className={orderStyles.deletebutton}

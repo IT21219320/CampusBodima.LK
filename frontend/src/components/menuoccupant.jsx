@@ -17,10 +17,9 @@ import { toast } from 'react-toastify';
 import { useGetBoardingMenuesMutation } from '../slices/menuesApiSlice';
 import orderStyles from '../styles/orderStyles.module.css';
 import DeleteMenu from './deleteMenu';
-import {  Button} from '@mui/material';
+import { Button } from '@mui/material';
 import { setCartItems } from '../slices/cartSlice.js';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import { Navigate } from 'react-router-dom';
 
 const MenuView = () => {
   const [menuData, setMenuData] = useState([]);
@@ -47,10 +46,10 @@ const MenuView = () => {
 
   const addToCart = (menu) => {
     const quantity = 1;
-  
+
     // Check if the menu item is already in the cart
     const existingCartItemIndex = cart.findIndex((item) => item._id === menu._id);
-  
+
     if (existingCartItemIndex !== -1) {
       // If the item already exists in the cart, create a new cart array with the updated quantity
       const updatedCart = cart.map((item, index) => {
@@ -70,9 +69,9 @@ const MenuView = () => {
       dispatch(setCartItems(tempCart));
     }
   }
-  
 
-  
+
+
 
   useEffect(() => {
     loadMenuData();
@@ -88,7 +87,7 @@ const MenuView = () => {
     <>
       <Row>
         <Col>
-          
+
           <input
             id="search"
             type="text"
@@ -105,46 +104,60 @@ const MenuView = () => {
         </Col>
       </Row>
       <br />
-      
+
       <Row>
         <Col>
-        
+
           <Card>
             <Card.Body>
-              {isLoading ? 
-                'Loading...' 
-              : 
-                <Row>
-                {filteredMenus.length > 0 ?
-                  filteredMenus.map((menu, index) => (
-                    <Col lg={4} key={index}>
-                      <Button style={{
-    background: 'linear-gradient(to right, #C02425, #F0CB35)', // Replace these colors with your desired gradient
-    flexDirection: 'column',
-    padding: '10px 10px',
-    margin: '10px 0',
-    textAlign: 'center',
-    fontFamily: 'cursive', 
-    width: '100%',
-    color: 'white',
-    fontWeight: 'bold',
-  }} variant='contained' onClick={() => addToCart(menu)}>
-                        <Row>
-                          <Col>
-                            {menu.product}
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            Rs. {menu.price}
-                          </Col>
-                        </Row>
-                      </Button>
-                    </Col>
-                  ))
+              {isLoading ?
+                'Loading...'
                 :
-                  <Col>'No menu items found!'</Col>} 
-                </Row>        
+                <Row>
+                  {filteredMenus.length > 0 ?
+                    filteredMenus.map((menu, index) => (
+                      <Col lg={4} key={index}>
+                        <Container style={{display:'flex' ,alignItems:'stretch'}}>
+                        <Button style={{
+                          background: 'linear-gradient(135deg, #0575E6, #021B79)',
+                          flexDirection: 'column',
+                          padding: '10px 10px',
+                          margin: '10px 0',
+                          textAlign: 'center',
+                          fontFamily: 'cursive',
+                          width: '100%',
+                          color: 'white',
+                          fontWeight: 'bold',
+                        }} variant='contained' onClick={() => addToCart(menu)}>
+                          <Row>
+                            <Col>
+                              {menu.product}
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col>
+                              Rs. {menu.price}
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Button style={{
+                              color: 'black',
+                              backgroundColor: '#7CFC00	',
+                              borderradius: '4px',
+                              padding: '10px 20px',
+                              fontisize: '16px',
+                              cursor: 'pointer',
+                            }} >
+                              <AddShoppingCartIcon />
+                            </Button>
+                          </Row>
+                        </Button>
+                        </Container>
+                      </Col>
+                    ))
+                    :
+                    <Col>'No menu items found!'</Col>}
+                </Row>
               }
               {/*<TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
