@@ -77,21 +77,33 @@ const getTodayOrder = asyncHandler(async (req, res) => {
   
   const ownerId = req.body.ownerId;
   let boardingId = req.body.boardingId;
-  console.log(ownerId);
+
+  
   if(!boardingId){
-    console.log(boardingId);
     boardingId = await Boarding.findOne({ inventoryManager: ownerId });
     boardingId = boardingId._id.toString();
   }
   //1.const boarding = get boardings that has inventoryManager as ownerId
   const boarding = await Boarding.find({ inventoryManager: ownerId }).select('boardingName');
-  if(boarding.length>0){
-  try {
-      const order = await Order.find({ 
-        inventoryManager:ownerId,
-        ...(boardingId !== 'All' ? {boarding:boardingId} : {}),
-      });
 
+  if(boardingId.length == 0){
+    throw new Error("You are not assigned to a boarding")
+  }
+
+  let query = {};
+
+  if (boardingId === 'All') {
+    query = { boarding: { $in: boarding.map(b => b._id) } };
+  } else {
+    query = { boarding: boardingId };
+  }
+
+  if(boarding.length>0){
+    try {
+      
+      const order = await Order.find(query);
+      
+      console.log(order);
       if (order) {
           res.status(200).json({
             order,

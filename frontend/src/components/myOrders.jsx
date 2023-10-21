@@ -71,7 +71,15 @@ const MyOrders = () => {
         loadOrderData();
     }, []); // Empty dependency array to trigger the effect on component mount
 
-    
+    const filteredOrders = product.filter((order) => {
+        console.log(order);
+        return (
+          order.status === "Pending"||order.status === "Ready" &&
+          order?.items.some((item) =>
+            item.product.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        );
+      });
 
     return (
         
@@ -118,8 +126,8 @@ const MyOrders = () => {
                                 <TableRow style={{ width: '100%', height: '100%', textAlign: 'center' }}>
                                     <TableCell align="center" colSpan={10}><CircularProgress /></TableCell>
                                 </TableRow>
-                            ) : product.length > 0 ? ( // Step 4: Display filtered orders
-                                product.map((order, index) => (
+                            ) : filteredOrders.length > 0 ? ( // Step 4: Display filtered orders
+                            filteredOrders.map((order, index) => (
                                     <TableRow key={index}>
                                         {/*<TableCell align="center">{order._id}</TableCell>*/}
                                         <TableCell align="center">{new Date(order.date).toDateString()}</TableCell>

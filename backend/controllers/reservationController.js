@@ -624,7 +624,7 @@ const updateGender = asyncHandler(async (req, res) => {
 const getToDoByOccId = asyncHandler(async(req, res) => {
     const occId = req.body.occId;
 
-    const Todo = await toDoPayment.findById({occId})
+    const Todo = await toDoPayment.find({owner:occId, status:"paid"});
 
     if (Todo) {
         res.status(200).json(Todo)

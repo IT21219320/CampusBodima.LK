@@ -118,7 +118,17 @@ const MenuView = () => {
                 {filteredMenus.length > 0 ?
                   filteredMenus.map((menu, index) => (
                     <Col lg={4} key={index}>
-                      <Button style={{flexDirection: 'column', padding: '10px 10px', margin: '10px 0', textAlign: 'center', width:'100%'}} variant='contained' onClick={() => addToCart(menu)}>
+                      <Button style={{
+    background: 'linear-gradient(to right, #C02425, #F0CB35)', // Replace these colors with your desired gradient
+    flexDirection: 'column',
+    padding: '10px 10px',
+    margin: '10px 0',
+    textAlign: 'center',
+    fontFamily: 'cursive', 
+    width: '100%',
+    color: 'white',
+    fontWeight: 'bold',
+  }} variant='contained' onClick={() => addToCart(menu)}>
                         <Row>
                           <Col>
                             {menu.product}

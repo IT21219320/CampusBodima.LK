@@ -25,21 +25,14 @@ const OrderList = () => {
     const [activeTab, setActiveTab] = useState('Pending Orders');
     const [boardingNames, setBoardingNames] = useState('');
 
-    const openDeleteModal = (order) => {
-        setSelectedOrder(order);
-        setShowDeleteModal(true);
-    };
+    
 
     const closeDeleteModal = () => {
         setSelectedOrder(null);
         setShowDeleteModal(false);
     };
 
-    const handleDeleteSuccess = () => {
-        loadOrderData();
-        closeDeleteModal();
-    };
-
+    
     const { userInfo } = useSelector((state) => state.auth);
 
     const status = async (id) => {
@@ -54,7 +47,7 @@ const OrderList = () => {
                 loadOrderData();
             }
         } catch (err) {
-            toast.error(err.data?.message || err.error);
+            toast.error(err.data?.message || err.error || err);
         }
     };
 
@@ -72,8 +65,8 @@ const OrderList = () => {
             if(boardingId == ''){
                 setBoardingId(res.boarding[0]._id)
               }
-        } catch (error) {
-            toast.error('Failed to fetch orders. Please try again later.');
+        } catch (err) {
+            toast.error(err.data?.message || err.error || err);
         }
     };
 
@@ -81,13 +74,15 @@ const OrderList = () => {
         loadOrderData();
     }, [boardingId]); // Updated dependency array to trigger the effect when the selected boarding changes
 
-    const filteredOrders = product
-        .filter((order) => order.status === "Pending")
-        .filter((order) => {
-            return (
-                order.product.toLowerCase().includes(searchQuery.toLowerCase()) 
-            );
-        });
+    const filteredOrders = product.filter((order) => {
+        console.log(order);
+        return (
+          order.status === "Pending" &&
+          order?.items.some((item) =>
+            item.product.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        );
+      });
 
     return (
         <>
@@ -181,9 +176,27 @@ const OrderList = () => {
                                                         <td>{new Date(order.date).toDateString()}</td>
                                                         <td align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</td>
                                                         <td>{order.orderNo}</td>
-                                                        <td>{order.product}</td>
-                                                        <td>{order.quantity}</td>
-                                                        <td>{order.price}</td>
+                                                        <td align="center">
+                                            {order.items.map((item,index) => (
+                                                <tr>
+                                                    <td align="center">{item.product}</td>
+                                                </tr>
+                                            ))}
+                                        </td>
+                                        <td align="center">
+                                            {order.items.map((item,index) => (
+                                                <tr>
+                                                    <td align="center">{item.quantity}</td>
+                                                </tr>
+                                            ))}
+                                        </td>
+                                        <td align="center">
+                                            {order.items.map((item,index) => (
+                                                <tr>
+                                                    <td align="center">{item.price}</td>
+                                                </tr>
+                                            ))}
+                                        </td>
                                                         <td>{order.total}</td>
                                                         <td>{order.status}</td>
                                                         <td align="center">

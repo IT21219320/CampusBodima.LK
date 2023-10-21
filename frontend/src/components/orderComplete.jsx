@@ -66,13 +66,15 @@ const OrderComplete = () => {
         loadOrderData();
     }, [boardingId]);
 
-    const filteredOrders = product
-        .filter((order) => order.status === "Completed")
-        .filter((order) => {
-            return (
-                order.product.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        });
+    const filteredOrders = product.filter((order) => {
+        console.log(order);
+        return (
+          order.status === "Completed" &&
+          order?.items.some((item) =>
+            item.product.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        );
+      });
 
     const exportToPDF = () => {
         ;//Report Generating
