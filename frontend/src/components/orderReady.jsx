@@ -158,6 +158,7 @@ const OrderReady = () => {
                                     <TableCell align="center"><b>Product</b></TableCell>
                                     <TableCell align="center"><b>Quantity</b></TableCell>
                                     <TableCell align="center"><b>Price</b></TableCell>
+                                    <TableCell align="center"><b>Sub Total</b></TableCell>
                                     <TableCell align="center"><b>Total</b></TableCell>
                                     <TableCell align="center"><b>Status</b></TableCell>
                                     <TableCell align="center"><b>Update Status</b></TableCell>
