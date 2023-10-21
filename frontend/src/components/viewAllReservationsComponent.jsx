@@ -79,6 +79,7 @@ const ViewAllReservations = ({ bId }) => {
       setLoading(false)
 
     } catch (error) {
+      setLoading(false)
       console.error('Error getting boardings', error);
     }
 

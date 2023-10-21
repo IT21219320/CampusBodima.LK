@@ -50,6 +50,7 @@ const PendingReservations = ({ bId }) => {
       setLoading(false)
 
     } catch (error) {
+      setLoading(false)
       console.error('Error getting pending', error);
     }
 
