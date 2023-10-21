@@ -47,6 +47,11 @@ const getOwnerMenu = asyncHandler(async (req, res) => {
     boardingId = await Boarding.findOne({ inventoryManager: ownerId });
     boardingId = boardingId._id.toString();
   }
+
+  if(!boardingId){
+    throw new Error("You are not assigned to a boarding")
+  }
+
   //1.const boarding = get boardings that has inventoryManager as ownerId
   const boarding = await Boarding.find({ inventoryManager: ownerId }).select('boardingName');
   //if(boarding.lenght > 0){}else{thrw err no assigned boardings}
@@ -88,7 +93,7 @@ const getBoardingMenu = asyncHandler(async (req, res) => {
   if (reservation) {
     
     const boarding = await Boarding.findOne({_id: reservation.boardingId, food: true})
-    console.log(reservation);
+    
     if(!boarding){
       res.status(400)
       throw new Error("Your boarding does not proved this facility")
