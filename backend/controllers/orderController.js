@@ -86,7 +86,7 @@ const getTodayOrder = asyncHandler(async (req, res) => {
   //1.const boarding = get boardings that has inventoryManager as ownerId
   const boarding = await Boarding.find({ inventoryManager: ownerId }).select('boardingName');
 
-  if(!boardingId){
+  if(boardingId.length == 0){
     throw new Error("You are not assigned to a boarding")
   }
 
