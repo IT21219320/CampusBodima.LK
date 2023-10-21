@@ -1,8 +1,2 @@
-.deletebutton {
-  color: #FF0000; /* Initial color */
-  transition: color 0.3s; /* Add a transition for smooth color change */
-}
-.deletebutton:hover {
-  color: #FF5555; /* Color to change to on hover */
-}
+
 

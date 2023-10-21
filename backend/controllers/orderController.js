@@ -6,49 +6,47 @@ import Boarding from '../models/boardingModel.js';
 const createOrder = async (req, res) => {
   try {
     const {
-      product,
-      foodType,
-      quantity,
-      price,
-      orderNo,
-      foodImages,
-      owner,
-      occupantId,
-      status,
-      total,
+      cart,
+      occupantId
     } = req.body;
 
-    const productNames = {
-      '3': 'Fried Rice',
-      '6': 'Rice & Curry',
-      '12': 'Noodles',
-      '24': 'Hoppers',
-    };
-    
-    const foodTypeNames = {
-      '1': 'Fish',
-      '2': 'Chicken',
-      '7': 'Egg',
-      '5': 'Normal',
-    };
-    const order = new Order({
-      product:productNames[product],
-      foodType:foodTypeNames[foodType],
-      quantity:quantity,
-      price:price,
-      orderNo:orderNo+orderNo,
-      owner:owner,
-      occupant: occupantId,
-      status:status,
-  
-      total:total,
-    });
+    const latestOrder = await Order.findOne({boarding: cart[0].boarding}).sort({ createdAt: -1 });
 
+    let newOrderNo = 1
+    if(latestOrder){
+      newOrderNo = parseInt(latestOrder.orderNo) + 1
+    }
+
+    let items = [];
+    let item;
+    let total = 0;
+    for(let i = 0; i < cart.length; i++){
+
+      item = {
+        product:cart[i].product,
+        quantity:cart[i].quantity,
+        price:cart[i].price,
+        total:(cart[i].price*cart[i].quantity),
+      }
+
+      total += (cart[i].price*cart[i].quantity);
+
+      items.push(item)
+      
+    }
+    
+    const order = new Order({
+      items:items,
+      orderNo:newOrderNo,
+      boarding:cart[0].boarding,
+      occupant: occupantId,
+      total: total
+    })
     await order.save();
 
     res.status(201).json(order);
   } catch (error) {
-    res.status(500).json({ error: "Could not create the order" });
+    throw new Error(error)
   }
 };
 const getOrder = asyncHandler(async (req, res) => {
@@ -89,7 +87,10 @@ const getTodayOrder = asyncHandler(async (req, res) => {
   const boarding = await Boarding.find({ inventoryManager: ownerId }).select('boardingName');
   if(boarding.length>0){
   try {
-      const order = await Order.find({ ownerId:ownerId,boarding:boardingId});
+      const order = await Order.find({ 
+        inventoryManager:ownerId,
+        ...(boardingId !== 'All' ? {boarding:boardingId} : {}),
+      });
 
       if (order) {
           res.status(200).json({
