@@ -172,9 +172,10 @@ const OrderForm = () => {
                 </Row>
                 <Button style={{backgroundcolor: 'blue',
   color: 'white',
+  backgroundColor: '#0073cf',
   borderradius: '4px',
   padding: '10px 20px',
-  fontsize: '16px',
+  fontisize: '16px',
   cursor: 'pointer',
 }}
 

@@ -92,13 +92,15 @@ const OrderReady = () => {
         loadOrderData();
     }, [boardingId]); // Empty dependency array to trigger the effect on component mount
 
-    const filteredOrders = product
-        .filter((order) => order.status === "Ready") // Filter by "Pending" status
-        .filter((order) => {
-            return (
-                order.product.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        });
+    const filteredOrders = product.filter((order) => {
+        console.log(order);
+        return (
+          order.status === "Ready" &&
+          order?.items.some((item) =>
+            item.product.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        );
+      });
 
 
     return (
@@ -175,9 +177,27 @@ const OrderReady = () => {
                                         <td>{new Date(order.date).toDateString()}</td>
                                         <td align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</td>
                                         <td>{order.orderNo}</td>
-                                        <td>{order.product}</td>
-                                        <td>{order.quantity}</td>
-                                        <td>{order.price}</td>
+                                        <td align="center">
+                                            {order.items.map((item,index) => (
+                                                <tr>
+                                                    <td align="center">{item.product}</td>
+                                                </tr>
+                                            ))}
+                                        </td>
+                                        <td align="center">
+                                            {order.items.map((item,index) => (
+                                                <tr>
+                                                    <td align="center">{item.quantity}</td>
+                                                </tr>
+                                            ))}
+                                        </td>
+                                        <td align="center">
+                                            {order.items.map((item,index) => (
+                                                <tr>
+                                                    <td align="center">{item.price}</td>
+                                                </tr>
+                                            ))}
+                                        </td>
                                         <td>{order.total}</td>
                                         <td>{order.status}</td>
                                         <td align="center">

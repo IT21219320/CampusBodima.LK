@@ -303,7 +303,7 @@ const MenuView = () => {
                     ))
                   ) : (
                     <tr style={{ height: '100%', width: '100%', textAlign: 'center', color: 'blue' }}>
-                      <td colSpan={7}>
+                      <td colSpan={5}>
                         <h4>No matching menus found!</h4>
                       </td>
                     </tr>

@@ -176,9 +176,27 @@ const OrderList = () => {
                                                         <td>{new Date(order.date).toDateString()}</td>
                                                         <td align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</td>
                                                         <td>{order.orderNo}</td>
-                                                        <td>{order.product}</td>
-                                                        <td>{order.quantity}</td>
-                                                        <td>{order.price}</td>
+                                                        <td align="center">
+                                            {order.items.map((item,index) => (
+                                                <tr>
+                                                    <td align="center">{item.product}</td>
+                                                </tr>
+                                            ))}
+                                        </td>
+                                        <td align="center">
+                                            {order.items.map((item,index) => (
+                                                <tr>
+                                                    <td align="center">{item.quantity}</td>
+                                                </tr>
+                                            ))}
+                                        </td>
+                                        <td align="center">
+                                            {order.items.map((item,index) => (
+                                                <tr>
+                                                    <td align="center">{item.price}</td>
+                                                </tr>
+                                            ))}
+                                        </td>
                                                         <td>{order.total}</td>
                                                         <td>{order.status}</td>
                                                         <td align="center">
