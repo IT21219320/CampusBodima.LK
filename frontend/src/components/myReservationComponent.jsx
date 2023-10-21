@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { useGetMyReservationMutation, useUpdateDurationMutation, useDeleteReservationMutation } from "../slices/reservationsApiSlice";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -18,7 +17,15 @@ import { toast } from 'react-toastify';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import MailIcon from '@mui/icons-material/Mail';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { red } from "@mui/material/colors";
+
+import {
+  useGetMyReservationMutation,
+  useUpdateDurationMutation,
+  useDeleteReservationMutation,
+  useGetToDoByOccIdMutation,
+} from "../slices/reservationsApiSlice";
+
+
 
 
 const MyReservationComponent = () => {
@@ -33,7 +40,7 @@ const MyReservationComponent = () => {
     backgroundColor: 'rgb(240 242 255)',
     padding: '40px',
     marginTop: '20px',
-    borderRadius: '20px',
+    
   };
 
   const hederStyle = {
@@ -53,15 +60,17 @@ const MyReservationComponent = () => {
   const [getMyReservation] = useGetMyReservationMutation();
   const [updateDuration] = useUpdateDurationMutation();
   const [deleteReservation] = useDeleteReservationMutation();
+  const [getToDo] = useGetToDoByOccIdMutation();
 
   const [myReservation, setMyReservation] = useState();
   const [updateS, setUpdateS] = useState()
   const [deleteS, setDeleteS] = useState();
+  const [todo, setTodo ] = useState();
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const paymentHandle =() => {
+  const paymentHandle = () => {
     navigate(`/occupant/payment/`)
   }
 
@@ -71,7 +80,10 @@ const MyReservationComponent = () => {
 
       const res = await getMyReservation({ _id: userInfo._id }).unwrap();
       setMyReservation(res.myDetails);
+      const resTodo = await getToDo({occId: userInfo._id}).unwrap();
+      setTodo(resTodo);
       console.log(res.myDetails);
+      console.log(resTodo);
       setLoading(false)
 
     } catch (error) {
@@ -132,20 +144,25 @@ const MyReservationComponent = () => {
     const userID = userInfo._id
     console.log(userInfo.email)
 
-    if (userInfo.email === email) {
-      const res = await deleteReservation({ ReservationId: myReservation.Id }).unwrap();
-
-      console.log(res);
-      setDeleteS(res);
-
-      if (res.message === "Reservation Successfully Deleted") {
-        toast.success("Reservation Successfully Deleted");
-        navigate(`/`);
+    if (todo == 0){
+      if (userInfo.email === email) {
+        const res = await deleteReservation({ ReservationId: myReservation.Id }).unwrap();
+  
+        console.log(res);
+        setDeleteS(res);
+  
+        if (res.message === "Reservation Successfully Deleted") {
+          toast.success("Reservation Successfully Deleted");
+          navigate(`/`);
+        }
       }
-    }
-
-    else {
-      toast.error("Incorrect email. Please try again!");
+  
+      else {
+        toast.error("Incorrect email. Please try again!");
+      }
+    }else{
+      toast.warning("Please do your payments before cancelling the reservation");
+      navigate(`/occupant/payment/`);
     }
 
   }
@@ -188,8 +205,8 @@ const MyReservationComponent = () => {
                     <center>
                       <h1 style={{ marginTop: '130px', fontFamily: 'cursive', color: '#afb5be' }}>
                         <p>Your reservation has been approved. </p>
-                        </h1>
-                        <p>Please make your initial payment as soon as possible</p>
+                      </h1>
+                      <p>Please make your initial payment as soon as possible</p>
                       <Button variant="contained" size="small" onClick={paymentHandle}> Go to Payments</Button>
                     </center>
                   </>
@@ -241,7 +258,7 @@ const MyReservationComponent = () => {
 
                         <Row>
 
-                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '25px', marginTop: '20px', borderRadius: '20px', height: '96%' }}>
+                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '25px', marginTop: '20px', height: '96%' }}>
                             <h3 style={{ marginBottom: '30px', textAlign: "center" }}>My Reservation Details</h3>
 
                             <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Fisrt Name</p> <p >{myReservation.firstName}</p>
