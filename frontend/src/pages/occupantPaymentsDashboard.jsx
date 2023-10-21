@@ -418,7 +418,7 @@ const OccupantPaymentDash = () => {
                                                 <Row>
                                                     <center>
                                                         <div ref={chartRef} >
-                                                            <p style={{ fontSize: '30px', fontWeight: 'bold', margin: '8% 0px 0px 0px ' }}>Monthly Payment analyse</p>
+                                                            <p style={{ fontSize: '30px', fontWeight: 'bold', margin: '8% 0px 0px 0px ' }}>Monthly Payment analysis</p>
 
                                                             {mpData.length > 0 ? (
                                                                 <BarChart

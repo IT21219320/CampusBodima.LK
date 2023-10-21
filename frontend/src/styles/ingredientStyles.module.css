@@ -1,67 +1,67 @@
 /* Add borders to the table and its cells */
 .customtable {
-    border-collapse: collapse;
-    width: 100%;
-    border: 1px solid #df0e0e; /* Add border to the whole table */
-  }
-  
-  .customtable th, .customtable td {
-    border: 1px solid #dddddd; /* Add border to table cells (th and td) */
-    padding: 8px;
-    text-align: left;
-  }
-  
-  /* Add alternating row background color for better readability */
-  .customtable tbody tr:nth-child(odd) {
-    background-color: #e7e9ea;
-  }
-  
-  /* Add hover effect on rows */
-  .customtable tbody tr:hover {
-    background-color: #e2e2e2;
-  }
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #df0e0e;
+  /* Add border to the whole table */
+}
 
-  .deleteBtn {
-    background: #f95555 !important; /* Low-intensity red */
+.tableimportant {
+  width: 100% !important;
+}
+
+.customtable th,
+.customtable td {
+  border: 1px solid #dddddd;
+  /* Add border to table cells (th and td) */
+  padding: 8px;
+  text-align: left;
+}
+
+/* Add alternating row background color for better readability */
+.customtable tbody tr:nth-child(odd) {
+  background-color: #e7e9ea;
+}
+
+/* Add hover effect on rows */
+.customtable tbody tr:hover {
+  background-color: #e2e2e2;
+}
+
+.deleteBtn {
+  background: #f95555 !important;
+  /* Low-intensity red */
 }
 
 .deleteBtn:hover {
-    background: #fa2121 !important; /* Lighter red on hover */
+  background: #fa2121 !important;
+  /* Lighter red on hover */
 }
 
-.nohover{
+.nohover {
   text-align: center !important;
 }
 
-.alert td{
+.alert td {
   background-color: #f5e550 !important;
 }
 
-.lowAlert td{
+.lowAlert td {
   background-color: rgb(248, 161, 0) !important;
 }
 
-.veryLowAlert td{
-  background-color:#f66257 !important;
+.veryLowAlert td {
+  background-color: #f66257 !important;
 }
 
-.alert td:nth-child(5){
+.alert td:nth-child(5) {
   background-color: white !important;
 }
 
-.lowAlert td:nth-child(5){
+.lowAlert td:nth-child(5) {
   background-color: white !important;
 }
 
-.veryLowAlert td:nth-child(5){
+.veryLowAlert td:nth-child(5) {
   background-color: white !important;
 }
-
-
-
-   
-  
-  
-  
-  
-  

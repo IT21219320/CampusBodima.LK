@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useGetTodayOrderMutation } from "../slices/orderApiSlice";
+import { useGetOrderMutation } from "../slices/orderApiSlice";
 import { toast } from "react-toastify";
 import { Row, Col, Table,} from 'react-bootstrap';
 import { Button, TextField ,CircularProgress} from '@mui/material';
@@ -45,11 +45,11 @@ const OrderHistory = () =>{
 
     const navigate = useNavigate();
 
-    const [getTodayOrder, { isLoading }] = useGetTodayOrderMutation();
+    const [getOrder, { isLoading }] = useGetOrderMutation();
     const userID = userInfo._id
     const loadOrderData = async () => {
       try {
-        const res = await getTodayOrder({ occupantId: userID }).unwrap();
+        const res = await getOrder({ occupantId: userID }).unwrap();
          
         setOrder(res.order);
       } catch (error) {
@@ -67,8 +67,7 @@ const OrderHistory = () =>{
         .filter((order) => order.status === "Completed") 
         .filter((order) => {
             return (
-            order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            order.foodType.toLowerCase().includes(searchQuery.toLowerCase())
+            order.product.toLowerCase().includes(searchQuery.toLowerCase())
             );
         });
 
@@ -177,7 +176,6 @@ const OrderHistory = () =>{
                                     <th>Time</th>
                                     <th>Order Number</th>
                                     <th>Product</th>
-                                    <th>Food Type</th>
                                     <th>Quantity</th>
                                     <th>Price</th>
                                     <th>Total</th>
@@ -199,12 +197,10 @@ const OrderHistory = () =>{
                                         <td align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</td>
                                         <td>{order.orderNo}</td>
                                         <td>{order.product}</td>
-                                        <td>{order.foodType}</td>
                                         <td>{order.quantity}</td>
                                         <td>{order.price}</td>
                                         <td>{order.total}</td>
                                         <td>{order.status}</td>
-                                        {/* Render additional feedback data as needed */}
                                         <td align="center"> 
                                         
                                             

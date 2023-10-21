@@ -1,33 +1,37 @@
 import mongoose from "mongoose";
 
-const orderSchema = mongoose.Schema({
-    
+const itemSchema = mongoose.Schema({
     product:{
         type:String,
         required:true,
     },
-    foodType:{
-        type:String,
-        required:true,
-    },
     quantity:{
-        type:String,
+        type:Number,
         required:true,
     },
     price:{
-        type:String,
+        type:Number,
         required:true,
+    },
+    total:{
+        
+    }
+})
+
+const orderSchema = mongoose.Schema({
+    
+    items: {
+        type: [itemSchema],
+        required: true
     },
     orderNo:{
         type:Number,
-        
+        required: true
     },
-    foodImages:{
-        type:[String],
-    },
-    owner: {
+    boarding: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Boarding',
+        required: true
     },
     occupant: {
         type: mongoose.Schema.Types.ObjectId,
@@ -43,8 +47,10 @@ const orderSchema = mongoose.Schema({
         default : Date.now
     },
     total:{
-        type:String,
+        type:Number,
     },
+}, {
+    timestamps: true
 });
 
 const Order =  mongoose.model('Order',orderSchema);

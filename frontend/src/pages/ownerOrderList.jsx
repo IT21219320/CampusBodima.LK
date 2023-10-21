@@ -21,7 +21,7 @@ const OrderList = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [boardingId, setBoardingId] = useState('');
+    const [boardingId, setBoardingId] = useState('All');
     const [activeTab, setActiveTab] = useState('Pending Orders');
     const [boardingNames, setBoardingNames] = useState('');
 
@@ -85,8 +85,7 @@ const OrderList = () => {
         .filter((order) => order.status === "Pending")
         .filter((order) => {
             return (
-                order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                order.foodType.toLowerCase().includes(searchQuery.toLowerCase())
+                order.product.toLowerCase().includes(searchQuery.toLowerCase()) 
             );
         });
 
@@ -139,11 +138,14 @@ const OrderList = () => {
                                             label="Select Boarding"
                                             onChange={(e) => setBoardingId(e.target.value)}
                                         >
+                                            <MenuItem value={'All'}>
+                                                All
+                                            </MenuItem>
                                             {Array.isArray(boardingNames) && boardingNames.map((boarding) => (
-                  <MenuItem key={boarding._id} value={boarding._id}>
-                    {boarding.boardingName}
-                  </MenuItem>
-                ))}
+                                            <MenuItem key={boarding._id} value={boarding._id}>
+                                                {boarding.boardingName}
+                                            </MenuItem>
+                                            ))}
                                         </Select>
                                     </FormControl>
                                     </div>
@@ -159,7 +161,6 @@ const OrderList = () => {
                                                 <th>Time</th>
                                                 <th>Order Number</th>
                                                 <th>Product</th>
-                                                <th>Food Type</th>
                                                 <th>Quantity</th>
                                                 <th>Price</th>
                                                 <th>Total</th>
@@ -181,7 +182,6 @@ const OrderList = () => {
                                                         <td align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</td>
                                                         <td>{order.orderNo}</td>
                                                         <td>{order.product}</td>
-                                                        <td>{order.foodType}</td>
                                                         <td>{order.quantity}</td>
                                                         <td>{order.price}</td>
                                                         <td>{order.total}</td>

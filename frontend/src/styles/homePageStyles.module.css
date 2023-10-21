@@ -41,7 +41,6 @@
 
 .h1{
     font-family: Verdana;
-    width: 0px !important;
     overflow: hidden;
     transition: all ease-in 1s;
     text-wrap: nowrap;
@@ -55,7 +54,7 @@
 
 .doDivs{
     padding: 10%;
-    height: 220px;
+    height: 95%;
     border-radius: 10px;
     box-shadow: 3px 6px 24px 1px gray;
     transition: transform 0.5s ease;
