@@ -45,12 +45,12 @@ const getOwnerMenu = asyncHandler(async (req, res) => {
   console.log(boardingId);
   if (!boardingId) {
     boardingId = await Boarding.findOne({ inventoryManager: ownerId });
+    if(!boardingId){
+      throw new Error("You are not assigned to a boarding")
+    }
     boardingId = boardingId._id.toString();
   }
 
-  if(!boardingId){
-    throw new Error("You are not assigned to a boarding")
-  }
 
   //1.const boarding = get boardings that has inventoryManager as ownerId
   const boarding = await Boarding.find({ inventoryManager: ownerId }).select('boardingName');
