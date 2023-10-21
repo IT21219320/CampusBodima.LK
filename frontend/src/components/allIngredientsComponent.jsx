@@ -136,7 +136,7 @@ const AllIngredients = ({ boardingId }) => {
           </div>
         ) : ingredients.length > 0 ? (
           <>
-            <Col lg={9}>
+            <Col lg={9} style={{ width: '80%', important: 'true' }} >
               <Row>
                 <Col>
                   <Table
