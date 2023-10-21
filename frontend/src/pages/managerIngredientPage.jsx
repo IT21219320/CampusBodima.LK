@@ -114,14 +114,90 @@ const managerIngredientPage = () => {
                                 <Row>
                                    <Col> 
                                         <Tabs defaultActiveKey="Ingredients"  id="uncontrolled-tab-example" className="mb-3" onSelect={(k) => setActiveTab(k)}>
+
                                             <Tab eventKey="Ingredients" title="Ingredients">
-                                                {activeTab=="Ingredients" && boardingId ? <AllIngredients boardingId={boardingId} /> :''}
+                                                {activeTab=="Ingredients" && boardingId ? (
+                                                    <AllIngredients boardingId={boardingId} />
+                                                ) : (
+                                                    <div
+                                                    style={{
+                                                        height: '68vh',
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        color: 'dimgrey',
+                                                    }}
+                                                    >
+                                                    {boardingId ? (
+                                                        <h2>You don't have any Ingredients!</h2>
+                                                    ) : (
+                                                        <>
+                                                        {userInfo.userType === 'owner' ? (
+                                                            <h2>Please Select a boarding!</h2>
+                                                        ) : (
+                                                            <h2>You do not assign to any boarding!</h2>
+                                                        )}
+                                                        </>
+                                                    )}
+                                                    </div>
+                                                )}
                                             </Tab>
                                             <Tab eventKey="Central Inventory" title="Central Inventory">
-                                                {activeTab=="Central Inventory" && boardingId ? <CentralinventoryPage boardingId={boardingId} /> :''}
+                                                {activeTab=="Central Inventory" && boardingId ? (
+                                                    <AllIngredients boardingId={boardingId} />
+                                                ) : (
+                                                    <div
+                                                    style={{
+                                                        height: '68vh',
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        color: 'dimgrey',
+                                                    }}
+                                                    >
+                                                    {boardingId ? (
+                                                        <h2>You don't have any Ingredients!</h2>
+                                                    ) : (
+                                                        <>
+                                                        {userInfo.userType === 'owner' ? (
+                                                            <h2>Please Select a boarding!</h2>
+                                                        ) : (
+                                                            <h2>You do not assign to any boarding!</h2>
+                                                        )}
+                                                        </>
+                                                    )}
+                                                    </div>
+                                                )}
                                             </Tab>
                                             <Tab eventKey="Reduce Inventory" title="Reduce Inventory">
-                                                {activeTab=="Reduce Inventory" && boardingId ? <ReduceinventoryPage boardingId={boardingId} /> :''}
+                                                {activeTab=="Reduce Inventory" && boardingId ? (
+                                                    <AllIngredients boardingId={boardingId} />
+                                                ) : (
+                                                    <div
+                                                    style={{
+                                                        height: '68vh',
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        color: 'dimgrey',
+                                                    }}
+                                                    >
+                                                    {boardingId ? (
+                                                        <h2>You don't have any Ingredients!</h2>
+                                                    ) : (
+                                                        <>
+                                                        {userInfo.userType === 'owner' ? (
+                                                            <h2>Please Select a boarding!</h2>
+                                                        ) : (
+                                                            <h2>You do not assign to any boarding!</h2>
+                                                        )}
+                                                        </>
+                                                    )}
+                                                    </div>
+                                                )}
                                             </Tab> 
                                         </Tabs>
                                     </Col>

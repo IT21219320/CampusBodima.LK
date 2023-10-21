@@ -311,10 +311,11 @@ const AllIngredients = ({ boardingId }) => {
             ) : (
               <>
                 {userInfo.userType === 'owner' ? (
-                  <h2>Please Select a boarding!</h2>
-                ) : (
+                <h2>Please Select a boarding!</h2>
+                ) : ''}
+                {userInfo.userType === 'kitchen' ? (
                   <h2>You do not assign to any boarding!</h2>
-                )}
+                ) : ''}
               </>
             )}
           </div>
