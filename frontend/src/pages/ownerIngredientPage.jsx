@@ -242,6 +242,8 @@ const OwnerIngredientPage = () => {
                 </Col>
                 <Col>
                 {boardingId ? 
+                 <div>
+                  <p style={{ marginBottom: '5px' }}>Manager Email:</p>
                   <InputGroup className="mb-3" style={{ maxWidth: '310px' }}>
                     <Form.Control
                       aria-label="Recipient's username"
@@ -257,6 +259,7 @@ const OwnerIngredientPage = () => {
                       Update
                     </Button>
                   </InputGroup>
+                 </div>
                   : ''}
                 </Col>
                 <Col className="ml-5">
@@ -362,7 +365,7 @@ const OwnerIngredientPage = () => {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Select Manager</Modal.Title>
+          <Modal.Title>Select Inventory Manager</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Typography variant="subtitle1" sx={{ marginBottom: 1 }}>
