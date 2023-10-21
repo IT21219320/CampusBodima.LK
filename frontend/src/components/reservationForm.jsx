@@ -62,8 +62,8 @@ const ReservationForm = () => {
             if (paymentType === "Online") {
                 navigate(`/occupant/makePayment/${bId}`);
             } else {
-                window.alert("Wait until the owner approve")
-                navigate(`/occupant/reservations/confirm/`);
+                toast.success("Wait until the owner approves you");
+                navigate(`/occupant/boarding`);
             }
 
         }
