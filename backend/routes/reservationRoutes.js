@@ -10,6 +10,7 @@ import { reserveRoom,
          getBoardingByOwnerID,
          getBoardingByBId,
          updateGender, 
+         getToDoByOccId,
     } from '../controllers/reservationController.js';
  
 
@@ -26,5 +27,6 @@ router.delete('/deleteReservation' , deleteReservation);
 router.post('/boardings', getBoardingByOwnerID);
 router.post('/boardingbyId',getBoardingByBId);
 router.post('/updateGender', updateGender);
+router.post('/getTodo', getToDoByOccId)
 
 export default router;
