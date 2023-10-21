@@ -65,7 +65,7 @@ const OrderList = () => {
             if(boardingId == ''){
                 setBoardingId(res.boarding[0]._id)
               }
-        } catch (error) {
+        } catch (err) {
             toast.error(err.data?.message || err.error || err);
         }
     };
