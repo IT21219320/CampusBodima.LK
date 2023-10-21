@@ -297,9 +297,9 @@ const MyReservationComponent = () => {
 
                             <Row style={{ marginTop: '20px' }}>
 
-                              <Col>
+                              
 
-                                <Button variant="contained" size="small" style={{ backgroundColor: '#0a9954', borderRadius: '20px', width: '195px' }} onClick={handleClickOpen}>Update</Button>
+                                <Button variant="contained" size="small" style={{ backgroundColor: '#0a9954', borderRadius: '20px', width: '195px' , float: "left"}} onClick={handleClickOpen}>Update</Button>
 
                                 <Dialog open={open} onClose={handleClose}>
 
@@ -344,11 +344,7 @@ const MyReservationComponent = () => {
 
                                 </Dialog>
 
-                              </Col>
-
-                              <Col>
-
-                                <Button variant="contained" size="small" style={{ backgroundColor: '#d86872', borderRadius: '20px', width: '195px' }} onClick={handleDltClickOpen}>Delete</Button>
+                                <Button variant="contained" size="small" style={{ backgroundColor: '#d86872', borderRadius: '20px', width: '195px' , marginLeft:'30px'}} onClick={handleDltClickOpen}>Delete</Button>
 
                                 <Dialog open={dltOpen} onClose={handleDltClose}>
 
@@ -384,7 +380,7 @@ const MyReservationComponent = () => {
 
                                 </Dialog>
 
-                              </Col>
+                    
 
                             </Row>
 
