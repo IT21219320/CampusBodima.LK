@@ -25,21 +25,14 @@ const OrderList = () => {
     const [activeTab, setActiveTab] = useState('Pending Orders');
     const [boardingNames, setBoardingNames] = useState('');
 
-    const openDeleteModal = (order) => {
-        setSelectedOrder(order);
-        setShowDeleteModal(true);
-    };
+    
 
     const closeDeleteModal = () => {
         setSelectedOrder(null);
         setShowDeleteModal(false);
     };
 
-    const handleDeleteSuccess = () => {
-        loadOrderData();
-        closeDeleteModal();
-    };
-
+    
     const { userInfo } = useSelector((state) => state.auth);
 
     const status = async (id) => {
@@ -54,7 +47,7 @@ const OrderList = () => {
                 loadOrderData();
             }
         } catch (err) {
-            toast.error(err.data?.message || err.error);
+            toast.error(err.data?.message || err.error || err);
         }
     };
 
@@ -73,7 +66,7 @@ const OrderList = () => {
                 setBoardingId(res.boarding[0]._id)
               }
         } catch (error) {
-            toast.error('Failed to fetch orders. Please try again later.');
+            toast.error(err.data?.message || err.error || err);
         }
     };
 
@@ -81,13 +74,15 @@ const OrderList = () => {
         loadOrderData();
     }, [boardingId]); // Updated dependency array to trigger the effect when the selected boarding changes
 
-    const filteredOrders = product
-        .filter((order) => order.status === "Pending")
-        .filter((order) => {
-            return (
-                order.product.toLowerCase().includes(searchQuery.toLowerCase()) 
-            );
-        });
+    const filteredOrders = product.filter((order) => {
+        console.log(order);
+        return (
+          order.status === "Pending" &&
+          order?.items.some((item) =>
+            item.product.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        );
+      });
 
     return (
         <>
