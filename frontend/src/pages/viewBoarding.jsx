@@ -285,8 +285,9 @@ const ViewBoarding = () => {
                                                 boarding.room.some(room => room.status == "Approved") ?
                                                     boarding.room.map((room, index) => (
                                                         room.status=="Approved" ?
-                                                            <Card key={index} className={`${viewBoardingStyles.card} m-4`}>
-                                                                <CardContent className={ownerStyles.cardContent}>
+                                                            <Card key={index} className={`${viewBoardingStyles.card} ${room.noOfBeds == room.occupant.length? viewBoardingStyles.full : (room.visibility == false ? viewBoardingStyles.unavailable : '') } m-4`}>
+                                                                <CardContent className={`${ownerStyles.cardContent} ${room.noOfBeds == room.occupant.length || room.visibility == false ? viewBoardingStyles.blur : '' }`}>
+                                                                    {console.log(room.noOfBeds == room.occupant.length)}
                                                                     <Row>
                                                                         <Col style={{paddingBottom:'20px', width:'300px'}}>
                                                                             {imgLoading ? <Skeleton variant="rounded" animation="wave" width='100%' height='200px'/> :
@@ -319,12 +320,17 @@ const ViewBoarding = () => {
                                                                             </Row>
                                                                             <Row>
                                                                                 <Col>
+                                                                                    <p className={ownerStyles.paras}><b>Occpants:</b> {room.occupant.length}/{room.noOfBeds}</p>
+                                                                                </Col>
+                                                                            </Row>
+                                                                            <Row>
+                                                                                <Col>
                                                                                     <p className={ownerStyles.paras}><b>Key Money:</b> &nbsp;&nbsp;{room.keyMoney} Months</p>
                                                                                 </Col>
                                                                             </Row>
                                                                             <Row>
                                                                                 <Col style={{textAlign:'center'}}>
-                                                                                    {room.occupant.length < room.noOfBeds ? 
+                                                                                    {room.occupant.length < room.noOfBeds && room.visibility == true ? 
                                                                                         <MuiButton variant="contained" onClick={() => navigate(`/occupant/reservations/reserve/${boarding._id}/${room._id}`)}>Book Now</MuiButton>
                                                                                     : ''}
                                                                                 </Col>
@@ -339,24 +345,22 @@ const ViewBoarding = () => {
                                                 ''
                                             :
                                                 <div style={{height:'60vh', width:'100%',display:'flex',justifyContent:'center',alignItems:'center', color:'dimgrey'}}>
-                                                    <h2>You don't have any registered rooms!</h2>
+                                                    <h2>No rooms available!</h2>
                                                 </div>
                                             }
                                             </div>
                                         </Col>
                                     </Row>
                                     : ''}
+                                    <Row style={{width:'100%'}}>
+                                        <Col className={`mt-3 `}>
+                                            <FeedbackBoarding boardingId={boardingId} />
+                                        </Col>
+                                    </Row>
                                 </Col>
                             </Row>
                             }
                         </Col>
-                    </Row>
-                    <Row style={{width:'100%'}}>
-                        
-                      <Col className={`mt-3 `}>
-                        <FeedbackBoarding boardingId={boardingId} />
-                      </Col>
-                     
                     </Row>
                 </Container>
                 

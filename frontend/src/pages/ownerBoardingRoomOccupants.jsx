@@ -473,7 +473,7 @@ const OwnerBoardingRoomOccupants = () => {
                                                                             }
                                                                             </Col>
                                                                         </Row>
-                                                                        <Row>
+                                                                        <Row style={{textAlign:'center'}}>
                                                                             <Col>
                                                                                 <h3 style={{marginTop:'10px'}}>{reservation.occupantID.firstName+" "+(reservation.occupantID.lastName?reservation.occupantID.lastName:'')}</h3>
                                                                             </Col>
