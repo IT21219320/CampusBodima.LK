@@ -92,11 +92,20 @@ export const reservationApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
+        getToDoByOccId: builder.mutation({
+            query: (data) => ({
+                url: `${RESERVATION_URL}/getTodo`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+
     }),    
 
 })
 
 export const {
+
     useReserveRoomMutation,
     useUpdateDurationMutation,
     useGetMyReservationMutation,
@@ -108,4 +117,6 @@ export const {
     useGetBoardingsByIdMutation,
     useGetBoardingBybIdMutation,
     useUpdateGenderMutation,
+    useGetToDoByOccIdMutation,
+    
 } = reservationApiSlice;

@@ -3,6 +3,7 @@ import Ticket from '../models/ticketModel.js';
 import User from '../models/userModel.js';
 import Reservation from '../models/reservationModel.js';
 import Boarding from '../models/boardingModel.js';
+import { sendMail } from '../utils/mailer.js';
 
 
 
@@ -20,7 +21,7 @@ const createTicket = asyncHandler(async (req,res) =>{
     
     const boarding = await Boarding.findOne({_id: reservation.boardingId});
     
-    console.log(reservation.boardingId);
+    
     const owner = await User.findById(boarding.owner);
 
     const largestTicketNo = await Ticket.findOne({}, { ticketId: 1}).sort({ticketId: -1});
@@ -50,7 +51,13 @@ const createTicket = asyncHandler(async (req,res) =>{
 
     });
 
+    
+
     if(ticket){
+        const message = `<p><b>Dear ${owner.firstName},</b> <br><br> ${sender.firstName} has raised a ticket regarding <b>${category}</b>. Please reply to this ticket as soon as possible.
+                          <br><br> Best wishes,<br>
+                          The CampusBodima Team. </p>`
+        sendMail(owner.email,message,"You have a new ticket to respond");
         res.status(201).json({ticket});
     }
     else{
@@ -78,8 +85,9 @@ const getUserTickets = asyncHandler(async (req,res) => {
     
 
     const skip = (page) * pageSize;
-    
+
     endDate.setHours(23, 59, 59, 999); // Set to just before midnight of the following day
+
 
     const reservation = await Reservation.findOne({occupantID: id, status: "Approved"});
     if(!reservation){
@@ -93,7 +101,7 @@ const getUserTickets = asyncHandler(async (req,res) => {
         ...(category !== 'all' ? { category } : {}),
         ...(subCategory !== 'all' ? { subCategory } : {}),
         ...(status !== 'all' ? { status } : {}),
-        ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+        ...(date !== 'all' ? { updatedAt: { $gte: startDate, $lte: endDate } } : {}),
         $or: [
             {subject: { $regex: search, $options: "i" } },
             //{description: { $regex: search, $options: "i" } },
@@ -108,7 +116,7 @@ const getUserTickets = asyncHandler(async (req,res) => {
             ...(category !== 'all' ? { category } : {}),
             ...(subCategory !== 'all' ? { subCategory } : {}),
             ...(status !== 'all' ? { status } : {}),
-            ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(date !== 'all' ? { updatedAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
             $or: [
                 {subject: { $regex: search, $options: "i" } },
                 //{description: { $regex: search, $options: "i" } },
@@ -224,13 +232,19 @@ const replyTicket = asyncHandler(async (req, res) => {
             description: description,
             attachment: attachment
         }
+        console.log(senderId);
+        console.log(recieverId);
 
         const updatedTicket = await Ticket.findOneAndUpdate(
             { _id: _id }, // Find the parent ticket by _id
             { $push: { reply: reply } },
             { $set : {status: "Pending"}}
         );
-
+            //sending email 
+        const message = `<p><b>Dear ${recieverId.firstName},</b> <br><br> ${senderId.firstName} has replied to your ticket <b>${ticket.subject}</b>. 
+                          <br><br> Best wishes,<br>
+                          The CampusBodima Team. </p>`
+        sendMail(recieverId.email,message,"You have got a response to your ticket");
 
         res.status(200).json({
             updatedTicket
@@ -276,6 +290,7 @@ const updateTicket = asyncHandler(async (req,res) => {
     const {ticketId,subject,category,subCategory,description,status,attachment,replyTktId } = req.body;
 
     let ticket = await Ticket.findById(ticketId); 
+    console.log(attachment);
     if (ticket) {
         if(ticketId == replyTktId){
             ticket = await Ticket.findOne({_id:ticketId});
@@ -320,7 +335,6 @@ const deleteTicket = asyncHandler(async (req,res) => {
     const {ticketId, replyTktId } = req.params;
 
     let ticket = await Ticket.findById(ticketId);
-    
 
     if (ticket) {
         if(ticketId == replyTktId){
@@ -358,7 +372,7 @@ const getOwnerTickets = asyncHandler(async (req,res) => {
     const endDate = new Date(req.body.endDate);
     const date = req.body.date;
     const search = req.body.search;
-    let boardingId = req.body.boardingId;
+    let boardingId = req.body.boardingId || 'all';
     const sortColumn = req.body.sortColumn;
     const order = req.body.order;
 
@@ -381,7 +395,7 @@ const getOwnerTickets = asyncHandler(async (req,res) => {
         ...(category !== 'all' ? { category } : {}),
         ...(subCategory !== 'all' ? { subCategory } : {}),
         ...(status !== 'all' ? { status } : {}),
-        ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+        ...(date !== 'all' ? { updatedAt: { $gte: startDate, $lte: endDate } } : {}),
         subject: { $regex: search, $options: "i" } 
     });
 
@@ -392,7 +406,7 @@ const getOwnerTickets = asyncHandler(async (req,res) => {
             ...(category !== 'all' ? { category } : {}),
             ...(subCategory !== 'all' ? { subCategory } : {}),
             ...(status !== 'all' ? { status } : {}),
-            ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
+            ...(date !== 'all' ? { updatedAt: { $gte: startDate, $lte: endDate } } : {}), //gte is greater than or eqal and lte is less than or equal
             subject: { $regex: search, $options: "i" } 
         })
         .collation({locale: "en"}).sort({ [sortColumn]: order})

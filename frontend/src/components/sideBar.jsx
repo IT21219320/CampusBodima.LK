@@ -301,6 +301,17 @@ export default function Sidebar() {
               </Tooltip>
             </ListItem></Link>
 
+            <Link to='/occupant/utility' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+              <Tooltip title={!open ? "Utilities" : ''} placement="right" arrow>
+                <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/utility') ? sideBarStyles.active : ''}`}>
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white' }}>
+                    <RiWaterFlashFill style={{fontSize:'1.5em'}}/>
+                  </ListItemIcon>
+                  <ListItemText primary={"Utilities"} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Tooltip>
+            </ListItem></Link>
+
             <Link to='/occupant/ticket' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
               <Tooltip title={!open ? "My Tickets" : ''} placement="right" arrow>
                 <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'initial', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute.startsWith('/occupant/ticket') ? sideBarStyles.active : ''}`}>

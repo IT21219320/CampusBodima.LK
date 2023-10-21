@@ -113,13 +113,13 @@ const managerIngredientPage = () => {
                                    <Col> 
                                         <Tabs defaultActiveKey="Ingredients"  id="uncontrolled-tab-example" className="mb-3" onSelect={(k) => setActiveTab(k)}>
                                             <Tab eventKey="Ingredients" title="Ingredients">
-                                                {activeTab=="Ingredients" ? <AllIngredients boardingId={boardingId} /> :''}
+                                                {activeTab=="Ingredients" && boardingId ? <AllIngredients boardingId={boardingId} /> :''}
                                             </Tab>
                                             <Tab eventKey="Central Inventory" title="Central Inventory">
-                                                {activeTab=="Central Inventory" ? <CentralinventoryPage boardingId={boardingId} /> :''}
+                                                {activeTab=="Central Inventory" && boardingId ? <CentralinventoryPage boardingId={boardingId} /> :''}
                                             </Tab>
                                             <Tab eventKey="Reduce Inventory" title="Reduce Inventory">
-                                                {activeTab=="Reduce Inventory" ? <ReduceinventoryPage boardingId={boardingId} /> :''}
+                                                {activeTab=="Reduce Inventory" && boardingId ? <ReduceinventoryPage boardingId={boardingId} /> :''}
                                             </Tab> 
                                         </Tabs>
                                     </Col>

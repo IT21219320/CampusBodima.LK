@@ -5,6 +5,7 @@ import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Form, FloatingLabel} from 'react-bootstrap';
 import { Breadcrumbs, Typography, Link, Card, CardContent, Avatar, CircularProgress, Button, Dialog, DialogContent, DialogTitle, DialogActions, useMediaQuery, useTheme } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { Close, NavigateNext, Warning } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router';
 import { useDeleteTicketMutation, useGetTicketByUniqueIdMutation, useReplyTicketMutation, useUpdateTicketMutation, useUpdateTicketStatusMutation } from "../slices/ticketsApiSlices";
@@ -28,6 +29,7 @@ const OccupantTicketThreadPage = () => {
     const [tempDeleteId, setTempDeleteId] = useState('');
     const [confirmDialog, setConfirmDialog] = useState(false);
     const [isLoading3, setIsLoading3] = useState(false);
+    const [isLoading4, setIsLoading4] = useState(false);
     const [update, setUpdate] = useState(false);
     const [updateDescription, setUpdateDescription] = useState('');
     const [updateAttachment, setUpdateAttachment] = useState('');
@@ -56,6 +58,7 @@ const OccupantTicketThreadPage = () => {
     
 
     const loadData = async () => {
+        setIsLoading3(true)
         try{
             const res = await getTicketByUniqueID( ticketId ).unwrap();
 
@@ -92,10 +95,12 @@ const OccupantTicketThreadPage = () => {
             }
 
             setTicket(ticket);
+            setIsLoading3(false)
 
             
         } catch(err){
             toast.error(err.data?.message || err.error);
+            setIsLoading3(false)
             navigate('/occupant/ticket');
         }
     }
@@ -208,35 +213,40 @@ const OccupantTicketThreadPage = () => {
 
     //updateButton
     const handleUpdateBtn = async(replyTktId) => {
+        console.log(isLoading4);
         if(new Date(ticket.updatedAt) > new Date(new Date() - 15 * 60 * 1000)){
-            var uniqueName;
-            if(updateAttachment != ''){
-                const timestamp = new Date().getTime();
-                const random = Math.floor(Math.random() * 1000) + 1;
-                uniqueName = `${timestamp}_${random}.${updateAttachment.name.split('.').pop()}`;
-            
-                const storageRef = ref(storage, `${uniqueName}`);
-                const uploadTask = uploadBytesResumable(storageRef, updateAttachment);
-
-                await uploadTask;
-            }
 
             try{
+                var uniqueName;
+                if(updateAttachment){
+                    const timestamp = new Date().getTime();
+                    const random = Math.floor(Math.random() * 1000) + 1;
+                    uniqueName = `${timestamp}_${random}.${updateAttachment.name.split('.').pop()}`;
+                
+                    const storageRef = ref(storage, `${uniqueName}`);
+                    const uploadTask = uploadBytesResumable(storageRef, updateAttachment);
+    
+                    await uploadTask;
+                }
+
                 const res = await updateTicket({ticketId:ticket._id, replyTktId, description:updateDescription, attachment:uniqueName});
                 setUpdateAttachment('');
                 setUpdateAttachmentLink('');
                 setUpdateDescription('')
                 setUpdate(false);
                 toast.success('Ticket updated successfully');
+                setIsLoading4(false)
                 loadData();
             }
             catch(err){
                 toast.error(err.data?.message || err.error);
+                setIsLoading4(false)
             }
         }
         else{
             toast.error('Cannot Update ticket after 15 minutes!');
             loadData();
+            setIsLoading4(false)
         }
     }
 
@@ -372,7 +382,7 @@ const OccupantTicketThreadPage = () => {
                                                                 </Row>
                                                                 <Row>
                                                                     <Col className="mt-3">
-                                                                        <Button variant="contained" color="warning" onClick={() => handleUpdateBtn(tkt._id)}>Update</Button>
+                                                                        <LoadingButton loading={isLoading4} variant="contained" color="warning" onClick={() => handleUpdateBtn(tkt._id)}>Update</LoadingButton>
                                                                     </Col>
                                                                 </Row>
                                                             </>

@@ -1,0 +1,35 @@
+.mainDiv{
+    width: 100%;
+    margin: 0;
+    
+}
+
+.container{
+    margin: auto;
+    margin-top: 10px ;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+}
+
+.card{
+    box-shadow: 5px 5px 10px #0000002b !important;
+    margin-top: 22px;  
+}
+
+.cardContent{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 50px 50px 30px 50px !important;
+}
+
+.compact{
+    padding: 22px 50px 22px 50px !important;
+}
+.centeredContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; 
+  }

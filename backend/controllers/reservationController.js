@@ -4,6 +4,7 @@ import Room from "../models/roomModel.js";
 import Boarding from "../models/boardingModel.js"
 import Reservation from "../models/reservationModel.js";
 import ReservationHistory from "../models/reservationHistory.js";
+import toDoPayment from "../models/toDoPayments.js";
 
 
 //reserve a room
@@ -616,6 +617,25 @@ const updateGender = asyncHandler(async (req, res) => {
 })
 
 
+//@desc get todo payments
+//route POST/api/reservations/getToDoByOccId
+// @access  Private - occupant
+
+const getToDoByOccId = asyncHandler(async(req, res) => {
+    const occId = req.body.occId;
+
+    const Todo = await toDoPayment.findById({occId})
+
+    if (Todo) {
+        res.status(200).json(Todo)
+    }else{
+        res.status(200).json({
+            message: 'Done all the payments',
+        })
+    }
+
+})
+
 export {
     reserveRoom,
     updateDuration,
@@ -628,4 +648,5 @@ export {
     getBoardingByOwnerID,
     getBoardingByBId,
     updateGender,
+    getToDoByOccId,
 }

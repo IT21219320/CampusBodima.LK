@@ -5,6 +5,7 @@ import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Form, FloatingLabel} from 'react-bootstrap';
 import { Breadcrumbs, Typography, Link, Card, CardContent, Avatar, CircularProgress, Button, Dialog, DialogContent, DialogTitle, DialogActions, useMediaQuery, useTheme } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { Close, NavigateNext, Warning } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router';
 import { useDeleteTicketMutation, useGetTicketByUniqueIdMutation, useReplyTicketMutation, useUpdateTicketMutation, useUpdateTicketStatusMutation } from "../slices/ticketsApiSlices";
@@ -28,9 +29,11 @@ const OwnerTicketThreadPage = () => {
     const [tempDeleteId, setTempDeleteId] = useState('');
     const [confirmDialog, setConfirmDialog] = useState(false);
     const [isLoading3, setIsLoading3] = useState(false);
+    const [isLoading4, setIsLoading4] = useState(false);
     const [update, setUpdate] = useState(false);
     const [updateDescription, setUpdateDescription] = useState('');
     const [updateAttachment, setUpdateAttachment] = useState('');
+    const [updateAttachmentLink, setUpdateAttachmentLink] = useState('');
 
     const currentTime = new Date();
     const fifteenMinutesAgo = new Date(currentTime - 15 * 60 * 1000);
@@ -55,6 +58,7 @@ const OwnerTicketThreadPage = () => {
     
 
     const loadData = async () => {
+        setIsLoading3(true)
         try{
             const res = await getTicketByUniqueID( ticketId ).unwrap();
 
@@ -63,7 +67,7 @@ const OwnerTicketThreadPage = () => {
             if (ticket.attachment) {
                 try {
                     const Url = await getDownloadURL(ref(storage, ticket.attachment));
-                    ticket = { ...ticket, attachment: Url }; // Create a new object with the updated attachment
+                    ticket = { ...ticket, attachmentLink: Url }; // Create a new object with the updated attachment
                 } catch (error) {
                     console.log(error);
                 }
@@ -77,7 +81,7 @@ const OwnerTicketThreadPage = () => {
                     if (reply.attachment) {
                         try {
                             const Url2 = await getDownloadURL(ref(storage, reply.attachment));
-                            const updatedReply = { ...reply, attachment: Url2 }; // Create a new object with the updated attachment
+                            const updatedReply = { ...reply, attachmentLink: Url2 }; // Create a new object with the updated attachment
                             updatedReplies.push(updatedReply);
                         } catch (error) {
                             console.log(error);
@@ -90,10 +94,12 @@ const OwnerTicketThreadPage = () => {
                 ticket = { ...ticket, reply: updatedReplies }; // Update the ticket object with the updated replies
             }
             setTicket(ticket);
+            setIsLoading3(false)
 
             
         } catch(err){
             toast.error(err.data?.message || err.error);
+            setIsLoading3(false)
             navigate('/owner/ticket');
         }
     }
@@ -254,27 +260,49 @@ const OwnerTicketThreadPage = () => {
     const handleEditBtn = (ticket) => {
         setUpdateDescription(ticket.description);
         setUpdateAttachment(ticket.attachment);
+        setUpdateAttachmentLink(ticket.attachmentLink);
         setUpdate(true);
     }
 
     //updateButton
     const handleUpdateBtn = async(replyTktId) => {
+        setIsLoading4(true)
         if(new Date(ticket.updatedAt) > new Date(new Date() - 15 * 60 * 1000)){
             try{
-                const res = await updateTicket({ticketId:ticket._id, replyTktId, description:updateDescription, attachment:updateAttachment});
+                var uniqueName;
+                if(updateAttachment){
+                    const timestamp = new Date().getTime();
+                    const random = Math.floor(Math.random() * 1000) + 1;
+                    uniqueName = `${timestamp}_${random}.${updateAttachment.name.split('.').pop()}`;
+                
+                    const storageRef = ref(storage, `${uniqueName}`);
+                    const uploadTask = uploadBytesResumable(storageRef, updateAttachment);
+    
+                    await uploadTask;
+                }
+
+                const res = await updateTicket({ticketId:ticket._id, replyTktId, description:updateDescription, attachment:uniqueName}).unwrap();
                 setUpdateAttachment('');
+                setUpdateAttachmentLink('');
                 setUpdateDescription('')
                 setUpdate(false);
                 toast.success('Ticket updated successfully');
+                setIsLoading4(false)
                 loadData();
             }
             catch(err){
                 toast.error(err.data?.message || err.error);
+                setUpdateAttachment('');
+                setUpdateAttachmentLink('');
+                setUpdateDescription('')
+                setUpdate(false);
+                setIsLoading4(false)
             }
         }
         else{
             toast.error('Cannot Update ticket after 15 minutes!');
             loadData();
+            setIsLoading4(false)
         }
     }
 
@@ -395,21 +423,21 @@ const OwnerTicketThreadPage = () => {
                                                                 </Row>
                                                                 <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
                                                                     <Col lg={9} xs={6} className='mt-3'>
-                                                                        {updateAttachment ? 
+                                                                        {updateAttachmentLink ? 
                                                                                 <>
-                                                                                    <ReactLink to={updateAttachment} target="_blank" download>Attachment</ReactLink>
-                                                                                    <Close onClick={() => setUpdateAttachment('')} style={{cursor:'pointer'}} /> 
+                                                                                    <ReactLink to={updateAttachmentLink} target="_blank" download>Attachment</ReactLink>
+                                                                                    <Close onClick={() => {setUpdateAttachmentLink('');setUpdateAttachment('');}} style={{cursor:'pointer'}} /> 
                                                                                 </>
                                                                             : 
                                                                             <Form.Group controlId="formFileMultiple" className="mb-3" style={{maxWidth:'40%'}}>
-                                                                                <Form.Control type="file" onChange={(e) => setUpdateAttachment(e.target.files[0])} />
+                                                                                <Form.Control type="file" onChange={(e) => {setUpdateAttachment(e.target.files[0]);setUpdateAttachmentLink(e.target.files[0])}} />
                                                                             </Form.Group>
                                                                         }
                                                                     </Col>
                                                                 </Row>
                                                                 <Row>
                                                                     <Col className="mt-3">
-                                                                        <Button variant="contained" color="warning" onClick={() => handleUpdateBtn(tkt._id)}>Update</Button>
+                                                                        <LoadingButton loading={isLoading4} variant="contained" color="warning" onClick={() => handleUpdateBtn(tkt._id)}>Update</LoadingButton>
                                                                     </Col>
                                                                 </Row>
                                                             </>
@@ -449,7 +477,7 @@ const OwnerTicketThreadPage = () => {
                                                                 <Row>
                                                                     <Col>
                                                                         <pre className={ticketThreadPageStyles.description}>{tkt.description}</pre>
-                                                                        {tkt.attachment ? <ReactLink to={tkt.attachment} target="_blank" download>Download Attatchment</ReactLink> : ''}
+                                                                        {tkt.attachment ? <ReactLink to={tkt.attachment} className={ticketThreadPageStyles.attachment} target="_blank" download>Download Attatchment</ReactLink> : ''}
                                                                     </Col>
                                                                     
                                                                 </Row>
