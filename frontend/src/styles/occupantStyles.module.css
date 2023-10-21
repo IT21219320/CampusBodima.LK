@@ -4,6 +4,7 @@
     min-width: 285px !important;
     min-height: 285px;
     position: relative;
+    margin-right: 50px;
 }
 
 .card:hover{

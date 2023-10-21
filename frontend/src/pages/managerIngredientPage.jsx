@@ -86,6 +86,8 @@ const managerIngredientPage = () => {
                                     <Col>
                                     <h1 style={{ fontSize: '50px', color: '#685DD8', }}>Inventory</h1>
                                     </Col>
+                                    <Col>
+                                    </Col>
                                     <Col className="ml-5">
                                     <Box sx={{ minWidth: 120}}>
                                         <FormControl fullWidth>

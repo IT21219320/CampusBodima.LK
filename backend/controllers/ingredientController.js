@@ -3,6 +3,7 @@ import User from '../models/userModel.js';
 import Boarding from '../models/boardingModel.js';
 import Ingredient from '../models/ingredientModel.js';
 import IngredientHistory from '../models/ingredientHistoryModel.js';
+import { sendMail } from '../utils/mailer.js'
 
 
 // @desc    Add a new Ingredient
@@ -429,6 +430,29 @@ const reduceIngredientQuantity = asyncHandler(async (req, res) => {
             // Display the toast message if result < alertQuantity
             alertQty = true;
             alertQtyName = ingredient.ingredientName;
+
+            // Send an email to the boarding owner about low ingredient quantity
+            const boarding = await Boarding.findOne({ _id: boardingId });
+            const boardingOwner = boarding.owner
+            const owner = await User.findOne({ _id: boardingOwner })
+            if (owner && owner.email) {
+              const message = `<p>Dear Boarding Owner,</p>
+                <p>The ingredient ${ingredient.ingredientName} is running low in your (${boarding.boardingName}):</p>
+                <p><b>Ingredient Name:</b> ${ingredient.ingredientName}</p>
+                <p><b>Current Quantity:</b> ${result} ${ingredient.quantity.replace(/\d+/, '')}</p>
+                <p><b>Alert Quantity:</b> ${alertQuantity} ${ingredient.quantity.replace(/\d+/, '')}</p>
+                <p>Please restock to ensure there is an adequate supply.</p>
+                <p>Best regards,<br>
+                Your Boarding System</p>`;
+
+              try {
+                // Use your sendMail function to send the email
+                await sendMail(owner.email, message, `Low Ingredient Quantity at ${boarding.boardingName}`);
+                console.log(`Email sent to ${owner.email} about low ingredient quantity`);
+              } catch (error) {
+                console.error(`Error sending email to ${owner.email}: ${error}`);
+              }
+            }
           }
           // Save the updated ingredient quantity
           if (result < 0) {

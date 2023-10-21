@@ -42,22 +42,42 @@
     transform: scale(.98);
 }
 
-.pendingApproval {
-    position: relative;
-    filter: grayscale(1); /* Grayscale effect */
-    opacity: 0.8; /* Reduced opacity */
+.blur {
+    filter: blur(.5px); /* Grayscale effect */
+    opacity: 0.5; /* Reduced opacity */
   }
+
+.unavailable {
+    position: relative;
+}
+
+.full {
+    position: relative;
+}
   
   /* Style for the watermark text */
-.pendingApproval::before {
-    content: "Pending Approval"; /* Text content */
+.full::before {
+    content: "Full"; /* Text content */
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); /* Center the text */
     font-size: 24px; /* Adjust font size */
-    color: rgba(255, 0, 0, 0.7); /* Text color and opacity */
+    color: rgba(0, 0, 0, 0.7); /* Text color and opacity */
     z-index: 1; /* Place text above the content */
+    font-weight: 900;
+}
+
+.unavailable::before {
+    content: "Unavailable"; /* Text content */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the text */
+    font-size: 24px; /* Adjust font size */
+    color: rgba(0, 0, 0, 0.7); /* Text color and opacity */
+    z-index: 1; /* Place text above the content */
+    font-weight: 900;
 }
 
 .ctrls{

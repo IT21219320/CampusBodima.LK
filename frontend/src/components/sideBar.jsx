@@ -103,13 +103,13 @@ export default function Sidebar() {
         </DrawerHeader>
         <Divider />
         <List>
-          <Link to='/dashboard' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
-            <Tooltip title={!open ? "Dashboard" : ''} placement="right" arrow>
-              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5, }} className={`${sideBarStyles.itmBtn} ${activeRoute === '/dashboard' ? sideBarStyles.active : ''}`}>
+          <Link to='/' style={{textDecoration:'none', color:'white'}}><ListItem disablePadding sx={{ display: 'block' }}>
+            <Tooltip title={!open ? "Home" : ''} placement="right" arrow>
+              <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5, }} className={`${sideBarStyles.itmBtn}`}>
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: 'white',  }}>
                   <HomeRounded />
                 </ListItemIcon>
-                <ListItemText primary={"Dashboard"} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={"Home"} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </Tooltip>
           </ListItem></Link>

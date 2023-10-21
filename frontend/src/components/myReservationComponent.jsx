@@ -65,7 +65,7 @@ const MyReservationComponent = () => {
   const [myReservation, setMyReservation] = useState();
   const [updateS, setUpdateS] = useState()
   const [deleteS, setDeleteS] = useState();
-  const [todo, setTodo ] = useState();
+  const [todo, setTodo ] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -80,15 +80,24 @@ const MyReservationComponent = () => {
 
       const res = await getMyReservation({ _id: userInfo._id }).unwrap();
       setMyReservation(res.myDetails);
-      const resTodo = await getToDo({occId: userInfo._id}).unwrap();
-      setTodo(resTodo);
+      
       console.log(res.myDetails);
-      console.log(resTodo);
       setLoading(false)
 
     } catch (error) {
       setLoading(false)
       console.error('Error getting reservation', error);
+    }
+
+    try {
+      const resTodo = await getToDo({occId: userInfo._id}).unwrap();
+      setTodo(resTodo);
+
+      console.log(resTodo);
+
+    } catch (error) {
+      
+      console.log('Error getting Todo', error);
     }
 
   }
@@ -144,7 +153,7 @@ const MyReservationComponent = () => {
     const userID = userInfo._id
     console.log(userInfo.email)
 
-    if (todo == 0){
+    if (todo.length == 0){
       if (userInfo.email === email) {
         const res = await deleteReservation({ ReservationId: myReservation.Id }).unwrap();
   
@@ -294,7 +303,7 @@ const MyReservationComponent = () => {
 
                                 <Dialog open={open} onClose={handleClose}>
 
-                                  <DialogTitle>Upadte Reservation Period</DialogTitle>
+                                  <DialogTitle>Update Reservation Period</DialogTitle>
 
                                   <DialogContent>
 
