@@ -4,6 +4,10 @@
     width: 100%;
     border: 1px solid #df0e0e; /* Add border to the whole table */
   }
+
+.tableimportant {
+  width: 100% !important;  
+}
   
   .customtable th, .customtable td {
     border: 1px solid #dddddd; /* Add border to table cells (th and td) */
