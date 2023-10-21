@@ -318,7 +318,7 @@ const OccupantPaymentDash = () => {
 
             // Save or download the PDF
             doc.save('monthly_payment.pdf');
-            
+
         });
     };
 
@@ -389,12 +389,12 @@ const OccupantPaymentDash = () => {
                                                                         </Row>
                                                                             <Row style={{ marginLeft: "68%" }}>
 
-                                                                                <Button variant="contained" style={{width: "80px"}} onClick={() => navigateToPay()}>Pay</Button>
+                                                                                <Button variant="contained" style={{ width: "80px" }} onClick={() => navigateToPay()}>Pay</Button>
 
                                                                             </Row>
                                                                         </>) : (
                                                                             <>
-                                                                                <p>You have done the payment</p>
+                                                                                <p>You haven't payment to do</p>
                                                                             </>)}
 
                                                                     </Col>
@@ -408,9 +408,9 @@ const OccupantPaymentDash = () => {
                                                                         </Row>
                                                                             <Row style={{ marginLeft: "68%" }}>
 
-                                                                                <Button variant="contained" style={{width: "80px"}} onClick={() => navigateToPayOld()}>Pay</Button>
+                                                                                <Button variant="contained" style={{ width: "80px" }} onClick={() => navigateToPayOld()}>Pay</Button>
 
-                                                                            </Row></>) : (<><p>You have done the payment</p></>)}
+                                                                            </Row></>) : (<><p>You haven't payment to do</p></>)}
 
                                                                     </Col></Row>
                                                             </>) : (<></>)}
@@ -418,9 +418,9 @@ const OccupantPaymentDash = () => {
                                                 <Row>
                                                     <center>
                                                         <div ref={chartRef} >
-                                                            <p style={{ fontSize: '30px', fontWeight: 'bold', margin: '8% 0px 0px 0px ' }}>Monthly Payment analysis</p>
+                                                            <p style={{ fontSize: '30px', fontWeight: 'bold', margin: '8% 0px 0px 0px ' }}>Monthly Payment Analysis</p>
 
-                                                            {mpData.length > 0 ? (
+                                                            {mpData.length > 0 ? (<>
                                                                 <BarChart
                                                                     xAxis={[{ scaleType: 'band', data: xAxisData, label: 'Month' }]}
                                                                     yAxis={[{ label: 'Amount' }]}
@@ -428,12 +428,15 @@ const OccupantPaymentDash = () => {
                                                                     style={{ width: '100%' }}
                                                                     height={300}
                                                                 />
+
+                                                                <button onClick={exportToPDFChart} className={occupantDashboardPaymentStyles.exportBtn}>Export to PDF</button>
+                                                            </>
                                                             ) : (
-                                                                <> </>
+                                                                <> <p style={{marginTop:'5%'}}>No Payment details to show</p> </>
                                                             )}
                                                         </div>
                                                     </center>
-                                                    <button onClick={exportToPDFChart} className={occupantDashboardPaymentStyles.exportBtn}>Export to PDF</button>
+
                                                 </Row>
 
                                             </>) : (<>
