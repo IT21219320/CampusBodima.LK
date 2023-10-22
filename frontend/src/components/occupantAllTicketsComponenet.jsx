@@ -54,7 +54,7 @@ const OccupantAllTickets = ({search}) =>{
         } catch(err){
             toast.error(err.data?.message || err.error);
             if(err.data?.message == 'Please join a boarding to raise ticket' || err.error == 'Please join a boarding to raise ticket'){
-                navigate('/')
+                navigate('/profile')
             }
         }
     }
