@@ -55,7 +55,7 @@ const OwnerAllTickets = ({search}) =>{
         } catch(err){
             toast.error(err.data?.message || err.error);
             if(err.data?.message == 'Please create a boarding to view tickets' || err.error == 'Please create a boarding to view tickets'){
-                navigate('/')
+                navigate('/profile')
             }
         }
     }
