@@ -469,8 +469,9 @@ const getUtilityReport = asyncHandler(async (req, res) => {
             .collation({ locale: "en" })
             .sort({ [sortBy]: order })
             .skip(skipCount)
-            .populate('occupant')
+            .populate(['occupant','boarding'])
             .limit(pageSize);
+            
     } 
     
     if (utilityType == 'Water') {
@@ -492,7 +493,7 @@ const getUtilityReport = asyncHandler(async (req, res) => {
             .collation({ locale: "en" })
             .sort({ [sortBy]: order })
             .skip(skipCount)
-            .populate('occupant')
+            .populate(['occupant','boarding'])
             .limit(pageSize);
     } else {
         totalRows = await Utility.countDocuments({
@@ -513,7 +514,7 @@ const getUtilityReport = asyncHandler(async (req, res) => {
             .collation({ locale: "en" })
             .sort({ [sortBy]: order })
             .skip(skipCount)
-            .populate('occupant')
+            .populate(['occupant','boarding'])
             .limit(pageSize);
     }
   

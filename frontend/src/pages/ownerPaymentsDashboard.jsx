@@ -5,7 +5,7 @@ import Sidebar from '../components/sideBar';
 import { Breadcrumbs, Typography, Card, Button, CircularProgress, Box, Collapse, IconButton, Alert, FormControl, InputLabel, MenuItem, Select, Link } from "@mui/material";
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Placeholder } from 'react-bootstrap';
 import { useGetPaymentByOwnerMutation, useWithdrawMoneyByBoardingMutation } from "../slices/paymentApiSlice";
 import { useGetBoardingsByIdMutation } from '../slices/reservationsApiSlice.js';
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css"
@@ -89,6 +89,7 @@ const OwnerPaymentDash = () => {
     const [open, setOpen] = useState(false);
     const [amount, setAmount] = useState('');
     const [desc, setDesc] = useState('');
+    const [errorTxt, setErrorTxt] = useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -282,7 +283,7 @@ const OwnerPaymentDash = () => {
 
                                 </Col>
                             </Row>
-                                <Dialog open={open} onClose={handleClose}>
+                                <Dialog open={open} onClose={handleClose} >
                                     <DialogTitle>Withdraw</DialogTitle>
                                     <DialogContent>
                                         <DialogContentText>
@@ -298,15 +299,17 @@ const OwnerPaymentDash = () => {
                                             variant="standard"
                                             value={amount}
                                             onChange={(e) => {
-                                                if (credited > e.target.value) {
+                                                if ((credited-debited) >= e.target.value) {
+                                                    setErrorTxt(false)
                                                     setAmount(e.target.value)
                                                 }
                                                 else{
-                                                    setAmount('error')
+                                                    setErrorTxt(true)
                                                 }
                                             }
                                             }
                                         />
+                                        {errorTxt ?(<><p>You can't exceed your balance of {credited-debited}</p></>):(<><p>Your remaining balance {credited-debited}</p></>) }
 
                                         <TextField
                                             autoFocus
