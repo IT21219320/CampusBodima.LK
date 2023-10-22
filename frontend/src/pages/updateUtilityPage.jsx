@@ -36,6 +36,7 @@ const {utilityType} =useParams();
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
                                 <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : userInfo.userType == 'kitchen' ? 'Kitchen' : <></>)}</Link>,
+                                <Link underline="hover" key="1" color="inherit" href="/owner/utility/">AllUtility</Link>
                                 <Typography key="3" color="text.primary">Update Utility</Typography>
                             </Breadcrumbs>
                       
