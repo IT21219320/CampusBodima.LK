@@ -47,3 +47,7 @@
     margin-right: 10px; /* Add some spacing to the right of the label */
     color:darkslategray; /* Customize the text color */
 }
+.cardHeader{
+    background-color: rgb(36, 39, 69)!important;
+    height: 50px;
+}
