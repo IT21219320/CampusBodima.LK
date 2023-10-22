@@ -148,6 +148,10 @@ const ingredientReport = ({ boardingId }) => {
         doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
         doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
 
+        const data1 = ingredients[0].boarding.boardingName
+
+        doc.text(`${data1}`, 20, 67);
+
         // Add report title
         doc.setFontSize(12);
         doc.text(`${type} Ingredient List`, 85, 65);
@@ -175,7 +179,6 @@ const ingredientReport = ({ boardingId }) => {
           head: [headers],
           body: data,
           styles,
-          margin: { top: 90 },
           startY: 75
       });
 
