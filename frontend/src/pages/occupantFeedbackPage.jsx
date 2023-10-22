@@ -168,7 +168,7 @@ const selectionRange = {
       feedback.description,
       feedback.rating,
      
-      new Date(feedback.updateAt).toLocaleString('en-GB')
+      //new Date(feedback.updateAt).toLocaleString('en-GB')
     ]);
 
 
@@ -332,7 +332,7 @@ const selectionRange = {
                   ) : filteredFeedbacks && filteredFeedbacks.length > 0 ? (
                     filteredFeedbacks.map((feedback, index) => (
                       <tr key={index}>
-                        <td>{new Date(feedback.updateAt).toISOString().split('T')[0]}</td>
+                        <td>{new Date(feedback.updatedAt).toISOString().split('T')[0]}</td>
                         <td>{feedback.boardingId.boardingName}</td>
                         <td>{feedback.description}</td>
                         <td><Rating name="read-only" value={parseInt(feedback.rating)} readOnly /></td>
