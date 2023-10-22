@@ -293,11 +293,52 @@ const ProfilePage = () => {
                                                 </Col>
                                             </Row>
                                             <Divider sx={{borderColor:'initial'}}/>
+                                            { userType != "owner"?
+                                            <>
+                                            <Row className='my-2'>
+                                                <Col>
+                                                    <b>Phone Number</b>
+                                                </Col>
+                                                <Col>
+                                                    {userInfo.phoneNo ?
+                                                        <InputGroup style={{width:'fit-content'}}>
+                                                            <InputGroup.Text style={{color:'green'}}><Check /></InputGroup.Text>
+                                                            <Form.Control type="text" placeholder="PhoneNo" value={phoneNo} required readOnly style={{width:'fit-content'}}/>
+                                                        </InputGroup>
+                                                    :
+                                                    <InputGroup style={{width:'fit-content'}}>
+                                                        <InputGroup.Text>(+94)</InputGroup.Text>
+                                                        <Form.Control placeholder="715447792" type="text" maxLength={9} value={phoneNo} onChange={(e) => setPhoneNo(e.target.value.replace(/\D/g, ''))}/>
+                                                        <LoadingButton loading={isLoading1} variant="contained" className="ms-2" onClick={sendOTP}>Add</LoadingButton>
+                                                    </InputGroup>
+                                                    }
+                                                    <Modal
+                                                        open={modalOpen}
+                                                        onClose={() => setModalOpen(false)}
+                                                        aria-labelledby="OTP Modal"
+                                                        aria-describedby="OTP Modal"
+                                                    >
+                                                        <Box sx={style}>
+                                                            
+                                                            <h1>OTP Verification</h1>
+                                                            <br />
+                                                            <p className="text-start">The OTP code has being sent to +94{phoneNo}. Please enter the code below to verify.</p>
+                                                            <MuiOtpInput value={otp} length={6} onChange={ (e) => setOTP(e)} />
+                                                            <LoadingButton loading={isLoading2} onClick={ verifyOTP } color="primary" variant="contained" className="mt-3">Verify OTP</LoadingButton>
+                                                            <LoadingButton loading={isLoading1} onClick={ sendOTP } color="primary" variant="contained" className="mt-3 ms-3"><Sync /> Resend</LoadingButton>
+                                                            
+                                                        </Box>
+                                                    </Modal>
+                                                </Col>
+                                            </Row>
+                                            <Divider sx={{borderColor:'initial'}}/>
+                                            </> : ''
+                                            }
                                         </List>
                                     </CardContent>
                                 </Card>
                             </Col>
-                            
+                            { userType == "owner"?
                             <Col className="mb-3" xs={12} md={12}>
                                 <Card>
                                     <CardContent className={`${dashboardStyles.cardContent} ${dashboardStyles.compact}`}>                                        
@@ -396,6 +437,7 @@ const ProfilePage = () => {
                                     </CardContent>
                                 </Card>
                             </Col>
+                            : ''}
                         </Row>
                     </Fade>
                     <Fade in={updateUserInfo} id='updateUser'>

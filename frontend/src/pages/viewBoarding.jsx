@@ -311,10 +311,10 @@ const ViewBoarding = () => {
                                                                                 </Col>
                                                                             </Row>
                                                                             <Row>
-                                                                                <Col lg={4}>
+                                                                                <Col lg={5}>
                                                                                     <p className={ownerStyles.paras}><b>Beds:</b> {room.noOfBeds}</p>
                                                                                 </Col>
-                                                                                <Col lg={4}>
+                                                                                <Col lg={5}>
                                                                                     <p className={ownerStyles.paras}><b>Baths:</b> {parseInt(room.noOfAttachBaths)+parseInt(room.noOfCommonBaths)}</p>
                                                                                 </Col>
                                                                             </Row>
