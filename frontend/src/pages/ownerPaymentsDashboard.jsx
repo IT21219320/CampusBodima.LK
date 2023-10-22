@@ -6,7 +6,7 @@ import { Breadcrumbs, Typography, Card, Button, CircularProgress, Box, Collapse,
 import { NavigateNext, HelpOutlineRounded, Check, Close, AddPhotoAlternate, Sync } from '@mui/icons-material';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col } from 'react-bootstrap';
-import { useGetPaymentByOwnerMutation } from "../slices/paymentApiSlice";
+import { useGetPaymentByOwnerMutation, useWithdrawMoneyByBoardingMutation } from "../slices/paymentApiSlice";
 import { useGetBoardingsByIdMutation } from '../slices/reservationsApiSlice.js';
 import occupantDashboardPaymentStyles from "../styles/occupantDashboardPaymentStyles.module.css"
 import { styled } from '@mui/material/styles';
@@ -21,6 +21,14 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
+import { PieChart } from '@mui/x-charts/PieChart';
 
 
 
@@ -78,6 +86,27 @@ const OwnerPaymentDash = () => {
     const [boarding, setBoarding] = useState([]);
     const [boardingID, setBoardingID] = useState('');
     const [loading, setLoading] = useState(true);
+    const [open, setOpen] = useState(false);
+    const [amount, setAmount] = useState('');
+    const [desc, setDesc] = useState('');
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleWithdrawClose = async () => {
+        try {
+            const resWith = await withdrawByBoarding({ userInfo_id: userInfo._id, bId: boardingID, amount: amount, des: desc })
+        } catch (error) {
+            console.log(error);
+        }
+        setOpen(false);
+    }
+
     const navigate = useNavigate();
 
     const [value, setValue] = useState('1');
@@ -88,26 +117,27 @@ const OwnerPaymentDash = () => {
 
     const [getPayment] = useGetPaymentByOwnerMutation();
     const [getOwnerBoarding] = useGetBoardingsByIdMutation();
+    const [withdrawByBoarding] = useWithdrawMoneyByBoardingMutation();
 
     const loadData = async () => {
         try {
             setLoading(true)
-            const resGetPay = await getPayment({ userInfo_id: userInfo._id, boId:boardingID }).unwrap();
-            
+            const resGetPay = await getPayment({ userInfo_id: userInfo._id, boId: boardingID }).unwrap();
+
             setPayments(resGetPay.payments);
             let totalCredit = 0;
             let totalDebited = 0;
             for (const pay of resGetPay.payments) {
-                if(pay.credited){
+                if (pay.credited) {
                     const creditedInt = parseInt(pay.credited)
                     totalCredit += creditedInt
                 }
-                
+
                 if (pay.debited) {
                     const debitedInt = parseInt(pay.debited)
                     totalDebited += debitedInt
                     setDebited(totalDebited)
-                }else{
+                } else {
                     setDebited(totalDebited)
                 }
 
@@ -157,10 +187,9 @@ const OwnerPaymentDash = () => {
                     </Row>
                     <Row>
                         <Col>
-                            <p style={{margin: '6% 0px 0px 6%', fontWeight: 'bold',fontSize: 'x-large'}}>Select boarding to filter </p>
-                        </Col>
-                        <Col>
-                            <FormControl size="small" style={{ width: '40%',margin: '6% 0px 0px 0px' }}>
+                            <p style={{ margin: '6% 0px 0px 6%', fontWeight: 'bold', fontSize: 'x-large', float: 'left' }}>Select boarding to filter </p>
+
+                            <FormControl size="small" style={{ width: '25%', margin: '6% 5% 0px 5%' }}>
                                 <InputLabel id="demo-simple-select-label" >Boarding</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-label"
@@ -203,7 +232,7 @@ const OwnerPaymentDash = () => {
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
                                         <Col>
-                                            <center><h4 style={{ fontFamily: "fantasy", fontSize: "xx-large", }}>My Account</h4></center>
+                                            <center><h4 style={{ fontFamily: 'Lucida Console', fontSize: '42px', color: '#f0f2ff' }}>My Account</h4></center>
                                         </Col>
                                         <Row >
                                             <Col style={stylesBalances}>
@@ -247,11 +276,58 @@ const OwnerPaymentDash = () => {
 
                                             </Col>
                                         </Row>
-                                        <Button>Withdraw money </Button>
+                                        {boardingID == '' ? (<></>) : (<><Button variant="outlined" onClick={handleClickOpen} style={{ backgroundColor: '#448e36', margin: '2%', width: '21%', color: 'white', marginLeft: '71%' }}>Withdraw money </Button></>)}
+
                                     </Row>
 
                                 </Col>
                             </Row>
+                                <Dialog open={open} onClose={handleClose}>
+                                    <DialogTitle>Withdraw</DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText>
+
+                                        </DialogContentText>
+                                        <TextField
+                                            autoFocus
+                                            margin="dense"
+                                            id="name"
+                                            label="Enter Amount"
+                                            type="Number"
+                                            fullWidth
+                                            variant="standard"
+                                            value={amount}
+                                            onChange={(e) => {
+                                                if (credited > e.target.value) {
+                                                    setAmount(e.target.value)
+                                                }
+                                                else{
+                                                    setAmount('error')
+                                                }
+                                            }
+                                            }
+                                        />
+
+                                        <TextField
+                                            autoFocus
+                                            margin="dense"
+                                            id="name"
+                                            label="Description"
+                                            type="text"
+                                            fullWidth
+                                            variant="standard"
+                                            value={desc}
+                                            onChange={(e) => setDesc(e.target.value)}
+                                        />
+
+
+
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={handleClose}>Cancel</Button>
+                                        <Button onClick={handleWithdrawClose}>Withdraw</Button>
+                                    </DialogActions>
+                                </Dialog>
                                 <Row>
                                     <Col>
                                         <Row style={{ marginTop: '20px' }}>
@@ -304,7 +380,29 @@ const OwnerPaymentDash = () => {
                                     </Table>
                                 </TableContainer></>)}
                         </TabPanel>
-                        <TabPanel value="2">Item Two</TabPanel>
+                        <TabPanel value="2">
+                            <Row>
+                                <Col>
+                                    <center>
+                                        <p style={{ fontWeight: 'bold' }}>Credited Debited Values chart</p>
+                                        <PieChart
+                                            series={[
+                                                {
+                                                    data: [
+                                                        { id: 0, value: credited, label: `Credited\n ${credited}` },
+                                                        { id: 1, value: debited, label: `Debited\n ${debited}` },
+                                                    ],
+                                                },
+                                            ]}
+                                            width={400}
+                                            height={200}
+                                        />
+                                    </center>
+                                </Col>
+                                <Col>
+                                </Col>
+                            </Row>
+                        </TabPanel>
                     </TabContext>
 
                 </Container>
