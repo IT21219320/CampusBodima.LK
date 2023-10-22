@@ -57,13 +57,13 @@ const reserveRoom = asyncHandler(async (req, res) => {
                             { _id: RoomID },
                             {
                                 $push: { occupant: occupantID },
-                                $set: { visibility: 'false' }
 
                             },
                             { new: true }
                         );
 
                         if (noOfBeds === occupantCount) {
+                            
                             const updatedVisibility = await Room.findOneAndUpdate(
                                 { _id: RoomID },
                                 {

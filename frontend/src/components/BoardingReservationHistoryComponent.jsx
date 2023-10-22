@@ -137,7 +137,7 @@ const BoardingReservationHistory = ({ bId }) => {
 
         // Add report title
         doc.setFontSize(12);
-        doc.text("Reservations List", 85, 70);
+        doc.text("Reservation History List", 85, 70);
 
 
         // table headers
@@ -175,7 +175,7 @@ const BoardingReservationHistory = ({ bId }) => {
 
 
         // Save the PDF
-        doc.save("Reservations.pdf");
+        doc.save("ReservationHistories.pdf");
 
     };
 
