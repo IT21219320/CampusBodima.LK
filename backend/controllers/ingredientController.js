@@ -533,6 +533,7 @@ const getIngredientHistoy = asyncHandler(async (req, res) => {
       .collation({ locale: "en" })
       .sort({ [sortBy]: order })
       .skip(skipCount)
+      .populate('boarding')
       .limit(pageSize);
   }
   if (type == 'Reduce') {
@@ -552,6 +553,7 @@ const getIngredientHistoy = asyncHandler(async (req, res) => {
       .collation({ locale: "en" })
       .sort({ [sortBy]: order })
       .skip(skipCount)
+      .populate('boarding')
       .limit(pageSize);
   } else {
     totalRows = await IngredientHistory.countDocuments({
@@ -568,6 +570,7 @@ const getIngredientHistoy = asyncHandler(async (req, res) => {
       .collation({ locale: "en" })
       .sort({ [sortBy]: order })
       .skip(skipCount)
+      .populate('boarding')
       .limit(pageSize);
   }
 
