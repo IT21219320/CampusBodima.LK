@@ -15,7 +15,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Sidebar from '../components/sideBar';
 import ownerStyles from '../styles/ownerStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-import ingredientStyles from '../styles/ingredientStyles.module.css';  
+import ingredientStyles from '../styles/ingredientStyles.module.css'; 
+import ownerAllTicketsStyles from '../styles/ownerAllTicketsStyles.module.css'; 
 
 import AllIngredients from "../components/allIngredientsComponent";
 import ReduceinventoryPage from "../components/reduceinventoryComponent";
@@ -83,33 +84,45 @@ const managerIngredientPage = () => {
                         <Row className='mt-3'>
                             <Col className="mb-3" xs={12} md={12}>
                                 <Row>
-                                    <Col>
-                                    <h1 style={{ fontSize: '50px', color: '#685DD8', }}>Inventory</h1>
-                                    </Col>
-                                    <Col>
-                                    </Col>
-                                    <Col className="ml-5">
-                                    <Box sx={{ minWidth: 120}}>
-                                        <FormControl fullWidth size='small'>
-                                            <InputLabel id="demo-simple-select-label">Boarding Name</InputLabel>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                value={boardingId}
-                                                label="Boarding Name" 
-                                                inputProps={{
-                                                    readOnly: true, 
-                                                }}
-                                            >
-                                                 {boardingNames.map((boarding) => (
-                                                    <MenuItem key={boarding._id} value={boarding._id}>
-                                                        {boarding.boardingName}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                   </Box>
-                                   </Col> 
+                                    <Row>
+                                        <Col>
+                                            <Card variant="outlined" className={ownerAllTicketsStyles.card}>
+                                                <CardContent style={{ padding: '3px', important: 'true'}}>
+                                                    <h1 style={{ fontSize: '40px', color: '#685DD8', textAlign: 'center'}}>
+                                                        Inventory
+                                                    </h1>
+                                                </CardContent>
+                                            </Card>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                        </Col>
+                                        <Col>
+                                        </Col>
+                                        <Col className="ml-5">
+                                            <Box sx={{ minWidth: 120}}>
+                                                <FormControl fullWidth size='small'>
+                                                    <InputLabel id="demo-simple-select-label">Boarding Name</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={boardingId}
+                                                        label="Boarding Name" 
+                                                        inputProps={{
+                                                            readOnly: true, 
+                                                        }}
+                                                    >
+                                                        {boardingNames.map((boarding) => (
+                                                            <MenuItem key={boarding._id} value={boarding._id}>
+                                                                {boarding.boardingName}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </FormControl>
+                                            </Box>
+                                        </Col> 
+                                   </Row>
                                 </Row>
                                 <Row>
                                    <Col> 
