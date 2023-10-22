@@ -63,7 +63,7 @@ const reserveRoom = asyncHandler(async (req, res) => {
                         );
 
                         if (noOfBeds === occupantCount) {
-                            
+
                             const updatedVisibility = await Room.findOneAndUpdate(
                                 { _id: RoomID },
                                 {
@@ -190,14 +190,14 @@ const getMyReservation = asyncHandler(async (req, res) => {
     const user = await User.findById(userInfo_id);
     const boarding = await Boarding.findById(ViewMyReservation.boardingId);
     const room = await Room.findById(ViewMyReservation.roomID);
-    const owner =await User.findById(boarding.owner);
+    const owner = await User.findById(boarding.owner);
 
     if (ViewMyReservation) {
 
-        if (ViewMyReservation.boardingType === "Annex" ) {
+        if (ViewMyReservation.boardingType === "Annex") {
             const myDetails = {
                 Id: ViewMyReservation._id,
-                paymentStatus:ViewMyReservation.paymentStatus,
+                paymentStatus: ViewMyReservation.paymentStatus,
                 status: ViewMyReservation.status,
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -207,24 +207,24 @@ const getMyReservation = asyncHandler(async (req, res) => {
                 rent: boarding.rent,
                 Duration: ViewMyReservation.Duration,
                 reservedDt: ViewMyReservation.createdAt,
-                ownerName:owner.firstName,
-                ownerLName:owner.lastName,
-                ownerEmail:owner.email,
-                ownerPhone:owner.phoneNo,
-                ownerAccNo:owner.bankAccNo,
+                ownerName: owner.firstName,
+                ownerLName: owner.lastName,
+                ownerEmail: owner.email,
+                ownerPhone: owner.phoneNo,
+                ownerAccNo: owner.bankAccNo,
                 ownerHoldName: owner.bankAccName,
-                ownerBankName:owner.bankName ,
-                ownerBranch:owner.bankBranch ,
+                ownerBankName: owner.bankName,
+                ownerBranch: owner.bankBranch,
             }
             res.status(200).json({
                 myDetails,
             })
 
-        } else if (ViewMyReservation.boardingType === "Hostel" ) {
+        } else if (ViewMyReservation.boardingType === "Hostel") {
 
             const myDetails = {
                 Id: ViewMyReservation._id,
-                paymentStatus:ViewMyReservation.paymentStatus,
+                paymentStatus: ViewMyReservation.paymentStatus,
                 status: ViewMyReservation.status,
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -235,14 +235,14 @@ const getMyReservation = asyncHandler(async (req, res) => {
                 rent: room.rent,
                 Duration: ViewMyReservation.Duration,
                 reservedDt: ViewMyReservation.createdAt,
-                ownerFName:owner.firstName,
-                ownerLName:owner.lastName,
-                ownerEmail:owner.email,
-                ownerPhone:owner.phoneNo,
-                ownerAccNo:owner.bankAccNo,
+                ownerFName: owner.firstName,
+                ownerLName: owner.lastName,
+                ownerEmail: owner.email,
+                ownerPhone: owner.phoneNo,
+                ownerAccNo: owner.bankAccNo,
                 ownerHoldName: owner.bankAccName,
-                ownerBankName:owner.bankName ,
-                ownerBranch:owner.bankBranch ,
+                ownerBankName: owner.bankName,
+                ownerBranch: owner.bankBranch,
             }
             res.status(200).json({
                 myDetails,
@@ -592,24 +592,20 @@ const updateGender = asyncHandler(async (req, res) => {
     const occupant = await User.findById({ _id: occId });
 
     if (occupant) {
-        if (occupant.accType == 'google') {
-            console.log(occupant.accType)
-            /*const updatedGender =  await User.findOneAndUpdate(
-                { _id: occId },
-                {
-                    $push: { gender: gender }
-                },
-                { new: true }
-            )*/
 
-            occupant.gender = gender
-            occupant.save()
-            res.status(200).json(occupant)
-        } else {
-            res.status(200).json({
-                message: 'normal account',
-            })
-        }
+        console.log(occupant.accType)
+        /*const updatedGender =  await User.findOneAndUpdate(
+            { _id: occId },
+            {
+                $push: { gender: gender }
+            },
+            { new: true }
+        )*/
+
+        occupant.gender = gender
+        occupant.save()
+        res.status(200).json(occupant)
+
     } else {
         res.status(400);
         throw new Error("No User Exist")
@@ -621,14 +617,14 @@ const updateGender = asyncHandler(async (req, res) => {
 //route POST/api/reservations/getToDoByOccId
 // @access  Private - occupant
 
-const getToDoByOccId = asyncHandler(async(req, res) => {
+const getToDoByOccId = asyncHandler(async (req, res) => {
     const occId = req.body.occId;
 
-    const Todo = await toDoPayment.find({owner:occId, status:"paid"});
+    const Todo = await toDoPayment.find({ owner: occId, status: "paid" });
 
     if (Todo) {
         res.status(200).json(Todo)
-    }else{
+    } else {
         res.status(200).json({
             message: 'Done all the payments',
         })
