@@ -205,7 +205,7 @@ const OwnerAllTickets = ({search}) =>{
       ticket.description,
       ticket.category,
       ticket.subCategory,
-      ticket.senderId.firstName+ticket.senderId.lastName,
+      ticket.senderId.firstName+ " " +ticket.senderId.lastName,
       ticket.status,
       new Date(ticket.createdAt).toLocaleString('en-GB')
     ]);
@@ -222,7 +222,6 @@ const OwnerAllTickets = ({search}) =>{
       head: headers,
       body: data,
       styles,
-      margin: { top: 70 },
       startY: 75
     });
 
@@ -264,7 +263,7 @@ const OwnerAllTickets = ({search}) =>{
                             <Select
                             value={category}
                             label="category"
-                            onChange={(event) => setCategory(event.target.value)}
+                            onChange={(event) => {setCategory(event.target.value);setSubCategory('all')}}
                             >
                             <MenuItem value={'all'}>All</MenuItem>
                             <MenuItem value={'boarding'}>Boarding Issue</MenuItem>

@@ -214,7 +214,6 @@ const OccupantAllTickets = ({search}) =>{
              head: headers,
              body: data,
              styles,
-             margin: { top: 90 },
              startY: 75
            });
               
@@ -238,7 +237,7 @@ const OccupantAllTickets = ({search}) =>{
                             <Select
                             value={category}
                             label="category"
-                            onChange={(event) => setCategory(event.target.value)}
+                            onChange={(event) => {setCategory(event.target.value);setSubCategory('all')}}
                             >
                             <MenuItem value={'all'}>All</MenuItem>
                             <MenuItem value={'boarding'}>Boarding Issue</MenuItem>
