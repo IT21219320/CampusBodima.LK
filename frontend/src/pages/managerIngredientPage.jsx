@@ -145,7 +145,7 @@ const managerIngredientPage = () => {
                                             </Tab>
                                             <Tab eventKey="Central Inventory" title="Central Inventory">
                                                 {activeTab=="Central Inventory" && boardingId ? (
-                                                    <AllIngredients boardingId={boardingId} />
+                                                    <CentralinventoryPage boardingId={boardingId} />
                                                 ) : (
                                                     <div
                                                     style={{
@@ -173,7 +173,7 @@ const managerIngredientPage = () => {
                                             </Tab>
                                             <Tab eventKey="Reduce Inventory" title="Reduce Inventory">
                                                 {activeTab=="Reduce Inventory" && boardingId ? (
-                                                    <AllIngredients boardingId={boardingId} />
+                                                    <ReduceinventoryPage boardingId={boardingId} />
                                                 ) : (
                                                     <div
                                                     style={{
