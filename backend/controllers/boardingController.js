@@ -309,29 +309,16 @@ const occupantJoin = asyncHandler(async (req, res) => {
 
     if(boarding){
         if(boarding.boardingType == "Hostel"){
-            const room = await Room.findById(reservation.roomID);
-            if(room.noOfBeds == room.occupant.length){
-                res.status(400);
-                throw new Error("Boarding room is full")
-            }
-            else{
-                reservation.occupantID = userId;
-                reservation.boardingType = 'Hostel';
-                reservation.paymentStatus = 'Paid';
-                reservation.status = 'Approved';
-            }
+            reservation.occupantID = userId;
+            reservation.boardingType = 'Hostel';
+            reservation.paymentStatus = 'Paid';
+            reservation.status = 'Approved';
         }
         else if(boarding.boardingType == "Annex"){
-            if(boarding.occupantId){
-                res.status(400);
-                throw new Error("Boarding is full")
-            }
-            else{
-                reservation.occupantID = userId;
-                reservation.boardingType = 'Annex';
-                reservation.paymentStatus = 'Paid';
-                reservation.status = 'Approved';
-            }
+            reservation.occupantID = userId;
+            reservation.boardingType = 'Annex';
+            reservation.paymentStatus = 'Paid';
+            reservation.status = 'Approved';
         }
     }else{
         res.status(400);

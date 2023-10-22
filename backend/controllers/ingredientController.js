@@ -534,7 +534,8 @@ const getIngredientHistoy = asyncHandler(async (req, res) => {
       .sort({ [sortBy]: order })
       .skip(skipCount)
       .limit(pageSize);
-  } else {
+  }
+  if (type == 'Reduce') {
     totalRows = await IngredientHistory.countDocuments({
       boarding: boardingId,
       type,
@@ -545,6 +546,22 @@ const getIngredientHistoy = asyncHandler(async (req, res) => {
     ingredientHistory = await IngredientHistory.find({
       boarding: boardingId,
       type,
+      ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+      ...(search ? { ingredientName: { $regex: search, $options: "i" } } : {}),
+    })
+      .collation({ locale: "en" })
+      .sort({ [sortBy]: order })
+      .skip(skipCount)
+      .limit(pageSize);
+  } else {
+    totalRows = await IngredientHistory.countDocuments({
+      boarding: boardingId,
+      ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
+      ...(search ? { ingredientName: { $regex: search, $options: "i" } } : {}),
+    });
+
+    ingredientHistory = await IngredientHistory.find({
+      boarding: boardingId,
       ...(date !== 'All' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}),
       ...(search ? { ingredientName: { $regex: search, $options: "i" } } : {}),
     })

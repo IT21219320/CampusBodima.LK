@@ -172,7 +172,6 @@ const AdminAllBoardings = () => {
             head: [headers],
             body: data,
             styles,
-            margin: { top: 90 },
             startY: 75
         });
     

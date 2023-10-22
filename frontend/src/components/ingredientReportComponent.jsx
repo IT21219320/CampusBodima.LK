@@ -30,7 +30,7 @@ const ingredientReport = ({ boardingId }) => {
     const [pageSize, setPageSize] = useState(10)
     const [totalRows, setTotalRows] = useState(0);
     const [ingredients, setIngredients] = useState([]);
-    const [type, setType] = useState('Purchase')
+    const [type, setType] = useState('All')
     const [startDate, setStartDate] = useState(new Date())
     const [endDate, setEndDate] = useState(new Date())
     const [date, setDate] = useState('All')
@@ -221,6 +221,7 @@ const ingredientReport = ({ boardingId }) => {
                             label="Type"
                             onChange={(e) => setType(e.target.value)}
                         >
+                            <MenuItem value={'All'}>All</MenuItem>
                             <MenuItem value={'Purchase'}>Purchase</MenuItem>
                             <MenuItem value={'Reduce'}>Reduce</MenuItem>
                         </Select>

@@ -78,8 +78,8 @@ const Header = () => {
         <AppBar id="header" className={`${headerStyles.header} ${isSticky ? headerStyles.sticky : ""}`} >
             <Container maxWidth="lg">
                 <Toolbar disableGutters>
-                    <Box sx={{display: { xs: "none", md: "flex" }}}>
-                        <img src="/logo3.png" width='100px' />
+                    <Box sx={{display: { xs: "none", md: "flex", cursor:'pointer' }}}>
+                        <img src="/logo3.png" width='100px' onClick={() => navigate('/')} />
                     </Box>
 
                     <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -116,8 +116,8 @@ const Header = () => {
                             </Offcanvas.Body>
                         </Offcanvas>
                     </Box>
-                    <Box sx={{display: { xs: "flex", md: "none" }}} style={{width:'100%', justifyContent:'center'}}>
-                        <img src="/logoBig2.png" width='200px' />
+                    <Box sx={{display: { xs: "flex", md: "none", cursor:'pointer' }}} style={{width:'100%', justifyContent:'center'}}>
+                        <img src="/logoBig2.png" width='200px' onClick={() => navigate('/')} />
                     </Box>
                     <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent:'center' }}>
                             <Button
