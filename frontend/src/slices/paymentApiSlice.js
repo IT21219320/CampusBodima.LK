@@ -85,7 +85,15 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+
+        withdrawMoneyByBoarding: builder.mutation({
+            query:(data) => ({
+                url: `${PAYMENT_URL}/withdrawByBoarding`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
     }),
 });
 
-export const { useGetPaymentByUserMutation, useMakePaymentMutation, useGetPaymentByOwnerMutation,useSearchPayMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation, useChangeStatusMutation, useChangePaidStatusMutation, useGetToDoPaymentByIdMutation, useGetAllToDoPaymentByIdMutation } = paymentApiSlice;
+export const { useGetPaymentByUserMutation, useMakePaymentMutation, useGetPaymentByOwnerMutation,useSearchPayMutation, useGetToDoPaymentMutation, useGetMyResMutation, useGetToDoPaymentOldMutation, useChangeStatusMutation, useChangePaidStatusMutation, useGetToDoPaymentByIdMutation, useGetAllToDoPaymentByIdMutation, useWithdrawMoneyByBoardingMutation } = paymentApiSlice;

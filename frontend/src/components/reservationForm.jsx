@@ -60,7 +60,7 @@ const ReservationForm = () => {
 
         else {
             if (paymentType === "Online") {
-                navigate(`/occupant/makePayment/${bId}`);
+                navigate(`/occupant/boarding`);
             } else {
                 toast.success("Wait until the owner approves you");
                 navigate(`/occupant/boarding`);

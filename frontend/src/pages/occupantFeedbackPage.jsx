@@ -11,8 +11,9 @@ import { NavigateNext, Search, BrowserUpdated as BrowserUpdatedIcon, Delete as D
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
 import jsPDF from 'jspdf';
 import { GetAppRounded, GridViewRounded } from '@mui/icons-material';
-
-
+import { DateRange } from 'react-date-range';
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
 
 import Modal from 'react-bootstrap/Modal';
 
@@ -28,13 +29,25 @@ const OccupantFeedback = () => {
   const [deleteFeedback, { isLoading2 }] = useDeleteFeedbackMutation();
   const [searchQuery, setSearchQuery] = useState('');
   const ratings = ['all', '0', '1', '2', '3', '4','5'];
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [date, setDate] = useState('all');
+ 
+  
+ 
+  const TimeAgo = ( date ) => {
+    const formattedDate = formatDistanceToNow(date, { addSuffix: true });
+    
+    return formattedDate;
+  }  
+
 
 
   const [show, setShow] = useState(false);
 
   const loadFeedbackData = async () => {
     try {
-      const res = await getFeedbackByUserId({ userId: userInfo._id ,searchQuery}).unwrap();
+      const res = await getFeedbackByUserId({ userId: userInfo._id ,searchQuery, startDate, endDate, date}).unwrap();
       setFeedbacks(res.feedback);
       //filteredFeedbacks(res.feedback);
     } catch (error) {
@@ -45,7 +58,29 @@ const OccupantFeedback = () => {
  
   useEffect(() => {
     loadFeedbackData();
-  }, [ userInfo._id,searchQuery,deleteFeedbacks]);
+  }, [ userInfo._id,searchQuery,deleteFeedbacks, startDate, endDate, date]);
+
+
+
+  const handleDateRangeSelect = (ranges) =>{
+    console.log(ranges);
+    setStartDate(ranges.selection.startDate);
+    setEndDate(ranges.selection.endDate);
+    setDate('range');
+}
+
+const handleDateChange = (e) => {
+    setDate(e.target.value);
+    setStartDate(new Date());
+    setEndDate(new Date());
+
+}
+
+const selectionRange = {
+    startDate,
+    endDate,
+    key: 'selection',
+}
 
  
   const handleShow = () => setShow(true);
@@ -133,7 +168,7 @@ const OccupantFeedback = () => {
       feedback.description,
       feedback.rating,
      
-      new Date(feedback.createdAt).toLocaleString('en-GB')
+      //new Date(feedback.updateAt).toLocaleString('en-GB')
     ]);
 
 
@@ -251,7 +286,26 @@ const OccupantFeedback = () => {
                         </FormControl>
                     </Box>
                 </Col>
-                
+                <Col>
+                    <Box sx={{ minWidth: 120, minHeight:50 }}>
+                        <FormControl fullWidth>
+                            <InputLabel>Date</InputLabel>
+                            <Select
+                                label="Date"
+                                value={date}
+                                onChange={handleDateChange}
+                            >
+                                <MenuItem value={'all'} style={{marginBottom:'10px'}}>All Time</MenuItem>
+                                <MenuItem value={'range'} hidden>{startDate.toLocaleDateString('en-US')} - {endDate.toLocaleDateString('en-US')}</MenuItem>
+                                <DateRange
+                                    ranges={[selectionRange]}
+                                    onChange={handleDateRangeSelect}
+                                    maxDate={new Date()}
+                                />
+                            </Select>
+                        </FormControl>
+                    </Box>                               
+                </Col>
                 </Row>
               </FormControl>
 
@@ -263,7 +317,8 @@ const OccupantFeedback = () => {
             <Table striped bordered hover>
                 <thead>
                   <tr style={{ textAlign: 'center', backgroundColor: 'black', color: 'white ' }}>
-                  <th style={{ backgroundColor: '#232a67', color: 'white' }}>Boarding Name</th>
+                  <th style={{ backgroundColor: '#232a67', color: 'white' }}>Date</th>
+                    <th style={{ backgroundColor: '#232a67', color: 'white' }}>Boarding Name</th>
                     <th style={{ backgroundColor: '#232a67', color: 'white' }}>Feedback Details</th>
                     <th style={{ backgroundColor: '#232a67', color: 'white' }}>Number of Star Rating</th>
                     <th style={{ backgroundColor: '#232a67', color: 'white' }}>Options</th>
@@ -277,11 +332,12 @@ const OccupantFeedback = () => {
                   ) : filteredFeedbacks && filteredFeedbacks.length > 0 ? (
                     filteredFeedbacks.map((feedback, index) => (
                       <tr key={index}>
+                        <td>{new Date(feedback.updatedAt).toISOString().split('T')[0]}</td>
                         <td>{feedback.boardingId.boardingName}</td>
                         <td>{feedback.description}</td>
                         <td><Rating name="read-only" value={parseInt(feedback.rating)} readOnly /></td>
                         <td style={{ textAlign: 'center' }}>
-                        <Button type="button" onClick={() => navigate(`/occupant/feedback/update/${feedback._id}/${feedback.boardingId.boardingName}`)} className="mt-4 mb-4 me-3" style={{ float: 'Center' }} variant="contained">
+                        <Button type="button" onClick={() => navigate(`/occupant/feedback/update/${feedback._id}/${feedback.boardingId.boardingName}`)} className="mt-4 mb-4 me-3" style={{ float: 'Center',background: 'black', color: 'white' }} variant="contained">
                           <BrowserUpdatedIcon/>Update
                         </Button>
 
@@ -290,7 +346,7 @@ const OccupantFeedback = () => {
                         
                           <Button
                             className="mt-4 mb-4 me-3" style={{ float: 'center' ,
-                             background: 'red', color: 'black', marginLeft: '10px',variant:"contained" }}
+                             background: 'red', color: 'white', marginLeft: '10px',variant:"contained" }}
                             onClick={handleShow }
                           >
                             <DeleteIcon /> Delete

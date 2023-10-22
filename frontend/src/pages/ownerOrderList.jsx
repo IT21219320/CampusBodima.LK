@@ -5,7 +5,7 @@ import { useGetTodayOrderMutation, useUpdateStatusMutation } from "../slices/ord
 import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { Container, Row, Col, Table, Tabs, Tab } from 'react-bootstrap';
+import { Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { MenuItem, Breadcrumbs,FormControl,InputLabel, Select, Typography, Link, Button, TextField, CircularProgress } from '@mui/material';
 import { NavigateNext, Search, GridViewRounded } from '@mui/icons-material';
 import orderStyles from '../styles/orderStyles.module.css';
@@ -15,6 +15,13 @@ import DeleteOrder from "./DeleteOrder";
 import formStyle from '../styles/formStyle.module.css';
 import OrderReady from "../components/orderReady";
 import OrderComplete from "../components/orderComplete";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
 const OrderList = () => {
     const [product, setOrder] = useState([]);
@@ -148,73 +155,88 @@ const OrderList = () => {
                             </Row>
                             <Row>
                                 <Col>
-                                    <Table striped bordered hover className={orderStyles.table}>
-                                        <thead>
-                                            <tr style={{ textAlign: 'center' }}>
-                                                {/*<th>Order id</th>*/}
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Order Number</th>
-                                                <th>Product</th>
-                                                <th>Quantity</th>
-                                                <th>Price</th>
-                                                <th>Total</th>
-                                                <th>Status</th>
-                                                <th>Change Status</th>
+                                <TableContainer compenent={Paper}>
+                        <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                            <TableHead>
+                                <TableRow style={{ textAlign: 'center' }}>
 
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {isLoading ? (
-                                                <tr style={{ width: '100%', height: '100%', textAlign: 'center' }}>
-                                                    <td colSpan={10}><CircularProgress /></td>
-                                                </tr>
-                                            ) : filteredOrders.length > 0 ? (
-                                                filteredOrders.map((order, index) => (
-                                                    <tr key={index}>
-                                                        {/*<td>{order._id}</td>*/}
-                                                        <td>{new Date(order.date).toDateString()}</td>
-                                                        <td align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</td>
-                                                        <td>{order.orderNo}</td>
-                                                        <td align="center">
+                                    {/*<th>Order id</th>*/}
+                                    <TableCell align="center"><b>Date</b></TableCell>
+                                    <TableCell align="center"><b>Time</b></TableCell>
+                                    <TableCell align="center"><b>Order Number</b></TableCell>
+                                    <TableCell align="center"><b>Product</b></TableCell>
+                                    <TableCell align="center"><b>Quantity</b></TableCell>
+                                    <TableCell align="center"><b>Price</b></TableCell>
+                                    <TableCell align="center"><b>Sub Total</b></TableCell>
+                                    <TableCell align="center"><b>Total</b></TableCell>
+                                    <TableCell align="center"><b>Status</b></TableCell>
+                                    <TableCell align="center"><b>Update Status</b></TableCell>
+
+                                </TableRow>
+                            </TableHead>
+
+                            <tbody>
+                                {isLoading ? (
+                                    <TableRow style={{ width: '100%', height: '100%', textAlign: 'center' }}>
+                                        <TableCell colSpan={9}><CircularProgress /></TableCell>
+                                    </TableRow>
+                                ) : filteredOrders.length > 0 ? ( // Step 4: Display filtered orders
+                                    filteredOrders.map((order, index) => (
+                                        <TableRow key={index}>
+                                            {/*<td>{order._id}</td>*/}
+                                            <TableCell align="center">{new Date(order.date).toDateString()}</TableCell>
+                                            <TableCell align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</TableCell>
+                                            <TableCell align="center">{order.orderNo}</TableCell>
+                                            <TableCell><td align="center">
                                             {order.items.map((item,index) => (
-                                                <tr>
-                                                    <td align="center">{item.product}</td>
-                                                </tr>
+                                                <TableRow>
+                                                    <TableCell align="center">{item.product}</TableCell>
+                                                </TableRow>
                                             ))}
-                                        </td>
+                                        </td></TableCell><TableCell>
                                         <td align="center">
                                             {order.items.map((item,index) => (
-                                                <tr>
-                                                    <td align="center">{item.quantity}</td>
-                                                </tr>
+                                                <TableRow>
+                                                    <TableCell align="center">{item.quantity}</TableCell>
+                                                </TableRow>
                                             ))}
-                                        </td>
+                                        </td></TableCell><TableCell>
                                         <td align="center">
                                             {order.items.map((item,index) => (
-                                                <tr>
-                                                    <td align="center">{item.price}</td>
-                                                </tr>
+                                                <TableRow>
+                                                    <TableCell align="center">{item.price}</TableCell>
+                                                </TableRow>
                                             ))}
-                                        </td>
-                                                        <td>{order.total}</td>
-                                                        <td>{order.status}</td>
-                                                        <td align="center">
+                                        </td></TableCell>
+                                        <TableCell>
+                                        <td align="center">
+                                            {order.items.map((item,index) => (
+                                                <TableRow>
+                                                    <TableCell align="center">{item.total}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </td></TableCell>
+                                            <TableCell align="center">{order.total}</TableCell>
+                                            <TableCell align="center">{order.status}</TableCell>
+                                            {/* Render additional feedback data as needed */}
+                                            <TableCell align="center">
+
                                                             <Button
                                                                 variant="contained"
-                                                                onClick={() => status(order._id)}>Ready</Button></td>
+                                                                onClick={() => status(order._id)}>Ready</Button></TableCell>
 
-                                                    </tr>
+                                                    </TableRow>
                                                 ))
                                             ) : (
-                                                <tr style={{ height: '100%', width: '100%', textAlign: 'center', color: 'blue' }}>
-                                                    <td colSpan={10}>
+                                                <TableRow style={{ height: '100%', width: '100%', textAlign: 'center', color: 'blue' }}>
+                                                    <TableCell colSpan={10}>
                                                         <h4>No matching orders found!</h4>
-                                                    </td>
-                                                </tr>
+                                                    </TableCell>
+                                                </TableRow>
                                             )}
                                         </tbody>
                                     </Table>
+                                    </TableContainer>
                                 </Col>
                             </Row>
                         </Tab>

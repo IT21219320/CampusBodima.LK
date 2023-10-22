@@ -92,16 +92,22 @@ const OwnerPaymentDash = () => {
     const loadData = async () => {
         try {
             setLoading(true)
-            const resGetPay = await getPayment({ _id: userInfo._id }).unwrap();
+            const resGetPay = await getPayment({ userInfo_id: userInfo._id, boId:boardingID }).unwrap();
+            
             setPayments(resGetPay.payments);
             let totalCredit = 0;
             let totalDebited = 0;
             for (const pay of resGetPay.payments) {
-                const creditedInt = parseInt(pay.credited)
-                totalCredit += creditedInt
+                if(pay.credited){
+                    const creditedInt = parseInt(pay.credited)
+                    totalCredit += creditedInt
+                }
+                
                 if (pay.debited) {
                     const debitedInt = parseInt(pay.debited)
                     totalDebited += debitedInt
+                    setDebited(totalDebited)
+                }else{
                     setDebited(totalDebited)
                 }
 
@@ -114,7 +120,6 @@ const OwnerPaymentDash = () => {
                 const resBoardings = await getOwnerBoarding({ ownerId: userInfo._id }).unwrap();
                 if (resBoardings) {
                     setBoarding(resBoardings.ownerBoardings);
-
 
                 }
                 setLoading(false)
@@ -130,7 +135,7 @@ const OwnerPaymentDash = () => {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [boardingID]);
 
 
     return (
@@ -150,151 +155,156 @@ const OwnerPaymentDash = () => {
                             </Breadcrumbs>
                         </Col>
                     </Row>
-
-                    <FormControl size="small" style={{ width: '20%' }}>
-                        <InputLabel id="demo-simple-select-label" >Boarding</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={boardingID}
-                            onChange={(e) => setBoardingID(e.target.value)}
-                            label="Boardings"
-                        >
-                            <MenuItem value=''>
-                                <em>All</em>
-                            </MenuItem>
-                            {boarding.length > 0 ? (
-                                boarding.map((boarding) => (
-                                    <MenuItem key={boarding._id} value={boarding._id}>
-                                        <em>{boarding.boardingName}</em>
+                    <Row>
+                        <Col>
+                            <p style={{margin: '6% 0px 0px 6%', fontWeight: 'bold',fontSize: 'x-large'}}>Select boarding to filter </p>
+                        </Col>
+                        <Col>
+                            <FormControl size="small" style={{ width: '40%',margin: '6% 0px 0px 0px' }}>
+                                <InputLabel id="demo-simple-select-label" >Boarding</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={boardingID}
+                                    onChange={(e) => setBoardingID(e.target.value)}
+                                    label="Boardings"
+                                >
+                                    <MenuItem value=''>
+                                        <em>All</em>
                                     </MenuItem>
-                                ))
+                                    {boarding.length > 0 ? (
+                                        boarding.map((boarding) => (
+                                            <MenuItem key={boarding._id} value={boarding._id}>
+                                                <em>{boarding.boardingName}</em>
+                                            </MenuItem>
+                                        ))
 
-                            ) : (
-                                <MenuItem value="">
-                                    <em>No reservation</em>
-                                </MenuItem>)}
+                                    ) : (
+                                        <MenuItem value="">
+                                            <em>No Boarding</em>
+                                        </MenuItem>)}
 
-                        </Select>
-                    </FormControl>
-                    <TabContext value={value}>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                <Tab label="Item One" value="1" />
-                                <Tab label="Item Two" value="2" />
-                                <Tab label="Item Three" value="3" />
+                                </Select>
+                            </FormControl>
+                        </Col>
+                    </Row>
+                    <TabContext value={value} >
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider', marginLeft: '3%' }}>
+                            <TabList onChange={handleChange} aria-label="lab API tabs example" centered>
+                                <Tab label="Account" value="1" />
+                                <Tab label="Account statistics" value="2" />
                             </TabList>
                         </Box>
                         <TabPanel value="1">
                             {loading ? (<><Box sx={{ margin: '10% 50%' }}>
-                                            <CircularProgress />
-                                        </Box></>) : (<><Row style={stylesAccount}>
+                                <CircularProgress />
+                            </Box></>) : (<><Row style={stylesAccount}>
 
-<Col>
-    <Row style={{ marginTop: '20px' }}>
-        <Col>
-            <center><h4 style={{ fontFamily: "fantasy", fontSize: "xx-large", }}>My Account</h4></center>
-        </Col>
-        <Row >
-            <Col style={stylesBalances}>
-                {credited ? (
-                    <>
-                        <p style={styleTopics}>Credited Balance</p>
-                        <p> LKR {credited} </p>
-                    </>
-                ) : (
-                    <>
-                        <p style={styleTopics}>Credited Balance</p>
-                        <p>  LKR 0</p>
-                    </>
-                )}
+                                <Col>
+                                    <Row style={{ marginTop: '20px' }}>
+                                        <Col>
+                                            <center><h4 style={{ fontFamily: "fantasy", fontSize: "xx-large", }}>My Account</h4></center>
+                                        </Col>
+                                        <Row >
+                                            <Col style={stylesBalances}>
+                                                {credited ? (
+                                                    <>
+                                                        <p style={styleTopics}>Credited Balance</p>
+                                                        <p> LKR {credited} </p>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <p style={styleTopics}>Credited Balance</p>
+                                                        <p>  LKR 0</p>
+                                                    </>
+                                                )}
 
-            </Col>
-            <Col style={stylesBalances}>
-                {debited ? (
-                    <>
-                        <p style={styleTopics}>Debited Balance</p>
-                        <p>  LKR {debited} </p>
-                    </>
-                ) : (
-                    <>
-                        <p style={styleTopics}>Debited Balance</p>
-                        <p>  LKR 0 </p>
-                    </>)}
+                                            </Col>
+                                            <Col style={stylesBalances}>
+                                                {debited ? (
+                                                    <>
+                                                        <p style={styleTopics}>Debited Balance</p>
+                                                        <p>  LKR {debited} </p>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <p style={styleTopics}>Debited Balance</p>
+                                                        <p>  LKR 0 </p>
+                                                    </>)}
 
-            </Col >
-            <Col style={stylesBalances}>
-                {debited ? (
-                    <>
-                        <p style={styleTopics}>Total Balance</p>
-                        <p>  LKR {credited - debited} </p>
-                    </>
-                ) : (
-                    <>
-                        <p style={styleTopics}>Total Balance</p>
-                        <p> LKR {credited}</p>
-                    </>)}
+                                            </Col >
+                                            <Col style={stylesBalances}>
+                                                {debited ? (
+                                                    <>
+                                                        <p style={styleTopics}>Total Balance</p>
+                                                        <p>  LKR {credited - debited} </p>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <p style={styleTopics}>Total Balance</p>
+                                                        <p> LKR {credited}</p>
+                                                    </>)}
 
-            </Col>
-        </Row>
-    </Row>
+                                            </Col>
+                                        </Row>
+                                        <Button>Withdraw money </Button>
+                                    </Row>
 
-</Col>
-</Row>
-<Row>
-<Col>
-    <Row style={{ marginTop: '20px' }}>
-        <Col>
-            <center><h4>Transactions</h4></center>
-        </Col>
-    </Row>
+                                </Col>
+                            </Row>
+                                <Row>
+                                    <Col>
+                                        <Row style={{ marginTop: '20px' }}>
+                                            <Col>
+                                                <center><h4>Transactions</h4></center>
+                                            </Col>
+                                        </Row>
 
-</Col>
-</Row>
+                                    </Col>
+                                </Row>
 
 
-<TableContainer component={Paper} style={{ marginTop: '20px' }}>
-<Table sx={{ minWidth: 700 }} aria-label="customized table">
-    <TableHead>
-        <TableRow>
-            <StyledTableCell>Transaction ID</StyledTableCell>
-            <StyledTableCell align="right">Amount</StyledTableCell>
-            <StyledTableCell align="right">Description</StyledTableCell>
-            <StyledTableCell align="right">Transaction Date</StyledTableCell>
-            <StyledTableCell align="right">Method</StyledTableCell>
-            <StyledTableCell align="right">Credited</StyledTableCell>
-            <StyledTableCell align="right">Debited</StyledTableCell>
-        </TableRow>
-    </TableHead>
+                                <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+                                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <StyledTableCell>Transaction ID</StyledTableCell>
+                                                <StyledTableCell align="right">Amount</StyledTableCell>
+                                                <StyledTableCell align="right">Description</StyledTableCell>
+                                                <StyledTableCell align="right">Transaction Date</StyledTableCell>
+                                                <StyledTableCell align="right">Method</StyledTableCell>
+                                                <StyledTableCell align="right">Credited</StyledTableCell>
+                                                <StyledTableCell align="right">Debited</StyledTableCell>
+                                            </TableRow>
+                                        </TableHead>
 
-    <TableBody>
-        {payments.length > 0 ? (
-            payments.map((payment) => (
+                                        <TableBody>
+                                            {payments.length > 0 ? (
+                                                payments.map((payment) => (
 
-                <StyledTableRow key={payment._id}>
-                    <StyledTableCell component="th" scope="row">
-                        {payment._id}
-                    </StyledTableCell>
-                    <StyledTableCell align="right" >{payment.amount}</StyledTableCell>
-                    <StyledTableCell align="right" >{payment.description}</StyledTableCell>
-                    <StyledTableCell align="right">{payment.date}</StyledTableCell>
-                    <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
-                    <StyledTableCell align="right">{payment.credited}</StyledTableCell>
-                    <StyledTableCell align="right">{payment.debited}</StyledTableCell>
-                </StyledTableRow>
-            ))) : (
-            <StyledTableRow >
-                <StyledTableCell component="th" scope="row" align="center" colSpan={7}>
-                    No data
-                </StyledTableCell>
+                                                    <StyledTableRow key={payment._id}>
+                                                        <StyledTableCell component="th" scope="row">
+                                                            {payment._id}
+                                                        </StyledTableCell>
+                                                        <StyledTableCell align="right" >{payment.amount}</StyledTableCell>
+                                                        <StyledTableCell align="right" >{payment.description}</StyledTableCell>
+                                                        <StyledTableCell align="right">{payment.date}</StyledTableCell>
+                                                        <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
+                                                        <StyledTableCell align="right">{payment.credited}</StyledTableCell>
+                                                        <StyledTableCell align="right">{payment.debited}</StyledTableCell>
+                                                    </StyledTableRow>
+                                                ))) : (
+                                                <StyledTableRow >
+                                                    <StyledTableCell component="th" scope="row" align="center" colSpan={7}>
+                                                        No data
+                                                    </StyledTableCell>
 
-            </StyledTableRow>)}
-    </TableBody>
-</Table>
-</TableContainer></>)}
-                            </TabPanel>
+                                                </StyledTableRow>)}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer></>)}
+                        </TabPanel>
                         <TabPanel value="2">Item Two</TabPanel>
-                        <TabPanel value="3">Item Three</TabPanel>
                     </TabContext>
 
                 </Container>

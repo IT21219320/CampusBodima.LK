@@ -47,3 +47,17 @@
     display: inline-block;
     min-width: 0 !important;
 }
+.deletebutton {
+    color: #FF0000;
+    transition: color 0.3s; 
+  }
+  .deletebutton:hover {
+    color: #FF5555; 
+  }
+  .updatebutton {
+    color: #11ff00;
+    transition: color 0.3s; 
+  }
+  .updatebutton:hover {
+    color: #00ff3c; 
+  }
