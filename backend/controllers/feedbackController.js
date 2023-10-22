@@ -4,6 +4,7 @@ import User from '../models/userModel.js';
 import Boarding from '../models/boardingModel.js';
 import bodyParser from 'body-parser';
 import ReservationHistory from '../models/reservationHistory.js';
+import { sendMail } from '../utils/mailer.js';
 
 
 
@@ -37,14 +38,16 @@ const createFeedback = asyncHandler(async (req, res) => {
 
    
     const sender = await User.findById(senderId);
-    const boarding = await Boarding.findById(boardingId);
+    const boarding = await Boarding.findById(boardingId).populate('owner');
     if(!boarding){
       res.status(400);
       throw new Error('Boarding Not Found!');
     }
-   
-  
 
+    
+    
+    const ownerEmail = boarding.owner.email;
+    
       const feedback = await Feedback.create({
         feedbackId,
         senderId: sender,
@@ -55,7 +58,18 @@ const createFeedback = asyncHandler(async (req, res) => {
       });
   
       if(feedback){
-        res.status(201).json({feedback});
+        // Send email to each occupant with per occupant cost
+        const message = `<p><b>Hello ${boarding.owner.firstName},</b><br><br> 
+                            feedback:<br><br>
+                            ${feedback.description}
+                            Rating ${feedback.rating}"<br><br>
+                            Thank you for choosing CampusBodima!<br><br>
+                            Best wishes,<br>
+                            The CampusBodima Team</p>`
+        
+        sendMail(ownerEmail,message,"Activate Your Account");
+        res.status(201).json({ message: "feedback and rating Sent!"});
+      
     }
     else{
         res.status(400)
@@ -122,9 +136,18 @@ const createFeedback = asyncHandler(async (req, res) => {
 const getFeedbackByUserId = asyncHandler(async (req, res) => {
   const { userId } = req.body;
   const searchQuery = req.body.searchQuery;
+  const startDate = new Date(req.body.startDate);
+  const endDate = new Date(req.body.endDate);
+  const date = req.body.date;
+
+
+  endDate.setHours(23, 59, 59, 999);
 
   try {
-    const feedback = await Feedback.find({ 'senderId._id': userId,description: { $regex: searchQuery, $options: 'i' } }).populate('boardingId');
+    const feedback = await Feedback.find({ 'senderId._id': userId,
+    description: { $regex: searchQuery, $options: 'i' },
+    ...(date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {}), 
+  }).populate('boardingId');
     
    
 
@@ -173,19 +196,30 @@ const getFeedbackByBoardingId = asyncHandler(async (req, res) => {
 
 
   const getAllFeedbacks = asyncHandler(async (req, res) => {
+
+    const startDate = new Date(req.body.startDate);
+    const endDate = new Date(req.body.endDate);
+    const date = req.body.date;
+  
+  
+    endDate.setHours(23, 59, 59, 999);
     try {
         // Extract the search query parameter from the request object
         const { searchQuery } = req.query;
         
         let feedback;
 
+        const dateFilter = date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {};
+
         // If there is a search query, fetch feedbacks based on the 'description' field
         if (searchQuery) {
-            feedback = await Feedback.find({ description: { $regex: new RegExp(searchQuery, 'i') } })
+            feedback = await Feedback.find({ description: { $regex: new RegExp(searchQuery, 'i') },
+          ...dateFilter
+          })
                 .populate('boardingId');
         } else {
             // If no search query, fetch all feedbacks
-            feedback = await Feedback.find({}).populate('boardingId');
+            feedback = await Feedback.find({...dateFilter}).populate('boardingId');
         }
 
         if (feedback && feedback.length > 0) {
@@ -203,6 +237,8 @@ const getFeedbackByBoardingId = asyncHandler(async (req, res) => {
 
 
 
+
+
  
   
   // Update feedback by feedbackId
@@ -210,7 +246,7 @@ const getFeedbackByBoardingId = asyncHandler(async (req, res) => {
 
   const updateFeedback = asyncHandler(async (req, res) => {
     //const { _id } = req.qu;
-    const { feedbackId, newdescription, newrating } = req.body;
+    const { feedbackId, newdescription, newrating,newcreatedAt} = req.body;
   
     try {
       const feedback = await Feedback.findById(feedbackId);
@@ -224,6 +260,7 @@ const getFeedbackByBoardingId = asyncHandler(async (req, res) => {
         
         feedback.description = newdescription || feedback.description;
         feedback.rating = newrating || feedback.rating;
+        feedback.createdAt=newcreatedAt||feedback.createdAt;
   
         const updatedFeedback = await feedback.save();
 
