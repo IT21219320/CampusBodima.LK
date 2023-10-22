@@ -38,7 +38,7 @@ const utilityReport = ({ boardingId ,occupant}) => {
     const [sortBy, setSortBy] = useState('createdAt')
     const [order, setOrder] = useState(1)
     const [confirmDialog, setConfirmDialog] = useState(false);
-
+    const [boardingNames, setBoardingNames] = useState([]);
      
 
     const theme = useTheme();
@@ -109,8 +109,10 @@ const utilityReport = ({ boardingId ,occupant}) => {
           setOrder(1);
       }
   }
+ 
+  
 
-  const exportToPDF = () => {;
+  const exportToPDF = () => {
                 
     const doc = new jsPDF();
     
@@ -146,10 +148,12 @@ const utilityReport = ({ boardingId ,occupant}) => {
     doc.text(`Report of Utility`, 20, 55);
     doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
     doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
+    const boardingName= Utilities[0].boarding.boardingName
+    doc.text(`${boardingName} `, 20, 67);
 
     // Add report title
     doc.setFontSize(12);
-    doc.text(`${UtilityType} List`, 85, 65);
+    doc.text(`${UtilityType} List of `, 85, 65);
 
 
     // Define the table headers
@@ -178,7 +182,6 @@ const utilityReport = ({ boardingId ,occupant}) => {
           head: [headers],
           body: data,
           styles,
-          margin: { top: 90 },
           startY: 75
       });
 
@@ -196,6 +199,7 @@ const utilityReport = ({ boardingId ,occupant}) => {
     };
     return date.toLocaleDateString("en-US", options);
   }
+ 
   
   
 
@@ -207,7 +211,7 @@ const utilityReport = ({ boardingId ,occupant}) => {
                 <Col>
                     <Paper
                         component="form"
-                        sx={{ p: '2px 4px', mb:'10px', display: 'flex', alignItems: 'center', width: 400 }}
+                        sx={{ p: '2px 4px', mb:'10px', display: 'flex', alignItems: 'center', width: 400  }}
                     >
                         <InputBase
                             sx={{ ml: 1, pl:'10px', flex: 1 }}
@@ -226,10 +230,10 @@ const utilityReport = ({ boardingId ,occupant}) => {
         </Row>
             <Row style={{marginBottom:'10px', marginTop: '10px'}}>
                 <Col>
-                    <TextField id="outlined-basic" variant="outlined" value={'Filter By:'} disabled/>
+                    <TextField id="outlined-basic" variant="outlined" value={'Filter By:'} disabled size="small"/>
                 </Col>
                 <Col>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth size="small">
                         <InputLabel>UtilityType</InputLabel>
                         <Select
                             value={UtilityType}
@@ -243,7 +247,7 @@ const utilityReport = ({ boardingId ,occupant}) => {
                     </FormControl>
                 </Col>
                 <Col>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth size="small">
                         <InputLabel>Date</InputLabel>
                         <Select
                             label="Date"
