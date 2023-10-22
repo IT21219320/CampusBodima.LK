@@ -9,7 +9,7 @@ import{ createFeedback,getAllFeedbacks,updateFeedback,getUpdateFeedback,deleteFe
 
 
 router.post('/create', createFeedback);
-router.get('/getfeedback', getAllFeedbacks);
+router.post('/getfeedback', getAllFeedbacks);
 router.post('/getfeedbackByid',getFeedbackByUserId);
 router.post('/getfeedbackbyBoardingid',getFeedbackByBoardingId);
 

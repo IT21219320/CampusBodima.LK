@@ -7,15 +7,18 @@ import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Table,Card } from 'react-bootstrap';
 import { Breadcrumbs, Typography, Paper, InputBase, IconButton, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress, Button, Rating,Link,CardContent } from '@mui/material';
-import { NavigateNext, Search, BrowserUpdated as BrowserUpdatedIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { NavigateNext, Search, Delete as DeleteIcon } from '@mui/icons-material';
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
 import jsPDF from 'jspdf';
 import { GetAppRounded, GridViewRounded } from '@mui/icons-material';
 import { DateRange } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
+
 
 import Modal from 'react-bootstrap/Modal';
+import Boarding from "../../../backend/models/boardingModel";
 
 const OccupantFeedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -50,6 +53,8 @@ const OccupantFeedback = () => {
       const res = await getFeedbackByUserId({ userId: userInfo._id ,searchQuery, startDate, endDate, date}).unwrap();
       setFeedbacks(res.feedback);
       //filteredFeedbacks(res.feedback);
+
+
     } catch (error) {
       console.error('Error getting feedbacks', error);
       }
@@ -165,7 +170,8 @@ const selectionRange = {
     // Map the admin data to table rows
 
     const data = filteredFeedbacks.map((feedback) => [
-      feedback.updatedAt,
+
+      new Date(feedback.updatedAt).toISOString().split('T')[0],
       feedback.boardingId.boardingName,
       feedback.description,
       feedback.rating,
@@ -219,7 +225,7 @@ const selectionRange = {
           <Row>
                         <Col>
                             <Card variant="outlined" className={occupantFeedbackStyles.card}>
-                                <CardContent>
+                                <CardContent style={{color:'#fff',backgroundColor:'#232a67'}}>
                                     <h4>FEEDBACKS  &  RATING</h4> 
                                 </CardContent>
                             </Card>
@@ -239,7 +245,7 @@ const selectionRange = {
 >
   <InputBase
     sx={{ ml: 1, flex: 1 }}
-    placeholder="Search Feedbacks"
+    placeholder="Search Feedbacks by Discription"
     onChange={handleSearch}
   />
   <IconButton
@@ -313,7 +319,7 @@ const selectionRange = {
                 </Col>
                 </Row>
               </FormControl>
-
+              
               </form>
             </Col>
           </Row>
@@ -342,8 +348,8 @@ const selectionRange = {
                         <td>{feedback.description}</td>
                         <td><Rating name="read-only" value={parseInt(feedback.rating)} readOnly /></td>
                         <td style={{ textAlign: 'center' }}>
-                        <Button type="button" onClick={() => navigate(`/occupant/feedback/update/${feedback._id}/${feedback.boardingId.boardingName}`)} className="mt-4 mb-4 me-3" style={{ float: 'Center',background: 'black', color: 'white' }} variant="contained">
-                          <BrowserUpdatedIcon/>Update
+                        <Button type="button" onClick={() => navigate(`/occupant/feedback/update/${feedback._id}/${feedback.boardingId.boardingName}`)} className="mt-4 mb-4 me-3" style={{ float: 'Center',background: '#2ac609', color: 'white' }} variant="contained">
+                          <SystemUpdateAltIcon/>
                         </Button>
 
 
@@ -354,7 +360,7 @@ const selectionRange = {
                              background: 'red', color: 'white', marginLeft: '10px',variant:"contained" }}
                             onClick={handleShow }
                           >
-                            <DeleteIcon /> Delete
+                            <DeleteIcon />
                           </Button>
                               <Modal show={show} onHide={handleClose}>
                                 <Modal.Header closeButton>

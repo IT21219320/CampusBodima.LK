@@ -47,7 +47,8 @@ const AllFeedbacks = () => {
 
   const loadFeedbackData = async () => {
     try {
-      const res = await getAllFeedbacks({ startDate, endDate, date}).unwrap();
+      const res = await getAllFeedbacks({ startDate, endDate, date, searchQuery}).unwrap();
+
       setFeedbacks(res.feedback);
       
     } catch (error) {
@@ -63,7 +64,7 @@ const AllFeedbacks = () => {
   }, [ userInfo._id,searchQuery,deleteFeedbacks, startDate, endDate, date]);
 
   const handleDateRangeSelect = (ranges) =>{
-    console.log(ranges);
+   
     setStartDate(ranges.selection.startDate);
     setEndDate(ranges.selection.endDate);
     setDate('range');
@@ -165,8 +166,7 @@ const AllFeedbacks = () => {
     // Map the admin data to table rows
 
     const data = filteredFeedbacks.map((feedback) => [
-      
-      feedback.updatedAt,
+      new Date(feedback.updatedAt).toISOString().split('T')[0],
       feedback.boardingId.boardingName,
       feedback.description,
       feedback.rating,
@@ -220,7 +220,7 @@ const AllFeedbacks = () => {
           <Row>
                         <Col>
                             <Card variant="outlined" className={occupantFeedbackStyles.card}>
-                                <CardContent>
+                                <CardContent style={{color:'#fff',backgroundColor:'#232a67'}}>
                                     <h4>FEEDBACKS  &  RATING</h4> 
                                 </CardContent>
                             </Card>
@@ -240,7 +240,7 @@ const AllFeedbacks = () => {
               >
               <InputBase
                 sx={{ ml: 1, flex: 1 }}
-                placeholder="Search Feedbacks"
+                placeholder="Search Feedbacks by Discription"
                 onChange={handleSearch}
               />
                  <IconButton
@@ -352,7 +352,7 @@ const AllFeedbacks = () => {
                              background: 'red', color: 'white', variant:"contained" }}
                             onClick={handleShow }
                           >
-                            <DeleteIcon /> Delete
+                            <DeleteIcon />
                           </Button>
                               <Modal show={show} onHide={handleClose}>
                                 <Modal.Header closeButton>
