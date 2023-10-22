@@ -239,7 +239,7 @@ const OwnerIngredientPage = () => {
               <Row>
                 <Col>
                   <Card variant="outlined" className={ownerAllTicketsStyles.card}>
-                    <CardContent>
+                    <CardContent style={{ padding: '3px', important: 'true'}}>
                       <h1 style={{ fontSize: '40px', color: '#685DD8', textAlign: 'center'}}>
                         Inventory
                       </h1>
