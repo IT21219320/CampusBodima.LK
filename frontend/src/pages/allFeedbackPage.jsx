@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import { Container, Row, Col, Table,Card } from 'react-bootstrap';
-import { Breadcrumbs, Typography, Paper, InputBase, IconButton, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress, Button, Rating } from '@mui/material';
+import { Breadcrumbs, Typography, Paper, InputBase, IconButton, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress, Button, Rating,Link,CardContent } from '@mui/material';
 import { NavigateNext, Search, BrowserUpdated as BrowserUpdatedIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
 import jsPDF from 'jspdf';
@@ -166,6 +166,7 @@ const AllFeedbacks = () => {
 
     const data = filteredFeedbacks.map((feedback) => [
       
+      feedback.updatedAt,
       feedback.boardingId.boardingName,
       feedback.description,
       feedback.rating,
@@ -206,20 +207,25 @@ const AllFeedbacks = () => {
       <Sidebar />
       <div className={dashboardStyles.mainDiv}>
         <Container className={dashboardStyles.container}>
-          <Row>
+        <Row>
             <Col>
-              <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
-                <Typography color="text.primary">Home</Typography>,
-                <Typography color="text.primary">{userInfo.userType === 'owner' ? 'Owner' : (userInfo.userType === 'occupant' ? 'Occupant' : userInfo.userType === 'admin' ? 'Admin' : '')}</Typography>,
-                <Typography color="text.primary">Feedbacks</Typography>
-              </Breadcrumbs>
+            <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
+                                <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
+                                <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : userInfo.userType == 'kitchen' ? 'Kitchen' : <></>)}</Link>,
+                                
+                                <Typography key="3" color="text.primary">My Feedbacks</Typography>
+                            </Breadcrumbs>
             </Col>
           </Row>
-          <Col>
-              <Card variant="outlined" className={occupantFeedbackStyles.card}>
-                <h4>Feedbacks</h4>
-              </Card>
-          </Col>
+          <Row>
+                        <Col>
+                            <Card variant="outlined" className={occupantFeedbackStyles.card}>
+                                <CardContent>
+                                    <h4>FEEDBACKS  &  RATING</h4> 
+                                </CardContent>
+                            </Card>
+                        </Col>
+                    </Row>
           <Row>
             <Col>
               <Paper
@@ -334,7 +340,7 @@ const AllFeedbacks = () => {
                   ) : filteredFeedbacks && filteredFeedbacks.length > 0 ? (
                     filteredFeedbacks.map((feedback, index) => (
                       <tr key={index}>
-                        <td>{new Date(feedback.createdAt).toISOString().split('T')[0]}</td>
+                        <td>{new Date(feedback.updatedAt).toISOString().split('T')[0]}</td>
                         <td>{feedback.boardingId.boardingName}</td>
                         <td>{feedback.description}</td>
                         <td><Rating name="read-only" value={parseInt(feedback.rating)} readOnly /></td>

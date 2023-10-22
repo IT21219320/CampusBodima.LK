@@ -9,6 +9,7 @@ import { sendMail } from '../utils/mailer.js';
 
 
 
+
 // @desc Create a feedback
 // @route POST /api/feedback/create
 // @access Private
@@ -62,12 +63,13 @@ const createFeedback = asyncHandler(async (req, res) => {
         const message = `<p><b>Hello ${boarding.owner.firstName},</b><br><br> 
                             feedback:<br><br>
                             ${feedback.description}
+                            ${feedback.boardingId.boardingName}
                             Rating ${feedback.rating}"<br><br>
                             Thank you for choosing CampusBodima!<br><br>
                             Best wishes,<br>
                             The CampusBodima Team</p>`
         
-        sendMail(ownerEmail,message,"Activate Your Account");
+        sendMail(ownerEmail,message,"Your Boarding Feedback");
         res.status(201).json({ message: "feedback and rating Sent!"});
       
     }
@@ -209,17 +211,17 @@ const getFeedbackByBoardingId = asyncHandler(async (req, res) => {
         
         let feedback;
 
-        const dateFilter = date !== 'all' ? { createdAt: { $gte: startDate, $lte: endDate } } : {};
+        
 
         // If there is a search query, fetch feedbacks based on the 'description' field
         if (searchQuery) {
             feedback = await Feedback.find({ description: { $regex: new RegExp(searchQuery, 'i') },
-          ...dateFilter
+          
           })
                 .populate('boardingId');
         } else {
             // If no search query, fetch all feedbacks
-            feedback = await Feedback.find({...dateFilter}).populate('boardingId');
+            feedback = await Feedback.find().populate('boardingId');
         }
 
         if (feedback && feedback.length > 0) {
