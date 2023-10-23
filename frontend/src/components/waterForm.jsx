@@ -273,7 +273,7 @@ const AddUtilitiesPage = () => {
 
                         <div className="mt-3">
                           <Form.Label>
-                            Amount : <span style={{ color: 'red' }}>*</span>
+                            Total Amount : <span style={{ color: 'red' }}>*</span>
                             <Tooltip title="Give your bill's amount" placement="top" arrow>
                               <HelpOutlineRounded style={{ color: '#707676', fontSize: 'large' }} />
                             </Tooltip>
