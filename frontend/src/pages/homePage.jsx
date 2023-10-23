@@ -59,7 +59,7 @@ const HomePage = () => {
 
     return (
         <>
-            <div style={{ width: '100%' }}>
+            <div style={{ width: '100%' }} id='top'>
                 <Header />
                 <div style={{ minHeight: '100vh', height: '200vh' }}>
                     <div className={homeStyles.homeBackDiv}>
