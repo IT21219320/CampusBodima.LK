@@ -301,12 +301,9 @@ const ViewAllReservations = ({ bId }) => {
                     <TableCell align="right" style={{ color: "#ffffff" }}>Date</TableCell>
                     <TableCell align="right" style={{ color: "#ffffff" }}>Duration</TableCell>
                     {console.log(boardingId.boardingType)}
-                    {boardingId.boardingType === 'Hostel' ? (
+                    {boardingId.boardingType === 'Hostel' && (
                       <TableCell align="right" style={{ color: "#ffffff" }}>Room Number</TableCell>
-                    ) : (
-                      <>
-                        <TableCell align="right" style={{ color: "#ffffff" }}></TableCell>
-                      </>)}
+                    ) }
 
                   </TableRow>
 
