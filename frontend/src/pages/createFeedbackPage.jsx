@@ -36,8 +36,8 @@ const CreateFeedback = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (description.length > 140) {
-      toast.error('Description must be under 140 characters.');
+    if (description.length > 240) {
+      toast.error('Description must be under 240 characters.');
       return;
     }
 
