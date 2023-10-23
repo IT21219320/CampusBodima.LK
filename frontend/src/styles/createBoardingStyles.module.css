@@ -1,6 +1,15 @@
 .card{
-    background: linear-gradient(45deg, rgba(181, 174, 255, 0.25) 0%, rgba(91, 84, 189, 0.25) 100%);    
+    background-color: rgba(183, 221, 255, 0.215) !important;    
     box-shadow: 2px 2px 5px 0px rgb(0 0 0 / 27%) !important;
+}
+
+.cardHeading{
+    background: linear-gradient(135deg, #0057a0, #242745,#0057a0);
+    border-radius: 10px; 
+    color: white !important;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .addImgLabel{

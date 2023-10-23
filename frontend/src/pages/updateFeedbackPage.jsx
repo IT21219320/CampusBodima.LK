@@ -93,7 +93,7 @@ const UpdateFeedback = () => {
             <Form onSubmit={submitHandler} className={CreateFeedbackStyles.form}>
               <Row>
                 <Col>
-                  <Card variant="outlined" className={CreateFeedbackStyles.card}>
+                  <Card variant="outlined" className={CreateFeedbackStyles.cards}>
                     <CardContent style={{ padding: '18px' }}>
                       <h4 style={{ margin: 0 }}>Update Feedback</h4>
                     </CardContent>

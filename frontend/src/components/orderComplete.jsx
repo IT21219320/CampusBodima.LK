@@ -264,7 +264,7 @@ const OrderComplete = () => {
                                             <TableCell align="center">{order.status}</TableCell>
                                             {/* Render additional feedback data as needed */}
                                             
-                                            {(new Date()-new Date(order.date)) <(24 * 60 * 60 * 1000)? (
+                                            {(new Date()-new Date(order.date)) <(6 * 60 * 60 * 1000)? (
                                             <TableCell align="center">
 
                                                 <Button

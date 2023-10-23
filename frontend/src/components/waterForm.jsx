@@ -246,7 +246,7 @@ const AddUtilitiesPage = () => {
               <form onSubmit={handleUtilityFormSubmit}>
                 <Row className='mt-4'>
                   <Col md={7} >
-                    <Card className={CreateBoardingStyles.card}>
+                    <Card  className={BillStyles.card}>
                       <CardContent style={{ padding: '25px' }}>
                         <div><Row>
                           <Form.Label>Select Boarding Name</Form.Label>
@@ -300,7 +300,7 @@ const AddUtilitiesPage = () => {
                             value={month} // Display the selected month
                             readOnly // Make the input read-only
                             required
-                            style={{ width: '30%' }}
+                            style={{ width: '35%' }}
                             min={getCurrentMonthValue()}
                             max={getCurrentMonthValue()}
                           ></Form.Control>
@@ -358,7 +358,7 @@ const AddUtilitiesPage = () => {
                     </Card>
                   </Col>
                   <Col md={5}>
-                    <Card className={CreateBoardingStyles.card}  >
+                    <Card  className={BillStyles.card} >
                       <CardContent style={{ padding: '25px' }}>
 
                         <Form.Label>Select Occupants:</Form.Label>

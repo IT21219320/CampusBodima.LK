@@ -201,7 +201,7 @@ const ProfilePage = () => {
                     
                     <Row>
                         <Col>
-                            <Card className='mt-3 py-3 text-center'>
+                            <Card className={`mt-3 py-3 text-center ${dashboardStyles.cardHeading}`}>
                                 {userType == 'owner' ? <h2>Owner Dashboard</h2> : (userType == 'occupant' ? <h2>Occupant Dashboard</h2> : userType == 'admin' ? <h2>Admin Dashboard</h2> : userType == 'kitchen' ? <h2>Inventory Manager Dashboard</h2> : <></>)}
                             </Card>
                         </Col>
@@ -572,6 +572,52 @@ const ProfilePage = () => {
                                                     </Row>
                                                 </Form.Group>
                                                 <Divider sx={{borderColor:'initial'}}/>
+                                                { userType != "owner"?
+                                            <>
+                                            <hr />
+                                            <Row style={{marginTop:'20px'}}>
+                                                <Col>
+                                                    <Row>
+                                                        <Col>
+                                                            <Form.Label style={{margin:0}}>Phone Number<span style={{color:'red'}}>*</span></Form.Label>
+                                                        </Col>
+                                                        <Col>
+                                                            {phoneNo==userInfo.phoneNo ?
+                                                                <InputGroup style={{width:'fit-content'}}>
+                                                                    <InputGroup.Text style={{color:'green'}}><Check /></InputGroup.Text>
+                                                                    <Form.Control type="text" placeholder="PhoneNo" value={phoneNo} required readOnly style={{width:'fit-content'}}/><IconButton onClick={() => setPhoneNo('')}><Close /></IconButton>
+                                                                </InputGroup>
+                                                            :
+                                                            <InputGroup style={{width:'fit-content'}}>
+                                                                <InputGroup.Text>(+94)</InputGroup.Text>
+                                                                <Form.Control placeholder="715447792" type="text" maxLength={9} value={phoneNo} onChange={(e) => setPhoneNo(e.target.value.replace(/\D/g, ''))}/>
+                                                                <LoadingButton loading={isLoading1} variant="contained" className="ms-2" onClick={sendOTP}>Add</LoadingButton>
+                                                            </InputGroup>
+                                                            }
+                                                            <Modal
+                                                                open={modalOpen}
+                                                                onClose={() => setModalOpen(false)}
+                                                                aria-labelledby="OTP Modal"
+                                                                aria-describedby="OTP Modal"
+                                                            >
+                                                                <Box sx={style}>
+                                                                    
+                                                                    <h1>OTP Verification</h1>
+                                                                    <br />
+                                                                    <p className="text-start">The OTP code has being sent to +94{phoneNo}. Please enter the code below to verify.</p>
+                                                                    <MuiOtpInput value={otp} length={6} onChange={ (e) => setOTP(e)} />
+                                                                    <LoadingButton loading={isLoading2} onClick={ verifyOTP } color="primary" variant="contained" className="mt-3">Verify OTP</LoadingButton>
+                                                                    <LoadingButton loading={isLoading1} onClick={ sendOTP } color="primary" variant="contained" className="mt-3 ms-3"><Sync /> Resend</LoadingButton>
+                                                                    
+                                                                </Box>
+                                                            </Modal>
+                                                        </Col>
+                                                    </Row>
+                                                </Col>
+                                            </Row>
+                                            <Divider sx={{borderColor:'initial'}}/>
+                                            </> : ''
+                                            }
                                                 {accType === 'google'? <></> : <>
                                                 <Form.Group controlId="pwd">
                                                     <Row className='py-3'>
@@ -608,6 +654,7 @@ const ProfilePage = () => {
                                         </CardContent>
                                     </Card>
                                 </Grid>
+                                { userType == "owner"?
                                 <Grid item xs={12}>
                                     <Card>
                                         <CardContent style={{display:"flex", alignItems:"center", flexDirection:"column", padding:"10px 50px 30px 50px"}}>
@@ -706,6 +753,7 @@ const ProfilePage = () => {
                                         </CardContent>
                                     </Card>
                                 </Grid>
+                                : ''}
                             </Grid>
                         </form>
                     </Fade>

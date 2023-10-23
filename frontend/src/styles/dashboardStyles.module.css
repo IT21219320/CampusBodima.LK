@@ -16,6 +16,24 @@
     margin-top: 22px;  
 }
 
+.cardHeading{
+    background: linear-gradient(135deg, #0057a0, #242745,#0057a0);
+    border-radius: 10px; 
+    color: white !important;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.cardHeading{
+    background: linear-gradient(135deg, #0057a0, #242745,#0057a0);
+    border-radius: 10px; 
+    color: white !important;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .cardContent{
     display: flex;
     align-items: center;

@@ -164,7 +164,7 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                             </div>
                         ) : (utilities && utilities.length !== 0 ? (
                             utilities.map((utility, index) => (
-                                <Card className={`${ownerStyles.card} mt-4`} key={utility._id} style={{ height: 'auto' } } >
+                                <Card className={`${ownerStyles.cardc} mt-4`} key={utility._id} style={{ height: 'auto' } } >
                                     <CardContent className={ownerStyles.cardContent}>
                                         <Col lg={12}>
                                         <Row>

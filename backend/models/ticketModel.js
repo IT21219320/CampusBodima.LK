@@ -4,7 +4,7 @@ import Boarding from "../models/boardingModel.js";
 
 const replySchema = mongoose.Schema({
     ticketId:{
-        type:String,
+        type:Number,
         required:true,
     },
 
@@ -53,7 +53,7 @@ const replySchema = mongoose.Schema({
 
 const ticketSchema = mongoose.Schema({
     ticketId:{
-        type:String,
+        type:Number,
         required:true,
     },
 

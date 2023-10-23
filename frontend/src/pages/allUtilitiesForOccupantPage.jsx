@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AllUtility from '../components/utilitiesForOccupant';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import Sidebar from '../components/sideBar';
+import orderStyles from '../styles/orderStyles.module.css';
 import { RiWaterFlashFill } from 'react-icons/ri';
 import sideBarStyles from '../styles/sideBarStyles.module.css';
 import billStyles from '../styles/billStyles.module.css';
@@ -51,8 +52,8 @@ const AllUtilitiesPage = () =>{
                       
                         <Row className='mt-4'>
                                 <Col className="mb-1">
-                                    <Card className={CreateBoardingStyles.card}>
-                                        <CardContent style={{padding:'25px', textAlign:'center'}}>
+                                    <Card style={{borderRadius:'6px'}}className={orderStyles.card}>
+                                        <CardContent style={{padding:'1px', textAlign:'center',color:'white'}}>
                                             <h4 style={{margin:0}}><b>All Utilities</b></h4>
                                         </CardContent>
                                     </Card>

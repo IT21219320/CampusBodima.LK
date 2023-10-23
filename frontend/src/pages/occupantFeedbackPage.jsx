@@ -366,12 +366,12 @@ const selectionRange = {
                                 <Modal.Header closeButton>
                                   <Modal.Title>Delete</Modal.Title>
                                 </Modal.Header>
-                                <Modal.Body>Do you won't to conform</Modal.Body>
+                                <Modal.Body>Do you want to confirm?</Modal.Body>
                                 <Modal.Footer>
-                                  <Button variant="secondary" onClick={handleClose}>
+                                  <Button style={{color:'blue'}} variant="secondary" onClick={handleClose}>
                                     Cancel
                                   </Button>
-                                  <Button variant="primary" onClick={() => handleDeleteFeedback(feedback._id)}>
+                                  <Button style={{color:'red'}} variant="primary" onClick={() => handleDeleteFeedback(feedback._id)}>
                                     Delete
                                   </Button>
                                 </Modal.Footer>
