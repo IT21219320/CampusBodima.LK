@@ -66,11 +66,14 @@ const stylesBalances = {
     margin: "3%",
     backgroundColor: "#ccddff",
     padding: "20px 20px",
+
 }
 
 const styleTopics = {
+
     fontFamily: "monospace",
     fontSize: "larger",
+
 }
 
 
@@ -169,6 +172,8 @@ const OwnerPaymentDash = () => {
     }, [boardingID]);
 
 
+    //calc 
+
     return (
         <>
             <Sidebar />
@@ -188,8 +193,7 @@ const OwnerPaymentDash = () => {
                     </Row>
                     <Row>
                         <Col>
-                            <p style={{ margin: '6% 0px 0px 6%', fontWeight: 'bold', fontSize: 'x-large', float: 'left' }}>Select boarding to filter </p>
-
+                  
                             <FormControl size="small" style={{ width: '25%', margin: '6% 5% 0px 5%' }}>
                                 <InputLabel id="demo-simple-select-label" >Boarding</InputLabel>
                                 <Select

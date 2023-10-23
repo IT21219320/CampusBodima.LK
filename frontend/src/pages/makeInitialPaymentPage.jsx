@@ -46,7 +46,7 @@ function MakeInitialPaymentPage() {
 
   return (
     <>
-      <div style={{ width: '100%' }}>
+      <div style={{ width: '100%',    marginTop: '120px' }}>
         <Header />
         <div style={{ width: '100%' }}>
           <div className={paymentScreenStyles.stepperDiv}>

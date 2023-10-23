@@ -52,7 +52,7 @@ const ReserveAnnexPage = () =>{
     <>
     <div style={{width:'100%'}}>
     <Header />
-      <div style={{width:'100%'}}>
+      <div style={{width:'100%', marginTop: '120px'}}>
         <div className={paymentScreenStyles.stepperDiv}>
           <Stepper activeStep={activeStep}>
               <Step>
