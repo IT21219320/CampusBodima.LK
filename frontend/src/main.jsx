@@ -98,83 +98,81 @@ const router = createBrowserRouter(
       {/* Private Routes */}
       <Route path='' element={ <PrivateRoute /> }>
         <Route path='/profile' element={ <ProfilePage /> } />
-        
-
-        {/* Admin Routes */}
-        <Route path='' element={ <AdminRoute /> }>
-          <Route path='/admin/boardings' element={ <AdminVerifyBoardingPage /> } />
-          <Route path='/admin/feedbacks' element={ <AllFeedbacks /> } />
-        </Route>
-
-        {/* Owner Routes */}
-        <Route path='' element={ <OwnerRoute /> }>
-          <Route path='/owner/boardings' element={ <OwnerBoardingPage /> } />
-          <Route path='/owner/boardings/add' element={ <RegisterBoardingPage /> } />
-          <Route path='/owner/boardings/:boardingId/occupants' element={ <OwnerBoardingOccupants /> } />
-          <Route path='/owner/boardings/:boardingId/rooms' element={ <OwnerBoardingRoomPage /> } />
-          <Route path='/owner/boardings/:boardingId/edit' element={ <EditBoardingPage /> } />
-          <Route path='/owner/boardings/:boardingId/rooms/:roomId/occupants' element={ <OwnerBoardingRoomOccupants /> } />
-          <Route path='/owner/boardings/:boardingId/:boardingName/rooms/:roomNo/add' element={ <AddBoardingRoomPage /> } />
-          <Route path='/owner/boardings/:boardingId/:boardingName/rooms/:roomId/edit' element={ <EditBoardingRoomPage /> } />
-
-          <Route path='/owner/reservations/' element={<OwnerAllReservarions />} />
-
-          <Route path='/owner/payment/' element={<OwnerPaymentDash />} />
-
-          <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
-          <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
-          <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
-
-          <Route path='/owner/ticket' element={<OwnerTicketsPage />} />
-          <Route path='/owner/ticket/:ticketId' element={<OwnerTicketThreadPage />} />
-
-          <Route path='/owner/utility/' element={<AllUtilitiesPage />} />
-          <Route path='/owner/utility/update/:boardingId/:utilityType/:utilityId' element={<UpdateUtilitiesPage />} />
-          <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
-        </Route>
-
-        {/* Inventory Manager Routes */}
-        <Route path='' element={<KitchenRoute />}>
-          <Route path='/kitchen/ingredient' element={ <ManagerIngredientPage /> } />
-          <Route path='/kitchen/ingredient/add' element={ <AddIngredientPage /> } />
-          <Route path='/kitchen/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
-          
-          <Route path='/kitchen/menu/' element={<MenuForm />} />
-
-          <Route path='/kitchen/orders/' element={<OwnerOrderList />} />
-        </Route>
-
-        {/* Occupant Routes */}
-        <Route path='' element={ <OccupantRoute /> }>
-          <Route path='/occupant/ticket' element={<OccupantTicketsPage />} />
-          <Route path='/occupant/ticket/:ticketId' element={<OccupantTicketThreadPage />} />
-          <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
-          <Route path='/occupant/ticket/update/:ticketId' element={<UpdateMainTicketPage />} />
-
-          <Route path='/occupant/order/' element={<Orders />} />
-          <Route path='/occupant/order/orderList/updateOrder/:oId' element={<UpdateOrder />} />
-
-          <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
-          <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
-          <Route path='/occupant/makeMonthlyPayment/:bId/:amount/:payId' element={<MakeMonthlyPaymentPage />} />
-
-          <Route path='/occupant/reservations/reserve/:bId/:rId' element={<ReserveHostelPage />} />
-          <Route path='/occupant/reservations/reserve/:bId/' element={<ReserveAnnexPage />} />
-          <Route path='/occupant/reservations/confirm/' element={<ConfirmReservationPage />} />
-          <Route path='/occupant/boarding' element={<MyReservationPage />} />
-          <Route path='/occupant/boarding/join/:tokenHeader/:tokenPayload/:tokenSecret' element={ <VerifyOccupantEmailPage /> } />
-          
-          <Route path='/occupant/utility' element={<AllOccupantUtilitiesPage />} />
-
-          <Route path='/occupant/feedback' element={<OccupantFeedback />} />
-          <Route path='/occupant/feedback/create/:boardingId/:boardingName' element={<CreateFeedback />} />
-          <Route path='/occupant/feedback/update/:feedbackId/:boardingName' element={<UpdateFeedbackpage />} />
-          
-          
-        </Route>
       </Route>
 
-    </Route>
+      {/* Admin Routes */}
+      <Route path='' element={ <AdminRoute /> }>
+        <Route path='/admin/boardings' element={ <AdminVerifyBoardingPage /> } />
+        <Route path='/admin/feedbacks' element={ <AllFeedbacks /> } />
+      </Route>
+
+      {/* Owner Routes */}
+      <Route path='' element={ <OwnerRoute /> }>
+        <Route path='/owner/boardings' element={ <OwnerBoardingPage /> } />
+        <Route path='/owner/boardings/add' element={ <RegisterBoardingPage /> } />
+        <Route path='/owner/boardings/:boardingId/occupants' element={ <OwnerBoardingOccupants /> } />
+        <Route path='/owner/boardings/:boardingId/rooms' element={ <OwnerBoardingRoomPage /> } />
+        <Route path='/owner/boardings/:boardingId/edit' element={ <EditBoardingPage /> } />
+        <Route path='/owner/boardings/:boardingId/rooms/:roomId/occupants' element={ <OwnerBoardingRoomOccupants /> } />
+        <Route path='/owner/boardings/:boardingId/:boardingName/rooms/:roomNo/add' element={ <AddBoardingRoomPage /> } />
+        <Route path='/owner/boardings/:boardingId/:boardingName/rooms/:roomId/edit' element={ <EditBoardingRoomPage /> } />
+
+        <Route path='/owner/reservations/' element={<OwnerAllReservarions />} />
+
+        <Route path='/owner/payment/' element={<OwnerPaymentDash />} />
+
+        <Route path='/owner/ingredient' element={ <OwnerIngredientPage /> } />
+        <Route path='/owner/ingredient/add' element={ <AddIngredientPage /> } />
+        <Route path='/owner/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
+
+        <Route path='/owner/ticket' element={<OwnerTicketsPage />} />
+        <Route path='/owner/ticket/:ticketId' element={<OwnerTicketThreadPage />} />
+
+        <Route path='/owner/utility/' element={<AllUtilitiesPage />} />
+        <Route path='/owner/utility/update/:boardingId/:utilityType/:utilityId' element={<UpdateUtilitiesPage />} />
+        <Route path='/owner/utility/add' element={<AddUtilitiesPage />} />
+      </Route>
+
+      {/* Inventory Manager Routes */}
+      <Route path='' element={<KitchenRoute />}>
+        <Route path='/kitchen/ingredient' element={ <ManagerIngredientPage /> } />
+        <Route path='/kitchen/ingredient/add' element={ <AddIngredientPage /> } />
+        <Route path='/kitchen/ingredient/update/:boardingId/:ingredientId' element={ <UpdateIngredientPage /> } />
+        
+        <Route path='/kitchen/menu/' element={<MenuForm />} />
+
+        <Route path='/kitchen/orders/' element={<OwnerOrderList />} />
+      </Route>
+
+      {/* Occupant Routes */}
+      <Route path='' element={ <OccupantRoute /> }>
+        <Route path='/occupant/ticket' element={<OccupantTicketsPage />} />
+        <Route path='/occupant/ticket/:ticketId' element={<OccupantTicketThreadPage />} />
+        <Route path='/occupant/ticket/create' element={<CreateTicketPage />} />
+        <Route path='/occupant/ticket/update/:ticketId' element={<UpdateMainTicketPage />} />
+
+        <Route path='/occupant/order/' element={<Orders />} />
+        <Route path='/occupant/order/orderList/updateOrder/:oId' element={<UpdateOrder />} />
+
+        <Route path='/occupant/payment/' element={<OccupantPaymentDash />} />
+        <Route path='/occupant/makePayment/:bId' element={<MakeInitialPaymentPage />} />
+        <Route path='/occupant/makeMonthlyPayment/:bId/:amount/:payId' element={<MakeMonthlyPaymentPage />} />
+
+        <Route path='/occupant/reservations/reserve/:bId/:rId' element={<ReserveHostelPage />} />
+        <Route path='/occupant/reservations/reserve/:bId/' element={<ReserveAnnexPage />} />
+        <Route path='/occupant/reservations/confirm/' element={<ConfirmReservationPage />} />
+        <Route path='/occupant/boarding' element={<MyReservationPage />} />
+        <Route path='/occupant/boarding/join/:tokenHeader/:tokenPayload/:tokenSecret' element={ <VerifyOccupantEmailPage /> } />
+        
+        <Route path='/occupant/utility' element={<AllOccupantUtilitiesPage />} />
+
+        <Route path='/occupant/feedback' element={<OccupantFeedback />} />
+        <Route path='/occupant/feedback/create/:boardingId/:boardingName' element={<CreateFeedback />} />
+        <Route path='/occupant/feedback/update/:feedbackId/:boardingName' element={<UpdateFeedbackpage />} />
+        
+        
+      </Route>
+      </Route>
   )
 );
 

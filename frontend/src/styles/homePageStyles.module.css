@@ -32,6 +32,8 @@
     text-wrap: nowrap;
     display: flex;
     justify-content: center;
+    font-weight: bold;
+    color: #242745;
 }
 
 .animH1{
@@ -39,26 +41,33 @@
 }
 
 .doDivs{
-    padding: 10%;
+    padding: 5%;
     height: 95%;
-    border-radius: 10px;
-    box-shadow: 3px 6px 24px 1px gray;
-    transition: transform 0.5s ease;
+    border-radius: 3px;
+    transition: ease-in-out .2s;
+    border: 1px solid grey;
 }
 
 .doDivs:hover{
-    transform: scale(1.05);
-    
+    transform: translate(0px,-15px);
 }
 
 .doDivsimgDiv{
-    width:80%;
-    height:100px;
+    width:100%;
+    background-color: #daeeff;
 }
 
 .doDivP{
-    color: red;
+    color: rgb(62, 62, 62);
     font-family: Georgia;
     font-size: larger;
     text-decoration: none;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: left;
+}
+
+.welcBtns:hover{
+    transform: scale(1.03);
+    z-index: 1;
 }

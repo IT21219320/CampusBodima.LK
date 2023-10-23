@@ -107,18 +107,21 @@ const Header = () => {
                             <Button
                                 onClick={() => navigate('/')}
                                 sx={{ my: 2, px: 1, mx: 1, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
                                 Home
                             </Button>
                             <Button
                                 onClick={() => navigate('/')}
                                 sx={{ my: 2, px: 1, mx: 1, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
                                 About Us
                             </Button>
                             <Button
                                 onClick={() => navigate('/')}
                                 sx={{ my: 2, px: 1, mx: 1, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
                                 Contact Us
                             </Button>
@@ -136,18 +139,21 @@ const Header = () => {
                             <Button
                                 onClick={() => navigate('/')}
                                 sx={{ my: 2, px: 3, mx: 2, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
                                 Home
                             </Button>
                             <Button
                                 onClick={() => navigate('/')}
                                 sx={{ my: 2, px: 3, mx: 2, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
                                 About Us
                             </Button>
                             <Button
                                 onClick={() => navigate('/')}
                                 sx={{ my: 2, px: 3, mx: 2, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
                                 Contact Us
                             </Button>
@@ -191,11 +197,11 @@ const Header = () => {
                     :
                     
                     <Box sx={{ flexGrow: 0 }}>
-                        <Button onClick={() => navigate('/login')} sx={{ p: 0, color: "inherit", fontWeight:'inherit' }}>
+                        <Button onClick={() => navigate('/login')} className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} sx={{ p: 0, color: "inherit", fontWeight:'inherit' }}>
                             <FaSignInAlt />&nbsp; Sign In
                         </Button>
                         &nbsp; &nbsp; &nbsp;
-                        <Button onClick={() => navigate('/register')} sx={{ p: 0, color: "inherit", fontWeight:'inherit' }}>
+                        <Button onClick={() => navigate('/register')} className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} sx={{ p: 0, color: "inherit", fontWeight:'inherit' }}>
                             <FaSignOutAlt />&nbsp; Sign Up
                         </Button>
                     </Box>}
