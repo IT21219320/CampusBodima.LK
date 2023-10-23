@@ -38,8 +38,8 @@ const AddBoardingRoomPage = () => {
 
     const navigate = useNavigate();
 
-    const roomMarks = [{value: 1, label: '1'}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}, {value: 8}, {value: 9}, {value: 10}]
-    const bathMarks = [{value: 0, label: '0'}, {value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}, {value: 8}, {value: 9}, {value: 10}]
+    const roomMarks = [{value: 1, label: '1'}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}, {value: 8}, {value: 9}, {value: 10}, {value: 11, label: '10+'}]
+    const bathMarks = [{value: 0, label: '0'}, {value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}, {value: 8}, {value: 9}, {value: 10}, {value: 11, label: '10+'}]
     
 
     useEffect(() => {
@@ -242,7 +242,7 @@ const AddBoardingRoomPage = () => {
                                                                 valueLabelDisplay={noOfBeds > 1 ? 'on' : "auto"} 
                                                                 step={1} 
                                                                 min={1} 
-                                                                max={11} 
+                                                                max={10} 
                                                                 marks={roomMarks}
                                                                 style={{width:'95%'}}
                                                                 valueLabelFormat={sliderValueText} 
