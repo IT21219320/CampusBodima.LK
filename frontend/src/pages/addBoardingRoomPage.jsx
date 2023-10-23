@@ -168,8 +168,8 @@ const AddBoardingRoomPage = () => {
                         <Form onSubmit={submitHandler}>
                             <Row className='mt-4'>
                                 <Col className="mb-1">
-                                    <Card className={CreateBoardingStyles.card}>
-                                        <CardContent style={{padding:'25px', textAlign:'center'}}>
+                                    <Card className={`${CreateBoardingStyles.card} ${CreateBoardingStyles.cardHeading}`}>
+                                        <CardContent style={{padding:'18px', textAlign:'center'}}>
                                             <h4 style={{margin:0}}><b>Add Room</b></h4>
                                         </CardContent>
                                     </Card>
