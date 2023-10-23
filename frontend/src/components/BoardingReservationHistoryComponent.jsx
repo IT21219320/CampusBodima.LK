@@ -252,7 +252,7 @@ const BoardingReservationHistory = ({ bId }) => {
                 </>) : (
                     <>
                         <div ref={tabletRef}>
-                            <TableContainer component={Paper} style={{ marginTop: "30px" }}>
+                            <TableContainer component={Paper} style={{ marginTop: "30px"}}>
 
                                 <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
 

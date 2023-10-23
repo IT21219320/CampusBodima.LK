@@ -205,8 +205,11 @@ const MyReservationComponent = () => {
                     <center>
                       <h1 style={{ marginTop: '190px', fontFamily: 'cursive', color: '#afb5be' }}>
                         <p>Thank you for choosing us !!!</p>
-                        <p>Please wait until owner approves the boarding</p>
-                      </h1>
+                        </h1>
+
+                        <h3 style={{ marginTop: '20px', fontFamily: 'cursive', color: 'rgb(125 131 139)' }}>
+                        <p>You will be notified by a mail when the owner approves your reservation</p>
+                        </h3>
                     </center>
                   </>
                 ) : myReservation.paymentStatus === "Pending" && myReservation.status === "Approved" ? (
@@ -298,7 +301,7 @@ const MyReservationComponent = () => {
                             <Row style={{ marginTop: '20px' }}>
 
                               
-
+                              <Col>
                                 <Button variant="contained" size="small" style={{ backgroundColor: '#0a9954', borderRadius: '20px', width: '195px' , float: "left"}} onClick={handleClickOpen}>Update</Button>
 
                                 <Dialog open={open} onClose={handleClose}>
@@ -343,8 +346,10 @@ const MyReservationComponent = () => {
                                   </DialogActions>
 
                                 </Dialog>
+                                </Col>
+                                <Col>
 
-                                <Button variant="contained" size="small" style={{ backgroundColor: '#d86872', borderRadius: '20px', width: '195px' , marginLeft:'30px'}} onClick={handleDltClickOpen}>Delete</Button>
+                                <Button variant="contained" size="small" style={{ backgroundColor: '#d86872', borderRadius: '20px', width: '195px' }} onClick={handleDltClickOpen}>Delete</Button>
 
                                 <Dialog open={dltOpen} onClose={handleDltClose}>
 
@@ -380,7 +385,7 @@ const MyReservationComponent = () => {
 
                                 </Dialog>
 
-                    
+                                </Col>
 
                             </Row>
 

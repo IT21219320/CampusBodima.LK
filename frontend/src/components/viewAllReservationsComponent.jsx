@@ -19,6 +19,8 @@ import { GridViewRounded, GetAppRounded } from '@mui/icons-material';
 import { useGetBoardingReservationsMutation } from '../slices/reservationsApiSlice';
 import { useGetBoardingBybIdMutation } from '../slices/reservationsApiSlice';
 import { useParams } from 'react-router-dom';
+import { useRef } from 'react';
+import jsPDF from 'jspdf';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -125,6 +127,94 @@ const ViewAllReservations = ({ bId }) => {
     loadData();
   }, [bId]);
 
+
+  const tabletRef = useRef();
+
+  const exportToPDF = () => {
+    ;
+
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+
+    // company details
+    const companyDetails = {
+      name: "CampusBodima",
+      address: "138/K, Ihala Yagoda, Gampaha",
+      phone: "071-588-6675",
+      email: "info.campusbodima@gmail.com",
+      website: "www.campusbodima.com"
+    };
+
+    // logo
+    doc.addImage("/logo2.png", "PNG", 10, 10, 50, 30);
+
+    // Show company details
+    doc.setFontSize(15);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${companyDetails.name}`, 200, 20, { align: "right", style: "bold" });
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${companyDetails.address}`, 200, 25, { align: "right" });
+    doc.text(`${companyDetails.phone}`, 200, 29, { align: "right" });
+    doc.text(`${companyDetails.email}`, 200, 33, { align: "right" });
+    doc.text(`${companyDetails.website}`, 200, 37, { align: "right" });
+
+    // horizontal line
+    doc.setLineWidth(0.5);
+    doc.line(10, 45, 200, 45);
+
+    // Report details
+    doc.setFontSize(8);
+    doc.text(`Report of Reservation List`, 20, 55);
+    doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
+    doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
+
+
+    // Add report title
+    doc.setFontSize(12);
+    doc.text("Reservation List", 85, 70);
+
+
+    // table headers
+    let headers = ["Reservation ID" , "First Name", "Last Name", "Email", "Date", "Duration", "Room Number"];
+
+    // Map the admin data to table rows
+
+    const data = sortedReservationsByMonth.map((reservation) => [
+
+      reservation.Id,
+      reservation.firstName,
+      reservation.lastName,
+      reservation.email,
+      new Date(reservation.Date).toDateString(),
+      reservation.Duration,
+      reservation.RoomNo,
+
+    ]);
+
+
+    // table styles
+    const styles = {
+      halign: "center",
+      valign: "middle",
+      fontSize: 9,
+    };
+
+    // Add the table to the PDF document
+    doc.autoTable({
+      head: [headers],
+      body: data,
+      styles,
+      margin: { top: 90 },
+      startY: 75
+    });
+
+
+    // Save the PDF
+    doc.save("Reservations.pdf");
+
+  };
+
   return (
     <>
       <Row>
@@ -148,6 +238,7 @@ const ViewAllReservations = ({ bId }) => {
         </Col>
 
         <Col>
+        
           <div style={{ width: '130px', float: 'left', marginTop: '17px', marginLeft: '200px' }}>
             <Box sx={{ minWidth: 120 }}>
               <FormControl fullWidth size='small'>
@@ -179,7 +270,7 @@ const ViewAllReservations = ({ bId }) => {
           </div>
 
           <div>
-            <Button variant="contained" style={{ background: '#4c4c4cb5', float: 'right', marginTop: '17px' }} /*onClick={exportToPDF} */>Export<GetAppRounded /></Button>
+            <Button variant="contained" style={{ background: '#4c4c4cb5', float: 'right', marginTop: '17px' }} onClick={exportToPDF} >Export<GetAppRounded /></Button>
           </div>
 
         </Col>
@@ -192,102 +283,118 @@ const ViewAllReservations = ({ bId }) => {
           </div>
         </>) : (
         <>
-          <TableContainer component={Paper} style={{ marginTop: "30px" }}>
-            <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-              <TableHead style={{ backgroundColor: "#242745" }}>
-                <TableRow>
-                  <TableCell style={{ color: "#ffffff" }}>Reservation ID</TableCell>
-                  <TableCell align="right" style={{ color: "#ffffff" }}>First Name</TableCell>
-                  <TableCell align="right" style={{ color: "#ffffff" }}>Second Name</TableCell>
-                  <TableCell align="right" style={{ color: "#ffffff" }}>Email</TableCell>
-                  <TableCell align="right" style={{ color: "#ffffff" }}>Date</TableCell>
-                  <TableCell align="right" style={{ color: "#ffffff" }}>Duration</TableCell>
-                  {console.log(boardingId.boardingType)}
-                  {boardingId.boardingType === 'Hostel' ? (
-                    <TableCell align="right" style={{ color: "#ffffff" }}>Room Number</TableCell>
-                  ) : (
-                    <>
-                      <TableCell align="right" style={{ color: "#ffffff" }}>Duration</TableCell>
-                    </>)}
 
-                </TableRow>
-              </TableHead>
-              <TableBody style={{ backgroundColor: '#858bc72b' }}>
+          <div ref={tabletRef} >
 
-                {reservations.length > 0 ? (
-                  <>
-                    {filteredReservations.length > 0 ? (
+            <TableContainer component={Paper} style={{ marginTop: "30px" }}>
 
+              <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+
+                <TableHead style={{ backgroundColor: "#242745" }}>
+
+                  <TableRow>
+
+                    <TableCell style={{ color: "#ffffff" }}>Reservation ID</TableCell>
+                    <TableCell align="right" style={{ color: "#ffffff" }}>First Name</TableCell>
+                    <TableCell align="right" style={{ color: "#ffffff" }}>Last Name</TableCell>
+                    <TableCell align="right" style={{ color: "#ffffff" }}>Email</TableCell>
+                    <TableCell align="right" style={{ color: "#ffffff" }}>Date</TableCell>
+                    <TableCell align="right" style={{ color: "#ffffff" }}>Duration</TableCell>
+                    {console.log(boardingId.boardingType)}
+                    {boardingId.boardingType === 'Hostel' ? (
+                      <TableCell align="right" style={{ color: "#ffffff" }}>Room Number</TableCell>
+                    ) : (
                       <>
-                        {sortedReservationsByMonth.length > 0 ? (
-                          <>
-                            {sortedReservationsByMonth.map((reservation) => (
-                              <TableRow
-                                key={reservation.Id}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                              >
-                                <TableCell component="th" scope="row">
-                                  {reservation.Id}
-                                </TableCell>
+                        <TableCell align="right" style={{ color: "#ffffff" }}></TableCell>
+                      </>)}
 
-                                <TableCell align="right">{reservation.firstName}</TableCell>
-                                <TableCell align="right">{reservation.lastName}</TableCell>
-                                <TableCell align="right">{reservation.email}</TableCell>
-                                <TableCell align="right">{new Date(reservation.Date).toDateString()}</TableCell>
-                                <TableCell align="right">{reservation.Duration}</TableCell>
-                                {reservation.bType === 'Hostel' && (
-                                  <TableCell align="right">{reservation.RoomNo}</TableCell>
-                                )}
+                  </TableRow>
+
+                </TableHead>
+
+                <TableBody style={{ backgroundColor: '#858bc72b' }}>
+
+                  {reservations.length > 0 ? (
+                    <>
+                      {filteredReservations.length > 0 ? (
+
+                        <>
+                          {sortedReservationsByMonth.length > 0 ? (
+                            <>
+                              {sortedReservationsByMonth.map((reservation) => (
+                                <TableRow
+                                  key={reservation.Id}
+                                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                  <TableCell component="th" scope="row">
+                                    {reservation.Id}
+                                  </TableCell>
+
+                                  <TableCell align="right">{reservation.firstName}</TableCell>
+                                  <TableCell align="right">{reservation.lastName}</TableCell>
+                                  <TableCell align="right">{reservation.email}</TableCell>
+                                  <TableCell align="right">{new Date(reservation.Date).toDateString()}</TableCell>
+                                  <TableCell align="right">{reservation.Duration}</TableCell>
+                                  {reservation.bType === 'Hostel' && (
+                                    <TableCell align="right">{reservation.RoomNo}</TableCell>
+                                  )}
+
+                                </TableRow>
+                              ))
+                              }
+
+                            </>) : (
+                            <>
+                              <TableRow>
+
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No Reservations to display</TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
+                                <TableCell align="right">   </TableCell>
 
                               </TableRow>
-                            ))
-                            }
 
-                          </>) : (
-                          <>
-                            <TableRow>
-                              <TableCell align="right">   </TableCell>
-                              <TableCell align="right">   </TableCell>
-                              <TableCell align="right">   </TableCell>
-                              <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No Reservations to display</TableCell>
-                              <TableCell align="right">   </TableCell>
-                              <TableCell align="right">   </TableCell>
-                              <TableCell align="right">   </TableCell>
+                            </>)}
+                        </>) : (
+                        <>
+                          <TableRow style={{ color: 'rgb(255, 255, 255)' }}>
 
-                            </TableRow>
+                            <TableCell align="right">   </TableCell>
+                            <TableCell align="right">   </TableCell>
+                            <TableCell align="right">   </TableCell>
+                            <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No Reservations to display</TableCell>
+                            <TableCell align="right">   </TableCell>
+                            <TableCell align="right">   </TableCell>
+                            <TableCell align="right">   </TableCell>
 
-                          </>)}
-                      </>) : (
-                      <>
-                        <TableRow style={{ color: 'rgb(255, 255, 255)' }}>
-                          <TableCell align="right">   </TableCell>
-                          <TableCell align="right">   </TableCell>
-                          <TableCell align="right">   </TableCell>
-                          <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No Reservations to display</TableCell>
-                          <TableCell align="right">   </TableCell>
-                          <TableCell align="right">   </TableCell>
-                          <TableCell align="right">   </TableCell>
+                          </TableRow>
+                        </>)}
+                    </>) :
+                    (<>
+                      <TableRow>
 
-                        </TableRow>
-                      </>)}
-                  </>) :
-                  (<>
-                    <TableRow>
-                      <TableCell align="right">   </TableCell>
-                      <TableCell align="right">   </TableCell>
-                      <TableCell align="right">   </TableCell>
-                      <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No Reservations to display</TableCell>
-                      <TableCell align="right">   </TableCell>
-                      <TableCell align="right">   </TableCell>
-                      <TableCell align="right">   </TableCell>
+                        <TableCell align="right">   </TableCell>
+                        <TableCell align="right">   </TableCell>
+                        <TableCell align="right">   </TableCell>
+                        <TableCell style={{ fontSize: '20px', fontFamily: 'cursive', color: '#64651d' }}>No Reservations to display</TableCell>
+                        <TableCell align="right">   </TableCell>
+                        <TableCell align="right">   </TableCell>
+                        <TableCell align="right">   </TableCell>
 
-                    </TableRow>
+                      </TableRow>
 
-                  </>)}
+                    </>)}
 
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableBody>
+
+              </Table>
+
+            </TableContainer>
+
+          </div>
         </>)}
 
     </>
