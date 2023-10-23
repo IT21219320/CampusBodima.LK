@@ -102,7 +102,7 @@ const CreateTicket = () => {
                         <Form onSubmit={submitHandler}>
                             <Row>
                                 <Col>
-                                    <Card variant="outlined" className={CreateTicketStyles.card}>
+                                    <Card variant="outlined" className={CreateTicketStyles.card1}>
                                         <CardContent style={{padding:'18px'}}>
                                             <h4 style={{margin:0}}>Create Tickets</h4>
                                         </CardContent>

@@ -17,6 +17,8 @@ import { toast } from 'react-toastify';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import MailIcon from '@mui/icons-material/Mail';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import storage from "../utils/firebaseConfig";
+import { ref, getDownloadURL } from "firebase/storage";
 
 import {
   useGetMyReservationMutation,
@@ -64,9 +66,10 @@ const MyReservationComponent = () => {
   const [deleteReservation] = useDeleteReservationMutation();
   const [getToDo] = useGetToDoByOccIdMutation();
 
-  const [myReservation, setMyReservation] = useState();
-  const [updateS, setUpdateS] = useState()
-  const [deleteS, setDeleteS] = useState();
+  const [myReservation, setMyReservation] = useState('');
+  const [imageLink, setImageLink] = useState('');
+  const [updateS, setUpdateS] = useState('')
+  const [deleteS, setDeleteS] = useState('');
   const [todo, setTodo ] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -83,7 +86,18 @@ const MyReservationComponent = () => {
       const res = await getMyReservation({ _id: userInfo._id }).unwrap();
       setMyReservation(res.myDetails);
       
-      console.log(res.myDetails);
+      console.log(res.myDetails.image);
+
+      let link;
+      try {
+        link = await getDownloadURL(ref(storage, res.myDetails.image))
+      } catch (error) {
+        console.error('Error updating image URLs:', error);
+        setLoading(false);
+      }
+
+      setImageLink(link);
+
       setLoading(false)
 
     } catch (error) {
@@ -231,7 +245,9 @@ const MyReservationComponent = () => {
                       <Col style={{ marginLeft: '10px', marginRight: '10px' }}>
 
                         <Row>
-                          <div style={myStyle}> </div>
+                          <div style={{boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '15px', marginTop: '20px', height: '396px'}}>
+                            <img style={{height:'100%' , width:'100%', objectFit:'contain'}} src={imageLink} /> 
+                          </div>
                         </Row>
 
                         <Row>

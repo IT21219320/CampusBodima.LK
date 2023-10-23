@@ -7,6 +7,7 @@ import { NavigateNext } from '@mui/icons-material';
 import CreateBoardingStyles from '../styles/createBoardingStyles.module.css';
 import { toast } from 'react-toastify';
 import { useAddUtilitiesMutation } from '../slices/utilitiesApiSlice';
+import orderStyles from '../styles/orderStyles.module.css';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -60,9 +61,9 @@ const handleUtilityFormSubmit = async (event) => {
                       
                         <Row className='mt-4'>
                                 <Col className="mb-1">
-                                <Card className={BillStyles.cardHeader}>
-                                        <CardContent style={{padding:'10px', textAlign:'center',color:'white'}}>
-                                            <h4 style={{margin:0,fontSize:'20px'}}><b>Add Utilities</b></h4>
+                                <Card className={orderStyles.card} style={{borderRadius:'6px'}}>
+                                        <CardContent style={{padding:'1px', textAlign:'center',color:'white'}}>
+                                            <h4 style={{margin:0,fontSize:'25px'}}><b>Add Utilities</b></h4>
                                         </CardContent>
                                     </Card>
                                 </Col>
