@@ -242,7 +242,7 @@ const AddBoardingRoomPage = () => {
                                                                 valueLabelDisplay={noOfBeds > 1 ? 'on' : "auto"} 
                                                                 step={1} 
                                                                 min={1} 
-                                                                max={11} 
+                                                                max={10} 
                                                                 marks={roomMarks}
                                                                 style={{width:'95%'}}
                                                                 valueLabelFormat={sliderValueText} 
