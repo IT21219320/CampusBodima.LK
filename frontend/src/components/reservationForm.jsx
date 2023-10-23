@@ -31,7 +31,14 @@ const ReservationForm = () => {
     const { bId, rId } = useParams();
     
     const { userInfo } = useSelector((state) => state.auth);
-
+    
+    useEffect (()=>{
+        if(userInfo.gender != ''){
+            setGender(userInfo.gender);
+    
+        }
+    },[])
+    
     const navigate = useNavigate();
     
     const submitHandler = async (e) => {
@@ -90,6 +97,7 @@ const ReservationForm = () => {
                     <Row className={reserveFormStyle.email}>
                         <TextField id="standard-basic" label="Email" value={userInfo.email} variant="standard" InputProps={{ readOnly: true, }} />
                     </Row>
+                    
 
                     <Row className={reserveFormStyle.Gender}>
                         <FormControl>
@@ -102,8 +110,8 @@ const ReservationForm = () => {
                                 onChange={(e) => setGender(e.target.value)}
                                 required
                             >
-                                <FormControlLabel value="Female" control={<Radio />} label="Female" />
-                                <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                                <FormControlLabel value="Female" control={<Radio disabled={userInfo.gender == null}/>} label="Female" />
+                                <FormControlLabel value="Male" control={<Radio disabled={userInfo.gender == null}/>} label="Male" />
 
                             </RadioGroup>
                         </FormControl>
