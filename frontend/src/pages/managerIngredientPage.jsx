@@ -16,7 +16,8 @@ import Sidebar from '../components/sideBar';
 import ownerStyles from '../styles/ownerStyles.module.css';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import ingredientStyles from '../styles/ingredientStyles.module.css'; 
-import ownerAllTicketsStyles from '../styles/ownerAllTicketsStyles.module.css'; 
+import ownerAllTicketsStyles from '../styles/ownerAllTicketsStyles.module.css';
+import orderStyles from '../styles/orderStyles.module.css'; 
 
 import AllIngredients from "../components/allIngredientsComponent";
 import ReduceinventoryPage from "../components/reduceinventoryComponent";
@@ -83,12 +84,12 @@ const managerIngredientPage = () => {
                      
                         <Row className='mt-3'>
                             <Col className="mb-3" xs={12} md={12}>
-                                <Row>
+                                
                                     <Row>
                                         <Col>
-                                            <Card variant="outlined" className={ownerAllTicketsStyles.card}>
+                                            <Card variant="outlined" style={{padding: '3px',borderRadius:'6px'}}className={orderStyles.card}>
                                                 <CardContent style={{ padding: '3px', important: 'true'}}>
-                                                    <h1 style={{ fontSize: '40px', color: '#685DD8', textAlign: 'center'}}>
+                                                    <h1 style={{ fontSize: '40px', color: 'white', textAlign: 'center'}}>
                                                         Inventory
                                                     </h1>
                                                 </CardContent>
@@ -123,7 +124,7 @@ const managerIngredientPage = () => {
                                             </Box>
                                         </Col> 
                                    </Row>
-                                </Row>
+                                
                                 <Row>
                                    <Col> 
                                         <Tabs defaultActiveKey="Ingredients"  id="uncontrolled-tab-example" className="mb-3" onSelect={(k) => setActiveTab(k)}>
