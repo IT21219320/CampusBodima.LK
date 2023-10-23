@@ -60,6 +60,11 @@ const Header = () => {
     useEffect(() => {
         if(activeRoute == '/'){
             document.getElementById("main").addEventListener("scroll", handleScroll);
+            if (document.getElementById("main").scrollTop > 10) {
+                setIsSticky(true);
+            } else {
+                setIsSticky(false);
+            }
         }
         else{
             setIsSticky(true)
@@ -79,7 +84,11 @@ const Header = () => {
             <Container maxWidth="lg">
                 <Toolbar disableGutters>
                     <Box sx={{display: { xs: "none", md: "flex", cursor:'pointer' }}}>
-                        <img src="/logo3.png" width='100px' onClick={() => navigate('/')} />
+                        {isSticky? 
+                            <img src="/logo3.png" width='100px' onClick={() => navigate('/')}/> 
+                        :
+                            <img src="/logo2.png" width='100px' onClick={() => navigate('/')}/> 
+                        }
                     </Box>
 
                     <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -97,44 +106,48 @@ const Header = () => {
                             <Offcanvas.Body>
                             <Button
                                 onClick={() => navigate('/')}
-                                sx={{ my: 2, px: 1, mx: 1, color: "white", display: "block" }}
+                                sx={{ my: 2, px: 1, mx: 1, color: "inherit", fontWeight:'inherit', display: "block" }}
                             >
                                 Home
                             </Button>
                             <Button
                                 onClick={() => navigate('/')}
-                                sx={{ my: 2, px: 1, mx: 1, color: "white", display: "block" }}
+                                sx={{ my: 2, px: 1, mx: 1, color: "inherit", fontWeight:'inherit', display: "block" }}
                             >
                                 About Us
                             </Button>
                             <Button
                                 onClick={() => navigate('/')}
-                                sx={{ my: 2, px: 1, mx: 1, color: "white", display: "block" }}
+                                sx={{ my: 2, px: 1, mx: 1, color: "inherit", fontWeight:'inherit', display: "block" }}
                             >
                                 Contact Us
                             </Button>
                             </Offcanvas.Body>
                         </Offcanvas>
                     </Box>
-                    <Box sx={{display: { xs: "flex", md: "none", cursor:'pointer' }}} style={{width:'100%', justifyContent:'center'}}>
-                        <img src="/logoBig2.png" width='200px' onClick={() => navigate('/')} />
+                    <Box sx={{display: { xs: "flex", md: "none", cursor:'pointer' }}} style={{width:'100%', justifyContent:'center'}}>                        
+                        {isSticky? 
+                            <img src="/logoBig2.png" width='150px' onClick={() => navigate('/')}/> 
+                        :
+                            <img src="/logoBig1.png" width='150px' onClick={() => navigate('/')}/> 
+                        }
                     </Box>
                     <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent:'center' }}>
                             <Button
                                 onClick={() => navigate('/')}
-                                sx={{ my: 2, px: 3, mx: 2, color: "white", display: "block" }}
+                                sx={{ my: 2, px: 3, mx: 2, color: "inherit", fontWeight:'inherit', display: "block" }}
                             >
                                 Home
                             </Button>
                             <Button
                                 onClick={() => navigate('/')}
-                                sx={{ my: 2, px: 3, mx: 2, color: "white", display: "block" }}
+                                sx={{ my: 2, px: 3, mx: 2, color: "inherit", fontWeight:'inherit', display: "block" }}
                             >
                                 About Us
                             </Button>
                             <Button
                                 onClick={() => navigate('/')}
-                                sx={{ my: 2, px: 3, mx: 2, color: "white", display: "block" }}
+                                sx={{ my: 2, px: 3, mx: 2, color: "inherit", fontWeight:'inherit', display: "block" }}
                             >
                                 Contact Us
                             </Button>
@@ -178,12 +191,12 @@ const Header = () => {
                     :
                     
                     <Box sx={{ flexGrow: 0 }}>
-                        <Button onClick={() => navigate('/login')} sx={{ p: 0, color:'white' }}>
-                            <FaSignInAlt /> Sign In
+                        <Button onClick={() => navigate('/login')} sx={{ p: 0, color: "inherit", fontWeight:'inherit' }}>
+                            <FaSignInAlt />&nbsp; Sign In
                         </Button>
-                        &nbsp; &nbsp;
-                        <Button onClick={() => navigate('/register')} sx={{ p: 0, color:'white' }}>
-                            <FaSignOutAlt /> Sign Up
+                        &nbsp; &nbsp; &nbsp;
+                        <Button onClick={() => navigate('/register')} sx={{ p: 0, color: "inherit", fontWeight:'inherit' }}>
+                            <FaSignOutAlt />&nbsp; Sign Up
                         </Button>
                     </Box>}
                 </Toolbar>
