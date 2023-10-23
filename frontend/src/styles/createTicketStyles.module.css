@@ -1,3 +1,18 @@
+.card1{
+    margin-top: 10px;
+    box-shadow: 2px 1px 10px -5px black;
+    height: 60px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #0057a0, #242745,#0057a0);
+    border-radius: 10px; 
+    color: white !important;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    
+}
+
+
 .card{
     box-shadow: 5px 5px 10px #0000002b !important;
     margin-top: 22px;  
