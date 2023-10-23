@@ -210,8 +210,9 @@ const AddIngredientPage = () => {
                               ></Form.Control>
                             </Form.Group>
                             
+                            <Form.Label>Measurement</Form.Label>
                             <Box sx={{ minWidth: 120 }}>
-                              <FormControl fullWidth>
+                              <FormControl fullWidth size='small'>
                                   <InputLabel id="demo-simple-select-label">Measurement</InputLabel>
                                   <Select
                                     labelId="demo-simple-select-label"
