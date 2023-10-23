@@ -281,7 +281,7 @@ const UpdateUtilitiesPage = ({ }) => {
               <form onSubmit={handleUtilityFormSubmit}>
                 <Row className='mt-4'>
                   <Col md={7}>
-                    <Card className={CreateBoardingStyles.card}>
+                    <Card className={BillStyles.card}>
                       <CardContent style={{ padding: '25px' }}>
                         <div><Row>
 
@@ -378,7 +378,7 @@ const UpdateUtilitiesPage = ({ }) => {
                     </Card>
                   </Col>
                   <Col md={5}>
-                    <Card className={CreateBoardingStyles.card} >
+                    <Card className={BillStyles.card}>
                       <CardContent style={{ padding: '25px' }}>
 
                         <Form.Label>Select Occupants:</Form.Label>
