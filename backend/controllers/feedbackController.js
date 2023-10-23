@@ -61,13 +61,13 @@ const createFeedback = asyncHandler(async (req, res) => {
       if(feedback){
         // Send email to each occupant with per occupant cost
         const message = `<p><b>Hello ${boarding.owner.firstName},</b><br><br> 
-                            feedback:<br><br>
-                            ${feedback.description}
-                            ${feedback.boardingId.boardingName}
-                            Rating ${feedback.rating}"<br><br>
-                            Thank you for choosing CampusBodima!<br><br>
-                            Best wishes,<br>
-                            The CampusBodima Team</p>`
+        Feedback for ${feedback.boardingId.boardingName}:<br><br>
+        Description: ${feedback.description}<br>
+        Rating: ${feedback.rating}<br><br>
+        Thank you for choosing CampusBodima!<br><br>
+        Best wishes,<br>
+        The CampusBodima Team
+        </p>`
         
         sendMail(ownerEmail,message,"Your Boarding Feedback");
         res.status(201).json({ message: "feedback and rating Sent!"});
@@ -198,42 +198,28 @@ const getFeedbackByBoardingId = asyncHandler(async (req, res) => {
 
 
   const getAllFeedbacks = asyncHandler(async (req, res) => {
-
     const startDate = new Date(req.body.startDate);
     const endDate = new Date(req.body.endDate);
     const date = req.body.date;
-  
-  
+    const searchQuery = req.body.searchQuery;
+
     endDate.setHours(23, 59, 59, 999);
+
     try {
-        // Extract the search query parameter from the request object
-        const { searchQuery } = req.query;
-        
-        let feedback;
+        const feedback = await Feedback.find({ 
+          ...(date !== 'all' ? { updatedAt: { $gte: new Date(startDate), $lte: new Date(endDate) } } : {}), 
+          description: { $regex: searchQuery, $options: 'i' },
+        }).populate('boardingId');
 
         
 
-        // If there is a search query, fetch feedbacks based on the 'description' field
-        if (searchQuery) {
-            feedback = await Feedback.find({ description: { $regex: new RegExp(searchQuery, 'i') },
-          
-          })
-                .populate('boardingId');
-        } else {
-            // If no search query, fetch all feedbacks
-            feedback = await Feedback.find().populate('boardingId');
-        }
-
-        if (feedback && feedback.length > 0) {
             res.status(200).json({ feedback });
-        } else {
-            res.status(404).json({ error: 'Feedback not found' });
-        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to fetch feedback.' });
     }
 });
+
 
 
 

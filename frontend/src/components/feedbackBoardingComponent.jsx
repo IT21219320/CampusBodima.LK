@@ -72,7 +72,8 @@ const FeedbackBoarding = ({ boardingId }) => {
           </Carousel>
           
       ) : (
-        <div>No feedback available</div>
+        <div style={{fontfamily: 'Arial' ,fontsize: '18px', color: '#3498db', textalign: 'center', padding: '20px', backgroundcolor: '#ecf0f1', borderradius: '10px', boxshadow: '0 4px 8px rgba(0, 0, 0, 0.2)'}}>No feedback available</div>
+
       )}
     </div>
   );

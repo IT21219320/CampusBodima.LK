@@ -109,16 +109,16 @@ const AllUtilitiesPage = () =>{
                       
                         <Row className='mt-4'>
                                 <Col className="mb-1">
-                                    <Card className={CreateBoardingStyles.card}>
-                                        <CardContent style={{padding:'25px', textAlign:'center'}}>
-                                            <h4 style={{margin:0}}><b>All Utilities</b></h4>
+                                    <Card className={BillStyles.cardHeader}>
+                                        <CardContent style={{padding:'10px', textAlign:'center',color:'white'}}>
+                                            <h4 style={{margin:0,fontSize:'20px'}}><b>All Utilities</b></h4>
                                         </CardContent>
                                     </Card>
                                 </Col>
                             </Row>
                             <Row className='mt-3'>
                                     <Col className="ml-5">
-                                    <FormControl sx={{ m: 1, width: 300 }}>
+                                    <FormControl sx={{ m: 1, width: 300 }}size="small">
                              <InputLabel id="boarding-name-label"> Boarding Name </InputLabel>
                                  <Select className={BillStyles.select}
                                       labelId="demo-simple-select-label"
@@ -138,7 +138,7 @@ const AllUtilitiesPage = () =>{
                              </FormControl>
                                    </Col>
                                     <Col className="ml-5">
-                                  <FormControl sx={{ m: 1, width: 300 }}>
+                                  <FormControl sx={{ m: 1, width: 300 }}size="small">
                                     <InputLabel id="occupant-name-label"> Occupant Name </InputLabel>
                                     <Select
                                       className={BillStyles.select}
@@ -149,7 +149,7 @@ const AllUtilitiesPage = () =>{
                                       onChange={(e) => handleOccupantNameChange(e)}// Update selectedOccupant state
                                     >
                                       
-                                      <MenuItem value="">All</MenuItem>
+                                      <MenuItem value=''>All</MenuItem>
 
                                       {occupantData.map((occupantName,index) => (
                                         <MenuItem key={index} value={occupantName._id}>
@@ -171,11 +171,12 @@ const AllUtilitiesPage = () =>{
                                 
                             <Row className='mt-4'>
                 <Col className="mb-1">
-                  <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                  <Box sx={{ width: '100%', bgcolor: 'HighlightText' }}>
                     <Tabs
                       value={utilityType}
                       onChange={handleChange}
                       centered
+                      
                     >
                       <Tab label="Electricity" value="Electricity" />
                       <Tab label="Water" value="Water" />

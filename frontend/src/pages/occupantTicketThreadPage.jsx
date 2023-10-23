@@ -317,7 +317,7 @@ const OccupantTicketThreadPage = () => {
                                             <Row>
                                                 <Col>
                                                     <pre className={ticketThreadPageStyles.description}>{ticket.description}</pre>
-                                                    {ticket.attachmentLink ? <ReactLink to={ticket.attachmentLink} target="_blank" download>Download Attatchment</ReactLink> : ''}
+                                                    {ticket.attachmentLink ? <ReactLink to={ticket.attachmentLink}  className={ticketThreadPageStyles.attachment} target="_blank" download>Download Attatchment</ReactLink> : ''}
                                                 </Col>
                                             </Row>
                                         </CardContent>
@@ -422,7 +422,7 @@ const OccupantTicketThreadPage = () => {
                                                                 <Row>
                                                                     <Col>
                                                                         <pre className={ticketThreadPageStyles.description}>{tkt.description}</pre>
-                                                                        {tkt.attachmentLink ? <ReactLink to={tkt.attachmentLink} target="_blank" download>Download Attatchment</ReactLink> : ''}
+                                                                        {tkt.attachmentLink ? <ReactLink to={tkt.attachmentLink} className={ticketThreadPageStyles.attachment} target="_blank" download>Download Attatchment</ReactLink> : ''}
                                                                     </Col>
                                                                     
                                                                 </Row>

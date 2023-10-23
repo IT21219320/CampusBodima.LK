@@ -17,6 +17,7 @@ import Sidebar from '../components/sideBar';
 import UtilityForm from '../components/utilityForm';
 import OtherUtilityForm from '../components/otherUtilityForm';
 import Water from '../components/waterForm';
+import  BillStyles from '../styles/billStyles.module.css';
 
 const AddUtilitiesPage = () =>{
 
@@ -53,14 +54,15 @@ const handleUtilityFormSubmit = async (event) => {
                             <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb" className="py-2 ps-3 mt-4 bg-primary-subtle">
                                 <Link underline="hover" key="1" color="inherit" href="/">Home</Link>,
                                 <Link underline="hover" key="2" color="inherit" href="/profile">{userInfo.userType == 'owner' ? 'Owner' : (userInfo.userType == 'occupant' ? 'Occupant' : userInfo.userType == 'admin' ? 'Admin' : userInfo.userType == 'kitchen' ? 'Kitchen' : <></>)}</Link>,
+                                <Link underline="hover" key="1" color="inherit" href="/owner/utility/">AllUtility</Link>
                                 <Typography key="3" color="text.primary">AddUtility</Typography>
                             </Breadcrumbs>
                       
                         <Row className='mt-4'>
                                 <Col className="mb-1">
-                                    <Card className={CreateBoardingStyles.card}>
-                                        <CardContent style={{padding:'25px', textAlign:'center'}}>
-                                            <h4 style={{margin:0}}><b>Add Utilities</b></h4>
+                                <Card className={BillStyles.cardHeader}>
+                                        <CardContent style={{padding:'10px', textAlign:'center',color:'white'}}>
+                                            <h4 style={{margin:0,fontSize:'20px'}}><b>Add Utilities</b></h4>
                                         </CardContent>
                                     </Card>
                                 </Col>

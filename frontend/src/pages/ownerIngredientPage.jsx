@@ -13,6 +13,7 @@ import {
   useDeleteKitchenUserMutation,
   useGetBoardingManagerMutation,
 } from '../slices/ingredientsApiSlice';
+import ownerAllTicketsStyles from '../styles/ownerAllTicketsStyles.module.css';
 import { toast } from 'react-toastify';
 
 //import SwipeableViews from 'react-swipeable-views';
@@ -234,16 +235,28 @@ const OwnerIngredientPage = () => {
 
           <Row className="mt-3">
             <Col className="mb-3" xs={12} md={12}>
+
               <Row>
                 <Col>
-                  <h1 style={{ fontSize: '50px', color: '#685DD8' }}>
-                    Inventory
-                  </h1>
+                  <Card variant="outlined" className={ownerAllTicketsStyles.card}>
+                    <CardContent style={{ padding: '3px', important: 'true'}}>
+                      <h1 style={{ fontSize: '40px', color: '#685DD8', textAlign: 'center'}}>
+                        Inventory
+                      </h1>
+                    </CardContent>
+                  </Card>
                 </Col>
-                <Col>
+              </Row> 
+
+              <Row> 
+                <Col lg={7}>
                 {boardingId ? 
                  <div>
-                  <p style={{ marginBottom: '5px' }}>Manager Email:</p>
+                  <Row>
+                  <Col lg={4} style={{ width: '24%', important: 'true', padding: '0px' }}> 
+                  <p style={{margin: '5% 16px',fontWeight: 'bold'}}>Manager Email:</p>
+                  </Col>
+                  <Col lg={6} style={{padding: '0px'}}>
                   <InputGroup className="mb-3" style={{ maxWidth: '310px' }}>
                     <Form.Control
                       aria-label="Recipient's username"
@@ -259,12 +272,16 @@ const OwnerIngredientPage = () => {
                       Update
                     </Button>
                   </InputGroup>
+                  </Col>
+                  </Row>
                  </div>
                   : ''}
                 </Col>
+                <Col>
+                </Col>
                 <Col className="ml-5">
                   <Box sx={{ minWidth: 120 }}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth size='small'>
                       <InputLabel id="demo-simple-select-label">
                         Boarding Name
                       </InputLabel>

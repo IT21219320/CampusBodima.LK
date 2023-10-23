@@ -68,6 +68,7 @@ const OwnerTicketThreadPage = () => {
                 try {
                     const Url = await getDownloadURL(ref(storage, ticket.attachment));
                     ticket = { ...ticket, attachmentLink: Url }; // Create a new object with the updated attachment
+                    console.log(ticket);
                 } catch (error) {
                     console.log(error);
                 }
@@ -92,6 +93,7 @@ const OwnerTicketThreadPage = () => {
                 }
 
                 ticket = { ...ticket, reply: updatedReplies }; // Update the ticket object with the updated replies
+                
             }
             setTicket(ticket);
             setIsLoading3(false)
@@ -372,7 +374,7 @@ const OwnerTicketThreadPage = () => {
                                             <Row>
                                                 <Col>
                                                     <pre className={ticketThreadPageStyles.description}>{ticket.description}</pre>
-                                                    {ticket.attachment ? <ReactLink to={ticket.attachment} target="_blank" download>Download Attatchment</ReactLink> : ''}
+                                                    {ticket.attachment ? <ReactLink to={ticket.attachmentLink} className={ticketThreadPageStyles.attachment} target="_blank" download>Download Attatchment</ReactLink> : ''}
                                                 </Col>
                                             </Row>
                                         </CardContent>
@@ -477,7 +479,7 @@ const OwnerTicketThreadPage = () => {
                                                                 <Row>
                                                                     <Col>
                                                                         <pre className={ticketThreadPageStyles.description}>{tkt.description}</pre>
-                                                                        {tkt.attachment ? <ReactLink to={tkt.attachment} className={ticketThreadPageStyles.attachment} target="_blank" download>Download Attatchment</ReactLink> : ''}
+                                                                        {tkt.attachment ? <ReactLink to={tkt.attachmentLink} className={ticketThreadPageStyles.attachment} target="_blank" download>Download Attatchment</ReactLink> : ''}
                                                                     </Col>
                                                                     
                                                                 </Row>
