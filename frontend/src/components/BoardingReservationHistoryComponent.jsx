@@ -24,7 +24,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 import { useBoardingHistoryMutation } from '../slices/reservationHistoryApiSlice';
-
+import { useGetBoardingBybIdMutation } from '../slices/reservationsApiSlice';
 
 const BoardingReservationHistory = ({ bId }) => {
 
@@ -39,10 +39,12 @@ const BoardingReservationHistory = ({ bId }) => {
     const { userInfo } = useSelector((state) => state.auth);
 
     const [getBoardingHistory] = useBoardingHistoryMutation();
+    const [getBording] = useGetBoardingBybIdMutation();
 
     const [reservationHis, setReservationHis] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchWord, setSearchWord] = useState('');
+    const [boardingId, setBoardingId] = useState('');
     const [month, setMonth] = useState('');
 
     const handleMonthChange = (event) => {
@@ -78,12 +80,25 @@ const BoardingReservationHistory = ({ bId }) => {
 
             if (resBoardingHis) {
                 setReservationHis(resBoardingHis);
+
             }
 
             setLoading(false)
         } catch (error) {
             setLoading(false)
             console.log(error);
+        }
+
+        try {
+            
+            const resbor = await getBording({ bId: bId });
+
+            setBoardingId(resbor.data.selectedBoarding);
+            console.log(resbor.data.selectedBoarding);
+        } catch (error) {
+
+            console.error('Error getting boardings', error);
+
         }
 
     }
@@ -252,7 +267,7 @@ const BoardingReservationHistory = ({ bId }) => {
                 </>) : (
                     <>
                         <div ref={tabletRef}>
-                            <TableContainer component={Paper} style={{ marginTop: "30px"}}>
+                            <TableContainer component={Paper} style={{ marginTop: "30px" }}>
 
                                 <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
 
@@ -268,8 +283,11 @@ const BoardingReservationHistory = ({ bId }) => {
                                             <TableCell align="right" style={{ color: "#ffffff" }}>Phone Number</TableCell>
 
                                             <TableCell align="right" style={{ color: "#ffffff" }}>Gender</TableCell>
-
-                                            <TableCell align="right" style={{ color: "#ffffff" }}>Room No</TableCell>
+                                            {console.log(boardingId.boardingType)}
+                                            {boardingId.boardingType === 'Hostel' && (
+                                                <>
+                                                    <TableCell align="right" style={{ color: "#ffffff" }}>Room No</TableCell>
+                                                </>)}
 
                                             <TableCell align="right" style={{ color: "#ffffff" }}>Reserved Date</TableCell>
 
@@ -302,7 +320,10 @@ const BoardingReservationHistory = ({ bId }) => {
 
                                                                         <TableCell align="right">{his.gender}</TableCell>
 
-                                                                        <TableCell align="right">{his.roomNo}</TableCell>
+                                                                        {his.bType === 'Hostel' && (
+                                                                            <>
+                                                                                <TableCell align="right">{his.roomNo}</TableCell>
+                                                                            </>)}
 
                                                                         <TableCell align="right">{new Date(his.reservedDate).toDateString()}</TableCell>
 

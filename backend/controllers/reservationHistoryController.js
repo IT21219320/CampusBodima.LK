@@ -28,7 +28,8 @@ const getReservationHistory = asyncHandler(async (req, res) => {
                     phoneNo: his.occupant.phoneNo,
                     gender: his.occupant.gender,
                     reservedDate: his.ReservedDate,
-                    cancelledDate: his.cancelledDate
+                    cancelledDate: his.cancelledDate,
+                    bType: his.boarding.boardingType,
                 })
 
 
@@ -44,7 +45,8 @@ const getReservationHistory = asyncHandler(async (req, res) => {
                     gender: his.occupant.gender,
                     roomNo: his.room.roomNo,
                     reservedDate: his.ReservedDate,
-                    cancelledDate: his.cancelledDate
+                    cancelledDate: his.cancelledDate,
+                    bType: his.boarding.boardingType,
                 })
             }
             
