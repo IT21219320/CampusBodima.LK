@@ -73,13 +73,24 @@ const MyOrders = () => {
     const filteredOrders = product.filter((order) => {
         console.log(order);
         return (
-          order.status === "Pending"||order.status === "Ready" &&
-          order?.items.some((item) =>
-            item.product.toLowerCase().includes(searchQuery.toLowerCase())
-          )
+            (order.status === "Pending" || order.status === "Ready" || order.status === "Preparing") &&
+            order?.items.some((item) =>
+                item.product.toLowerCase().includes(searchQuery.toLowerCase())
+            )
         );
-      });
-
+    });
+    
+    const sortedOrders = filteredOrders.slice().sort((a, b) => {
+        const statusOrder = ["Pending", "Ready", "Preparing"];
+    
+        // Compare the statuses based on the defined order
+        const statusA = statusOrder.indexOf(a.status);
+        const statusB = statusOrder.indexOf(b.status);
+    
+        return statusB - statusA; // Sorting in descending order
+    });
+    
+    
     return (
         
         <>
@@ -117,7 +128,7 @@ const MyOrders = () => {
                                 <TableCell align="center"><b>Sub Total</b></TableCell>
                                 <TableCell align="center"><b>Total</b></TableCell>
                                 <TableCell align="center"><b>Status</b></TableCell>
-                                <TableCell align="center"><b>Delete</b></TableCell>
+                                <TableCell align="center"><b>Action</b></TableCell>
 
                                 </TableRow>
                 </TableHead>
@@ -126,17 +137,17 @@ const MyOrders = () => {
                                 <TableRow style={{ width: '100%', height: '100%', textAlign: 'center' }}>
                                     <TableCell align="center" colSpan={10}><CircularProgress /></TableCell>
                                 </TableRow>
-                            ) : filteredOrders.length > 0 ? ( // Step 4: Display filtered orders
-                            filteredOrders.map((order, index) => (
+                            ) : sortedOrders.length > 0 ? ( // Step 4: Display filtered orders
+                            sortedOrders.map((order, index) => (
                                     <TableRow key={index}>
                                         {/*<TableCell align="center">{order._id}</TableCell>*/}
                                         <TableCell align="center">{new Date(order.date).toDateString()}</TableCell>
                                         <TableCell align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</TableCell>
                                         <TableCell align="center">{order.orderNo}</TableCell>
-                                        <TableCell><td align="center">
+                                        <TableCell><td>
                                             {order.items.map((item,index) => (
                                                 <TableRow>
-                                                    <TableCell align="center">{item.product}</TableCell>
+                                                    <TableCell>{item.product}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </td></TableCell><TableCell>
@@ -166,34 +177,32 @@ const MyOrders = () => {
                                         <TableCell align="center">{order.status}</TableCell>
                                         {/* Render additional feedback data as needed */}
                                         {order.status === "Pending" ? (
-                                            <>
-                                                <TableCell align="center">
-                                                    <Button
-                                                        style={{ background: '#FF0000', color: 'white' }}
-                                                        onClick={() => openDeleteModal(order)}
-                                                    >
-                                                        <DeleteIcon />
-                                                    </Button>
-                                                </TableCell>
-                                            </>
-                                        ) : order.status === "Ready" ? (
-                                            <>
-                                                <TableCell style={{ color: 'red', textAlign: "center" }}>Your Order Is Ready for Pickup!</TableCell>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <TableCell style={{ color: 'darkgreen', textAlign: "center" }}>Order Completed</TableCell>
-                                            </>
-                                        )}
-
+                                            <TableCell align="center">
+                                                <Button
+                                                variant="text"
+                                                    style={{ backgroundColor:"#FF4444", color: 'white' }}
+                                                    onClick={() => openDeleteModal(order)}
+                                                >
+                                                    Delete Order
+                                                </Button>
+                                            </TableCell>
+                                            ) : order.status === "Preparing" ? (
+                                            <TableCell style={{ color: '#FFA500', textAlign: "center" }}>
+                                                <b>Your Order Is Being prepared.<br />Please Wait...</b>
+                                            </TableCell>
+                                            ) : (
+                                            <TableCell style={{ color: '#00CED1', textAlign: "center" }}>
+                                                <b>Your Order Is Ready for Pickup!</b>
+                                            </TableCell>
+                                            )}
 
                                     </TableRow>
 
                                 ))
                             ) : (
-                                <TableRow style={{ height: '100%', width: '100%', textAlign: 'center', color: 'blue' }}>
-                                    <TableCell colSpan={10}>
-                                        <h4>No matching orders found!</h4>
+                                <TableRow style={{ height: '100%', width: '100%', textAlign: 'center', color: '#DE5615' }}>
+                                    <TableCell colSpan={10} align="center">
+                                        <h4><b>No matching orders found!</b></h4>
                                     </TableCell>
                                 </TableRow>
                             )}

@@ -102,8 +102,6 @@ const getTodayOrder = asyncHandler(async (req, res) => {
     try {
       
       const order = await Order.find(query);
-      
-      console.log(order);
       if (order) {
           res.status(200).json({
             order,
@@ -202,8 +200,8 @@ const updateStatus = asyncHandler(async (req, res) => {
 
 const deleteOrder = asyncHandler(async (req, res) => {
   const orderId = req.body._id;
-  console.log(orderId);
-  try {
+  const currentDate = new Date();
+
     const order = await Order.findById(orderId);
 
     if (!order) {
@@ -211,17 +209,24 @@ const deleteOrder = asyncHandler(async (req, res) => {
       throw new Error("Order not found");
     }
 
-    await Order.deleteOne({ _id:orderId });
-    res.status(200).json({
-      message: "Order deleted successfully"
-    });
-  } catch (error) {
-    res.status(400).json({
-      message: "Failed to delete Order",
-      error: error.message
-    });
-  }
+    const targetDate = new Date(order.date); // Parse the date from the database
+
+    const timeDifference = currentDate - targetDate;
+
+    const eightHoursInMillis = 24 * 60 * 60 * 1000;
+
+    if (timeDifference < eightHoursInMillis) {
+      await Order.deleteOne({ _id: orderId });
+      res.status(200).json({
+        message: "Order deleted successfully",
+      });
+    } else {
+      res.status(200);
+      throw new Error("You can't delete orders after one day.");
+    }
+
 });
+
 export{
   createOrder,
   getTodayOrder,

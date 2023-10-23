@@ -5,6 +5,7 @@ import Boarding from "../models/boardingModel.js"
 import Reservation from "../models/reservationModel.js";
 import ReservationHistory from "../models/reservationHistory.js";
 import toDoPayment from "../models/toDoPayments.js";
+import { sendMail } from '../utils/mailer.js';
 
 
 //reserve a room
@@ -384,6 +385,8 @@ const approvePendingStatus = asyncHandler(async (req, res) => {
     const ReservationId = req.body.reservationId;
 
     const reservation = await Reservation.findById(ReservationId);
+    const Occupant = await User.findById(reservation.occupantID);
+    const boarding = await Boarding.findById(reservation.boardingId);
 
     if (reservation) {
 
@@ -391,8 +394,37 @@ const approvePendingStatus = asyncHandler(async (req, res) => {
             reservation.status = 'Approved';
             reservation.paymentStatus = 'Paid';
 
+            const message = `<p><b>Hello ${Occupant.firstName} ${Occupant.lastName},</b><br><br> 
+                            
+                            Your reservation has been approved.
+
+                            We hope this message finds you in great spirits and eager anticipation for the exciting academic journey that lies ahead.<br/><br/>
+
+                            On behalf of the ${boarding.boardingName} team, it is with immense pleasure that we extend a warm welcome to you as our newest occupant. We are thrilled to have you join our vibrant community, and we trust that your time here will be filled with enriching experiences, lasting friendships, and successful studies.                
+
+                            <br><br>Best wishes,<br>
+                            The CampusBodima Team</p>`
+
+            sendMail(Occupant.email, message, "Reservation has been approved");
+            res.status(201).json({ message: "Reservation pending successful msg Sent!" });
+
         } else {
             reservation.status = 'Approved';
+            const message = `<p><b>Hello ${Occupant.firstName} ${Occupant.lastName},</b><br><br> 
+                            
+                            Your reservation has been approved. 
+
+                            We hope this message finds you in great spirits and eager anticipation for the exciting academic journey that lies ahead.<br/><br/>
+
+                            On behalf of the ${boarding.boardingName} team, it is with immense pleasure that we extend a warm welcome to you as our newest occupant. We are thrilled to have you join our vibrant community, and we trust that your time here will be filled with enriching experiences, lasting friendships, and successful studies.                
+
+                            <br><b style="color:red">Please do Your initial payment as soon as possible.</b>
+
+                            <br><br>Best wishes,<br>
+                            The CampusBodima Team</p>`
+
+            sendMail(Occupant.email, message, "Reservation has been approved");
+            res.status(201).json({ message: "Reservation pending successful mail Sent!" });
 
         }
 
@@ -415,6 +447,7 @@ const deletePendingStatus = asyncHandler(async (req, res) => {
     const ReservationId = req.body.reservationId;
     console.log(ReservationId)
     const reservation = await Reservation.findById(ReservationId);
+    const Occupant = await User.findById(reservation.occupantID);
 
     if (reservation) {
         const deletedPending = await Reservation.findByIdAndDelete(ReservationId);
@@ -439,6 +472,20 @@ const deletePendingStatus = asyncHandler(async (req, res) => {
                 { new: true }
             );
         }
+
+        const message = `<p><b>Hello ${Occupant.firstName} ${Occupant.lastName},</b><br><br> 
+                            
+        We regret to inform you that we are unable to approve your reservation at this time. 
+        We understand that this may be disappointing, and we sincerely apologize for any inconvenience this may cause.<br>
+
+        If you have any further questions or if there's anything else we can assist you with, please do not hesitate to reach out to us.
+         We are more than happy to provide recommendations or explore alternative options for your accommodation needs.
+
+        <br><br>Best wishes,<br>
+        The CampusBodima Team</p>`
+
+        sendMail(Occupant.email, message, "Reservation has been cancelled");
+        res.status(201).json({ message: "Reservation pending cancellation mail Sent!" });
 
         res.status(200).json({
             message: "Pending reservation Successfully Deleted",
@@ -470,6 +517,9 @@ const deleteReservation = asyncHandler(async (req, res) => {
         const boarding = await Boarding.findById(deletedReservation.boardingId);
         console.log(boarding)
 
+        const cancelledDate = new Date(Date.now()).toLocaleString();
+        const reservedDate = new Date(deletedReservation.createdAt).toLocaleString();
+
         if (deletedReservation.boardingType === "Annex") {
 
             const reservationHistory = new ReservationHistory({
@@ -497,6 +547,31 @@ const deleteReservation = asyncHandler(async (req, res) => {
                 { new: true }
             );
 
+            
+            //send an confirmation mail
+            const refundAmount = boarding.rent * boarding.keyMoney;
+
+            const message = `<p><b>Hello ${user.firstName} ${user.lastName},</b><br><br> 
+                            
+            We wanted to acknowledge that we have received your recent cancellation request for your reservation at ${boarding.boardingName}. 
+            We understand that circumstances can change, and we want to assure you that we've processed your cancellation.<br/><br/>
+
+            The details of your cancellation are as follows:<br><br>
+            
+            <b>Reservation ID:</b> ${deletedReservation._id}<br/>
+            <b>Reserved Date:</b> ${reservedDate}<br/>
+            <b>Cancelled Date:</b> ${cancelledDate}<br/>
+            <b>Amount to be Refunded:</b> LKR ${refundAmount}<br><br>
+
+            We will refund your key money within 3 months. If you have any questions or concerns regarding the refund, please don't hesitate to reach out to us.
+
+            <br><br>Best wishes,<br>
+            The CampusBodima Team</p>`
+
+            sendMail(user.email, message, "Reservation has been cancelled");
+
+
+
         } else if (deletedReservation.boardingType === "Hostel") {
 
             const room = await Room.findById(deletedReservation.roomID)
@@ -523,6 +598,29 @@ const deleteReservation = asyncHandler(async (req, res) => {
                 },
                 { new: true }
             );
+
+
+            //send an confirmation mail
+            const refundAmount = room.rent * room.keyMoney;
+
+            const message = `<p><b>Hello ${user.firstName} ${user.lastName},</b><br><br> 
+                            
+            We wanted to acknowledge that we have received your recent cancellation request for your reservation at ${boarding.boardingName}. 
+            We understand that circumstances can change, and we want to assure you that we've processed your cancellation.<br/><br/>
+
+            The details of your cancellation are as follows:<br><br>
+            
+            <b>Reservation ID:</b> ${deletedReservation._id}<br/>
+            <b>Reserved Date:</b> ${reservedDate}<br/>
+            <b>Cancelled Date:</b> ${cancelledDate}<br/>
+            <b>Amount to be Refunded:</b> LKR ${refundAmount}<br><br>
+
+            We will refund your key money within 3 months. If you have any questions or concerns regarding the refund, please don't hesitate to reach out to us.
+
+            <br><br>Best wishes,<br>
+            The CampusBodima Team</p>`
+
+            sendMail(user.email, message, "Reservation has been cancelled");
 
 
 

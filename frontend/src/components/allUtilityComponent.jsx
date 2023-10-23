@@ -231,8 +231,8 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                                     
                                                         
                                                     <Row>
-                                                    <Col className="d-flex justify-content-end">
-                                                            <Row>    
+                                                    <Col className="d-flex flex-column align-items-end justify-content-end">
+                                                            <Row >    
                                                                 <Col>
                                                                     <Button
                                                                         type="button"

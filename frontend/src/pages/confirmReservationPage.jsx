@@ -19,7 +19,7 @@ function ConfirmReservationPage() {
     <div style={{width:'100%'}}>
     <Header />
     <Container>
-      <div style={{width:'100%'}}>
+      <div style={{width:'100%',     margin: '15% 0px'}}>
         <div className={paymentScreenStyles.stepperDiv}>
           <Stepper activeStep={activeStep}>
               <Step>

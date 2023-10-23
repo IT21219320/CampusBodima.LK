@@ -130,7 +130,7 @@ const PaymentForm = ({ des, amount, payId }) => {
             if (resPay.data.message === "payment inserted") {
 
                 toast.success('Payment successfull!', { position: toast.POSITION.TOP_RIGHT });
-                navigate('/occupant/reservations/confirm/');
+                navigate('/occupant/payment/');
             }
         }
 

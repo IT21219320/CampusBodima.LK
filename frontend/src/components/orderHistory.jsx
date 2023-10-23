@@ -7,7 +7,6 @@ import { Row, Col } from 'react-bootstrap';
 import { Button, TextField, CircularProgress } from '@mui/material';
 import { GetAppRounded } from '@mui/icons-material';
 import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
@@ -17,8 +16,6 @@ import orderStyles from '../styles/orderStyles.module.css';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 
-import DeleteIcon from '@mui/icons-material/Delete';
-import DeleteOrder from "../pages/DeleteOrder";
 import formStyle from '../styles/formStyle.module.css';
 import jsPDF from 'jspdf';
 
@@ -29,27 +26,19 @@ const OrderHistory = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
 
     const [searchQuery, setSearchQuery] = useState('');
+    
 
 
-
-    const openDeleteModal = (order) => {
-        setSelectedOrder(order);
-        setShowDeleteModal(true);
-    };
+   
     const closeDeleteModal = () => {
         setSelectedOrder(null);
         setShowDeleteModal(false);
     };
-    const handleDeleteSuccess = () => {
-        // Reload the order data or update the UI as needed
-        loadOrderData();
-        closeDeleteModal();
-    };
+    
     const { userInfo } = useSelector((state) => state.auth);
 
 
 
-    const navigate = useNavigate();
 
     const [getOrder, { isLoading }] = useGetOrderMutation();
     const userID = userInfo._id
@@ -190,8 +179,7 @@ const OrderHistory = () => {
                                     <TableCell align="center"><b>Sub Total</b></TableCell>
                                     <TableCell align="center"><b>Total</b></TableCell>
                                     <TableCell align="center"><b>Status</b></TableCell>
-                                    <TableCell align="center"><b>Delete</b></TableCell>
-
+                                  
                                 </TableRow>
                             </TableHead>
 
@@ -203,7 +191,6 @@ const OrderHistory = () => {
                                 ) : filteredOrders.length > 0 ? ( // Step 4: Display filtered orders
                                     filteredOrders.map((order, index) => (
                                         <TableRow key={index}>
-                                            {/*<td>{order._id}</td>*/}
                                             <TableCell align="center">{new Date(order.date).toDateString()}</TableCell>
                                             <TableCell align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</TableCell>
                                             <TableCell align="center">{order.orderNo}</TableCell>
@@ -239,37 +226,22 @@ const OrderHistory = () => {
                                             <TableCell align="center">{order.total}</TableCell>
                                             <TableCell align="center">{order.status}</TableCell>
                                             {/* Render additional feedback data as needed */}
-                                            <TableCell align="center">
-
-
-                                                <Button
-                                                    style={{ background: 'red', color: 'white' }}
-                                                    onClick={() => openDeleteModal(order)}
-                                                >
-                                                    <DeleteIcon />
-                                                </Button>
-                                            </TableCell>
+                                            
 
                                         </TableRow>
 
                                     ))
                                 ) : (
-                                    <TableRow style={{ height: '100%', width: '100%', textAlign: 'center', color: 'blue' }}>
-                                        <TableCell colSpan={10}>
-                                            <h4>No matching orders found!</h4>
-                                        </TableCell>
-                                    </TableRow>
+                                    <TableRow style={{ height: '100%', width: '100%', textAlign: 'center', color: '#DE5615' }}>
+                                    <TableCell colSpan={10} align="center">
+                                        <h4><b>No matching orders found!</b></h4>
+                                    </TableCell>
+                                </TableRow>
                                 )}
                             </tbody>
                         </Table>
                     </TableContainer>
-                    {selectedOrder && (
-                        <DeleteOrder
-                            order={selectedOrder}
-                            onClose={closeDeleteModal}
-                            onDeleteSuccess={handleDeleteSuccess}
-                        />
-                    )}
+                    
                 </Col>
             </Row>
         </>
