@@ -44,11 +44,13 @@ const MyReservationComponent = () => {
   };
 
   const hederStyle = {
-    backgroundColor: 'rgb(36 39 69)',
-    padding: '10px',
-    marginTop: '10px',
-    borderRadius: '10px',
+    background: 'linear-gradient(135deg, #0057a0, #242745,#0057a0)',
+    padding: '1%',
+    bordeRadius: '10px',
+    color: 'white',
     textAlign: 'center',
+    marginTop: '20px',
+    marginBottom:' 20px',
   }
 
   const fonts = {
