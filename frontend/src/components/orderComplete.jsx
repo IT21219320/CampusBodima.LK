@@ -213,7 +213,7 @@ const OrderComplete = () => {
                                     <TableCell align="center"><b>Sub Total</b></TableCell>
                                     <TableCell align="center"><b>Total</b></TableCell>
                                     <TableCell align="center"><b>Status</b></TableCell>
-                                    <TableCell align="center"><b>Delete</b></TableCell>
+                                    <TableCell align="center"><b>Action</b></TableCell>
 
                                 </TableRow>
                             </TableHead>
@@ -224,7 +224,8 @@ const OrderComplete = () => {
                                         <TableCell colSpan={9}><CircularProgress /></TableCell>
                                     </TableRow>
                                 ) : filteredOrders.length > 0 ? ( // Step 4: Display filtered orders
-                                    filteredOrders.map((order, index) => (
+                                    filteredOrders.sort((a, b) => b.orderNo - a.orderNo) 
+                                    .map((order, index) => (
                                         <TableRow key={index}>
                                             {/*<td>{order._id}</td>*/}
                                             <TableCell align="center">{new Date(order.date).toDateString()}</TableCell>
@@ -262,8 +263,9 @@ const OrderComplete = () => {
                                             <TableCell align="center">{order.total}</TableCell>
                                             <TableCell align="center">{order.status}</TableCell>
                                             {/* Render additional feedback data as needed */}
+                                            
+                                            {(new Date()-new Date(order.date)) <(24 * 60 * 60 * 1000)? (
                                             <TableCell align="center">
-
 
                                                 <Button
                                                     variant="text"
@@ -286,7 +288,11 @@ const OrderComplete = () => {
                                                 </Button>
 
                                             </TableCell>
-
+                                            ):(
+                                                <TableCell style={{ color: 'orange', textAlign: "center" }}>
+                                                ~ Unavailable ~
+                                            </TableCell>
+                                            )}
                                         </TableRow>
 
                                     ))
