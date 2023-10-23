@@ -498,7 +498,7 @@ const OwnerPaymentDash = () => {
                             <Row>
                                 <Col>
                                     <center>
-                                        <p style={{ fontWeight: 'bold' }}>Credited Debited Values chart</p>
+                                        <p style={{ fontWeight: 'bold' }}>Credited Debited values</p>
                                         {payments.length > 0 ? (
                                             <>
                                                 <PieChart
@@ -524,7 +524,7 @@ const OwnerPaymentDash = () => {
                                 </Col>
 
                             </Row>
-                            <Row>
+                            <Row style={{marginTop:'5%'}}> 
                                 <Col>
                                     <center>
                                         <p style={{ fontWeight: 'bold' }}>Monthly credited balance </p>
