@@ -179,8 +179,9 @@ const Header = () => {
                     
                     <Box sx={{ flexGrow: 0 }}>
                         <Button onClick={() => navigate('/login')} sx={{ p: 0, color:'white' }}>
-                            <FaSignInAlt /> Sign In &nbsp; &nbsp;
+                            <FaSignInAlt /> Sign In
                         </Button>
+                        &nbsp; &nbsp;
                         <Button onClick={() => navigate('/register')} sx={{ p: 0, color:'white' }}>
                             <FaSignOutAlt /> Sign Up
                         </Button>
