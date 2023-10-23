@@ -141,9 +141,7 @@ const AllIngredients = ({ boardingId }) => {
                 <Col>
                   <Table
                     className={`${ingredientStyles.customtable} ${ingredientStyles.tableimportant}`}
-                    striped
-                    bordered
-                    hover
+                    style={{ border: '1px solid black' }} 
                   >
                     <thead>
                       <tr>
