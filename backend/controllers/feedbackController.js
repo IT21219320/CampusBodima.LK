@@ -59,18 +59,38 @@ const createFeedback = asyncHandler(async (req, res) => {
       });
   
       if(feedback){
+        if(feedback.rating>3){
         // Send email to each occupant with per occupant cost
-        const message = `<p><b>Hello ${boarding.owner.firstName},</b><br><br> 
-        Feedback for ${feedback.boardingId.boardingName}:<br><br>
-        Description: ${feedback.description}<br>
-        Rating: ${feedback.rating}<br><br>
-        Thank you for choosing CampusBodima!<br><br>
-        Best wishes,<br>
-        The CampusBodima Team
+        const message = `<p>
+        <b>Dear ${boarding.owner.firstName}</b>,<br/><br/>
+
+          I'm delighted to share that we've received glowing feedback about your<b style="color: blue;"> ${feedback.boardingId.boardingName}</b> boarding facility.<br/> Clients praised the <b>(${feedback.rating}/5) ratings with description as "${feedback.description}"</b>.<br/>Thank you for your exemplary service.
+          <br/>
+          Warm regards,
+          <br/>
+          Campusbodima Team<br/>
+          Admin<br/>
+          campusbodima.lk
         </p>`
         
-        sendMail(ownerEmail,message,"Your Boarding Feedback");
+        sendMail(ownerEmail,message,"Concerning Feedback Received for Your Boarding Facility");
+        res.status(201).json({ message: "feedback and rating Sent!"});}
+        else{
+          const message = `<p><b>Dear ${boarding.owner.firstName}</b>,<br/><br/>
+
+        I regret to inform you that we have received concerning feedback about your <b style="color: blue;"> ${feedback.boardingId.boardingName}</b> boarding facility. Clients expressed dissatisfaction with <b style="color: red;">(${feedback.rating}/5)ratings with description as "${feedback.description}"</b>.<br/> We urge you to address these issues promptly to ensure the well-being of the people entrusted to your facility.<br/>Thank you.
+        
+        Sincerely,
+          <br/>
+          Campusbodima Team<br/>
+          Admin<br/>
+          campusbodima.lk
+        </p>`
+        
+        sendMail(ownerEmail,message,"Concerning Feedback Received for Your Boarding Facility");
         res.status(201).json({ message: "feedback and rating Sent!"});
+        
+        }
       
     }
     else{
@@ -319,49 +339,7 @@ const deleteFeedback = asyncHandler(async (req, res) => {
 
 
 
-//search
 
-/*const search = asyncHandler(async (req,res) => {
-  const id = req.body.id;
-  const search = req.body.search;
-
-
-  var totalRows = await Ticket.countDocuments({
-      'senderId._id': id,
-      $or: [
-          { subject: { $regex: search, $options: "i" } },
-          { category: { $regex: search, $options: "i" } },
-          { subCategory: { $regex: search, $options: "i" } },
-          {status: {$regex: search, $options: "i"}},
-          
-        ],  
-  });
-
-  try{
-      const tickets = await Ticket.find({
-          'senderId._id': id,
-          $or: [
-              { subject: { $regex: search, $options: "i" } },
-              { category: { $regex: search, $options: "i" } },
-              { subCategory: { $regex: search, $options: "i" } },
-              {status: {$regex: search, $options: "i"}},
-              {description: {$regex: search, $options: "i"}}
-            ],  
-      })
-      .skip(skip)
-      .limit(pageSize);
-
-      if(tickets){
-          res.status(201).json({tickets,totalRows});
-      }
-       else{
-          res.status(400);
-          throw new Error('No tickets');
-      } 
-  }catch(err){
-      res.status(500).json({err});
-  }
-});*/
 
   
   export {

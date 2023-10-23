@@ -34,6 +34,7 @@ const OccupantTicketThreadPage = () => {
     const [updateDescription, setUpdateDescription] = useState('');
     const [updateAttachment, setUpdateAttachment] = useState('');
     const [updateAttachmentLink, setUpdateAttachmentLink] = useState('');
+    const [updateObj, setUpdateObj] = useState('');
 
     const currentTime = new Date();
     const fifteenMinutesAgo = new Date(currentTime - 15 * 60 * 1000); //1second=1000ms
@@ -205,19 +206,24 @@ const OccupantTicketThreadPage = () => {
 
     //update last ticket
     const handleEditBtn = (ticket) => {
-        setUpdateDescription(ticket.description);
-        setUpdateAttachment(ticket.attachment);
-        setUpdateAttachmentLink(ticket.attachmentLink);
-        setUpdate(true);
+        if(new Date(ticket.updatedAt) > new Date(new Date() - 15 * 60 * 1000)){
+            console.log(ticket);
+            setUpdateObj(ticket)
+            setUpdate(true);
+        }
+        else{
+            toast.error('Cannot Update ticket after 15 minutes!');
+            loadData();
+        }
     }
 
     //updateButton
     const handleUpdateBtn = async(replyTktId) => {
-        console.log(isLoading4);
+        setIsLoading4(true);
         if(new Date(ticket.updatedAt) > new Date(new Date() - 15 * 60 * 1000)){
 
             try{
-                var uniqueName;
+                var uniqueName = updateObj.attachment;
                 if(updateAttachment){
                     const timestamp = new Date().getTime();
                     const random = Math.floor(Math.random() * 1000) + 1;
@@ -359,8 +365,14 @@ const OccupantTicketThreadPage = () => {
                                                                                 as="textarea"
                                                                                 placeholder="Add Description"
                                                                                 className={ticketThreadPageStyles.rplyTktDesc}
-                                                                                value={updateDescription}  
-                                                                                onChange={ (e) => setUpdateDescription(e.target.value)} 
+                                                                                value={updateDescription || updateObj.description}  
+                                                                                onChange={ (e)  => {
+                                                                                    setUpdateDescription(e.target.value);
+                                                                                    setUpdateObj(prevUpdateObj => ({
+                                                                                        ...prevUpdateObj, // Preserve other properties
+                                                                                        description: e.target.value,
+                                                                                    }));
+                                                                                }} 
                                                                                 required
                                                                             />
                                                                         </FloatingLabel>
@@ -368,10 +380,16 @@ const OccupantTicketThreadPage = () => {
                                                                 </Row>
                                                                 <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
                                                                     <Col lg={9} xs={6} className='mt-3'>
-                                                                        {updateAttachment ? 
+                                                                        {updateObj.attachmentLink ? 
                                                                                 <>
-                                                                                    <ReactLink to={updateAttachmentLink} target="_blank" download>Attachment</ReactLink>
-                                                                                    <Close onClick={() => {setUpdateAttachmentLink('');setUpdateAttachment('');}} style={{cursor:'pointer'}} /> 
+                                                                                    <ReactLink to={updateObj.attachmentLink} target="_blank" download>Attachment</ReactLink>
+                                                                                    <Close onClick={() => {
+                                                                                        setUpdateObj(prevUpdateObj => ({
+                                                                                            ...prevUpdateObj, // Preserve other properties
+                                                                                            attachment: '', // Clear the value
+                                                                                            attachmentLink: '', // Clear the value
+                                                                                        }));}} 
+                                                                                style={{cursor:'pointer'}} /> 
                                                                                 </>
                                                                             : 
                                                                             <Form.Group controlId="formFileMultiple" className="mb-3" style={{maxWidth:'40%'}}>

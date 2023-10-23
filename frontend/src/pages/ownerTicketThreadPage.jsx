@@ -34,6 +34,7 @@ const OwnerTicketThreadPage = () => {
     const [updateDescription, setUpdateDescription] = useState('');
     const [updateAttachment, setUpdateAttachment] = useState('');
     const [updateAttachmentLink, setUpdateAttachmentLink] = useState('');
+    const [updateObj, setUpdateObj] = useState('');
 
     const currentTime = new Date();
     const fifteenMinutesAgo = new Date(currentTime - 15 * 60 * 1000);
@@ -260,10 +261,15 @@ const OwnerTicketThreadPage = () => {
 
     //update last ticket
     const handleEditBtn = (ticket) => {
-        setUpdateDescription(ticket.description);
-        setUpdateAttachment(ticket.attachment);
-        setUpdateAttachmentLink(ticket.attachmentLink);
-        setUpdate(true);
+        if(new Date(ticket.updatedAt) > new Date(new Date() - 15 * 60 * 1000)){
+            console.log(ticket);
+            setUpdateObj(ticket)
+            setUpdate(true);
+        }
+        else{
+            toast.error('Cannot Update ticket after 15 minutes!');
+            loadData();
+        }
     }
 
     //updateButton
@@ -271,7 +277,8 @@ const OwnerTicketThreadPage = () => {
         setIsLoading4(true)
         if(new Date(ticket.updatedAt) > new Date(new Date() - 15 * 60 * 1000)){
             try{
-                var uniqueName;
+                console.log(updateObj.attachment);
+                var uniqueName = updateObj.attachment;
                 if(updateAttachment){
                     const timestamp = new Date().getTime();
                     const random = Math.floor(Math.random() * 1000) + 1;
@@ -406,7 +413,7 @@ const OwnerTicketThreadPage = () => {
                                                                         <BiTimeFive style={{marginBottom:"2px"}} /> {TimeAgo(new Date(tkt.createdAt))}
                                                                     </Col>
                                                                     <Col lg={1}>
-                                                                        <Button style={{float:"right"}} onClick={(e) => {setUpdate(false); setUpdateAttachment(''); setUpdateDescription('')}}><Close style={{color:"#f73b54"}}/></Button>
+                                                                        <Button style={{float:"right"}} onClick={(e) => {setUpdate(false);setUpdateAttachment('');setUpdateAttachmentLink(''); setUpdateDescription('')}}><Close style={{color:"#f73b54"}}/></Button>
                                                                     </Col>
                                                                 </Row>
                                                                 <Row>
@@ -416,8 +423,14 @@ const OwnerTicketThreadPage = () => {
                                                                                 as="textarea"
                                                                                 placeholder="Add Description"
                                                                                 className={ticketThreadPageStyles.rplyTktDesc}
-                                                                                value={updateDescription}  
-                                                                                onChange={ (e) => setUpdateDescription(e.target.value)} 
+                                                                                value={updateDescription || updateObj.description}  
+                                                                                onChange={ (e) => {
+                                                                                    setUpdateDescription(e.target.value);
+                                                                                    setUpdateObj(prevUpdateObj => ({
+                                                                                        ...prevUpdateObj, // Preserve other properties
+                                                                                        description: e.target.value,
+                                                                                    }));
+                                                                                }} 
                                                                                 required
                                                                             />
                                                                         </FloatingLabel>
@@ -425,16 +438,23 @@ const OwnerTicketThreadPage = () => {
                                                                 </Row>
                                                                 <Row style={{alignItems:'flex-start', marginTop:'10px'}}>
                                                                     <Col lg={9} xs={6} className='mt-3'>
-                                                                        {updateAttachmentLink ? 
-                                                                                <>
-                                                                                    <ReactLink to={updateAttachmentLink} target="_blank" download>Attachment</ReactLink>
-                                                                                    <Close onClick={() => {setUpdateAttachmentLink('');setUpdateAttachment('');}} style={{cursor:'pointer'}} /> 
-                                                                                </>
-                                                                            : 
+                                                                    {updateObj.attachmentLink ?  
+                                                                        <>
+                                                                            <ReactLink to={updateObj.attachmentLink} target="_blank" download>Attachment</ReactLink>
+                                                                            <Close onClick={() => {
+                                                                                setUpdateObj(prevUpdateObj => ({
+                                                                                    ...prevUpdateObj, // Preserve other properties
+                                                                                    attachment: '', // Clear the value
+                                                                                    attachmentLink: '', // Clear the value
+                                                                                }));}} 
+                                                                                style={{cursor:'pointer'}} 
+                                                                            /> 
+                                                                        </>
+                                                                            :
                                                                             <Form.Group controlId="formFileMultiple" className="mb-3" style={{maxWidth:'40%'}}>
-                                                                                <Form.Control type="file" onChange={(e) => {setUpdateAttachment(e.target.files[0]);setUpdateAttachmentLink(e.target.files[0])}} />
+                                                                                <Form.Control type="file" onChange={(e) => {setUpdateAttachment(e.target.files[0]);setUpdateAttachmentLink(e.target.files[0]);console.log(e.target.files[0]);}} />
                                                                             </Form.Group>
-                                                                        }
+                                                                    }
                                                                     </Col>
                                                                 </Row>
                                                                 <Row>

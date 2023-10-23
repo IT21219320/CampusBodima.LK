@@ -78,8 +78,6 @@ const getOwnerMenu = asyncHandler(async (req, res) => {
     throw new Error("Sorry, No boardings assigned to you!!");
   }
 
-  //if(bid == ''){}
-
 
 
 });
@@ -144,6 +142,34 @@ const updateMenu = asyncHandler(async (req, res) => {
   }
 });
 
+const updateAvailability = asyncHandler(async (req, res) => {
+  try {
+    // Find the Boarding based on ownerId
+    const boarding = await Boarding.findOne({ inventoryManager: req.body.ownerId });
+
+    if (!boarding) {
+      res.status(404).json({ message: 'Boarding not found' });
+      return;
+    }
+
+
+    // Update all menu items with the same boarding _id
+    const filter = { boarding: boarding._id };
+    const update = { availability: req.body.availability };
+    
+    const result = await Menu.updateMany(filter, update);
+
+    res.status(200).json({
+      message: 'Menu availability updated for all matching items',
+    });
+
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
+
 // @desc    Delete Menu of particular owner
 // route    DELETE /api/menues/owner/:ownerId/:menuId
 // @access  Private - Owner
@@ -175,5 +201,6 @@ export {
   getOwnerMenu,
   getBoardingMenu,
   updateMenu,
+  updateAvailability,
   deleteMenu
 };
