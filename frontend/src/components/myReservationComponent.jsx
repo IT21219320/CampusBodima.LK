@@ -42,7 +42,7 @@ const MyReservationComponent = () => {
     backgroundColor: 'rgb(240 242 255)',
     padding: '40px',
     marginTop: '20px',
-    
+
   };
 
   const hederStyle = {
@@ -52,7 +52,7 @@ const MyReservationComponent = () => {
     color: 'white',
     textAlign: 'center',
     marginTop: '20px',
-    marginBottom:' 20px',
+    marginBottom: ' 20px',
   }
 
   const fonts = {
@@ -70,7 +70,7 @@ const MyReservationComponent = () => {
   const [imageLink, setImageLink] = useState('');
   const [updateS, setUpdateS] = useState('')
   const [deleteS, setDeleteS] = useState('');
-  const [todo, setTodo ] = useState([]);
+  const [todo, setTodo] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -85,7 +85,7 @@ const MyReservationComponent = () => {
 
       const res = await getMyReservation({ _id: userInfo._id }).unwrap();
       setMyReservation(res.myDetails);
-      
+
       console.log(res.myDetails.image);
 
       let link;
@@ -106,13 +106,13 @@ const MyReservationComponent = () => {
     }
 
     try {
-      const resTodo = await getToDo({occId: userInfo._id}).unwrap();
+      const resTodo = await getToDo({ occId: userInfo._id }).unwrap();
       setTodo(resTodo);
 
       console.log(resTodo);
 
     } catch (error) {
-      
+
       console.log('Error getting Todo', error);
     }
 
@@ -169,23 +169,23 @@ const MyReservationComponent = () => {
     const userID = userInfo._id
     console.log(userInfo.email)
 
-    if (todo.length == 0){
+    if (todo.length == 0) {
       if (userInfo.email === email) {
         const res = await deleteReservation({ ReservationId: myReservation.Id }).unwrap();
-  
+
         console.log(res);
         setDeleteS(res);
-  
+
         if (res.message === "Reservation Successfully Deleted") {
           toast.success("Reservation Successfully Deleted");
           navigate(`/`);
         }
       }
-  
+
       else {
         toast.error("Incorrect email. Please try again!");
       }
-    }else{
+    } else {
       toast.warning("Please do your payments before cancelling the reservation");
       navigate(`/occupant/payment/`);
     }
@@ -221,11 +221,11 @@ const MyReservationComponent = () => {
                     <center>
                       <h1 style={{ marginTop: '190px', fontFamily: 'cursive', color: '#afb5be' }}>
                         <p>Thank you for choosing us !!!</p>
-                        </h1>
+                      </h1>
 
-                        <h3 style={{ marginTop: '20px', fontFamily: 'cursive', color: 'rgb(125 131 139)' }}>
+                      <h3 style={{ marginTop: '20px', fontFamily: 'cursive', color: 'rgb(125 131 139)' }}>
                         <p>You will be notified by a mail when the owner approves your reservation</p>
-                        </h3>
+                      </h3>
                     </center>
                   </>
                 ) : myReservation.paymentStatus === "Pending" && myReservation.status === "Approved" ? (
@@ -245,65 +245,21 @@ const MyReservationComponent = () => {
                       <Col style={{ marginLeft: '10px', marginRight: '10px' }}>
 
                         <Row>
-                          <div style={{boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '15px', marginTop: '20px', height: '396px'}}>
-                            <img style={{height:'100%' , width:'100%', objectFit:'contain'}} src={imageLink} /> 
+                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '15px', marginTop: '20px', height: '393px' }}>
+                            <img style={{ height: '100%', width: '100%', objectFit: 'contain' }} src={imageLink} />
                           </div>
                         </Row>
 
                         <Row>
-                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '35pxpx', marginTop: '20px' }}>
+                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '35pxpx', marginTop: '20px', height: '218px', paddingLeft: '27px' }}>
 
-                            <h5 style={{ marginBottom: '25px', marginTop: "10px", fontWeight: "bold" }}>Boarding Owner Details</h5>
+                            <h5 style={{ marginBottom: '25px', marginTop: "20px", fontWeight: "bold" }}>Boarding Owner Details</h5>
 
                             <p style={{ float: "left", width: "40%", fontWeight: "bold" }}><AccountCircleIcon fontSize="small" />Owner Name</p> <p >{myReservation.ownerFName + "  " + myReservation.ownerLName}</p>
 
                             <p style={{ float: "left", width: "40%", fontWeight: "bold" }}><MailIcon fontSize="small" />Email</p> <p >{myReservation.ownerEmail}</p>
 
                             <p style={{ float: "left", width: "40%", fontWeight: "bold" }}><LocalPhoneIcon fontSize="small" />Phone Number</p> <p >{myReservation.ownerPhone}</p>
-
-                          </div>
-
-                        </Row>
-
-                        <Row>
-                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '35pxpx', marginTop: '20px' }}>
-
-                            <h5 style={{ marginBottom: '25px', marginTop: "10px", fontWeight: "bold" }}>Owner Bank Details</h5>
-
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Account Number</p> <p >{myReservation.ownerAccNo}</p>
-
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Holder Name</p> <p >{myReservation.ownerHoldName}</p>
-
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Bank Name</p> <p >{myReservation.ownerBankName}</p>
-
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Branch Name</p> <p >{myReservation.ownerBranch}</p>
-
-                          </div>
-
-                        </Row>
-
-                      </Col>
-
-                      <Col>
-
-                        <Row>
-
-                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '25px', marginTop: '20px', height: '96%' }}>
-                            <h3 style={{ marginBottom: '30px', textAlign: "center" }}>My Reservation Details</h3>
-
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Fisrt Name</p> <p >{myReservation.firstName}</p>
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Last Name</p> <p >{myReservation.lastName}</p>
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Type</p> <p >{myReservation.bType}</p>
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Name</p> <p >{myReservation.bName}</p>
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Address</p> <p >{myReservation.bAddress}</p>
-
-                            {myReservation.bType === 'Hostel' && (
-                              <>
-                                <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Room Number</p> <p >{myReservation.rNo}</p>
-
-                              </>)}
-
-                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Monthly Rent</p> <p >{myReservation.rent}</p>
 
                           </div>
 
@@ -318,9 +274,9 @@ const MyReservationComponent = () => {
 
                             <Row style={{ marginTop: '20px' }}>
 
-                              
+
                               <Col>
-                                <Button variant="contained" size="small" style={{ backgroundColor: '#0a9954', borderRadius: '20px', width: '195px' , float: "left"}} onClick={handleClickOpen}>Update</Button>
+                                <Button variant="contained" size="small" style={{ backgroundColor: '#0a9954', borderRadius: '20px', width: '232px', float: "left", marginLeft: '54%' }} onClick={handleClickOpen}>Update Duration</Button>
 
                                 <Dialog open={open} onClose={handleClose}>
 
@@ -364,52 +320,106 @@ const MyReservationComponent = () => {
                                   </DialogActions>
 
                                 </Dialog>
-                                </Col>
-                                <Col>
-
-                                <Button variant="contained" size="small" style={{ backgroundColor: '#d86872', borderRadius: '20px', width: '195px' }} onClick={handleDltClickOpen}>Delete</Button>
-
-                                <Dialog open={dltOpen} onClose={handleDltClose}>
-
-                                  <DialogTitle>Delete Reservation</DialogTitle>
-
-                                  <DialogContent>
-
-                                    <DialogContentText>
-
-                                      <p style={{ color: '#ff0000' }}>Are you sure you want to delete this reservation?</p>
-                                      <p>To delete your reservation, Enter the email that used to do the reservation above.</p>
-
-                                    </DialogContentText>
-
-                                    <TextField
-                                      autoFocus
-                                      margin="dense"
-                                      id="name"
-                                      label="Email Address"
-                                      type="email"
-                                      value={email}
-                                      onChange={(e) => setEmail(e.target.value)}
-                                      fullWidth
-                                      variant="standard"
-                                    />
-
-                                  </DialogContent>
-
-                                  <DialogActions>
-                                    <Button onClick={handleDltcancel}>Cancel</Button>
-                                    <Button onClick={handleDltClose}>Delete</Button>
-                                  </DialogActions>
-
-                                </Dialog>
-
-                                </Col>
+                              </Col>
 
                             </Row>
 
                           </div>
 
                         </Row>
+
+
+
+                      </Col>
+
+                      <Col>
+
+                        <Row>
+
+                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '25px', marginTop: '20px', height: '96%' }}>
+                            <h3 style={{ marginBottom: '30px', textAlign: "center" }}>My Reservation Details</h3>
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Fisrt Name</p> <p >{myReservation.firstName}</p>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Last Name</p> <p >{myReservation.lastName}</p>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Type</p> <p >{myReservation.bType}</p>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Name</p> <p >{myReservation.bName}</p>
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Boarding Address</p> <p >{myReservation.bAddress}</p>
+
+                            {myReservation.bType === 'Hostel' && (
+                              <>
+                                <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Room Number</p> <p >{myReservation.rNo}</p>
+
+                              </>)}
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Monthly Rent</p> <p >{myReservation.rent}</p>
+
+                          </div>
+
+                        </Row>
+
+                        <Row>
+                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '35pxpx', marginTop: '20px' }}>
+
+                            <h5 style={{ marginBottom: '25px', marginTop: "10px", fontWeight: "bold" }}>Owner Bank Details</h5>
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Account Number</p> <p >{myReservation.ownerAccNo}</p>
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Holder Name</p> <p >{myReservation.ownerHoldName}</p>
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Bank Name</p> <p >{myReservation.ownerBankName}</p>
+
+                            <p style={{ float: "left", width: "40%", fontWeight: "bold" }}>Branch Name</p> <p >{myReservation.ownerBranch}</p>
+
+                          </div>
+
+                        </Row>
+                        <Row>
+
+                          <div style={{ boxShadow: '1px 9px 20px 5px #d8d6d6', backgroundColor: 'rgb(240 242 255)', padding: '20px', marginTop: '20px', height: '192px' }}>
+
+                            <h5 style={{ marginBottom: '25px', fontWeight: "bold" }}>Delete Reservation</h5>
+
+                            <p>Please make sure wheather you have done all the payments before deleting the reservation !!!</p>
+                            <Button variant="contained" size="small" style={{ backgroundColor: '#d86872', borderRadius: '20px', width: '232px', marginLeft:'53%' }} onClick={handleDltClickOpen}>DELETE RESERVATION</Button>
+
+                            <Dialog open={dltOpen} onClose={handleDltClose}>
+
+                              <DialogTitle>Delete Reservation</DialogTitle>
+
+                              <DialogContent>
+
+                                <DialogContentText>
+
+                                  <p style={{ color: '#ff0000' }}>Are you sure you want to delete this reservation?</p>
+                                  <p>To delete your reservation, Enter the email that used to do the reservation above.</p>
+
+                                </DialogContentText>
+
+                                <TextField
+                                  autoFocus
+                                  margin="dense"
+                                  id="name"
+                                  label="Email Address"
+                                  type="email"
+                                  value={email}
+                                  onChange={(e) => setEmail(e.target.value)}
+                                  fullWidth
+                                  variant="standard"
+                                />
+
+                              </DialogContent>
+
+                              <DialogActions>
+                                <Button onClick={handleDltcancel}>Cancel</Button>
+                                <Button onClick={handleDltClose}>Delete</Button>
+                              </DialogActions>
+
+                            </Dialog>
+
+                          </div>
+                        </Row>
+
+
 
                       </Col>
 

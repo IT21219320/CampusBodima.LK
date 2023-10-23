@@ -13,6 +13,7 @@ import { useParams } from 'react-router-dom';
 
 import dashboardStyles from '../styles/dashboardStyles.module.css';
 import Sidebar from '../components/sideBar';
+import orderStyles from '../styles/orderStyles.module.css';
 
 import UpdateForm from '../components/updateForm';
 import Water from '../components/waterForm';
@@ -42,8 +43,8 @@ const {utilityType} =useParams();
                       
                         <Row className='mt-4'>
                                 <Col className="mb-1">
-                                    <Card className={CreateBoardingStyles.card}>
-                                        <CardContent style={{padding:'25px', textAlign:'center'}}>
+                                    <Card style={{borderRadius:'6px'}}className={orderStyles.card}>
+                                        <CardContent style={{padding:'1px', textAlign:'center',color:'white'}}>
                                             <h4 style={{margin:0}}><b>Update Utilities</b></h4>
                                         </CardContent>
                                     </Card>
