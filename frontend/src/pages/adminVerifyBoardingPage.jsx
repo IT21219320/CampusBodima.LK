@@ -39,7 +39,7 @@ const AdminVerifyBoardingPage = () => {
                     
                     <Row>
                         <Col>
-                            <Card variant="outlined" className={dashboardStyles.card}>
+                            <Card variant="outlined" className={`${dashboardStyles.card} ${dashboardStyles.cardHeading}`}>
                                 <CardContent style={{display: 'flex', alignContent:'center', flexDirection:'column', padding:'20px'}}>
                                     <h4 style={{marginBottom:0}}>Boardings</h4>
                                 </CardContent>
