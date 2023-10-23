@@ -110,8 +110,8 @@ const ReservationForm = () => {
                                 onChange={(e) => setGender(e.target.value)}
                                 required
                             >
-                                <FormControlLabel value="Female" control={<Radio disabled={userInfo.gender == null}/>} label="Female" />
-                                <FormControlLabel value="Male" control={<Radio disabled={userInfo.gender == null}/>} label="Male" />
+                                <FormControlLabel value="Female" control={<Radio disabled={userInfo.gender !== ''}/>} label="Female" />
+                                <FormControlLabel value="Male" control={<Radio disabled={userInfo.gender !== ''}/>} label="Male" />
 
                             </RadioGroup>
                         </FormControl>
