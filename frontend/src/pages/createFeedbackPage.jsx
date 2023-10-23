@@ -73,15 +73,15 @@ const CreateFeedback = () => {
           <Form onSubmit={submitHandler} className={CreateFeedbackStyles.form} >
             <Row>
               <Col>
-                <Card variant="outlined" className={CreateFeedbackStyles.card}>
-                  <CardContent style={{ padding: '18px' }}>
-                    <h4 style={{ margin: 0 }}>Create Feedback</h4>
+                <Card variant="outlined" style={{borderRadius:'10px'}}className={CreateFeedbackStyles.cards}>
+                  <CardContent style={{ padding: '5px' }}>
+                    <h4 style={{ margin: 0, color:'white'}}>Create Feedback</h4>
                   </CardContent>
                 </Card>
               </Col>
             </Row>
             <Col >
-              <Card variant="outlined" className={CreateFeedbackStyles.card}>
+              <Card variant="outlined"  className={CreateFeedbackStyles.card}>
                 <CardContent>
                   <Row id={CreateFeedbackStyles.newFeedback}>
                     <p>
@@ -97,7 +97,7 @@ const CreateFeedback = () => {
                         </label>
                       </Col>
                       <Col lg={9} xs={6} className="mt-3">
-                        <TextField id="outlined-read-only-input" size="small" value={occupantName} InputProps={{ readOnly: true }} />
+                        <TextField id="outlined-read-only-input" sx={{  height: '78px',width:'300px' }} value={occupantName} InputProps={{ readOnly: true }} />
                       </Col>
                     </Row>
 
@@ -108,7 +108,7 @@ const CreateFeedback = () => {
                         </label>
                       </Col>
                       <Col lg={9} xs={6} className="mt-3">
-                        <TextField id="outlined-read-only-input" sx={{  height: '78px' }} value={occupantEmail} InputProps={{ readOnly: true }} />
+                        <TextField id="outlined-read-only-input" sx={{  height: '78px',width:'300px' }} value={occupantEmail} InputProps={{ readOnly: true }} />
                       </Col>
                     </Row>
 
@@ -119,7 +119,7 @@ const CreateFeedback = () => {
                         </label>
                       </Col>
                         <Col lg={9} xs={6} className={`mt-3 ${CreateFeedbackStyles.formControl}`}>
-                        <TextField id="outlined-read-only-input" sx={{ height: '78px' }} value={boardingName} InputProps={{ readOnly: true }} />
+                        <TextField id="outlined-read-only-input" sx={{  height: '78px',width:'300px' }} value={boardingName} InputProps={{ readOnly: true }} />
                       </Col>
                     </Row>
 
