@@ -322,6 +322,47 @@ const OccupantPaymentDash = () => {
         });
     };
 
+    const tableRef = useRef();
+
+    const exportToPDFTable = () => {
+        // Convert the chart to an image
+        const chartElement = tableRef.current;
+        html2canvas(chartElement).then((canvas) => {
+            const chartImage = canvas.toDataURL('image/png');
+
+            // Create a new jsPDF instance
+            const doc = new jsPDF();
+            // Add the company details
+            doc.addImage('/logo2.png', 'PNG', 10, 10, 50, 30);
+            doc.setFontSize(15);
+            doc.setFont('helvetica', 'bold');
+            doc.text('CampusBodima', 200, 20, { align: 'right', style: 'bold' });
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text('138/K, Ihala Yagoda, Gampaha', 200, 25, { align: 'right' });
+            doc.text('071-588-6675', 200, 29, { align: 'right' });
+            doc.text('info.campusbodima@gmail.com', 200, 33, { align: 'right' });
+            doc.text('www.campusbodima.com', 200, 37, { align: 'right' });
+
+            // Add a horizontal line
+            doc.setLineWidth(0.5);
+            doc.line(10, 45, 200, 45);
+
+            // Add report details
+            doc.setFontSize(8);
+            doc.text('Report of Payment list', 20, 55);
+            doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
+            doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
+            
+            // Add the chart image to the PDF
+            doc.addImage(chartImage, 'PNG', 10, 85, 190, 30); // Adjust the position and dimensions
+
+            // Save or download the PDF
+            doc.save('monthly_payment.pdf');
+
+        });
+    };
+
     return (
         <>
             <Sidebar />
@@ -429,12 +470,14 @@ const OccupantPaymentDash = () => {
                                                                     height={300}
                                                                 />
 
-                                                                <button onClick={exportToPDFChart} className={occupantDashboardPaymentStyles.exportBtn}>Export to PDF</button>
+                                                                
                                                             </>
                                                             ) : (
                                                                 <> <p style={{marginTop:'5%'}}>No Payment details to show</p> </>
                                                             )}
                                                         </div>
+                                                        {mpData.length > 0 && 
+                                                        <button onClick={exportToPDFChart} className={occupantDashboardPaymentStyles.exportBtn}>Export to PDF</button>}
                                                     </center>
 
                                                 </Row>
@@ -579,7 +622,7 @@ const OccupantPaymentDash = () => {
                                         <Box sx={{ margin: '10% 50%' }}>
                                             <CircularProgress />
                                         </Box></>) : (<>
-                                            <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+                                            <TableContainer component={Paper} style={{ marginTop: '20px', padding: '0px'}}  ref={tableRef}>
                                                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                                                     <TableHead>
                                                         <TableRow>
@@ -608,13 +651,16 @@ const OccupantPaymentDash = () => {
                                                                 </StyledTableRow>
                                                             ))) : (
                                                             <StyledTableRow >
-                                                                <StyledTableCell component="th" scope="row">
-                                                                    No data
+                                                                
+                                                                <StyledTableCell component="th" scope="row" colSpan={6} >
+                                                                   <center>No Transactions</center>
                                                                 </StyledTableCell>
                                                             </StyledTableRow>)}
                                                     </TableBody>
                                                 </Table>
-                                            </TableContainer></>)}
+                                            </TableContainer>
+                                            <button onClick={exportToPDFTable} className={occupantDashboardPaymentStyles.exportBtn}>Export to PDF</button>
+                                            </>)}
 
                                 </Row></TabPanel>
                         </TabContext>

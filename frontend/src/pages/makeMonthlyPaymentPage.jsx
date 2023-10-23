@@ -35,7 +35,7 @@ function MakeMonthlyPaymentPage() {
     <>
       <div style={{ width: '100%' }}>
         <Header />
-        <div className={paymentScreenStyles.card}>
+        <div className={paymentScreenStyles.card} style={{    margin: '145px 12%'}}>
           <Row>
 
             <Col className={paymentScreenStyles.card40}>
