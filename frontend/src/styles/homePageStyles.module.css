@@ -1,24 +1,15 @@
 .homeBackDiv{
-    
     background-repeat: no-repeat;
-    width: calc(100% - 6px);
-    position: fixed;
-}
-
-.homeDarkDiv{
-    background-color: black;
-    opacity: 0.5;
-    height: 600px;
     width: calc(100% - 6px);
     position: fixed;
 }
 
 .homeWelcText{
     position: absolute;
-    top: 420px;
-    color: white;
-    margin-left: 10%;
-    text-align: center;
+    top: 150px;
+    color: #242745;
+    margin-left: 5%;
+    text-align: left;
 }
 
 .servicesDiv{
@@ -29,14 +20,9 @@
     width: 100%;
 }
 
-.getStartBtn{
-    color: white !important;
-    border: 1px solid white !important;
-}
-
 .getStartBtn:hover{
-    color: rgb(192, 192, 192) !important;
-    border: 1px solid rgb(192, 192, 192) !important;
+    color: rgb(255, 255, 255) !important;
+    background-color: #0288d1 !important;
 }
 
 .h1{

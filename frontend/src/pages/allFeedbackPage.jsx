@@ -187,7 +187,7 @@ const AllFeedbacks = () => {
             head: [headers],
             body: data,
             styles,
-            margin: { top: 90 },
+            //margin: { top: 90 },
             startY: 75
         });
     
@@ -219,9 +219,9 @@ const AllFeedbacks = () => {
           </Row>
           <Row>
                         <Col>
-                            <Card variant="outlined" className={occupantFeedbackStyles.card}>
-                                <CardContent style={{color:'#fff',backgroundColor:'#232a67'}}>
-                                    <h4>FEEDBACKS  &  RATING</h4> 
+                            <Card variant="outlined" className={occupantFeedbackStyles.cards}>
+                                <CardContent style={{color:'#fff',padding: '10px'}}>
+                                    <h4 style={{marginTop:'10px'}}>FEEDBACKS  &  RATING</h4> 
                                 </CardContent>
                             </Card>
                         </Col>
