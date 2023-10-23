@@ -34,8 +34,6 @@ const createTicket = asyncHandler(async (req,res) =>{
         ticketId = 1;
     }
 
-    ticketId = ticketId.toString();
-
     const sender = await User.findById(senderId);
 
     const ticket = await Ticket.create({
