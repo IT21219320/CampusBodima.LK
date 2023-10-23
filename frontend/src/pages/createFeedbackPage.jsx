@@ -70,7 +70,7 @@ const CreateFeedback = () => {
             </Col>
           </Row>
 
-          <Form onSubmit={submitHandler} className={CreateFeedbackStyles.form}>
+          <Form onSubmit={submitHandler} className={CreateFeedbackStyles.form} >
             <Row>
               <Col>
                 <Card variant="outlined" className={CreateFeedbackStyles.card}>

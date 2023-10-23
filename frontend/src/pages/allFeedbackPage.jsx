@@ -5,7 +5,7 @@ import { useDeleteFeedbackMutation,useGetAllFeedbacksMutation  } from "../slices
 import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { Container, Row, Col, Table,Card } from 'react-bootstrap';
+import { Container, Row, Col, Table,Card,InputGroup } from 'react-bootstrap';
 import { Breadcrumbs, Typography, Paper, InputBase, IconButton, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress, Button, Rating,Link,CardContent } from '@mui/material';
 import { NavigateNext, Search, BrowserUpdated as BrowserUpdatedIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
