@@ -353,7 +353,7 @@ const OccupantPaymentDash = () => {
             doc.text('Report of Payment list', 20, 55);
             doc.text(`Date: ${new Date().toDateString()}`, 20, 59);
             doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 63);
-            
+
             // Add the chart image to the PDF
             doc.addImage(chartImage, 'PNG', 10, 85, 190, 30); // Adjust the position and dimensions
 
@@ -470,20 +470,24 @@ const OccupantPaymentDash = () => {
                                                                     height={300}
                                                                 />
 
-                                                                
+
                                                             </>
                                                             ) : (
-                                                                <> <p style={{marginTop:'5%'}}>No Payment details to show</p> </>
+                                                                <> <p style={{ marginTop: '5%' }}>No Payment details to show</p> </>
                                                             )}
                                                         </div>
-                                                        {mpData.length > 0 && 
-                                                        <button onClick={exportToPDFChart} className={occupantDashboardPaymentStyles.exportBtn}>Export to PDF</button>}
+                                                        {mpData.length > 0 &&
+                                                            <button onClick={exportToPDFChart} className={occupantDashboardPaymentStyles.exportBtn}>Export to PDF</button>}
                                                     </center>
 
                                                 </Row>
 
                                             </>) : (<>
-                                                No Reservation</>)}</>)}
+                                                <p style={{fontFamily: 'monospace',textAlign: 'center',marginTop: '15%', fontSize: 'xx-large' }}>No Reservation</p>
+                                            </>
+                                        )}
+                                    </>
+                                )}
 
 
 
@@ -622,7 +626,7 @@ const OccupantPaymentDash = () => {
                                         <Box sx={{ margin: '10% 50%' }}>
                                             <CircularProgress />
                                         </Box></>) : (<>
-                                            <TableContainer component={Paper} style={{ marginTop: '20px', padding: '0px'}}  ref={tableRef}>
+                                            <TableContainer component={Paper} style={{ marginTop: '20px', padding: '0px' }} ref={tableRef}>
                                                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                                                     <TableHead>
                                                         <TableRow>
@@ -651,16 +655,16 @@ const OccupantPaymentDash = () => {
                                                                 </StyledTableRow>
                                                             ))) : (
                                                             <StyledTableRow >
-                                                                
+
                                                                 <StyledTableCell component="th" scope="row" colSpan={6} >
-                                                                   <center>No Transactions</center>
+                                                                    <center>No Transactions</center>
                                                                 </StyledTableCell>
                                                             </StyledTableRow>)}
                                                     </TableBody>
                                                 </Table>
                                             </TableContainer>
                                             <button onClick={exportToPDFTable} className={occupantDashboardPaymentStyles.exportBtn}>Export to PDF</button>
-                                            </>)}
+                                        </>)}
 
                                 </Row></TabPanel>
                         </TabContext>
