@@ -30,6 +30,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import { PieChart } from '@mui/x-charts/PieChart';
 
+import { BarChart } from '@mui/x-charts/BarChart';
+
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -92,7 +94,24 @@ const OwnerPaymentDash = () => {
     const [open, setOpen] = useState(false);
     const [amount, setAmount] = useState('');
     const [desc, setDesc] = useState('');
+    const [withRef, setWithRef] = useState('');
     const [errorTxt, setErrorTxt] = useState(false);
+
+    const [january, setJanuary] = useState('');
+    const [february, setfebruary] = useState('');
+    const [march, setmarch] = useState('');
+    const [april, setapril] = useState('');
+    const [may, setmay] = useState('');
+    const [june, setjune] = useState('');
+    const [july, setjuly] = useState('');
+    const [auguest, setauguest] = useState('');
+    const [september, setseptember] = useState('');
+    const [october, setoctober] = useState(0);
+    const [november, setnovember] = useState('');
+    const [december, setdecember] = useState('');
+
+    const mpData = [january, february, march, april, may, june, july, auguest, september, october, november, december]
+    const xAxisData = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'auguest', 'september', 'october', 'november', 'december']
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -102,9 +121,14 @@ const OwnerPaymentDash = () => {
         setOpen(false);
     };
 
+
     const handleWithdrawClose = async () => {
         try {
-            const resWith = await withdrawByBoarding({ userInfo_id: userInfo._id, bId: boardingID, amount: amount, des: desc })
+
+            const type = 'Cash'
+            const resWith = await withdrawByBoarding({ userInfo_id: userInfo._id, bId: boardingID, amount: amount, des: desc, type: type })
+            setWithRef('refresh')
+
         } catch (error) {
             console.log(error);
         }
@@ -140,14 +164,86 @@ const OwnerPaymentDash = () => {
                 if (pay.debited) {
                     const debitedInt = parseInt(pay.debited)
                     totalDebited += debitedInt
-                    setDebited(totalDebited)
-                } else {
-                    setDebited(totalDebited)
+                    
                 }
 
 
             }
+            setDebited(totalDebited)
             setCredited(totalCredit)
+
+            if (resGetPay.payments.length > 0) {
+
+                let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jun = 0, jul = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
+                for (const payM of resGetPay.payments) {
+                    if (payM.credited) {
+                        console.log(payM.date);
+                        const date = new Date(payM.date)
+                        console.log(date.getMonth());
+                        if (date.getMonth() == 0) {
+                            jan += parseInt(payM.credited)
+
+                        }
+                        if (date.getMonth() == 1) {
+                            feb += parseInt(payM.credited)
+
+                        }
+                        if (date.getMonth() == 2) {
+                            mar += parseInt(payM.credited)
+                        }
+                        if (date.getMonth() == 3) {
+                            apr += parseInt(payM.credited)
+
+                        }
+                        if (date.getMonth() == 4) {
+                            may += parseInt(payM.credited)
+
+                        }
+                        if (date.getMonth() == 5) {
+                            jun += parseInt(payM.credited)
+
+                        }
+                        if (date.getMonth() == 6) {
+                            jul += parseInt(payM.credited)
+
+                        }
+                        if (date.getMonth() == 7) {
+                            aug += parseInt(payM.credited)
+
+                        }
+                        if (date.getMonth() == 8) {
+                            sep += parseInt(payM.credited)
+
+                        }
+                        if (date.getMonth() == 9) {
+
+                            oct += parseInt(payM.credited)
+
+                        }
+                        if (date.getMonth() == 10) {
+                            nov += parseInt(payM.credited)
+
+                        }
+                        if (date.getMonth() == 11) {
+                            dec += parseInt(payM.credited)
+
+                        }
+                    }
+
+                }
+                setJanuary(jan)
+                setfebruary(feb)
+                setmarch(mar)
+                setapril(apr)
+                setmay(may)
+                setjune(jun)
+                setjuly(jul)
+                setauguest(aug)
+                setseptember(sep)
+                setoctober(oct)
+                setnovember(nov)
+                setdecember(dec)
+            }
 
             try {
 
@@ -169,7 +265,7 @@ const OwnerPaymentDash = () => {
 
     useEffect(() => {
         loadData();
-    }, [boardingID]);
+    }, [boardingID, withRef]);
 
 
     //calc 
@@ -193,7 +289,18 @@ const OwnerPaymentDash = () => {
                     </Row>
                     <Row>
                         <Col>
-                  
+                            <Row style={{ marginTop: '20px' }}>
+                                <Col>
+                                    <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
+                                </Col>
+
+                            </Row>
+                        </Col>
+                    </Row>
+                    <Row>
+
+                        <Col>
+
                             <FormControl size="small" style={{ width: '25%', margin: '6% 5% 0px 5%' }}>
                                 <InputLabel id="demo-simple-select-label" >Boarding</InputLabel>
                                 <Select
@@ -287,7 +394,7 @@ const OwnerPaymentDash = () => {
 
                                 </Col>
                             </Row>
-                                <Dialog open={open} onClose={handleClose} >
+                                <Dialog open={open} onClose={handleClose} maxWidth={'sm'} fullWidth={true}>
                                     <DialogTitle>Withdraw</DialogTitle>
                                     <DialogContent>
                                         <DialogContentText>
@@ -303,17 +410,17 @@ const OwnerPaymentDash = () => {
                                             variant="standard"
                                             value={amount}
                                             onChange={(e) => {
-                                                if ((credited-debited) >= e.target.value) {
+                                                if ((credited - debited) >= e.target.value) {
                                                     setErrorTxt(false)
                                                     setAmount(e.target.value)
                                                 }
-                                                else{
+                                                else {
                                                     setErrorTxt(true)
                                                 }
                                             }
                                             }
                                         />
-                                        {errorTxt ?(<><p>You can't exceed your balance of {credited-debited}</p></>):(<><p>Your remaining balance {credited-debited}</p></>) }
+                                        {errorTxt ? (<><p style={{ color: 'red' }}>You can't exceed your balance of LKR {credited - debited}</p></>) : (<><p>Your remaining balance LKR {credited - debited}</p></>)}
 
                                         <TextField
                                             autoFocus
@@ -371,7 +478,7 @@ const OwnerPaymentDash = () => {
                                                         </StyledTableCell>
                                                         <StyledTableCell align="right" >{payment.amount}</StyledTableCell>
                                                         <StyledTableCell align="right" >{payment.description}</StyledTableCell>
-                                                        <StyledTableCell align="right">{payment.date}</StyledTableCell>
+                                                        <StyledTableCell align="right">{new Date(payment.date).toDateString()}</StyledTableCell>
                                                         <StyledTableCell align="right">{payment.paymentType}</StyledTableCell>
                                                         <StyledTableCell align="right">{payment.credited}</StyledTableCell>
                                                         <StyledTableCell align="right">{payment.debited}</StyledTableCell>
@@ -392,21 +499,50 @@ const OwnerPaymentDash = () => {
                                 <Col>
                                     <center>
                                         <p style={{ fontWeight: 'bold' }}>Credited Debited Values chart</p>
-                                        <PieChart
-                                            series={[
-                                                {
-                                                    data: [
-                                                        { id: 0, value: credited, label: `Credited\n ${credited}` },
-                                                        { id: 1, value: debited, label: `Debited\n ${debited}` },
-                                                    ],
-                                                },
-                                            ]}
-                                            width={400}
-                                            height={200}
-                                        />
+                                        {payments.length > 0 ? (
+                                            <>
+                                                <PieChart
+                                                    series={[
+                                                        {
+                                                            data: [
+                                                                { id: 0, value: credited, label: `Credited\n ${credited}` },
+                                                                { id: 1, value: debited, label: `Debited\n ${debited}` },
+                                                            ],
+                                                        },
+                                                    ]}
+                                                    width={400}
+                                                    height={200}
+                                                />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p style={{ marginTop: '5%' }}>No Payment details to show</p>
+                                            </>
+                                        )}
+
                                     </center>
                                 </Col>
+
+                            </Row>
+                            <Row>
                                 <Col>
+                                    <center>
+                                        <p style={{ fontWeight: 'bold' }}>Monthly credited balance </p>
+                                        {payments.length > 0 ? (<>
+                                            <BarChart
+                                                xAxis={[{ scaleType: 'band', data: xAxisData, label: 'Month' }]}
+                                                yAxis={[{ label: 'Amount' }]}
+                                                series={[{ data: mpData }]}
+                                                style={{ width: '100%' }}
+                                                height={300}
+                                            />
+
+
+                                        </>
+                                        ) : (
+                                            <> <p style={{ marginTop: '5%' }}>No Payment details to show</p> </>
+                                        )}
+                                    </center>
                                 </Col>
                             </Row>
                         </TabPanel>

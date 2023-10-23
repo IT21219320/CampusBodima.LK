@@ -389,16 +389,17 @@ const OccupantPaymentDash = () => {
                                     <Tab label="Transactions" value="3" />
                                 </TabList>
                             </Box>
-                            <TabPanel value="1"><Row>
-                                <Col>
-                                    <Row style={{ marginTop: '20px' }}>
-                                        <Col>
-                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
-                                        </Col>
+                            <TabPanel value="1">
+                                <Row>
+                                    <Col>
+                                        <Row style={{ marginTop: '20px' }}>
+                                            <Col>
+                                                <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
+                                            </Col>
 
-                                    </Row>
-                                </Col>
-                            </Row>
+                                        </Row>
+                                    </Col>
+                                </Row>
                                 {isLoading ? (
                                     <>
                                         <Box sx={{ margin: '10% 50%' }}>
@@ -483,7 +484,7 @@ const OccupantPaymentDash = () => {
                                                 </Row>
 
                                             </>) : (<>
-                                                <p style={{fontFamily: 'monospace',textAlign: 'center',marginTop: '15%', fontSize: 'xx-large' }}>No Reservation</p>
+                                                <p style={{ fontFamily: 'monospace', textAlign: 'center', marginTop: '15%', fontSize: 'xx-large' }}>No Reservation</p>
                                             </>
                                         )}
                                     </>
