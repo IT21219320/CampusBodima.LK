@@ -16,6 +16,7 @@ import { RiWaterFlashFill } from 'react-icons/ri';
 import sideBarStyles from '../styles/sideBarStyles.module.css';
 import billStyles from '../styles/billStyles.module.css';
 import  BillStyles from '../styles/billStyles.module.css';
+import orderStyles from '../styles/orderStyles.module.css';
 import { toast } from 'react-toastify';
 import UtilityReport from '../components/utilityReportComponent';
   
@@ -109,9 +110,9 @@ const AllUtilitiesPage = () =>{
                       
                         <Row className='mt-4'>
                                 <Col className="mb-1">
-                                    <Card className={BillStyles.cardHeader}>
-                                        <CardContent style={{padding:'10px', textAlign:'center',color:'white'}}>
-                                            <h4 style={{margin:0,fontSize:'20px'}}><b>All Utilities</b></h4>
+                                    <Card style={{borderRadius:'6px'}}className={orderStyles.card}>
+                                        <CardContent style={{padding:'1px', textAlign:'center',color:'white'}}>
+                                            <h4 style={{margin:0,fontSize:'25px'}}><b>All Utilities</b></h4>
                                         </CardContent>
                                     </Card>
                                 </Col>
