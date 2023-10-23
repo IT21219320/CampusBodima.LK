@@ -182,7 +182,7 @@ const AllUtilitiesForBoardings = ({ boardingId, utilityType,occupant }) => {
                                             <Col lg={5}>
                                         
                                                 <Row>
-                                                    <p><b>Amount:</b> Rs. {utility.amount} .00</p>
+                                                    <p><b>Total Amount:</b> Rs. {utility.amount} .00</p>
                                                 </Row>
                                                 <Row>
                                                 
