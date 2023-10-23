@@ -1,27 +1,30 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {Row, Col} from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import paymentScreenStyles from "../Styles/paymentScreen.module.css";
 import ReservationForm from "../components/reservationForm";
+import { CircularProgress } from "@mui/material";
 import Header from "../components/header.jsx";
 import { useGetBoardingByIdMutation } from "../slices/boardingsApiSlice";
 
-const ReserveBoardingPage = () =>{
+const ReserveBoardingPage = () => {
 
   const { userInfo } = useSelector((state) => state.auth);
   const [activeStep, setActiveStep] = useState(1);
+  const [loading, setLoading] = useState(true);
   const [boardingDetails, setBoardingDetails] = useState();
   const des = "Initial payment";
-  
+
   const { bId } = useParams();
   const [getBoardingById] = useGetBoardingByIdMutation();
-  
+
 
   const load = async () => {
+    setLoading(true)
     try {
       const boardingId = bId;
       const res = await getBoardingById(boardingId).unwrap();
@@ -29,6 +32,8 @@ const ReserveBoardingPage = () =>{
     } catch (error) {
       console.log(error)
     }
+
+    setLoading(false)
   }
   let am
   if (boardingDetails) {
@@ -44,16 +49,16 @@ const ReserveBoardingPage = () =>{
   useEffect(() => {
     load()
   }, [])
-  
 
-    
+
+
   return (
     <>
-    <div style={{width:'100%'}}>
-    <Header />
-      <div style={{width:'100%', marginTop: '120px'}}>
-        <div className={paymentScreenStyles.stepperDiv}>
-          <Stepper activeStep={activeStep}>
+      <div style={{ width: '100%' }}>
+        <Header />
+        <div style={{ width: '100%', marginTop: '120px' }}>
+          <div className={paymentScreenStyles.stepperDiv}>
+            <Stepper activeStep={activeStep}>
               <Step>
                 <StepLabel>Reservation</StepLabel>
               </Step>
@@ -66,12 +71,19 @@ const ReserveBoardingPage = () =>{
               <Step>
                 <StepLabel>Confirm Reservation</StepLabel>
               </Step>
-          </Stepper>
-        </div>
-        <div className={paymentScreenStyles.card}>
-          <Row>
-          <Col className={paymentScreenStyles.card40}>
-                <h3 className={paymentScreenStyles.h3PaymentTopic}>Payment Summery</h3>
+            </Stepper>
+          </div>
+          <div className={paymentScreenStyles.card}>
+            <Row>
+              {loading ? (<>
+
+                <div style={{ width: '60%', height: '85vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CircularProgress />
+            </div>              
+              </>):(
+              <>
+              <Col className={paymentScreenStyles.card40}>
+                <h3 className={paymentScreenStyles.h3PaymentTopic}>Reservation Summary</h3>
                 <hr style={{ color: "white", borderWidth: "2px" }}></hr>
                 {boardingDetails ? (<>
                   <h5 className={paymentScreenStyles.h5Text}>
@@ -113,15 +125,16 @@ const ReserveBoardingPage = () =>{
 
 
               </Col>
-            <Col>
-            <h3 className={paymentScreenStyles.h3Topic}>Enter Occupant details</h3>
-            <div className={paymentScreenStyles.paymentForm}>
-                <ReservationForm/>
-              </div>
-            </Col>
-        </Row>
+              </>)}
+              <Col>
+                <h3 className={paymentScreenStyles.h3Topic}>Enter Occupant details</h3>
+                <div className={paymentScreenStyles.paymentForm}>
+                  <ReservationForm />
+                </div>
+              </Col>
+            </Row>
+          </div>
         </div>
-      </div>
       </div>
     </>
   );
