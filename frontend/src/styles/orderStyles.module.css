@@ -1,12 +1,19 @@
 
 .card {
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+ /* box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
   margin-top: 20px;
   margin-bottom: 20px;
   padding: 10px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #3498db, #8e44ad); /* Replace these colors with your desired gradient colors */
+  background: linear-gradient(135deg, #3498db, #8e44ad); 
   color: #fff; /* Set text color to white or any suitable color */
+  background: linear-gradient(135deg, #0057a0, #242745,#0057a0);
+  padding: 1%;
+  border-radius: 10px; 
+  color: white;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
   

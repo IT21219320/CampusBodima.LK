@@ -32,6 +32,13 @@ export const menuesApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        updateAvailability: builder.mutation({
+            query: (data) => ({
+                url: `${Menu_URL}/owner/availability`,
+                method: 'PUT',
+                body: data,
+            }),
+        }),
         deleteMenues: builder.mutation({
             query: (data) => ({
                 url: `${Menu_URL}/owner/deletemenu`,
@@ -42,4 +49,9 @@ export const menuesApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useAddMenuMutation, useGetOwnerMenuesMutation, useGetBoardingMenuesMutation, useUpdateMenuesMutation, useDeleteMenuesMutation} = menuesApiSlice;
+export const { useAddMenuMutation,
+     useGetOwnerMenuesMutation,
+     useGetBoardingMenuesMutation,
+     useUpdateMenuesMutation,
+     useUpdateAvailabilityMutation,
+     useDeleteMenuesMutation} = menuesApiSlice;
