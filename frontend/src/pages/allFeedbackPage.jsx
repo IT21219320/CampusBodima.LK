@@ -5,7 +5,7 @@ import { useDeleteFeedbackMutation,useGetAllFeedbacksMutation  } from "../slices
 import { toast } from "react-toastify";
 import Sidebar from '../components/sideBar';
 import dashboardStyles from '../styles/dashboardStyles.module.css';
-import { Container, Row, Col, Table,Card } from 'react-bootstrap';
+import { Container, Row, Col, Table,Card,InputGroup } from 'react-bootstrap';
 import { Breadcrumbs, Typography, Paper, InputBase, IconButton, Box, FormControl, InputLabel, Select, MenuItem, TablePagination, CircularProgress, Button, Rating,Link,CardContent } from '@mui/material';
 import { NavigateNext, Search, BrowserUpdated as BrowserUpdatedIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import occupantFeedbackStyles from '../styles/occupantFeedbackStyles.module.css';
@@ -187,7 +187,7 @@ const AllFeedbacks = () => {
             head: [headers],
             body: data,
             styles,
-            margin: { top: 90 },
+            //margin: { top: 90 },
             startY: 75
         });
     
@@ -219,9 +219,9 @@ const AllFeedbacks = () => {
           </Row>
           <Row>
                         <Col>
-                            <Card variant="outlined" className={occupantFeedbackStyles.card}>
-                                <CardContent style={{color:'#fff',backgroundColor:'#232a67'}}>
-                                    <h4>FEEDBACKS  &  RATING</h4> 
+                            <Card variant="outlined" className={occupantFeedbackStyles.cards}>
+                                <CardContent style={{color:'#fff',padding: '10px'}}>
+                                    <h4 style={{marginTop:'10px'}}>FEEDBACKS  &  RATING</h4> 
                                 </CardContent>
                             </Card>
                         </Col>

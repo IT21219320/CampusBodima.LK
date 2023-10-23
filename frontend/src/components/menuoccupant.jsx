@@ -1,5 +1,3 @@
-// MenuView.js
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Card, Row, Col } from 'react-bootstrap';
@@ -17,9 +15,10 @@ import { toast } from 'react-toastify';
 import { useGetBoardingMenuesMutation } from '../slices/menuesApiSlice';
 import orderStyles from '../styles/orderStyles.module.css';
 import DeleteMenu from './deleteMenu';
-import { Button } from '@mui/material';
+import { Button,Tooltip } from '@mui/material';
 import { setCartItems } from '../slices/cartSlice.js';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+
 
 const MenuView = () => {
   const [menuData, setMenuData] = useState([]);
@@ -37,13 +36,20 @@ const MenuView = () => {
   const loadMenuData = async () => {
     try {
       const res = await getBoardingMenues({ userID }).unwrap();
-      setMenuData(res.menu);
+      const filteredMenuData = res.menu.filter((menu) => menu.availability === true);
+      setMenuData(filteredMenuData);
     } catch (err) {
       console.log(err);
       toast.error(err.data?.message || err.error || err);
     }
   };
-
+  
+    const customStyle = {
+      fontSize: '16px',
+      color: 'white',         
+      borderRadius: '4px',      
+      padding: '8px',       
+    };
   const addToCart = (menu) => {
     const quantity = 1;
 
@@ -99,7 +105,6 @@ const MenuView = () => {
         </Col>
         <Col>
           <div style={{ float: 'right', minWidth: '220px' }}>
-            {/* Your boarding selection component goes here */}
           </div>
         </Col>
       </Row>
@@ -107,51 +112,53 @@ const MenuView = () => {
 
       <Row>
         <Col>
-
+        
           <Card>
             <Card.Body>
+
               {isLoading ?
                 'Loading...'
                 :
-                <Row>
+                <Row><h4 style={{
+                  textAlign: 'center',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  color: '#0047ab',
+                  fontFamily:'Times New Roman',
+                }}>
+                  Select Item to Order
+                </h4>
                   {filteredMenus.length > 0 ?
                     filteredMenus.map((menu, index) => (
-                      <Col lg={4} key={index}>
-                        <Container style={{display:'flex' ,alignItems:'stretch'}}>
-                        <Button style={{
-                          background: 'linear-gradient(135deg, #0575E6, #021B79)',
-                          flexDirection: 'column',
-                          padding: '10px 10px',
-                          margin: '10px 0',
-                          textAlign: 'center',
-                          fontFamily: 'cursive',
-                          width: '100%',
-                          color: 'white',
-                          fontWeight: 'bold',
-                        }} variant='contained' onClick={() => addToCart(menu)}>
-                          <Row>
-                            <Col>
-                              {menu.product}
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col>
-                              Rs. {menu.price}
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Button style={{
-                              color: 'black',
-                              backgroundColor: '#7CFC00	',
-                              borderradius: '4px',
-                              padding: '10px 20px',
-                              fontisize: '16px',
-                              cursor: 'pointer',
-                            }} >
-                              <AddShoppingCartIcon />
-                            </Button>
-                          </Row>
-                        </Button>
+                      <Col lg={4} style={{ padding: 'initial' }} key={index}>
+                        <Container style={{ display: 'flex', alignItems: 'stretch' }}>
+                          {menu.availability ? (
+                            <Tooltip title={<span style={customStyle}>Rs. {menu.price}</span>} placement="top" arrow>
+                              <Button style={{
+                                flexDirection: 'column',
+                                padding: '10px 0',
+                                margin: '5px 0',
+                                textAlign: 'center',
+                                fontFamily: 'cursive',
+                                width: '100%',
+                                color: 'white',
+                                fontWeight: 'bold',
+
+                              }} variant='contained' color='info' onClick={() => addToCart(menu)}>
+                                <Row>
+                                  <Col>
+                                    {menu.product}
+                                  </Col>
+                                </Row>
+                                
+                              </Button>
+                            </Tooltip>
+                          ) : (
+                            // Display a message when menu is not available
+                            <div style={{ backgroundColor: 'gray', color: 'white', padding: '10px' }}>
+                              You can't place an order now
+                            </div>
+                          )}
                         </Container>
                       </Col>
                     ))
@@ -159,43 +166,8 @@ const MenuView = () => {
                     <Col>'No menu items found!'</Col>}
                 </Row>
               }
-              {/*<TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align="center" style={{ height: '50px' }}><b>Product</b></TableCell>
-                      <TableCell align="center"><b>Price</b></TableCell>
-                      <TableCell align="center"><b>Action</b></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {isLoading ? (
-                      <TableRow>
-                        <TableCell colSpan={4} style={{textAlign:'center'}}>
-                          Loading...
-                        </TableCell>
-                      </TableRow>
-                    ) : filteredMenus.length > 0 ? (
-                      filteredMenus.map((menu, index) => (
-                        <TableRow key={index}>
-                          <TableCell align="center" style={{ height: '50px' }}>{menu.product}</TableCell>
-                          <TableCell align="center">{menu.price}</TableCell>
-                          <TableCell align="center">
-                            <Button style={{ background: ' lightgreen', color: 'white', marginRight: '10px' }}
-                            onClick={()=>Navigate()}><AddShoppingCartIcon/></Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={4} style={{textAlign:'center', height:'5px'}}>
-                          No menu items found!
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>*/}
+
+
             </Card.Body>
           </Card>
         </Col>

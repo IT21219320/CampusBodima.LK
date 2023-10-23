@@ -20,7 +20,12 @@ const menuSchema = mongoose.Schema({
     },
     foodImage:{
         type:String,
-    }
+    },
+    availability:{
+        type:Boolean,
+        required: true,
+        default: true
+    },
 });
 
 const Menu = mongoose.model('Menu', menuSchema);

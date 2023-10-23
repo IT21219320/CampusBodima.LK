@@ -3,8 +3,17 @@
     box-shadow: 2px 1px 10px -5px black;
     height: 60px;
     margin-bottom: 16px;
-
 }
+.cards {
+ 
+    background: linear-gradient(135deg, #0057a0, #242745,#0057a0);
+    padding: 1px;
+    border-radius: 10px; 
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
 
 .table{
     margin-top: 10px !important;

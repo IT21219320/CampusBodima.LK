@@ -10,11 +10,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { MenuItem, Breadcrumbs, FormControl, InputLabel, Select, Typography, Link, Button, TextField, CircularProgress } from '@mui/material';
+import { MenuItem, Breadcrumbs, FormControl, InputLabel, Select, Button, TextField, CircularProgress } from '@mui/material';
 import orderStyles from '../styles/orderStyles.module.css';
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
-import DeleteIcon from '@mui/icons-material/Delete';
+import 'react-date-range/dist/styles.css'; 
+import 'react-date-range/dist/theme/default.css'; 
 import { useTheme } from "@emotion/react";
 import DeleteOrder from "../pages/DeleteOrder";
 import formStyle from '../styles/formStyle.module.css';
@@ -24,9 +23,7 @@ const OrderReady = () => {
     const theme = useTheme();
 
     const [product, setOrder] = useState([]);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [activeTab, setActiveTab] = useState('Place Order');
     const [searchQuery, setSearchQuery] = useState('');
     const [boardingId, setBoardingId] = useState('All');
     const [boardingNames, setBoardingNames] = useState('');
@@ -57,7 +54,7 @@ const OrderReady = () => {
             }).unwrap();
             if (ress) {
                 console.log("value", ress);
-                toast.success('Order Moved to Ready Status');
+                toast.success('Order is Completed..!!');
                 loadOrderData()
             }
         } catch (err) {
@@ -66,7 +63,6 @@ const OrderReady = () => {
     }
 
 
-    const navigate = useNavigate();
 
     const [getTodayOrder, { isLoading }] = useGetTodayOrderMutation();
     const [updateStatus] = useUpdateStatusMutation();
@@ -85,9 +81,8 @@ const OrderReady = () => {
     };
 
     useEffect(() => {
-        // Dispatch the action to fetch feedback data
         loadOrderData();
-    }, [boardingId]); // Empty dependency array to trigger the effect on component mount
+    }, [boardingId]); 
 
     const filteredOrders = product.filter((order) => {
         console.log(order);
@@ -105,7 +100,7 @@ const OrderReady = () => {
             <Row>
                 <Col>
                     <div className={orderStyles.card}>
-                        <h3>Prepared Orders</h3>
+                        <h3>Ready Orders</h3>
                     </div>
                 </Col>
             </Row>
@@ -178,10 +173,10 @@ const OrderReady = () => {
                                             <TableCell align="center">{new Date(order.date).toDateString()}</TableCell>
                                             <TableCell align="center">{new Date(order.date).getHours()}:{new Date(order.date).getMinutes()}</TableCell>
                                             <TableCell align="center">{order.orderNo}</TableCell>
-                                            <TableCell><td align="center">
+                                            <TableCell><td >
                                             {order.items.map((item,index) => (
                                                 <TableRow>
-                                                    <TableCell align="center">{item.product}</TableCell>
+                                                    <TableCell>{item.product}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </td></TableCell><TableCell>
@@ -214,18 +209,29 @@ const OrderReady = () => {
                                             <Button
                                                 variant="contained"
                                                 onClick={() => status(order._id)}
-                                                style={{ background: '#0FFF50', color: 'white', marginRight: '10px' }}>
+                                                style={{
+                                                    background: '#8EFE4B',
+                                                    color: 'white',
+                                                    marginRight: '10px',
+                                                    transition: 'background-color 0.3s',
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.target.style.backgroundColor = '#00DD46'; // Change the background color on hover
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.target.style.backgroundColor = '#8EFE4B'; // Change it back to the original color on mouse leave
+                                                }}>
                                                 Complete</Button></TableCell>
 
                                     </TableRow>
 
                                 ))
                             ) : (
-                                <tr style={{ height: '100%', width: '100%', textAlign: 'center', color: 'blue' }}>
-                                    <td colSpan={10}>
-                                        <h4>No matching orders found!</h4>
-                                    </td>
-                                </tr>
+                                <TableRow style={{ height: '100%', width: '100%', textAlign: 'center', color: '#DE5615' }}>
+                                    <TableCell colSpan={10} align="center">
+                                        <h4><b>No matching orders found!</b></h4>
+                                    </TableCell>
+                                </TableRow>
                             )}
                         </tbody>
                         {selectedOrder && (

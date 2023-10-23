@@ -1,26 +1,24 @@
 import { useEffect, useState } from "react"
 import { useSelector } from 'react-redux';
-import { useGetTodayOrderMutation } from "../slices/orderApiSlice";
+import { useNavigate } from 'react-router-dom';
+import { useGetTodayOrderMutation, useUpdateStatusMutation } from "../slices/orderApiSlice";
 import { toast } from "react-toastify";
-import { Row, Col } from 'react-bootstrap';
-import { MenuItem, FormControl, InputLabel, Select, Button, TextField, CircularProgress } from '@mui/material';
-import { GetAppRounded } from '@mui/icons-material';
+import { Row, Col, } from 'react-bootstrap';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { MenuItem,  FormControl, InputLabel, Select, Button, TextField, CircularProgress } from '@mui/material';
 import orderStyles from '../styles/orderStyles.module.css';
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
-
-import DeleteIcon from '@mui/icons-material/Delete';
+import 'react-date-range/dist/styles.css'; 
+import 'react-date-range/dist/theme/default.css'; 
+import { useTheme } from "@emotion/react";
 import DeleteOrder from "../pages/DeleteOrder";
 import formStyle from '../styles/formStyle.module.css';
-import jsPDF from 'jspdf';
-const OrderComplete = () => {
 
+const OrderPreparing = () => {
 
 
     const [product, setOrder] = useState([]);
@@ -30,10 +28,8 @@ const OrderComplete = () => {
     const [boardingNames, setBoardingNames] = useState('');
 
 
-    const openDeleteModal = (order) => {
-        setSelectedOrder(order);
-        setShowDeleteModal(true);
-    };
+
+    
     const closeDeleteModal = () => {
         setSelectedOrder(null);
         setShowDeleteModal(false);
@@ -45,11 +41,27 @@ const OrderComplete = () => {
     };
     const { userInfo } = useSelector((state) => state.auth);
 
-
+    const status = async (id) => {
+        try {
+            const newStatus = "Ready"
+            const ress = await updateStatus({
+                status: newStatus,
+                _id: id,
+            }).unwrap();
+            if (ress) {
+                console.log("value", ress);
+                toast.success('Order Moved to Ready Status');
+                loadOrderData()
+            }
+        } catch (err) {
+            toast.error(err.data?.message || err.error)
+        }
+    }
 
 
 
     const [getTodayOrder, { isLoading }] = useGetTodayOrderMutation();
+    const [updateStatus] = useUpdateStatusMutation();
     const userID = userInfo._id
     const loadOrderData = async () => {
         try {
@@ -65,97 +77,28 @@ const OrderComplete = () => {
     };
 
     useEffect(() => {
-
+        // Dispatch the action to fetch feedback data
         loadOrderData();
-    }, [boardingId]);
+    }, [boardingId]); // Empty dependency array to trigger the effect on component mount
 
     const filteredOrders = product.filter((order) => {
         console.log(order);
         return (
-            order.status === "Completed" &&
+            order.status === "Preparing" &&
             order?.items.some((item) =>
                 item.product.toLowerCase().includes(searchQuery.toLowerCase())
             )
         );
     });
 
-    const exportToPDF = () => {
-        ;//Report Generating
-
-        const completedOrders = product.filter((order) => order.status === 'Completed');
-
-        const doc = new jsPDF();
-        const companyDetails = {
-            name: "CampusBodima",
-            address: "138/K, Ihala Yagoda, Gampaha",
-            phone: "071-588-6675",
-            email: "info.campusbodima@gmail.com",
-            website: "www.campusbodima.com"
-        };
-        doc.addImage("/logo2.png", "PNG", 10, 10, 50, 30);
-        doc.setFontSize(15);
-        doc.setFont("helvetica", "bold");
-        doc.text(`${companyDetails.name}`, 200, 20, { align: "right", style: "bold" });
-        doc.setFontSize(8);
-        doc.setFont("helvetica", "normal");
-        doc.text(`${companyDetails.address}`, 200, 25, { align: "right" });
-        doc.text(`${companyDetails.phone}`, 200, 29, { align: "right" });
-        doc.text(`${companyDetails.email}`, 200, 33, { align: "right" });
-        doc.text(`${companyDetails.website}`, 200, 37, { align: "right" });
-        doc.setLineWidth(0.5);
-        doc.line(10, 45, 200, 45);
-
-
-
-
-        doc.setFontSize(12);
-        doc.text("Completed Orders", 85, 65);
-        const headers = [["Date", "Time", "Order Number", "Product", "Qty", "Price", "Total"]];
-
-
-
-        const data = completedOrders.map((order) => [
-            new Date(order.date).toLocaleDateString(),
-            `${new Date(order.date).getHours()}:${new Date(order.date).getMinutes()}`,
-            order.orderNo,
-            order.items.map((item) => item.product),
-            order.items.map((item) => item.quantity),
-            order.items.map((item) => item.price),
-            order.total,
-            order.status,
-        ]);
-
-        const styles = {
-            halign: "center",
-            valign: "middle",
-            fontSize: 10,
-        };
-
-        doc.autoTable({
-            head: headers,
-            body: data,
-            styles,
-            margin: { top: 70 },
-            startY: 70
-        });
-
-        doc.setFontSize(8);
-        doc.text(`Report of Order List`, 20, 50)
-        doc.text(`Date: ${new Date().toDateString()}`, 20, 54)
-        doc.text(`Author: ${userInfo.firstName} ${userInfo.lastName}`, 20, 58)
-        doc.save("OrderHistory.pdf");
-
-    };
 
     return (
         <>
             <Row>
                 <Col>
-
                     <div className={orderStyles.card}>
-                        <h3>Completed Orders</h3>
+                        <h3>Preparing Orders</h3>
                     </div>
-
                 </Col>
             </Row>
             <Row>
@@ -167,10 +110,7 @@ const OrderComplete = () => {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className={formStyle.searchField}
-                    />
-                </Col><Col></Col>
-                <Col style={{ textAlign: 'right' }}>
-                    <Button variant="contained" style={{ marginRight: '10px', background: '#4c4c4cb5' }} onClick={exportToPDF}>Download Report<GetAppRounded /></Button>
+                    /><p></p>
                 </Col>
                 <Col>
                     <div style={{ float: 'right', minWidth: '220px' }}>
@@ -213,7 +153,7 @@ const OrderComplete = () => {
                                     <TableCell align="center"><b>Sub Total</b></TableCell>
                                     <TableCell align="center"><b>Total</b></TableCell>
                                     <TableCell align="center"><b>Status</b></TableCell>
-                                    <TableCell align="center"><b>Delete</b></TableCell>
+                                    <TableCell align="center"><b>Update Status</b></TableCell>
 
                                 </TableRow>
                             </TableHead>
@@ -263,28 +203,24 @@ const OrderComplete = () => {
                                             <TableCell align="center">{order.status}</TableCell>
                                             {/* Render additional feedback data as needed */}
                                             <TableCell align="center">
-
-
                                                 <Button
-                                                    variant="text"
+                                                    variant="contained"
+                                                    onClick={() => status(order._id)}
                                                     style={{
-                                                        backgroundColor: '#FF4444',
+                                                        background: '#614BFB',
                                                         color: 'white',
-                                                        borderRadius: '50px',
+                                                        marginRight: '10px',
                                                         transition: 'background-color 0.3s',
                                                     }}
-                                                    onClick={() => openDeleteModal(order)}
                                                     onMouseEnter={(e) => {
-                                                        e.target.style.backgroundColor = '#FF0000'; // Change the background color on mouse enter
+                                                        e.target.style.backgroundColor = '#391FF2'; // Change the background color on hover
                                                     }}
                                                     onMouseLeave={(e) => {
-                                                        e.target.style.backgroundColor = '#FF4444'; // Change it back to the original color on mouse leave
-                                                    }
-                                                    }
+                                                        e.target.style.backgroundColor = '#614BFB'; // Change it back to the original color on mouse leave
+                                                    }}
                                                 >
-                                                    <DeleteIcon />
+                                                    Ready
                                                 </Button>
-
                                             </TableCell>
 
                                         </TableRow>
@@ -298,20 +234,20 @@ const OrderComplete = () => {
                                 </TableRow>
                                 )}
                             </tbody>
+                            {selectedOrder && (
+                                <DeleteOrder
+                                    order={selectedOrder}
+                                    onClose={closeDeleteModal}
+                                    onDeleteSuccess={handleDeleteSuccess}
+                                />
+                            )}
                         </Table>
-                    </TableContainer>
-                    {selectedOrder && (
-                        <DeleteOrder
-                            order={selectedOrder}
-                            onClose={closeDeleteModal}
-                            onDeleteSuccess={handleDeleteSuccess}
-                        />
-                    )}
 
+                    </TableContainer>
                 </Col>
             </Row>
         </>
 
     )
 }
-export default OrderComplete;
+export default OrderPreparing;
