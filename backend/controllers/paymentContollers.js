@@ -142,7 +142,7 @@ const getPaymentsByOwnerID = expressAsyncHandler(async (req, res) => {
 })
 
 const withdrawByBoarding = expressAsyncHandler(async (req, res) => {
-  const { userInfo_id, bId, des, amount } = req.body;
+  const { userInfo_id, bId, des, amount, type } = req.body;
   console.log(userInfo_id);
   console.log(bId);
   console.log(amount);
@@ -157,6 +157,7 @@ const withdrawByBoarding = expressAsyncHandler(async (req, res) => {
     description: des,
     boarding: boarding,
     debited: amount,
+    paymentType: type,
 
   })
   if (response) {
