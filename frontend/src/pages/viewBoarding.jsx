@@ -92,7 +92,7 @@ const ViewBoarding = () => {
                     const roomImagePromises = updatedBoarding.room.map(async (room, index) => {
                         const updatedRoomImages = await Promise.all(room.roomImages.map(async (image, index) => {
                             try {
-                                const roomImageUrl = await getDownloadURL(ref(storage, room.roomImages[0]));
+                                const roomImageUrl = await getDownloadURL(ref(storage, image));
                                 return roomImageUrl;
                             } catch (error) {
                                 console.log('Error retrieving image URL:', error);
