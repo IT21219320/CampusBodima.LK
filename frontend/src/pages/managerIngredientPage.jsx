@@ -87,7 +87,7 @@ const managerIngredientPage = () => {
                                 
                                     <Row>
                                         <Col>
-                                            <Card variant="outlined" style={{padding: '3px',borderRadius:'6px'}}className={orderStyles.card}>
+                                            <Card variant="outlined" style={{padding: '0px',borderRadius:'6px'}}className={orderStyles.card}>
                                                 <CardContent style={{ padding: '3px', important: 'true'}}>
                                                     <h1 style={{ fontSize: '40px', color: 'white', textAlign: 'center'}}>
                                                         Inventory
