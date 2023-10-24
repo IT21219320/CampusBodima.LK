@@ -394,7 +394,7 @@ const OccupantPaymentDash = () => {
                                     <Col>
                                         <Row style={{ marginTop: '20px' }}>
                                             <Col>
-                                                <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
+                                                <h4 style={{ background: "linear-gradient(135deg, #0057a0, #242745,#0057a0)", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
                                             </Col>
 
                                         </Row>
@@ -497,7 +497,7 @@ const OccupantPaymentDash = () => {
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
                                         <Col>
-                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
+                                            <h4 style={{ background: "linear-gradient(135deg, #0057a0, #242745,#0057a0)", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
                                         </Col>
                                     </Row>
                                     {cards.length > 0 ? (
@@ -578,7 +578,7 @@ const OccupantPaymentDash = () => {
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
                                         <Col>
-                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Transactions</h4>
+                                            <h4 style={{ background: "linear-gradient(135deg, #0057a0, #242745,#0057a0)", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Transactions</h4>
                                         </Col>
 
                                     </Row>
