@@ -145,7 +145,7 @@ const AllIngredients = ({ boardingId }) => {
                   >
                     <thead>
                       <tr>
-                        <th>Ingredient Name</th>
+                        <th >Ingredient Name</th>
                         <th>Available Quantity</th>
                         <th>Alert At</th>
                         <th>Purchase Date</th>

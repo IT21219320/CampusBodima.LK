@@ -19,6 +19,20 @@ const addIngredient = asyncHandler(async (req, res) => {
     purchaseDate
   } = req.body;
 
+  const match = quantity.match(/(\d+)([a-zA-Z]+)/);
+
+  if (match) {
+    // Extract the numeric and string values
+    const numericValue = parseFloat(match[1]);
+    const stringValue = match[2];
+
+    const quan = parseInt(numericValue);
+
+    if (quan > 1000) {
+
+    }
+  }
+
   var ingredientExists = await Ingredient.findOne({ ingredientName: ingredientName, 'boarding': boardingId });
 
   if (ingredientExists) {
