@@ -294,6 +294,7 @@ const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
 
         }
         let totalUtility = 0;
+        /*
         if (boardingT) {
           const utility = await Utility.find({ boarding: boardingT._id })
 
@@ -314,7 +315,7 @@ const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
             }
           }
 
-        }
+        }*/
 
         const foods = await Order.find({ occupant: userReservation.occupantID, status: 'Completed' })
 
