@@ -99,6 +99,11 @@ const AllFeedbacks = () => {
   });
 
 
+  const countRatings = (rating) => {
+    return filteredFeedbacks.filter((feedback) => parseInt(feedback.rating) === parseInt(rating)).length;
+  };
+
+
   const handleDeleteFeedback = async (feedbackId) => {setShow(false)
     try {
         const resDelete = await deleteFeedback({ feedbackId}).unwrap();
@@ -266,6 +271,30 @@ const AllFeedbacks = () => {
                     <Button variant="contained" style={{marginRight:'10px', background:'#4c4c4cb5'}} onClick={exportToPDF}>Report<GetAppRounded /></Button>
                 </Col>
           </Row>
+
+          <div style={{marginTop:'20px',
+    border:  '5px solid #a7a7d1',
+    borderradius: '8px'}}>       
+  {/* Display counts for each rating */}
+  {ratings.map((ratingValue) => (
+    <p 
+      key={ratingValue}
+      style={{
+        marginTop:'200px',
+        marginLeft:'30px',
+        display: 'inline',
+        fontSize: '14px', // Adjust the font size as needed
+        marginBottom: '8px', // Margin between each rating count
+        color: '#333', // Text color
+        fontWeight: ratingValue === 'all' ? 'bold' : 'normal', // Bold font for 'All' rating
+        color: ratingValue === '0' ? '#ff0000' : ratingValue === '1' ? '#ff9900' : '#333', // Customize color for specific ratings
+        
+      }}
+    >
+      Rating {ratingValue === 'all' ? 'All' : ratingValue}: {countRatings(ratingValue)}
+    </p>
+  ))}
+  </div>
 
           <Row style={{ marginTop: '30px' }}>
             <Col>
