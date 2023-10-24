@@ -142,7 +142,7 @@ const getPaymentsByOwnerID = expressAsyncHandler(async (req, res) => {
 })
 
 const withdrawByBoarding = expressAsyncHandler(async (req, res) => {
-  const { userInfo_id, bId, des, amount } = req.body;
+  const { userInfo_id, bId, des, amount, type } = req.body;
   console.log(userInfo_id);
   console.log(bId);
   console.log(amount);
@@ -157,6 +157,7 @@ const withdrawByBoarding = expressAsyncHandler(async (req, res) => {
     description: des,
     boarding: boarding,
     debited: amount,
+    paymentType: type,
 
   })
   if (response) {
@@ -169,54 +170,6 @@ const withdrawByBoarding = expressAsyncHandler(async (req, res) => {
 })
 
 cron.schedule('0 0 10 * *', async () => {
-  try {
-    // Calculate the monthly fee for each subscribed user
-    const reservedUsers = await reservations.find();
-
-    const currentDate = new Date(Date.now());
-    const currentMonth = currentDate.getMonth() + 1
-
-    for (const userReservation of reservedUsers) {
-      if (userReservation) {
-        const boardingT = await Boarding.findById(userReservation.boardingId);
-
-        let oneUserUtitlity = 0;
-        if (boardingT) {
-          const [utility, usersB] = await Promise.all([
-            Utility.find({ boarding: boardingT._id }),
-            reservations.find({ boardingId: boardingT._id }),
-          ]);
-
-          if (utility.length > 0) {
-            const userCount = usersB.length;
-
-            let totalUtility = 0;
-            for (const oneU of utility) {
-              totalUtility += parseInt(oneU.amount);
-            }
-
-            console.log("Total utility: ", totalUtility, " User count: ", userCount);
-            oneUserUtitlity = totalUtility / parseInt(userCount);
-          }
-
-          console.log("One user utility: ", oneUserUtitlity);
-        }
-
-        await toDoPayment.create({
-          amount: oneUserUtitlity,
-          occupant: userReservation.occupantID,
-          month: currentMonth,
-        });
-      }
-    }
-
-    console.log('Monthly fees calculated and updated.');
-  } catch (error) {
-    console.error('Error calculating monthly fees:', error);
-  }
-});
-
-const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
   try {
     // Calculate the monthly fee for each subscribed user
     const reservedUsers = await reservations.find({ status: 'Approved' });
@@ -267,6 +220,102 @@ const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
           }
 
         }
+
+        const foods = await Order.find({ occupant: userReservation.occupantID, status: 'Completed' })
+
+        let foodTotal = 0
+        for (const uFoods of foods) {
+          foodTotal += uFoods.total
+        }
+        console.log("Food payments", foodTotal);
+        console.log(totalUtility + foodTotal + monthlyFee)
+        const user = await User.findById(userReservation.occupantID)
+        console.log(user);
+        const message = `<p><b>Hello ${user.firstName},</b><br><br> 
+                          :<br><br>
+                           Your monthly payment <br>
+                           <p>Total utility amount :  ${totalUtility} </p>
+                           <p>Total food amount :  ${foodTotal} </p>
+                           <p>Total monthly fee of boarding :  ${monthlyFee} </p><br>
+                           <p>Total fee is : ${totalUtility + foodTotal + monthlyFee}</p>
+                           <b style="color:red"> Do your payment as soon as possible. Thank you</b><br>
+                          
+                          Thank you for choosing CampusBodima!<br><br>
+                          Best wishes,<br>
+                          The CampusBodima Team</p>`
+
+        sendMail(user.email, message, "Your Monthly payment");
+        await toDoPayment.create({
+          amount: totalUtility + foodTotal + monthlyFee,
+          occupant: userReservation.occupantID,
+          month: currentMonth,
+        });
+      }
+    }
+
+    res.status(200).json({
+
+      message: "Calculation done",
+    });
+
+    console.log('Monthly fees calculated and updated.');
+  } catch (error) {
+    console.error('Error calculating monthly fees:', error);
+  }
+});
+
+const calcMonthlyPayment = expressAsyncHandler(async (req, res) => {
+  try {
+    // Calculate the monthly fee for each subscribed user
+    const reservedUsers = await reservations.find({ status: 'Approved' });
+
+    const currentDate = new Date(Date.now())
+    const currentMonth = currentDate.getMonth() + 1
+
+    for (const userReservation of reservedUsers) {
+      if (userReservation) {
+        const boardingT = await Boarding.findById(userReservation.boardingId);
+
+        let monthlyFee = 0;
+        if (boardingT.boardingType === "Annex") {
+
+          monthlyFee = parseInt(boardingT.rent)
+
+        }
+        else if (boardingT.boardingType === "Hostel") {
+          const roomT = await Room.findById(userReservation.roomID);
+
+          if (roomT) {
+            monthlyFee = parseInt(roomT.rent);
+          }
+          else {
+            console.log(userReservation.roomID, "No room available")
+          }
+
+        }
+        let totalUtility = 0;
+        /*
+        if (boardingT) {
+          const utility = await Utility.find({ boarding: boardingT._id })
+
+          if (utility.length > 0) {
+            let userHaveUtility
+            for (const i of utility.occupant) {
+              if (i == userReservation.occupantID) {
+                userHaveUtility = true
+              }
+            }
+            if (utility.length > 0 && userHaveUtility) {
+
+
+              for (const oneU of utility) {
+                totalUtility += parseInt(oneU.perCost);
+              }
+              console.log("Total utility: ", totalUtility);
+            }
+          }
+
+        }*/
 
         const foods = await Order.find({ occupant: userReservation.occupantID, status: 'Completed' })
 

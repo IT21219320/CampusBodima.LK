@@ -79,6 +79,13 @@ const Header = () => {
         setAnchorElUser(null);
     };
 
+    const scrollToElement = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
     return (
         <AppBar id="header" className={`${headerStyles.header} ${isSticky ? headerStyles.sticky : ""}`} >
             <Container maxWidth="lg">
@@ -105,20 +112,23 @@ const Header = () => {
                         <Offcanvas show={showDrawer} onHide={() => setShowDrawer(false)} style={{width:'200px'}}>
                             <Offcanvas.Body>
                             <Button
-                                onClick={() => navigate('/')}
+                                onClick={() => {navigate('/');scrollToElement('top')}}
                                 sx={{ my: 2, px: 1, mx: 1, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
                                 Home
                             </Button>
                             <Button
-                                onClick={() => navigate('/')}
+                                onClick={() => {navigate('/');scrollToElement('animHeader')}}
                                 sx={{ my: 2, px: 1, mx: 1, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
-                                About Us
+                                Our Services
                             </Button>
                             <Button
-                                onClick={() => navigate('/')}
+                                onClick={() => {navigate('/');scrollToElement('contactUs')}}
                                 sx={{ my: 2, px: 1, mx: 1, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
                                 Contact Us
                             </Button>
@@ -134,20 +144,23 @@ const Header = () => {
                     </Box>
                     <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent:'center' }}>
                             <Button
-                                onClick={() => navigate('/')}
+                                onClick={() => {navigate('/');scrollToElement('top')}}
                                 sx={{ my: 2, px: 3, mx: 2, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
                                 Home
                             </Button>
                             <Button
-                                onClick={() => navigate('/')}
+                                onClick={() => {navigate('/');scrollToElement('animHeader')}}
                                 sx={{ my: 2, px: 3, mx: 2, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
-                                About Us
+                                Our Services
                             </Button>
                             <Button
-                                onClick={() => navigate('/')}
+                                onClick={() => {navigate('/');scrollToElement('contactUs')}}
                                 sx={{ my: 2, px: 3, mx: 2, color: "inherit", fontWeight:'inherit', display: "block" }}
+                                className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} 
                             >
                                 Contact Us
                             </Button>
@@ -191,11 +204,11 @@ const Header = () => {
                     :
                     
                     <Box sx={{ flexGrow: 0 }}>
-                        <Button onClick={() => navigate('/login')} sx={{ p: 0, color: "inherit", fontWeight:'inherit' }}>
+                        <Button onClick={() => navigate('/login')} className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} sx={{ p: 0, color: "inherit", fontWeight:'inherit' }}>
                             <FaSignInAlt />&nbsp; Sign In
                         </Button>
                         &nbsp; &nbsp; &nbsp;
-                        <Button onClick={() => navigate('/register')} sx={{ p: 0, color: "inherit", fontWeight:'inherit' }}>
+                        <Button onClick={() => navigate('/register')} className={isSticky? headerStyles.navBtns : headerStyles.navBtns2} sx={{ p: 0, color: "inherit", fontWeight:'inherit' }}>
                             <FaSignOutAlt />&nbsp; Sign Up
                         </Button>
                     </Box>}

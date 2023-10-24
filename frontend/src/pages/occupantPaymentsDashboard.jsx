@@ -389,16 +389,17 @@ const OccupantPaymentDash = () => {
                                     <Tab label="Transactions" value="3" />
                                 </TabList>
                             </Box>
-                            <TabPanel value="1"><Row>
-                                <Col>
-                                    <Row style={{ marginTop: '20px' }}>
-                                        <Col>
-                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
-                                        </Col>
+                            <TabPanel value="1">
+                                <Row>
+                                    <Col>
+                                        <Row style={{ marginTop: '20px' }}>
+                                            <Col>
+                                                <h4 style={{ background: "linear-gradient(135deg, #0057a0, #242745,#0057a0)", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Monthly Payment</h4>
+                                            </Col>
 
-                                    </Row>
-                                </Col>
-                            </Row>
+                                        </Row>
+                                    </Col>
+                                </Row>
                                 {isLoading ? (
                                     <>
                                         <Box sx={{ margin: '10% 50%' }}>
@@ -410,8 +411,8 @@ const OccupantPaymentDash = () => {
                                             <>
                                                 {myReserve.paymentStatus == 'Pending' && myReserve.paymentType == 'Online' && myReserve.status == 'Approved' ? (
                                                     <>
-                                                        <Row>
-                                                            <p>Payment is pending. Do your Initial payment in here</p>
+                                                        <Row style={{backgroundColor: '#ffabab',borderRadius: '12px',paddingBottom: '5%'}}>
+                                                            <p style={{textAlign:'center', fontFamily: 'monospace', marginTop: '6%',fontWeight: 'bold'}}>Payment is pending. Do your Initial payment in here</p>
                                                             <Button onClick={navigateToPayI}>Pay</Button>
                                                         </Row>
 
@@ -435,7 +436,7 @@ const OccupantPaymentDash = () => {
                                                                             </Row>
                                                                         </>) : (
                                                                             <>
-                                                                                <p>You haven't payment to do</p>
+                                                                                <p>You don't have payment to do</p>
                                                                             </>)}
 
                                                                     </Col>
@@ -451,7 +452,7 @@ const OccupantPaymentDash = () => {
 
                                                                                 <Button variant="contained" style={{ width: "80px" }} onClick={() => navigateToPayOld()}>Pay</Button>
 
-                                                                            </Row></>) : (<><p>You haven't payment to do</p></>)}
+                                                                            </Row></>) : (<><p>You don't have payment to do</p></>)}
 
                                                                     </Col></Row>
                                                             </>) : (<></>)}
@@ -483,7 +484,7 @@ const OccupantPaymentDash = () => {
                                                 </Row>
 
                                             </>) : (<>
-                                                <p style={{fontFamily: 'monospace',textAlign: 'center',marginTop: '15%', fontSize: 'xx-large' }}>No Reservation</p>
+                                                <p style={{ fontFamily: 'monospace', textAlign: 'center', marginTop: '15%', fontSize: 'xx-large' }}>No Reservation</p>
                                             </>
                                         )}
                                     </>
@@ -496,7 +497,7 @@ const OccupantPaymentDash = () => {
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
                                         <Col>
-                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
+                                            <h4 style={{ background: "linear-gradient(135deg, #0057a0, #242745,#0057a0)", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Saved cards</h4>
                                         </Col>
                                     </Row>
                                     {cards.length > 0 ? (
@@ -577,7 +578,7 @@ const OccupantPaymentDash = () => {
                                 <Col>
                                     <Row style={{ marginTop: '20px' }}>
                                         <Col>
-                                            <h4 style={{ backgroundColor: "#242745", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Transactions</h4>
+                                            <h4 style={{ background: "linear-gradient(135deg, #0057a0, #242745,#0057a0)", padding: "1%", borderRadius: " 10px", color: "white", textAlign: "center" }}>Transactions</h4>
                                         </Col>
 
                                     </Row>
