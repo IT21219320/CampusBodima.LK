@@ -411,8 +411,8 @@ const OccupantPaymentDash = () => {
                                             <>
                                                 {myReserve.paymentStatus == 'Pending' && myReserve.paymentType == 'Online' && myReserve.status == 'Approved' ? (
                                                     <>
-                                                        <Row>
-                                                            <p>Payment is pending. Do your Initial payment in here</p>
+                                                        <Row style={{backgroundColor: '#ffabab',borderRadius: '12px',paddingBottom: '5%'}}>
+                                                            <p style={{textAlign:'center', fontFamily: 'monospace', marginTop: '6%',fontWeight: 'bold'}}>Payment is pending. Do your Initial payment in here</p>
                                                             <Button onClick={navigateToPayI}>Pay</Button>
                                                         </Row>
 
@@ -436,7 +436,7 @@ const OccupantPaymentDash = () => {
                                                                             </Row>
                                                                         </>) : (
                                                                             <>
-                                                                                <p>You haven't payment to do</p>
+                                                                                <p>You don't have payment to do</p>
                                                                             </>)}
 
                                                                     </Col>
@@ -452,7 +452,7 @@ const OccupantPaymentDash = () => {
 
                                                                                 <Button variant="contained" style={{ width: "80px" }} onClick={() => navigateToPayOld()}>Pay</Button>
 
-                                                                            </Row></>) : (<><p>You haven't payment to do</p></>)}
+                                                                            </Row></>) : (<><p>You don't have payment to do</p></>)}
 
                                                                     </Col></Row>
                                                             </>) : (<></>)}

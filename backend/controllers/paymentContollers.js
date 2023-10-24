@@ -172,44 +172,91 @@ const withdrawByBoarding = expressAsyncHandler(async (req, res) => {
 cron.schedule('0 0 10 * *', async () => {
   try {
     // Calculate the monthly fee for each subscribed user
-    const reservedUsers = await reservations.find();
+    const reservedUsers = await reservations.find({ status: 'Approved' });
 
-    const currentDate = new Date(Date.now());
+    const currentDate = new Date(Date.now())
     const currentMonth = currentDate.getMonth() + 1
 
     for (const userReservation of reservedUsers) {
       if (userReservation) {
         const boardingT = await Boarding.findById(userReservation.boardingId);
 
-        let oneUserUtitlity = 0;
-        if (boardingT) {
-          const [utility, usersB] = await Promise.all([
-            Utility.find({ boarding: boardingT._id }),
-            reservations.find({ boardingId: boardingT._id }),
-          ]);
+        let monthlyFee = 0;
+        if (boardingT.boardingType === "Annex") {
 
-          if (utility.length > 0) {
-            const userCount = usersB.length;
+          monthlyFee = parseInt(boardingT.rent)
 
-            let totalUtility = 0;
-            for (const oneU of utility) {
-              totalUtility += parseInt(oneU.amount);
-            }
+        }
+        else if (boardingT.boardingType === "Hostel") {
+          const roomT = await Room.findById(userReservation.roomID);
 
-            console.log("Total utility: ", totalUtility, " User count: ", userCount);
-            oneUserUtitlity = totalUtility / parseInt(userCount);
+          if (roomT) {
+            monthlyFee = parseInt(roomT.rent);
+          }
+          else {
+            console.log(userReservation.roomID, "No room available")
           }
 
-          console.log("One user utility: ", oneUserUtitlity);
+        }
+        let totalUtility = 0;
+        if (boardingT) {
+          const utility = await Utility.find({ boarding: boardingT._id })
+
+          if (utility.length > 0) {
+            let userHaveUtility
+            for (const i of utility.occupant) {
+              if (i == userReservation.occupantID) {
+                userHaveUtility = true
+              }
+            }
+            if (utility.length > 0 && userHaveUtility) {
+
+
+              for (const oneU of utility) {
+                totalUtility += parseInt(oneU.perCost);
+              }
+              console.log("Total utility: ", totalUtility);
+            }
+          }
+
         }
 
+        const foods = await Order.find({ occupant: userReservation.occupantID, status: 'Completed' })
+
+        let foodTotal = 0
+        for (const uFoods of foods) {
+          foodTotal += uFoods.total
+        }
+        console.log("Food payments", foodTotal);
+        console.log(totalUtility + foodTotal + monthlyFee)
+        const user = await User.findById(userReservation.occupantID)
+        console.log(user);
+        const message = `<p><b>Hello ${user.firstName},</b><br><br> 
+                          :<br><br>
+                           Your monthly payment <br>
+                           <p>Total utility amount :  ${totalUtility} </p>
+                           <p>Total food amount :  ${foodTotal} </p>
+                           <p>Total monthly fee of boarding :  ${monthlyFee} </p><br>
+                           <p>Total fee is : ${totalUtility + foodTotal + monthlyFee}</p>
+                           <b style="color:red"> Do your payment as soon as possible. Thank you</b><br>
+                          
+                          Thank you for choosing CampusBodima!<br><br>
+                          Best wishes,<br>
+                          The CampusBodima Team</p>`
+
+        sendMail(user.email, message, "Your Monthly payment");
         await toDoPayment.create({
-          amount: oneUserUtitlity,
+          amount: totalUtility + foodTotal + monthlyFee,
           occupant: userReservation.occupantID,
           month: currentMonth,
         });
       }
     }
+
+    res.status(200).json({
+
+      message: "Calculation done",
+    });
 
     console.log('Monthly fees calculated and updated.');
   } catch (error) {
